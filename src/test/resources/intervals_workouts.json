@@ -1,0 +1,215 @@
+[
+  {
+    "athlete_id": "i55661",
+    "id": 85936,
+    "type": "FOLDER",
+    "name": "Workouts",
+    "description": "",
+    "children": [
+      {
+        "athlete_id": "i55661",
+        "id": 3,
+        "icu_training_load": 91,
+        "name": "Z2.E7 // FatMax // 3x 20 (10) mins [60]",
+        "description": "Z2.E7 // FatMax // 3x 20 (10) mins [60]\n\n- 20m 50%\n\n2x\n- 20m 70%\n- 10m 50%\n\n- 20m 70%\n- 45m 50%\n- 5m 45%\n",
+        "type": "Ride",
+        "indoor": false,
+        "color": null,
+        "moving_time": 9000,
+        "updated": "2023-03-18T10:30:54.850+00:00",
+        "joules": 1249200,
+        "joules_above_ftp": 0,
+        "workout_doc": {
+          "steps": [
+            {
+              "power": {
+                "units": "%ftp",
+                "value": 50
+              },
+              "duration": 1200
+            },
+            {
+              "reps": 2,
+              "text": "2x",
+              "steps": [
+                {
+                  "power": {
+                    "units": "%ftp",
+                    "value": 70
+                  },
+                  "duration": 1200
+                },
+                {
+                  "power": {
+                    "units": "%ftp",
+                    "value": 50
+                  },
+                  "duration": 600
+                }
+              ],
+              "distance": 0,
+              "duration": 3600
+            },
+            {
+              "power": {
+                "units": "%ftp",
+                "value": 70
+              },
+              "duration": 1200
+            },
+            {
+              "power": {
+                "units": "%ftp",
+                "value": 50
+              },
+              "duration": 2700
+            },
+            {
+              "power": {
+                "units": "%ftp",
+                "value": 45
+              },
+              "duration": 300
+            },
+            {
+              "power": {
+                "end": 20,
+                "start": 10,
+                "units": "%ftp"
+              },
+              "duration": 600
+            },
+            {
+              "power": {
+                "end": 30,
+                "start": 10,
+                "units": "%ftp"
+              },
+              "cadence": {
+                "end": 90,
+                "start": 80,
+                "units": "rpm"
+              },
+              "duration": 600
+            }
+          ],
+          "locales": [],
+          "options": {},
+          "distance": 0,
+          "duration": 9000,
+          "zoneTimes": [
+            {
+              "id": "Z1",
+              "max": 55,
+              "name": "Z1",
+              "secs": 5400,
+              "zone": 1,
+              "color": "#009e80",
+              "maxWatts": 132,
+              "minWatts": 1,
+              "percentRange": "0% - 55%"
+            },
+            {
+              "id": "Z2",
+              "max": 75,
+              "name": "Z2",
+              "secs": 3600,
+              "zone": 2,
+              "color": "#009e00",
+              "maxWatts": 180,
+              "minWatts": 133,
+              "percentRange": "56% - 75%"
+            },
+            {
+              "id": "Z3",
+              "max": 90,
+              "name": "Z3",
+              "secs": 0,
+              "zone": 3,
+              "color": "#ffcb0e",
+              "maxWatts": 216,
+              "minWatts": 181,
+              "percentRange": "76% - 90%"
+            },
+            {
+              "id": "Z4",
+              "max": 105,
+              "name": "Z4",
+              "secs": 0,
+              "zone": 4,
+              "color": "#ff7f0e",
+              "maxWatts": 252,
+              "minWatts": 217,
+              "percentRange": "91% - 105%"
+            },
+            {
+              "id": "Z5",
+              "max": 120,
+              "name": "Z5",
+              "secs": 0,
+              "zone": 5,
+              "color": "#dd0447",
+              "maxWatts": 288,
+              "minWatts": 253,
+              "percentRange": "106% - 120%"
+            },
+            {
+              "id": "Z6",
+              "max": 150,
+              "name": "Z6",
+              "secs": 0,
+              "zone": 6,
+              "color": "#6633cc",
+              "maxWatts": 360,
+              "minWatts": 289,
+              "percentRange": "121% - 150%"
+            },
+            {
+              "id": "Z7",
+              "max": 999,
+              "name": "Z7",
+              "secs": 0,
+              "zone": 7,
+              "color": "#504861",
+              "maxWatts": 9999,
+              "minWatts": 361,
+              "percentRange": "151% +"
+            },
+            {
+              "id": "SS",
+              "gap": true,
+              "max": 97,
+              "min": 84,
+              "name": "Sweet Spot",
+              "secs": 0,
+              "zone": 8,
+              "color": "#ffa00e",
+              "maxWatts": 232,
+              "minWatts": 201,
+              "percentRange": "84% - 97%"
+            }
+          ],
+          "description": "Z2.E7 // FatMax // 3x 20 (10) mins [60]",
+          "average_watts": 139,
+          "normalized_power": 145,
+          "variability_index": 1.0431654676258992
+        },
+        "folder_id": 85936,
+        "day": null,
+        "days": null,
+        "plan_applied": null,
+        "hide_from_athlete": false,
+        "target": null,
+        "targets": [
+          "POWER"
+        ],
+        "tags": null,
+        "attachments": null,
+        "distance": 0.0,
+        "icu_intensity": 60.332413
+      }
+    ],
+    "visibility": "PUBLIC",
+    "start_date_local": null
+  }
+]

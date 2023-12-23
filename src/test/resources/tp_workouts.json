@@ -1,0 +1,2026 @@
+[
+  {
+    "workoutId": 2422870322,
+    "athleteId": 2797132,
+    "title": "Day off",
+    "workoutTypeValueId": 7,
+    "code": null,
+    "workoutDay": "2024-01-01T00:00:00",
+    "startTime": null,
+    "startTimePlanned": null,
+    "isItAnOr": false,
+    "isHidden": null,
+    "completed": null,
+    "description": null,
+    "userTags": null,
+    "coachComments": null,
+    "workoutComments": [],
+    "newComment": null,
+    "publicSettingValue": 0,
+    "sharedWorkoutInformationKey": "2WQWDFNPWP3PUU74XSKKXIYIPU",
+    "sharedWorkoutInformationExpireKey": "RIK7N253KRKXV5YASSZ26L3MDIFLOTTXQISSZPQ",
+    "distance": null,
+    "distancePlanned": null,
+    "distanceCustomized": null,
+    "distanceUnitsCustomized": null,
+    "totalTime": null,
+    "totalTimePlanned": null,
+    "heartRateMinimum": null,
+    "heartRateMaximum": null,
+    "heartRateAverage": null,
+    "calories": null,
+    "caloriesPlanned": null,
+    "tssActual": null,
+    "tssPlanned": null,
+    "tssSource": 0,
+    "if": null,
+    "ifPlanned": null,
+    "velocityAverage": null,
+    "velocityPlanned": null,
+    "velocityMaximum": null,
+    "normalizedSpeedActual": null,
+    "normalizedPowerActual": null,
+    "powerAverage": null,
+    "powerMaximum": null,
+    "energy": null,
+    "energyPlanned": null,
+    "elevationGain": null,
+    "elevationGainPlanned": null,
+    "elevationLoss": null,
+    "elevationMinimum": null,
+    "elevationAverage": null,
+    "elevationMaximum": null,
+    "torqueAverage": null,
+    "torqueMaximum": null,
+    "tempMin": null,
+    "tempAvg": null,
+    "tempMax": null,
+    "cadenceAverage": null,
+    "cadenceMaximum": null,
+    "lastModifiedDate": "2023-12-15T13:09:46.997",
+    "equipmentBikeId": null,
+    "equipmentShoeId": null,
+    "isLocked": null,
+    "complianceDurationPercent": null,
+    "complianceDistancePercent": null,
+    "complianceTssPercent": null,
+    "rpe": null,
+    "feeling": null,
+    "structure": null,
+    "orderOnDay": 1,
+    "personalRecordCount": 0,
+    "syncedTo": null,
+    "poolLengthOptionId": null
+  },
+  {
+    "workoutId": 2422870396,
+    "athleteId": 2797132,
+    "title": "(3a) Intervals // 4x 8 mins (RI 4 mins)",
+    "workoutTypeValueId": 2,
+    "code": null,
+    "workoutDay": "2024-01-02T00:00:00",
+    "startTime": null,
+    "startTimePlanned": null,
+    "isItAnOr": false,
+    "isHidden": null,
+    "completed": null,
+    "description": "AEROBIC INTERVALS\n\nAIM: Quality Intervals - aim is to accumulate a lot of work per session, rather than pushing power to the limit\n\nTERRAIN: Intervals on a climb of ~5-6% - hill reps work well. If there are no hills, intervals can be performed into the win, or on the flat\n\nFEELING GOOD: Perform 5x reps\nFEELING TIRED: Reduce to 3 reps, and 1.25 hrs\n\n- - - -\n\nSeiler, S. Jøranson, K., Olesen, B.V. and Hetlelid, K.J. (2013). Adaptations to aerobic interval training: interactive effects of exercise intensity and total work duration. Scandinavian Journal of Medicine and Science in Sports. 23, 74-83.\n\n\"Accumulating 32 min of work at 90% HRmax induces greater adaptive gains than accumulating 16 min of work at 95% HRmax despite lower RPE\"\n\n- - - -\n\nSee the \"Pre-activity comments\" and \"workout details\" sections below for details of how to complete the session, target powers, coaching points, etc.",
+    "userTags": null,
+    "coachComments": "WARM UP\n- Power zones: 51-61% FTP\n- HR: <68%max // RPE: 2-3 // Cadence: 80-90 rpm\n\nINTERVALS\n- 4x 8 mins (RI 4 mins, see Coaching Points)\n- Power zones: CUSTOM - see Workout Details\n- HR: 85-90%max // RPE: 7-9 // Cadence: CUSTOM - see Workout Details\n- Recovery: CUSTOM - see Workout Details\n\nCOOL DOWN\n- Power zones: 51-61% FTP\n- HR: <68%max // RPE: 2-3 // Cadence: 80-90 rpm\n\nPHYSIOLOGICAL / PERFORMANCE ADAPTATIONS\n++++ Plasma volume, stroke volume and cardiac output, VO2max\n+++ Hypertrophy of slow-twitch muscle fibres, Muscle capillarisation\n++ Muscle mitochondrial enzymes, lactate threshold, muscle glycogen storage, muscle fast-twitch fibre conversion (Type Iix to IIa)\n\n- - - -\n\nCUSTOM POWER AND CADENCE ZONES\n- At PALMARES we believe in having as close to a bespoke training plan as possible - we employ CUSTOM zones throughout our plans dependent upon ability level, type and length of session, and training phase\n\nCOACHING POINTS\n- Aim 1: Hit target power zone for intervals\n- Aim 2: Option to add a rep, do not go harder\n- Hold steady power for each Interval\n- Recovery (RI) is 4 min, take longer if needed\n- The goal is very consistent high-quality intervals\n\nNUTRITION\n- Consume carbohydrates pre-intervals\n- Consider caffeine pre-intervals (if well-tolerated)\n- Hydrate well throughout",
+    "workoutComments": [],
+    "newComment": null,
+    "publicSettingValue": 0,
+    "sharedWorkoutInformationKey": "DG4KBUULHUU5YU74XSKKXIYIPU",
+    "sharedWorkoutInformationExpireKey": "VTSYJD3HS5FN55YASSZ26L3MDIFLOTTXQISSZPQ",
+    "distance": null,
+    "distancePlanned": null,
+    "distanceCustomized": null,
+    "distanceUnitsCustomized": null,
+    "totalTime": null,
+    "totalTimePlanned": 1.0,
+    "heartRateMinimum": null,
+    "heartRateMaximum": null,
+    "heartRateAverage": null,
+    "calories": null,
+    "caloriesPlanned": null,
+    "tssActual": null,
+    "tssPlanned": 78.12,
+    "tssSource": 0,
+    "if": null,
+    "ifPlanned": 0.88765624457276315,
+    "velocityAverage": null,
+    "velocityPlanned": null,
+    "velocityMaximum": null,
+    "normalizedSpeedActual": null,
+    "normalizedPowerActual": null,
+    "powerAverage": null,
+    "powerMaximum": null,
+    "energy": null,
+    "energyPlanned": null,
+    "elevationGain": null,
+    "elevationGainPlanned": null,
+    "elevationLoss": null,
+    "elevationMinimum": null,
+    "elevationAverage": null,
+    "elevationMaximum": null,
+    "torqueAverage": null,
+    "torqueMaximum": null,
+    "tempMin": null,
+    "tempAvg": null,
+    "tempMax": null,
+    "cadenceAverage": null,
+    "cadenceMaximum": null,
+    "lastModifiedDate": "2023-12-15T13:09:47.483",
+    "equipmentBikeId": null,
+    "equipmentShoeId": null,
+    "isLocked": null,
+    "complianceDurationPercent": null,
+    "complianceDistancePercent": null,
+    "complianceTssPercent": null,
+    "rpe": null,
+    "feeling": null,
+    "structure": {
+      "structure": [
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "name": "Warm up",
+              "length": {
+                "value": 360,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 51,
+                  "maxValue": 61
+                },
+                {
+                  "minValue": 80,
+                  "maxValue": 90,
+                  "unit": "roundOrStridePerMinute"
+                }
+              ],
+              "intensityClass": "warmUp",
+              "openDuration": false
+            }
+          ],
+          "begin": 0,
+          "end": 360
+        },
+        {
+          "type": "repetition",
+          "length": {
+            "value": 4,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "type": "step",
+              "name": "Hard",
+              "length": {
+                "unit": "second",
+                "value": 480
+              },
+              "targets": [
+                {
+                  "minValue": 100,
+                  "maxValue": 105
+                }
+              ],
+              "intensityClass": "active",
+              "openDuration": false
+            },
+            {
+              "type": "step",
+              "name": "Easy",
+              "length": {
+                "unit": "second",
+                "value": 240
+              },
+              "targets": [
+                {
+                  "minValue": 40,
+                  "maxValue": 50
+                }
+              ],
+              "intensityClass": "rest",
+              "openDuration": false
+            }
+          ],
+          "begin": 360,
+          "end": 3240
+        },
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "name": "Cool Down",
+              "length": {
+                "value": 360,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 51,
+                  "maxValue": 61
+                },
+                {
+                  "minValue": 80,
+                  "maxValue": 90,
+                  "unit": "roundOrStridePerMinute"
+                }
+              ],
+              "intensityClass": "coolDown",
+              "openDuration": false
+            }
+          ],
+          "begin": 3240,
+          "end": 3600
+        }
+      ],
+      "polyline": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0.581
+        ],
+        [
+          0.1,
+          0.581
+        ],
+        [
+          0.1,
+          0
+        ],
+        [
+          0.1,
+          1
+        ],
+        [
+          0.233,
+          1
+        ],
+        [
+          0.233,
+          0
+        ],
+        [
+          0.233,
+          0.476
+        ],
+        [
+          0.3,
+          0.476
+        ],
+        [
+          0.3,
+          0
+        ],
+        [
+          0.3,
+          1
+        ],
+        [
+          0.433,
+          1
+        ],
+        [
+          0.433,
+          0
+        ],
+        [
+          0.433,
+          0.476
+        ],
+        [
+          0.5,
+          0.476
+        ],
+        [
+          0.5,
+          0
+        ],
+        [
+          0.5,
+          1
+        ],
+        [
+          0.633,
+          1
+        ],
+        [
+          0.633,
+          0
+        ],
+        [
+          0.633,
+          0.476
+        ],
+        [
+          0.7,
+          0.476
+        ],
+        [
+          0.7,
+          0
+        ],
+        [
+          0.7,
+          1
+        ],
+        [
+          0.833,
+          1
+        ],
+        [
+          0.833,
+          0
+        ],
+        [
+          0.833,
+          0.476
+        ],
+        [
+          0.9,
+          0.476
+        ],
+        [
+          0.9,
+          0
+        ],
+        [
+          0.9,
+          0.581
+        ],
+        [
+          1,
+          0.581
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "primaryLengthMetric": "duration",
+      "primaryIntensityMetric": "percentOfFtp",
+      "primaryIntensityTargetOrRange": "range"
+    },
+    "orderOnDay": 1,
+    "personalRecordCount": 0,
+    "syncedTo": [
+      "Garmin"
+    ],
+    "poolLengthOptionId": null
+  },
+  {
+    "workoutId": 2422870397,
+    "athleteId": 2797132,
+    "title": "(1b) Endurance",
+    "workoutTypeValueId": 2,
+    "code": null,
+    "workoutDay": "2024-01-03T00:00:00",
+    "startTime": null,
+    "startTimePlanned": null,
+    "isItAnOr": false,
+    "isHidden": null,
+    "completed": null,
+    "description": "ENDURANCE SESSION\n\nAIM: Undulating paced endurance ride - designed to optimise training time.\n\nTERRAIN: Flat to rolling roads (some climbs are ok) our on the indoor trainer.\n\nFEELING GOOD: Extend up to 1.5 hrs\nFEELING TIRED: Take the day off\n\n- - - -\n\nCoffey, V.G. and Hawley, J.A. (2007). The molecular basis of training adaptation. Sports Medicine. 37, 737-763.\n\nHood, D.A. (2009). Mechanisms of exercise-induced mitochondrial biogenesis in human skeletal muscle. Applied Physiology, Nutrition, and Metabolism. 34, 465-472.\n\n- - - -\n\nSee the \"Pre-activity comments\" and \"Workout details\" sections below for details of how to complete the session, target powers, coaching points, etc.",
+    "userTags": null,
+    "coachComments": "WARM UP\n- Power zones: 40-50% FTP\n- HRmax: <65% // RPE: 2-3 // Cadence: 70-80 rpm\n\nENDURANCE\n- Power zones: CUSTOM - see Workout Details\n- HRmax: 65-80% // RPE: 4-5 (5 on climbs) // Cadence: CUSTOM - see Workout Details\n\nCOOL DOWN\n- Power zones: 40-50% FTP\n- HRmax: <65% // RPE: 2-3 // Cadence: 70-80 rpm\n\nPHYSIOLOGICAL / PERFORMANCE ADAPTATIONS\n++ Muscle mitochondrial enzymes, lactate threshold, muscle glycogen storage, muscle fast-twitch fibre conversion (Type IIx to IIa)\n+ Plasma volume, hypertrophy of slow-twitch muscle fibres, muscle capillarisation, stroke volume / cardiac output, VO2max\n\n- - - -\n\nCUSTOM POWER AND CADENCE ZONES\n- At PALMARES we believe in having as close to a bespoke training plan as possible - we employ CUSTOM zones throughout our plans dependent upon ability level, type and length of session, and training phase\n\nCOACHING POINTS\n- Pacing discipline is very important during this session - stay in the power and HR zone throughout\n- Aim for even power across session - It's ok to go slow uphill and into the wind\n- Keep cadence brisk, change gear early\n\nNUTRITION\n- No on bike feeding required, but hydrate well",
+    "workoutComments": [],
+    "newComment": null,
+    "publicSettingValue": 0,
+    "sharedWorkoutInformationKey": "YTO742NU3V3DUU74XSKKXIYIPU",
+    "sharedWorkoutInformationExpireKey": "5NGBSLOQ6KRYN47ZVL4IWFBYUIFLOTTXQISSZPQ",
+    "distance": null,
+    "distancePlanned": null,
+    "distanceCustomized": null,
+    "distanceUnitsCustomized": null,
+    "totalTime": null,
+    "totalTimePlanned": 1.5,
+    "heartRateMinimum": null,
+    "heartRateMaximum": null,
+    "heartRateAverage": null,
+    "calories": null,
+    "caloriesPlanned": null,
+    "tssActual": null,
+    "tssPlanned": 54.5,
+    "tssSource": 0,
+    "if": null,
+    "ifPlanned": 0.60470193957077667,
+    "velocityAverage": null,
+    "velocityPlanned": null,
+    "velocityMaximum": null,
+    "normalizedSpeedActual": null,
+    "normalizedPowerActual": null,
+    "powerAverage": null,
+    "powerMaximum": null,
+    "energy": null,
+    "energyPlanned": null,
+    "elevationGain": null,
+    "elevationGainPlanned": null,
+    "elevationLoss": null,
+    "elevationMinimum": null,
+    "elevationAverage": null,
+    "elevationMaximum": null,
+    "torqueAverage": null,
+    "torqueMaximum": null,
+    "tempMin": null,
+    "tempAvg": null,
+    "tempMax": null,
+    "cadenceAverage": null,
+    "cadenceMaximum": null,
+    "lastModifiedDate": "2023-12-15T13:09:47.493",
+    "equipmentBikeId": null,
+    "equipmentShoeId": null,
+    "isLocked": null,
+    "complianceDurationPercent": null,
+    "complianceDistancePercent": null,
+    "complianceTssPercent": null,
+    "rpe": null,
+    "feeling": null,
+    "structure": {
+      "structure": [
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "name": "Warm up",
+              "length": {
+                "value": 600,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 40,
+                  "maxValue": 50
+                }
+              ],
+              "intensityClass": "warmUp",
+              "openDuration": false
+            }
+          ],
+          "begin": 0,
+          "end": 600
+        },
+        {
+          "type": "repetition",
+          "length": {
+            "value": 15,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "type": "step",
+              "name": "Hard",
+              "length": {
+                "unit": "second",
+                "value": 180
+              },
+              "targets": [
+                {
+                  "minValue": 60,
+                  "maxValue": 70
+                }
+              ],
+              "intensityClass": "active",
+              "openDuration": false
+            },
+            {
+              "type": "step",
+              "name": "Easy",
+              "length": {
+                "unit": "second",
+                "value": 120
+              },
+              "targets": [
+                {
+                  "minValue": 55,
+                  "maxValue": 60
+                }
+              ],
+              "intensityClass": "rest",
+              "openDuration": false
+            }
+          ],
+          "begin": 600,
+          "end": 5100
+        },
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "name": "Cool Down",
+              "length": {
+                "value": 300,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 40,
+                  "maxValue": 50
+                }
+              ],
+              "intensityClass": "coolDown",
+              "openDuration": false
+            }
+          ],
+          "begin": 5100,
+          "end": 5400
+        }
+      ],
+      "polyline": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0.714
+        ],
+        [
+          0.111,
+          0.714
+        ],
+        [
+          0.111,
+          0
+        ],
+        [
+          0.111,
+          1
+        ],
+        [
+          0.144,
+          1
+        ],
+        [
+          0.144,
+          0
+        ],
+        [
+          0.144,
+          0.857
+        ],
+        [
+          0.167,
+          0.857
+        ],
+        [
+          0.167,
+          0
+        ],
+        [
+          0.167,
+          1
+        ],
+        [
+          0.2,
+          1
+        ],
+        [
+          0.2,
+          0
+        ],
+        [
+          0.2,
+          0.857
+        ],
+        [
+          0.222,
+          0.857
+        ],
+        [
+          0.222,
+          0
+        ],
+        [
+          0.222,
+          1
+        ],
+        [
+          0.256,
+          1
+        ],
+        [
+          0.256,
+          0
+        ],
+        [
+          0.256,
+          0.857
+        ],
+        [
+          0.278,
+          0.857
+        ],
+        [
+          0.278,
+          0
+        ],
+        [
+          0.278,
+          1
+        ],
+        [
+          0.311,
+          1
+        ],
+        [
+          0.311,
+          0
+        ],
+        [
+          0.311,
+          0.857
+        ],
+        [
+          0.333,
+          0.857
+        ],
+        [
+          0.333,
+          0
+        ],
+        [
+          0.333,
+          1
+        ],
+        [
+          0.367,
+          1
+        ],
+        [
+          0.367,
+          0
+        ],
+        [
+          0.367,
+          0.857
+        ],
+        [
+          0.389,
+          0.857
+        ],
+        [
+          0.389,
+          0
+        ],
+        [
+          0.389,
+          1
+        ],
+        [
+          0.422,
+          1
+        ],
+        [
+          0.422,
+          0
+        ],
+        [
+          0.422,
+          0.857
+        ],
+        [
+          0.444,
+          0.857
+        ],
+        [
+          0.444,
+          0
+        ],
+        [
+          0.444,
+          1
+        ],
+        [
+          0.478,
+          1
+        ],
+        [
+          0.478,
+          0
+        ],
+        [
+          0.478,
+          0.857
+        ],
+        [
+          0.5,
+          0.857
+        ],
+        [
+          0.5,
+          0
+        ],
+        [
+          0.5,
+          1
+        ],
+        [
+          0.533,
+          1
+        ],
+        [
+          0.533,
+          0
+        ],
+        [
+          0.533,
+          0.857
+        ],
+        [
+          0.556,
+          0.857
+        ],
+        [
+          0.556,
+          0
+        ],
+        [
+          0.556,
+          1
+        ],
+        [
+          0.589,
+          1
+        ],
+        [
+          0.589,
+          0
+        ],
+        [
+          0.589,
+          0.857
+        ],
+        [
+          0.611,
+          0.857
+        ],
+        [
+          0.611,
+          0
+        ],
+        [
+          0.611,
+          1
+        ],
+        [
+          0.644,
+          1
+        ],
+        [
+          0.644,
+          0
+        ],
+        [
+          0.644,
+          0.857
+        ],
+        [
+          0.667,
+          0.857
+        ],
+        [
+          0.667,
+          0
+        ],
+        [
+          0.667,
+          1
+        ],
+        [
+          0.7,
+          1
+        ],
+        [
+          0.7,
+          0
+        ],
+        [
+          0.7,
+          0.857
+        ],
+        [
+          0.722,
+          0.857
+        ],
+        [
+          0.722,
+          0
+        ],
+        [
+          0.722,
+          1
+        ],
+        [
+          0.756,
+          1
+        ],
+        [
+          0.756,
+          0
+        ],
+        [
+          0.756,
+          0.857
+        ],
+        [
+          0.778,
+          0.857
+        ],
+        [
+          0.778,
+          0
+        ],
+        [
+          0.778,
+          1
+        ],
+        [
+          0.811,
+          1
+        ],
+        [
+          0.811,
+          0
+        ],
+        [
+          0.811,
+          0.857
+        ],
+        [
+          0.833,
+          0.857
+        ],
+        [
+          0.833,
+          0
+        ],
+        [
+          0.833,
+          1
+        ],
+        [
+          0.867,
+          1
+        ],
+        [
+          0.867,
+          0
+        ],
+        [
+          0.867,
+          0.857
+        ],
+        [
+          0.889,
+          0.857
+        ],
+        [
+          0.889,
+          0
+        ],
+        [
+          0.889,
+          1
+        ],
+        [
+          0.922,
+          1
+        ],
+        [
+          0.922,
+          0
+        ],
+        [
+          0.922,
+          0.857
+        ],
+        [
+          0.944,
+          0.857
+        ],
+        [
+          0.944,
+          0
+        ],
+        [
+          0.944,
+          0.714
+        ],
+        [
+          1,
+          0.714
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "primaryLengthMetric": "duration",
+      "primaryIntensityMetric": "percentOfFtp",
+      "primaryIntensityTargetOrRange": "range"
+    },
+    "orderOnDay": 1,
+    "personalRecordCount": 0,
+    "syncedTo": [
+      "Garmin"
+    ],
+    "poolLengthOptionId": null
+  },
+  {
+    "workoutId": 2422870465,
+    "athleteId": 2797132,
+    "title": "(1b) Endurance // 8x 10 sec sprints",
+    "workoutTypeValueId": 2,
+    "code": null,
+    "workoutDay": "2024-01-04T00:00:00",
+    "startTime": null,
+    "startTimePlanned": null,
+    "isItAnOr": false,
+    "isHidden": null,
+    "completed": null,
+    "description": "ENDURANCE + 10 sec sprints\n\nAIM: Endurance training with neuromuscular maximal power 10 sec sprints\n\nTERRAIN: Flat to rolling roads. Perform sprints anywhere it's safe\n\nFEELING GOOD: Extend to 2 hrs\nFEELING TIRED: Reduce to 1 hr\n\n- - - -\n\nAlmquist, N.M., Ettema, G, Hopker, J., Sandbank, Ø. and Rønnestad, B.R. (2019). The effect of 30-second sprints during prolonged exercise of gross efficiency, electromyography and pedalling technique in elite cyclists. International Journal of Sports Physiology and Performance. [Epub ahead of print]\n\n\"The inclusion of maximal repeated sprinting does not affect the gross economy changes [of the endurance training], and the ability to sprint is maintained throughout the entire session\".\n\nGunnarsson, T.P., Brandt, N., Fiorenze, M., Hostrop, M., Pilegaard, H. and Bangsbo, J. (2019). Inclusion of sprints in moderate intensity continuous training leads to muscle oxidative adaptations in trained individuals. Physiological Reports. [Epub ahead of print]\n\n\"Addition of sprints... causes muscle oxidative adaptations in trained individuals\" ... \"time-trial performance\" also improved.\n\n- - - -\n\nSee the \"Pre-activity comments\" and \"workout details\" sections below for details of how to complete the session, target powers, coaching points, etc.",
+    "userTags": null,
+    "coachComments": "WARM UP\n- Power zones: 48-58% FTP\n- HRmax: <68% // RPE: 2-3 // Cadence: 80-90 rpm\n\nENDURANCE + 10x 10 sec Sprints\n- Power zones: CUSTOM - see Workout Details\n- HRmax: 68-78% // RPE: 3-4 (5 on climbs) // Cadence: CUSTOM - see Workout Details\n\nCOOL DOWN\n- Power zones: 48-58% FTP\n- HRmax: <68% // RPE: 2-3 // Cadence: 80-90 rpm\n\nPHYSIOLOGICAL / PERFORMANCE ADAPTATIONS\n+++ (Sprints) Neuromuscular power\n++ (Endurance) Muscle mitochondrial enzymes, lactate threshold, muscle glycogen storage, muscle fast-twitch fibre conversion (Type IIx to IIa) // (Sprints) High-energy phosphate stores (ATP/PCr), hypertrophy of fast-twitch fibres\n+ (Endurance) Plasma volume, hypertrophy of slow-twitch muscle fibres, muscle capillarisation, stroke volume / cardiac output, VO2max (Sprints) Anaerobic capacity\n\n- - - -\n\nCUSTOM POWER AND CADENCE ZONES\n- At PALMARES we believe in having as close to a bespoke training plan as possible - we employ CUSTOM zones throughout our plans dependent upon ability level, type and length of session, and training phase\n\nCOACHING POINTS\n- Pacing discipline is important during this session - stay in the power and HR zone during the ENDURANCE phase\n- SPRINTS are FULL-GAS - aim to hit peak power within 10 secs\n\nNUTRITION\n- No on bike feeding required, but hydrate well",
+    "workoutComments": [],
+    "newComment": null,
+    "publicSettingValue": 0,
+    "sharedWorkoutInformationKey": "MGXGSVLZZDCWKU74XSKKXIYIPU",
+    "sharedWorkoutInformationExpireKey": "DYNZLPCLD3RVD47ZVL4IWFBYUIFLOTTXQISSZPQ",
+    "distance": null,
+    "distancePlanned": null,
+    "distanceCustomized": null,
+    "distanceUnitsCustomized": null,
+    "totalTime": null,
+    "totalTimePlanned": 2.0,
+    "heartRateMinimum": null,
+    "heartRateMaximum": null,
+    "heartRateAverage": null,
+    "calories": null,
+    "caloriesPlanned": null,
+    "tssActual": null,
+    "tssPlanned": 88.72,
+    "tssSource": 0,
+    "if": null,
+    "ifPlanned": 0.66819682480883968,
+    "velocityAverage": null,
+    "velocityPlanned": null,
+    "velocityMaximum": null,
+    "normalizedSpeedActual": null,
+    "normalizedPowerActual": null,
+    "powerAverage": null,
+    "powerMaximum": null,
+    "energy": null,
+    "energyPlanned": null,
+    "elevationGain": null,
+    "elevationGainPlanned": null,
+    "elevationLoss": null,
+    "elevationMinimum": null,
+    "elevationAverage": null,
+    "elevationMaximum": null,
+    "torqueAverage": null,
+    "torqueMaximum": null,
+    "tempMin": null,
+    "tempAvg": null,
+    "tempMax": null,
+    "cadenceAverage": null,
+    "cadenceMaximum": null,
+    "lastModifiedDate": "2023-12-15T13:09:48.383",
+    "equipmentBikeId": null,
+    "equipmentShoeId": null,
+    "isLocked": null,
+    "complianceDurationPercent": null,
+    "complianceDistancePercent": null,
+    "complianceTssPercent": null,
+    "rpe": null,
+    "feeling": null,
+    "structure": {
+      "structure": [
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "name": "Warm up",
+              "length": {
+                "value": 1200,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 48,
+                  "maxValue": 58
+                },
+                {
+                  "minValue": 80,
+                  "maxValue": 90,
+                  "unit": "roundOrStridePerMinute"
+                }
+              ],
+              "intensityClass": "warmUp",
+              "openDuration": false
+            }
+          ],
+          "begin": 0,
+          "end": 1200
+        },
+        {
+          "type": "repetition",
+          "length": {
+            "value": 8,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "type": "step",
+              "name": "Hard",
+              "length": {
+                "unit": "second",
+                "value": 10
+              },
+              "targets": [
+                {
+                  "minValue": 200,
+                  "maxValue": 300
+                },
+                {
+                  "minValue": 100,
+                  "maxValue": 150,
+                  "unit": "roundOrStridePerMinute"
+                }
+              ],
+              "intensityClass": "active",
+              "openDuration": false
+            },
+            {
+              "type": "step",
+              "name": "Endurance",
+              "length": {
+                "unit": "second",
+                "value": 590
+              },
+              "targets": [
+                {
+                  "minValue": 55,
+                  "maxValue": 70
+                },
+                {
+                  "minValue": 80,
+                  "maxValue": 100,
+                  "unit": "roundOrStridePerMinute"
+                }
+              ],
+              "intensityClass": "rest",
+              "openDuration": false
+            }
+          ],
+          "begin": 1200,
+          "end": 6000
+        },
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "name": "Cool Down",
+              "length": {
+                "value": 1200,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 48,
+                  "maxValue": 58
+                },
+                {
+                  "minValue": 80,
+                  "maxValue": 90,
+                  "unit": "roundOrStridePerMinute"
+                }
+              ],
+              "intensityClass": "coolDown",
+              "openDuration": false
+            }
+          ],
+          "begin": 6000,
+          "end": 7200
+        }
+      ],
+      "polyline": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0.193
+        ],
+        [
+          0.167,
+          0.193
+        ],
+        [
+          0.167,
+          0
+        ],
+        [
+          0.167,
+          1
+        ],
+        [
+          0.168,
+          1
+        ],
+        [
+          0.168,
+          0
+        ],
+        [
+          0.168,
+          0.233
+        ],
+        [
+          0.25,
+          0.233
+        ],
+        [
+          0.25,
+          0
+        ],
+        [
+          0.25,
+          1
+        ],
+        [
+          0.251,
+          1
+        ],
+        [
+          0.251,
+          0
+        ],
+        [
+          0.251,
+          0.233
+        ],
+        [
+          0.333,
+          0.233
+        ],
+        [
+          0.333,
+          0
+        ],
+        [
+          0.333,
+          1
+        ],
+        [
+          0.335,
+          1
+        ],
+        [
+          0.335,
+          0
+        ],
+        [
+          0.335,
+          0.233
+        ],
+        [
+          0.417,
+          0.233
+        ],
+        [
+          0.417,
+          0
+        ],
+        [
+          0.417,
+          1
+        ],
+        [
+          0.418,
+          1
+        ],
+        [
+          0.418,
+          0
+        ],
+        [
+          0.418,
+          0.233
+        ],
+        [
+          0.5,
+          0.233
+        ],
+        [
+          0.5,
+          0
+        ],
+        [
+          0.5,
+          1
+        ],
+        [
+          0.501,
+          1
+        ],
+        [
+          0.501,
+          0
+        ],
+        [
+          0.501,
+          0.233
+        ],
+        [
+          0.583,
+          0.233
+        ],
+        [
+          0.583,
+          0
+        ],
+        [
+          0.583,
+          1
+        ],
+        [
+          0.585,
+          1
+        ],
+        [
+          0.585,
+          0
+        ],
+        [
+          0.585,
+          0.233
+        ],
+        [
+          0.667,
+          0.233
+        ],
+        [
+          0.667,
+          0
+        ],
+        [
+          0.667,
+          1
+        ],
+        [
+          0.668,
+          1
+        ],
+        [
+          0.668,
+          0
+        ],
+        [
+          0.668,
+          0.233
+        ],
+        [
+          0.75,
+          0.233
+        ],
+        [
+          0.75,
+          0
+        ],
+        [
+          0.75,
+          1
+        ],
+        [
+          0.751,
+          1
+        ],
+        [
+          0.751,
+          0
+        ],
+        [
+          0.751,
+          0.233
+        ],
+        [
+          0.833,
+          0.233
+        ],
+        [
+          0.833,
+          0
+        ],
+        [
+          0.833,
+          0.193
+        ],
+        [
+          1,
+          0.193
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "primaryLengthMetric": "duration",
+      "primaryIntensityMetric": "percentOfFtp",
+      "primaryIntensityTargetOrRange": "range"
+    },
+    "orderOnDay": 1,
+    "personalRecordCount": 0,
+    "syncedTo": [
+      "Garmin"
+    ],
+    "poolLengthOptionId": null
+  },
+  {
+    "workoutId": 2422870351,
+    "athleteId": 2797132,
+    "title": "Day off",
+    "workoutTypeValueId": 7,
+    "code": null,
+    "workoutDay": "2024-01-05T00:00:00",
+    "startTime": null,
+    "startTimePlanned": null,
+    "isItAnOr": false,
+    "isHidden": null,
+    "completed": null,
+    "description": null,
+    "userTags": null,
+    "coachComments": null,
+    "workoutComments": [],
+    "newComment": null,
+    "publicSettingValue": 0,
+    "sharedWorkoutInformationKey": "LHSBKDEIVKPGGU74XSKKXIYIPU",
+    "sharedWorkoutInformationExpireKey": "TOTQQBYWAVFPH47ZVL4IWFBYUIFLOTTXQISSZPQ",
+    "distance": null,
+    "distancePlanned": null,
+    "distanceCustomized": null,
+    "distanceUnitsCustomized": null,
+    "totalTime": null,
+    "totalTimePlanned": null,
+    "heartRateMinimum": null,
+    "heartRateMaximum": null,
+    "heartRateAverage": null,
+    "calories": null,
+    "caloriesPlanned": null,
+    "tssActual": null,
+    "tssPlanned": null,
+    "tssSource": 0,
+    "if": null,
+    "ifPlanned": null,
+    "velocityAverage": null,
+    "velocityPlanned": null,
+    "velocityMaximum": null,
+    "normalizedSpeedActual": null,
+    "normalizedPowerActual": null,
+    "powerAverage": null,
+    "powerMaximum": null,
+    "energy": null,
+    "energyPlanned": null,
+    "elevationGain": null,
+    "elevationGainPlanned": null,
+    "elevationLoss": null,
+    "elevationMinimum": null,
+    "elevationAverage": null,
+    "elevationMaximum": null,
+    "torqueAverage": null,
+    "torqueMaximum": null,
+    "tempMin": null,
+    "tempAvg": null,
+    "tempMax": null,
+    "cadenceAverage": null,
+    "cadenceMaximum": null,
+    "lastModifiedDate": "2023-12-15T13:09:47.017",
+    "equipmentBikeId": null,
+    "equipmentShoeId": null,
+    "isLocked": null,
+    "complianceDurationPercent": null,
+    "complianceDistancePercent": null,
+    "complianceTssPercent": null,
+    "rpe": null,
+    "feeling": null,
+    "structure": null,
+    "orderOnDay": 1,
+    "personalRecordCount": 0,
+    "syncedTo": null,
+    "poolLengthOptionId": null
+  },
+  {
+    "workoutId": 2422870402,
+    "athleteId": 2797132,
+    "title": "(3a) Endurance // Undulating Tempo",
+    "workoutTypeValueId": 2,
+    "code": null,
+    "workoutDay": "2024-01-06T00:00:00",
+    "startTime": null,
+    "startTimePlanned": null,
+    "isItAnOr": false,
+    "isHidden": null,
+    "completed": null,
+    "description": "ENDURANCE SESSION\n\nAIM: Endurance training with change in tempo\nTERRAIN: Flat to rolling roads\n\nFEELING GOOD: Increase the power 5-10%\nFEELING TIRED: Reduce the power 5-10%, and/or to 1.5 hrs\n\n- - - -\n\nWARM UP\n- Power zones: 40-50% FTP\n- HRmax: <68% // RPE: 2-3 // Cadence: 80-90 rpm\n\nENDURANCE\n- Power zones: CUSTOM - see Workout Details\n- HRmax: 68-78% // RPE: 3-4 (5 on climbs) // Cadence: CUSTOM - see Workout Details\n\nCOOL DOWN\n- Power zones: 40-50% FTP\n- HRmax: <68% // RPE: 2-3 // Cadence: 80-90 rpm\n\nPHYSIOLOGICAL / PERFORMANCE ADAPTATIONS\n++ Muscle mitochondrial enzymes, lactate threshold, muscle glycogen storage, muscle fast-twitch fibre conversion (Type IIx to IIa)\n+ Plasma volume, hypertrophy of slow-twitch muscle fibres, muscle capillarisation, stroke volume / cardiac output, VO2max\n\n- - - -\n\nCUSTOM POWER AND CADENCE ZONES\n- At PALMARES we believe in having as close to a bespoke training plan as possible - we employ CUSTOM zones throughout our plans dependent upon ability level, type and length of session, and training phase\n\nCOACHING POINTS\n- Pacing discipline is very important during this session - stay in the power and HR zone from each phase of the undulations\n- Aim for even power across each undulation - It's ok to go slow uphill and into the wind\n- Keep cadence brisk, change gear early\n\nNUTRITION\n- Light on bike feeding\n- Hydrate well, especially if it's hot",
+    "userTags": null,
+    "coachComments": null,
+    "workoutComments": [],
+    "newComment": null,
+    "publicSettingValue": 0,
+    "sharedWorkoutInformationKey": "TOJOICAXDOM6SU74XSKKXIYIPU",
+    "sharedWorkoutInformationExpireKey": "SGINW4ZXZTK5J47ZVL4IWFBYUIFLOTTXQISSZPQ",
+    "distance": null,
+    "distancePlanned": null,
+    "distanceCustomized": null,
+    "distanceUnitsCustomized": null,
+    "totalTime": null,
+    "totalTimePlanned": 2.0,
+    "heartRateMinimum": null,
+    "heartRateMaximum": null,
+    "heartRateAverage": null,
+    "calories": null,
+    "caloriesPlanned": null,
+    "tssActual": null,
+    "tssPlanned": 69.71,
+    "tssSource": 0,
+    "if": null,
+    "ifPlanned": 0.59160148284834768,
+    "velocityAverage": null,
+    "velocityPlanned": null,
+    "velocityMaximum": null,
+    "normalizedSpeedActual": null,
+    "normalizedPowerActual": null,
+    "powerAverage": null,
+    "powerMaximum": null,
+    "energy": null,
+    "energyPlanned": null,
+    "elevationGain": null,
+    "elevationGainPlanned": null,
+    "elevationLoss": null,
+    "elevationMinimum": null,
+    "elevationAverage": null,
+    "elevationMaximum": null,
+    "torqueAverage": null,
+    "torqueMaximum": null,
+    "tempMin": null,
+    "tempAvg": null,
+    "tempMax": null,
+    "cadenceAverage": null,
+    "cadenceMaximum": null,
+    "lastModifiedDate": "2023-12-15T13:09:47.547",
+    "equipmentBikeId": null,
+    "equipmentShoeId": null,
+    "isLocked": null,
+    "complianceDurationPercent": null,
+    "complianceDistancePercent": null,
+    "complianceTssPercent": null,
+    "rpe": null,
+    "feeling": null,
+    "structure": {
+      "structure": [
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "name": "Warm up",
+              "length": {
+                "value": 900,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 40,
+                  "maxValue": 50
+                },
+                {
+                  "minValue": 80,
+                  "maxValue": 90,
+                  "unit": "roundOrStridePerMinute"
+                }
+              ],
+              "intensityClass": "warmUp",
+              "openDuration": false
+            }
+          ],
+          "begin": 0,
+          "end": 900
+        },
+        {
+          "type": "repetition",
+          "length": {
+            "value": 6,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "type": "step",
+              "name": "Hard",
+              "length": {
+                "unit": "second",
+                "value": 600
+              },
+              "targets": [
+                {
+                  "minValue": 60,
+                  "maxValue": 70
+                },
+                {
+                  "minValue": 80,
+                  "maxValue": 100,
+                  "unit": "roundOrStridePerMinute"
+                }
+              ],
+              "intensityClass": "active",
+              "openDuration": false
+            },
+            {
+              "type": "step",
+              "name": "Easy",
+              "length": {
+                "unit": "second",
+                "value": 300
+              },
+              "targets": [
+                {
+                  "minValue": 50,
+                  "maxValue": 60
+                },
+                {
+                  "minValue": 80,
+                  "maxValue": 90,
+                  "unit": "roundOrStridePerMinute"
+                }
+              ],
+              "intensityClass": "rest",
+              "openDuration": false
+            }
+          ],
+          "begin": 900,
+          "end": 6300
+        },
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "name": "Cool Down",
+              "length": {
+                "value": 900,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 40,
+                  "maxValue": 50
+                },
+                {
+                  "minValue": 80,
+                  "maxValue": 90,
+                  "unit": "roundOrStridePerMinute"
+                }
+              ],
+              "intensityClass": "coolDown",
+              "openDuration": false
+            }
+          ],
+          "begin": 6300,
+          "end": 7200
+        }
+      ],
+      "polyline": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0.714
+        ],
+        [
+          0.125,
+          0.714
+        ],
+        [
+          0.125,
+          0
+        ],
+        [
+          0.125,
+          1
+        ],
+        [
+          0.208,
+          1
+        ],
+        [
+          0.208,
+          0
+        ],
+        [
+          0.208,
+          0.857
+        ],
+        [
+          0.25,
+          0.857
+        ],
+        [
+          0.25,
+          0
+        ],
+        [
+          0.25,
+          1
+        ],
+        [
+          0.333,
+          1
+        ],
+        [
+          0.333,
+          0
+        ],
+        [
+          0.333,
+          0.857
+        ],
+        [
+          0.375,
+          0.857
+        ],
+        [
+          0.375,
+          0
+        ],
+        [
+          0.375,
+          1
+        ],
+        [
+          0.458,
+          1
+        ],
+        [
+          0.458,
+          0
+        ],
+        [
+          0.458,
+          0.857
+        ],
+        [
+          0.5,
+          0.857
+        ],
+        [
+          0.5,
+          0
+        ],
+        [
+          0.5,
+          1
+        ],
+        [
+          0.583,
+          1
+        ],
+        [
+          0.583,
+          0
+        ],
+        [
+          0.583,
+          0.857
+        ],
+        [
+          0.625,
+          0.857
+        ],
+        [
+          0.625,
+          0
+        ],
+        [
+          0.625,
+          1
+        ],
+        [
+          0.708,
+          1
+        ],
+        [
+          0.708,
+          0
+        ],
+        [
+          0.708,
+          0.857
+        ],
+        [
+          0.75,
+          0.857
+        ],
+        [
+          0.75,
+          0
+        ],
+        [
+          0.75,
+          1
+        ],
+        [
+          0.833,
+          1
+        ],
+        [
+          0.833,
+          0
+        ],
+        [
+          0.833,
+          0.857
+        ],
+        [
+          0.875,
+          0.857
+        ],
+        [
+          0.875,
+          0
+        ],
+        [
+          0.875,
+          0.714
+        ],
+        [
+          1,
+          0.714
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "primaryLengthMetric": "duration",
+      "primaryIntensityMetric": "percentOfFtp",
+      "primaryIntensityTargetOrRange": "range"
+    },
+    "orderOnDay": 1,
+    "personalRecordCount": 0,
+    "syncedTo": null,
+    "poolLengthOptionId": null
+  },
+  {
+    "workoutId": 2422870404,
+    "athleteId": 2797132,
+    "title": "(2e) Endurance",
+    "workoutTypeValueId": 2,
+    "code": null,
+    "workoutDay": "2024-01-07T00:00:00",
+    "startTime": null,
+    "startTimePlanned": null,
+    "isItAnOr": false,
+    "isHidden": null,
+    "completed": null,
+    "description": "ENDURANCE SESSION\n\nAIM: Quality endurance training - stay in the zone throughout session\n\nTERRAIN: Flat to rolling roads (some climbs are ok)\n\nFEELING GOOD: Extend up to 4 hrs\nFEELING TIRED: Reduce to 2 hrs\n\n- - - -\n\nCoffey, V.G. and Hawley, J.A. (2007). The molecular basis of training adaptation. Sports Medicine. 37, 737-763.\n\nHood, D.A. (2009). Mechanisms of exercise-induced mitochondrial biogenesis in human skeletal muscle. Applied Physiology, Nutrition, and Metabolism. 34, 465-472.\n\n- - - -\n\nSee the \"Pre-activity comments\" and \"Workout details\" sections below for details of how to complete the session, target powers, coaching points, etc.",
+    "userTags": null,
+    "coachComments": "WARM UP\n- Power zones: 48-58% FTP\n- HRmax: <68% // RPE: 2-3 // Cadence: 70-80 rpm\n\nENDURANCE\n- Power zones: CUSTOM - see Workout Details\n- HRmax: 68-78% // RPE: 3-4 (5 on climbs) // Cadence: CUSTOM - see Workout Details\n\nCOOL DOWN\n- Power zones: 48-58% FTP\n- HRmax: <68% // RPE: 2-3 // Cadence: 70-80 rpm\n\nPHYSIOLOGICAL / PERFORMANCE ADAPTATIONS\n++ Muscle mitochondrial enzymes, lactate threshold, muscle glycogen storage, muscle fast-twitch fibre conversion (Type IIx to IIa)\n+ Plasma volume, hypertrophy of slow-twitch muscle fibres, muscle capillarisation, stroke volume / cardiac output, VO2max\n\n- - - -\n\nCUSTOM POWER AND CADENCE ZONES\n- At PALMARES we believe in having as close to a bespoke training plan as possible - we employ CUSTOM zones throughout our plans dependent upon ability level, type and length of session, and training phase\n\nCOACHING POINTS\n- Pacing discipline is very important during this session - stay in the power and HR zone throughout\n- Aim for even power across session - It's ok to go slow uphill and into the wind\n- Keep cadence brisk, change gear early\n\nNUTRITION\n- Light on bike feeding\n- Hydrate well, especially if it's warm",
+    "workoutComments": [],
+    "newComment": null,
+    "publicSettingValue": 0,
+    "sharedWorkoutInformationKey": "PU7UDYXDOHTVMU74XSKKXIYIPU",
+    "sharedWorkoutInformationExpireKey": "3IVR5K7FJSPN547ZVL4IWFBYUIFLOTTXQISSZPQ",
+    "distance": null,
+    "distancePlanned": null,
+    "distanceCustomized": null,
+    "distanceUnitsCustomized": null,
+    "totalTime": null,
+    "totalTimePlanned": 3.0,
+    "heartRateMinimum": null,
+    "heartRateMaximum": null,
+    "heartRateAverage": null,
+    "calories": null,
+    "caloriesPlanned": null,
+    "tssActual": null,
+    "tssPlanned": 110.73,
+    "tssSource": 0,
+    "if": null,
+    "ifPlanned": 0.60840410477067,
+    "velocityAverage": null,
+    "velocityPlanned": null,
+    "velocityMaximum": null,
+    "normalizedSpeedActual": null,
+    "normalizedPowerActual": null,
+    "powerAverage": null,
+    "powerMaximum": null,
+    "energy": null,
+    "energyPlanned": null,
+    "elevationGain": null,
+    "elevationGainPlanned": null,
+    "elevationLoss": null,
+    "elevationMinimum": null,
+    "elevationAverage": null,
+    "elevationMaximum": null,
+    "torqueAverage": null,
+    "torqueMaximum": null,
+    "tempMin": null,
+    "tempAvg": null,
+    "tempMax": null,
+    "cadenceAverage": null,
+    "cadenceMaximum": null,
+    "lastModifiedDate": "2023-12-15T13:09:47.573",
+    "equipmentBikeId": null,
+    "equipmentShoeId": null,
+    "isLocked": null,
+    "complianceDurationPercent": null,
+    "complianceDistancePercent": null,
+    "complianceTssPercent": null,
+    "rpe": null,
+    "feeling": null,
+    "structure": {
+      "structure": [
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "name": "Warm up",
+              "length": {
+                "value": 900,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 48,
+                  "maxValue": 58
+                },
+                {
+                  "minValue": 80,
+                  "maxValue": 90,
+                  "unit": "roundOrStridePerMinute"
+                }
+              ],
+              "intensityClass": "warmUp",
+              "openDuration": false
+            }
+          ],
+          "begin": 0,
+          "end": 900
+        },
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "name": "Endurance",
+              "length": {
+                "value": 9000,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 54,
+                  "maxValue": 69
+                },
+                {
+                  "minValue": 80,
+                  "maxValue": 100,
+                  "unit": "roundOrStridePerMinute"
+                }
+              ],
+              "intensityClass": "active",
+              "openDuration": false
+            }
+          ],
+          "begin": 900,
+          "end": 9900
+        },
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "name": "Cool Down",
+              "length": {
+                "value": 900,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 48,
+                  "maxValue": 58
+                },
+                {
+                  "minValue": 80,
+                  "maxValue": 90,
+                  "unit": "roundOrStridePerMinute"
+                }
+              ],
+              "intensityClass": "coolDown",
+              "openDuration": false
+            }
+          ],
+          "begin": 9900,
+          "end": 10800
+        }
+      ],
+      "polyline": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0.841
+        ],
+        [
+          0.083,
+          0.841
+        ],
+        [
+          0.083,
+          0
+        ],
+        [
+          0.083,
+          1
+        ],
+        [
+          0.917,
+          1
+        ],
+        [
+          0.917,
+          0
+        ],
+        [
+          0.917,
+          0.841
+        ],
+        [
+          1,
+          0.841
+        ],
+        [
+          1,
+          0
+        ]
+      ],
+      "primaryLengthMetric": "duration",
+      "primaryIntensityMetric": "percentOfFtp",
+      "primaryIntensityTargetOrRange": "range"
+    },
+    "orderOnDay": null,
+    "personalRecordCount": 0,
+    "syncedTo": null,
+    "poolLengthOptionId": null
+  }
+]

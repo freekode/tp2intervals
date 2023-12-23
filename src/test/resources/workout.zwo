@@ -1,0 +1,17 @@
+<workout_file>
+	<author>authord</author>
+	<name>Intervals</name>
+	<description>INTERVALS</description>
+	<sportType>bike</sportType>
+	<tags/>
+	<workout>
+		<Warmup Duration="1800" PowerHigh="0.66" PowerLow="0.46" Cadence="85">
+		</Warmup>
+		<IntervalsT Repeat="4" OnDuration="480" OnPower="1.03" OffDuration="240" OffPower="0.45">
+		</IntervalsT>
+		<SteadyState Duration="1920" Power="0.66">
+		</SteadyState>
+		<Cooldown Duration="600" PowerHigh="0.46" PowerLow="0.66" Cadence="85">
+		</Cooldown>
+	</workout>
+</workout_file>
