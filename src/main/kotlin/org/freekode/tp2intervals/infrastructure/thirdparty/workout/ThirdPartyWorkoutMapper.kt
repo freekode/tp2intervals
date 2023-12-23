@@ -20,7 +20,7 @@ class ThirdPartyWorkoutMapper(
             tpWorkout.totalTimePlanned?.let { Duration.ofMinutes((it * 60).toLong()) },
             tpWorkout.tssPlanned,
             tpWorkout.description,
-            tpWorkout.structure?.let { mapToWorkoutSteps(it) } ?: listOf(),
+            listOf(),
             workoutContent
         )
     }
@@ -38,18 +38,29 @@ class ThirdPartyWorkoutMapper(
         )
     }
 
-    private fun mapToWorkoutSteps(structure: ThirdPartyWorkoutStructureDTO): List<WorkoutStep> {
-        val list = mutableListOf<WorkoutStep>()
-        for (structureDTO in structure.structure) {
-            when (structureDTO.type) {
-                ThirdPartyWorkoutStructureDTO.StructureType.STEP -> {
-                    val stepDTO = structureDTO.steps[0]
-                }
+    fun mapToWorkoutStructure(workout: Workout): ThirdPartyWorkoutStructureDTO {
+        val stepDTOs = listOf(mapStructureStep(workout.steps[0]))
 
-                else -> throw RuntimeException("wrong")
-            }
-        }
-        return listOf()
+        return ThirdPartyWorkoutStructureDTO(
+            stepDTOs,
+            "duration",
+            "percentOfFtp",
+            "range",
+        )
+    }
+
+    private fun mapStructureStep(workoutStep: WorkoutStep): ThirdPartyWorkoutStructureDTO.StructureDTO {
+        val stepDTO = ThirdPartyWorkoutStructureDTO.StepDTO(
+            "one",
+            ThirdPartyWorkoutStructureDTO.LengthDTO(100, ThirdPartyWorkoutStructureDTO.LengthUnit.second),
+            listOf(ThirdPartyWorkoutStructureDTO.TargetDTO(20, 30, null)), null, null
+        )
+        return ThirdPartyWorkoutStructureDTO.StructureDTO(
+            ThirdPartyWorkoutStructureDTO.StructureType.step,
+            ThirdPartyWorkoutStructureDTO.LengthDTO(1, ThirdPartyWorkoutStructureDTO.LengthUnit.repetition),
+            listOf(stepDTO),
+            null, null
+        )
     }
 
     private fun mapWorkoutContent(tpWorkout: ThirdPartyWorkoutDTO) =

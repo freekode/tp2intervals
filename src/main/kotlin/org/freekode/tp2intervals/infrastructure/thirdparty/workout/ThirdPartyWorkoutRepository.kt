@@ -1,14 +1,18 @@
 package org.freekode.tp2intervals.infrastructure.thirdparty.workout
 
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.infrastructure.thirdparty.ThirdPartyApiClient
 import org.springframework.stereotype.Repository
 import java.time.LocalDate
 
+
 @Repository
 class ThirdPartyWorkoutRepository(
     private val thirdPartyApiClient: ThirdPartyApiClient,
-    private val thirdPartyWorkoutMapper: ThirdPartyWorkoutMapper
+    private val thirdPartyWorkoutMapper: ThirdPartyWorkoutMapper,
+    private val objectMapper: ObjectMapper
 ) {
     fun getWorkouts(startDate: LocalDate, endDate: LocalDate): List<Workout> {
         val userId = getUserId()
@@ -20,6 +24,11 @@ class ThirdPartyWorkoutRepository(
     }
 
     fun createAndPlanWorkout(workout: Workout) {
+        val structure = thirdPartyWorkoutMapper.mapToWorkoutStructure(workout)
+        val structureStr = objectMapper.copy()
+            .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+            .writeValueAsString(structure)
+
         val createRequest = CreateThirdPartyWorkoutDTO(
             getUserId(),
             workout.scheduledDate,
@@ -27,7 +36,7 @@ class ThirdPartyWorkoutRepository(
             workout.title,
             workout.duration?.toMinutes()?.toDouble()?.div(60),
             workout.load,
-            null
+            structureStr
         )
         thirdPartyApiClient.createAndPlanWorkout(getUserId(), createRequest)
     }

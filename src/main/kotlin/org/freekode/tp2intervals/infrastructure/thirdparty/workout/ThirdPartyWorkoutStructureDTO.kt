@@ -10,16 +10,16 @@ class ThirdPartyWorkoutStructureDTO(
         var type: StructureType,
         var length: LengthDTO,
         var steps: List<StepDTO>,
-        var begin: Int,
-        var end: Int,
+        var begin: Int?,
+        var end: Int?,
     )
 
     class StepDTO(
         var name: String,
         var length: LengthDTO,
         var targets: List<TargetDTO>,
-        var intensityClass: String,
-        var openDuration: Boolean
+        var intensityClass: String?,
+        var openDuration: Boolean?
     )
 
     class LengthDTO(
@@ -28,9 +28,9 @@ class ThirdPartyWorkoutStructureDTO(
     )
 
     enum class LengthUnit {
-        STEP,
-        SECOND,
-        REPETITION,
+        step,
+        second,
+        repetition,
     }
 
     class TargetDTO(
@@ -40,7 +40,7 @@ class ThirdPartyWorkoutStructureDTO(
     )
 
     enum class StructureType {
-        STEP,
-        REPETITION,
+        step,
+        repetition,
     }
 }

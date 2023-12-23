@@ -6,8 +6,3 @@ intervals:
   login:
   password:
   athlete-id:
-
-spring:
-  jackson:
-    mapper:
-      accept-case-insensitive-enums: true
