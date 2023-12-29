@@ -1,5 +1,6 @@
 package org.freekode.tp2intervals.infrastructure.intervalsicu
 
+import org.freekode.tp2intervals.domain.activity.Activity
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutStep
 import org.freekode.tp2intervals.domain.workout.WorkoutStepTarget
@@ -11,13 +12,23 @@ class IntervalsWorkoutMapper {
     fun mapToWorkout(eventDTO: IntervalsEventDTO): Workout {
         return Workout(
             eventDTO.start_date_local.toLocalDate(),
-            eventDTO.type!!.workoutType,
+            eventDTO.type!!.trainingType,
             eventDTO.name,
             eventDTO.moving_time?.let { Duration.ofSeconds(it) },
             eventDTO.icu_training_load?.toDouble(),
             eventDTO.description,
             eventDTO.workout_doc?.let { mapToWorkoutSteps(it) } ?: listOf(),
             null
+        )
+    }
+
+    fun mapToActivity(eventDTO: IntervalsActivityDTO): Activity {
+        return Activity(
+            eventDTO.start_date_local.toLocalDate(),
+            eventDTO.type!!.trainingType,
+            eventDTO.name,
+            eventDTO.moving_time?.let { Duration.ofSeconds(it) },
+            eventDTO.icu_training_load?.toDouble(),
         )
     }
 

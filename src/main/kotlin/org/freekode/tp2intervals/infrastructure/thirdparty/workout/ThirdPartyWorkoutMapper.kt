@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutStep
 import org.freekode.tp2intervals.domain.workout.WorkoutStepTarget
-import org.freekode.tp2intervals.domain.workout.WorkoutType
+import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.infrastructure.thirdparty.ThirdPartyApiClient
 import org.springframework.stereotype.Repository
 import java.time.Duration
@@ -19,7 +19,7 @@ class ThirdPartyWorkoutMapper(
         val workoutContent = mapWorkoutContent(tpWorkout)
         return Workout(
             tpWorkout.workoutDay.toLocalDate(),
-            tpWorkout.getWorkoutType()!!.workoutType,
+            tpWorkout.getWorkoutType()!!.trainingType,
             tpWorkout.title.ifBlank { "Workout" },
             tpWorkout.totalTimePlanned?.let { Duration.ofMinutes((it * 60).toLong()) },
             tpWorkout.tssPlanned,
@@ -32,7 +32,7 @@ class ThirdPartyWorkoutMapper(
     fun mapToWorkout(tpNote: ThirdPartyNoteDTO): Workout {
         return Workout(
             tpNote.noteDate.toLocalDate(),
-            WorkoutType.NOTE,
+            TrainingType.NOTE,
             tpNote.title,
             null,
             null,

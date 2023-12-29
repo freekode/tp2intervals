@@ -1,5 +1,6 @@
 package org.freekode.tp2intervals.infrastructure.thirdparty.workout
 
+import org.freekode.tp2intervals.domain.activity.Activity
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.infrastructure.thirdparty.ThirdPartyApiClient
 import org.springframework.stereotype.Repository
@@ -35,14 +36,14 @@ class ThirdPartyWorkoutRepository(
         thirdPartyApiClient.createAndPlanWorkout(getUserId(), createRequest)
     }
 
-    fun createActivity(workout: Workout) {
+    fun createActivity(activity: Activity) {
         val createRequest = CreateThirdPartyWorkoutDTO.createWorkout(
             getUserId(),
-            workout.date,
-            ThirdPartyWorkoutType.findByType(workout.type).value,
-            workout.title,
-            workout.duration?.toMinutes()?.toDouble()?.div(60),
-            workout.load,
+            activity.date,
+            ThirdPartyWorkoutType.findByType(activity.type).value,
+            activity.title,
+            activity.duration?.toMinutes()?.toDouble()?.div(60),
+            activity.load,
         )
         thirdPartyApiClient.createAndPlanWorkout(getUserId(), createRequest)
     }

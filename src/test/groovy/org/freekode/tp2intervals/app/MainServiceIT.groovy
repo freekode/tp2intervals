@@ -1,6 +1,6 @@
 package org.freekode.tp2intervals.app
 
-
+import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.infrastructure.intervalsicu.IntervalsWorkoutRepository
 import org.freekode.tp2intervals.infrastructure.thirdparty.workout.ThirdPartyWorkoutRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -38,12 +38,14 @@ class MainServiceIT extends Specification {
 
     def "should parse intervals workouts"() {
         given:
-        def startDate = LocalDate.parse("2023-12-27")
-        def endDate = LocalDate.parse("2023-12-27")
+        def startDate = LocalDate.parse("2023-12-12")
+        def endDate = LocalDate.now()
 
         when:
-        def workouts = intervalsWorkoutRepository.getPlannedWorkouts(startDate, endDate)
-        thirdPartyWorkoutRepository.createActivity(workouts[0])
+        def workouts = intervalsWorkoutRepository.getActivities(startDate, endDate)
+        workouts.stream()
+                .filter { it.type == TrainingType.WEIGHT || it.type == TrainingType.RUN }
+                .forEach { thirdPartyWorkoutRepository.createActivity(it) }
 
         then:
         workouts != null

@@ -32,4 +32,11 @@ interface IntervalsApiClient {
         @PathVariable("startDate") startDate: String,
         @PathVariable("endDate") endDate: String,
     ): List<IntervalsEventDTO>
+
+    @GetMapping("/api/v1/athlete/{athleteId}/activities?oldest={startDate}&newest={endDate}")
+    fun getActivities(
+        @PathVariable("athleteId") athleteId: String,
+        @PathVariable("startDate") startDate: String,
+        @PathVariable("endDate") endDate: String,
+    ): List<IntervalsActivityDTO>
 }

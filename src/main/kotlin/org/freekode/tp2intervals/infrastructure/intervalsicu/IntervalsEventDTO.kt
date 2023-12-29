@@ -1,7 +1,6 @@
 package org.freekode.tp2intervals.infrastructure.intervalsicu
 
 import java.time.LocalDateTime
-import kotlin.time.Duration
 
 class IntervalsEventDTO(
     val id: Long,

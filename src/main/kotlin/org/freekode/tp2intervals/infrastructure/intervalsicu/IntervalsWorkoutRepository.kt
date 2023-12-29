@@ -1,8 +1,9 @@
 package org.freekode.tp2intervals.infrastructure.intervalsicu
 
+import org.freekode.tp2intervals.domain.activity.Activity
 import org.freekode.tp2intervals.domain.plan.Folder
 import org.freekode.tp2intervals.domain.workout.Workout
-import org.freekode.tp2intervals.domain.workout.WorkoutType
+import org.freekode.tp2intervals.domain.TrainingType
 import org.springframework.stereotype.Repository
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
@@ -37,13 +38,20 @@ class IntervalsWorkoutRepository(
             .map { intervalsWorkoutMapper.mapToWorkout(it) }
     }
 
-    private fun mapType(type: WorkoutType): String {
+    fun getActivities(startDate: LocalDate, endDate: LocalDate): List<Activity> {
+        val activities =
+            intervalsApiClient.getActivities(intervalsProperties.athleteId, startDate.toString(), endDate.toString())
+        return activities
+            .map { intervalsWorkoutMapper.mapToActivity(it) }
+    }
+
+    private fun mapType(type: TrainingType): String {
         return when (type) {
-            WorkoutType.BIKE -> "Ride"
-            WorkoutType.RUN -> "Run"
-            WorkoutType.WEIGHT -> "WeightTraining"
-            WorkoutType.NOTE -> "NOTE"
-            WorkoutType.WALK -> "Walk"
+            TrainingType.BIKE -> "Ride"
+            TrainingType.RUN -> "Run"
+            TrainingType.WEIGHT -> "WeightTraining"
+            TrainingType.NOTE -> "NOTE"
+            TrainingType.WALK -> "Walk"
             else -> "Other"
         }
     }
