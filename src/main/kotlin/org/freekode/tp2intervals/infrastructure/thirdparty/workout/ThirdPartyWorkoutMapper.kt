@@ -1,5 +1,7 @@
 package org.freekode.tp2intervals.infrastructure.thirdparty.workout
 
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.databind.ObjectMapper
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutStep
 import org.freekode.tp2intervals.domain.workout.WorkoutStepTarget
@@ -11,6 +13,7 @@ import java.time.Duration
 @Repository
 class ThirdPartyWorkoutMapper(
     private val thirdPartyApiClient: ThirdPartyApiClient,
+    private val objectMapper: ObjectMapper,
 ) {
     fun mapToWorkout(tpWorkout: ThirdPartyWorkoutDTO): Workout {
         val workoutContent = mapWorkoutContent(tpWorkout)
@@ -37,6 +40,16 @@ class ThirdPartyWorkoutMapper(
             listOf(),
             null,
         )
+    }
+
+    fun mapToWorkoutStructureStr(workout: Workout): String? {
+        if (workout.steps.isEmpty()) {
+            return null
+        }
+        val structure = mapToWorkoutStructure(workout)
+        return objectMapper.copy()
+            .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+            .writeValueAsString(structure)
     }
 
     fun mapToWorkoutStructure(workout: Workout): ThirdPartyWorkoutStructureDTO {

@@ -4,7 +4,7 @@ import java.time.Duration
 import java.time.LocalDate
 
 data class Workout(
-    val scheduledDate: LocalDate,
+    val date: LocalDate,
     val type: WorkoutType,
     val title: String,
     val duration: Duration?,

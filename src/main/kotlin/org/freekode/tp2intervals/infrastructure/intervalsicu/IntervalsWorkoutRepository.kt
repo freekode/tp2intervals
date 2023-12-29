@@ -18,7 +18,7 @@ class IntervalsWorkoutRepository(
     fun createAndPlanWorkout(folder: Folder, workout: Workout) {
         val createWorkoutRequestDTO = CreateWorkoutRequestDTO(
             folder.id.value,
-            getWorkoutDayNumber(folder.startDate, workout.scheduledDate),
+            getWorkoutDayNumber(folder.startDate, workout.date),
             mapType(workout.type),
             workout.title,
             workout.duration?.seconds,

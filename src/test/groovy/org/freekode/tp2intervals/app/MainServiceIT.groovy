@@ -38,12 +38,12 @@ class MainServiceIT extends Specification {
 
     def "should parse intervals workouts"() {
         given:
-        def startDate = LocalDate.parse("2023-12-18")
-        def endDate = LocalDate.parse("2023-12-24")
+        def startDate = LocalDate.parse("2023-12-27")
+        def endDate = LocalDate.parse("2023-12-27")
 
         when:
         def workouts = intervalsWorkoutRepository.getPlannedWorkouts(startDate, endDate)
-        thirdPartyWorkoutRepository.createAndPlanWorkout(workouts[0])
+        thirdPartyWorkoutRepository.createActivity(workouts[0])
 
         then:
         workouts != null
