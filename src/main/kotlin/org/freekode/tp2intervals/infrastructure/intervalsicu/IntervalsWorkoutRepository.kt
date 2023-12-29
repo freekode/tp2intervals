@@ -43,6 +43,7 @@ class IntervalsWorkoutRepository(
             WorkoutType.RUN -> "Run"
             WorkoutType.WEIGHT -> "WeightTraining"
             WorkoutType.NOTE -> "NOTE"
+            WorkoutType.WALK -> "Walk"
             else -> "Other"
         }
     }

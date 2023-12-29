@@ -10,8 +10,6 @@ class ThirdPartyWorkoutStructureDTO(
         var type: StructureType,
         var length: LengthDTO,
         var steps: List<StepDTO>,
-        var begin: Int?,
-        var end: Int?,
     )
 
     class StepDTO(

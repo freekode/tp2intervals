@@ -9,11 +9,13 @@ enum class ThirdPartyWorkoutType(
     BIKE(2, WorkoutType.BIKE),
     RUN(3, WorkoutType.RUN),
     NOTE(7, WorkoutType.NOTE),
-    WEIGHT(9, WorkoutType.WEIGHT);
+    MTB(8, WorkoutType.BIKE),
+    WEIGHT(9, WorkoutType.WEIGHT),
+    WALKING(13, WorkoutType.WALK);
 
     companion object {
         fun findByValue(value: Int): ThirdPartyWorkoutType {
-            return entries.find { it.value == value }!!
+            return entries.find { it.value == value } ?: throw RuntimeException("$value is unknown workout type")
         }
 
         fun findByType(workoutType: WorkoutType): ThirdPartyWorkoutType {

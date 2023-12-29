@@ -2,6 +2,7 @@ package org.freekode.tp2intervals.infrastructure.thirdparty.workout
 
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutStep
+import org.freekode.tp2intervals.domain.workout.WorkoutStepTarget
 import org.freekode.tp2intervals.domain.workout.WorkoutType
 import org.freekode.tp2intervals.infrastructure.thirdparty.ThirdPartyApiClient
 import org.springframework.stereotype.Repository
@@ -39,7 +40,7 @@ class ThirdPartyWorkoutMapper(
     }
 
     fun mapToWorkoutStructure(workout: Workout): ThirdPartyWorkoutStructureDTO {
-        val stepDTOs = listOf(mapStructureStep(workout.steps[0]))
+        val stepDTOs = listOf(mapSingleStep(workout.steps[0]))
 
         return ThirdPartyWorkoutStructureDTO(
             stepDTOs,
@@ -49,19 +50,25 @@ class ThirdPartyWorkoutMapper(
         )
     }
 
-    private fun mapStructureStep(workoutStep: WorkoutStep): ThirdPartyWorkoutStructureDTO.StructureDTO {
+    private fun mapSingleStep(workoutStep: WorkoutStep): ThirdPartyWorkoutStructureDTO.StructureDTO {
         val stepDTO = ThirdPartyWorkoutStructureDTO.StepDTO(
-            "one",
-            ThirdPartyWorkoutStructureDTO.LengthDTO(100, ThirdPartyWorkoutStructureDTO.LengthUnit.second),
-            listOf(ThirdPartyWorkoutStructureDTO.TargetDTO(20, 30, null)), null, null
+            "Step",
+            ThirdPartyWorkoutStructureDTO.LengthDTO(
+                workoutStep.duration.seconds.toInt(),
+                ThirdPartyWorkoutStructureDTO.LengthUnit.second
+            ),
+            workoutStep.targets.map { mapToTargetDTO(it) },
+            null, null
         )
         return ThirdPartyWorkoutStructureDTO.StructureDTO(
             ThirdPartyWorkoutStructureDTO.StructureType.step,
             ThirdPartyWorkoutStructureDTO.LengthDTO(1, ThirdPartyWorkoutStructureDTO.LengthUnit.repetition),
-            listOf(stepDTO),
-            null, null
+            listOf(stepDTO)
         )
     }
+
+    private fun mapToTargetDTO(workoutStepTarget: WorkoutStepTarget) =
+        ThirdPartyWorkoutStructureDTO.TargetDTO(workoutStepTarget.value.min, workoutStepTarget.value.max, null)
 
     private fun mapWorkoutContent(tpWorkout: ThirdPartyWorkoutDTO) =
         if (tpWorkout.structure != null) {

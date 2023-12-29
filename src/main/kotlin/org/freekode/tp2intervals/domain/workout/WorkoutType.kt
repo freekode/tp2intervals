@@ -4,6 +4,7 @@ enum class WorkoutType {
     BIKE,
     RUN,
     WEIGHT,
+    WALK,
     NOTE,
     UNKNOWN
 }
