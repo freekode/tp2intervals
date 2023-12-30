@@ -12,7 +12,19 @@ class ThirdPartyWorkoutStructureDTO(
         var type: StructureType,
         var length: LengthDTO,
         var steps: List<StepDTO>,
-    )
+    ) {
+        companion object {
+            fun singleStep(stepDTO: StepDTO): StructureDTO =
+                StructureDTO(StructureType.step, LengthDTO(1, LengthUnit.repetition), listOf(stepDTO))
+
+            fun multiStep(stepDTOs: List<StepDTO>): StructureDTO =
+                StructureDTO(
+                    StructureType.repetition,
+                    LengthDTO.repetitions(stepDTOs.size.toLong()),
+                    stepDTOs
+                )
+        }
+    }
 
     class StepDTO(
         var name: String,
@@ -23,21 +35,33 @@ class ThirdPartyWorkoutStructureDTO(
     )
 
     class LengthDTO(
-        var value: Int,
+        var value: Long,
         var unit: LengthUnit,
-    )
+    ) {
+        companion object {
+            fun seconds(value: Long) = LengthDTO(value, LengthUnit.second)
+            fun repetitions(value: Long) = LengthDTO(value, LengthUnit.repetition)
+        }
+    }
 
     class TargetDTO(
         var minValue: Int,
         var maxValue: Int,
-        var unit: String?,
-    )
+        var unit: TargetUnit?,
+    ) {
+        companion object {
+            fun powerTarget(minValue: Int, maxValue: Int): TargetDTO = TargetDTO(minValue, maxValue, null)
+            fun cadenceTarget(minValue: Int, maxValue: Int): TargetDTO =
+                TargetDTO(minValue, maxValue, TargetUnit.roundOrStridePerMinute)
+        }
+    }
+
+    enum class TargetUnit {
+        roundOrStridePerMinute
+    }
 
     enum class IntensityClass(val type: IntensityType) {
-        warmUp(IntensityType.WARM_UP),
-        active(IntensityType.ACTIVE),
-        rest(IntensityType.REST),
-        coolDown(IntensityType.COOL_DOWN);
+        warmUp(IntensityType.WARM_UP), active(IntensityType.ACTIVE), rest(IntensityType.REST), coolDown(IntensityType.COOL_DOWN);
 
         companion object {
             fun findByIntensityType(type: IntensityType): IntensityClass {
@@ -47,13 +71,10 @@ class ThirdPartyWorkoutStructureDTO(
     }
 
     enum class LengthUnit {
-        step,
-        second,
-        repetition,
+        step, second, repetition,
     }
 
     enum class StructureType {
-        step,
-        repetition,
+        step, repetition,
     }
 }

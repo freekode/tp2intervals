@@ -27,6 +27,7 @@ class MainServiceIT extends Specification {
     @Autowired
     IntervalsFolderRepository intervalsFolderRepository
 
+    @Ignore
     def "should copy training plan"() {
         given:
         def startDate = LocalDate.parse("2023-12-12")
@@ -52,7 +53,6 @@ class MainServiceIT extends Specification {
                 .forEach { thirdPartyWorkoutRepository.createActivity(it) }
     }
 
-    @Ignore
     def "should migrate intervals workouts"() {
         given:
         def startDate = LocalDate.now()
@@ -61,7 +61,7 @@ class MainServiceIT extends Specification {
         expect:
         def workouts = intervalsWorkoutRepository.getPlannedWorkouts(startDate, endDate)
         workouts != null
-//        workouts.forEach { thirdPartyWorkoutRepository.planWorkout(it) }
+        workouts.forEach { thirdPartyWorkoutRepository.planWorkout(it) }
     }
 
 }

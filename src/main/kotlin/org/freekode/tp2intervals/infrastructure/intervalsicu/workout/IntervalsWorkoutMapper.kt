@@ -3,6 +3,7 @@ package org.freekode.tp2intervals.infrastructure.intervalsicu.workout
 import org.freekode.tp2intervals.domain.activity.Activity
 import org.freekode.tp2intervals.domain.workout.IntensityType
 import org.freekode.tp2intervals.domain.workout.Workout
+import org.freekode.tp2intervals.domain.workout.WorkoutExternalData
 import org.freekode.tp2intervals.domain.workout.WorkoutStep
 import org.freekode.tp2intervals.domain.workout.WorkoutStepTarget
 import org.freekode.tp2intervals.infrastructure.intervalsicu.IntervalsActivityDTO
@@ -20,7 +21,7 @@ class IntervalsWorkoutMapper {
             eventDTO.moving_time?.let { Duration.ofSeconds(it) },
             eventDTO.icu_training_load?.toDouble(),
             eventDTO.workout_doc?.let { mapToWorkoutSteps(it) } ?: listOf(),
-            null
+            WorkoutExternalData(null, eventDTO.id.toString(), null)
         )
     }
 
@@ -47,6 +48,7 @@ class IntervalsWorkoutMapper {
 
     private fun mapMultiStep(stepDTO: IntervalsWorkoutDocDTO.WorkoutStepDTO): WorkoutStep {
         return WorkoutStep(
+            stepDTO.text ?: "Step",
             stepDTO.reps!!,
             stepDTO.duration?.let { Duration.ofSeconds(it) } ?: Duration.ZERO,
             listOf(),
@@ -60,6 +62,7 @@ class IntervalsWorkoutMapper {
         val intensity = intensityType(stepDTO)
 
         return WorkoutStep(
+            stepDTO.text ?: "Step",
             1,
             stepDTO.duration?.let { Duration.ofSeconds(it) } ?: Duration.ZERO,
             targets,
@@ -94,12 +97,14 @@ class IntervalsWorkoutMapper {
     private fun mapStepTarget(
         stepValueDTO: IntervalsWorkoutDocDTO.StepValueDTO,
         targetType: WorkoutStepTarget.TargetType
-    ) =
-        WorkoutStepTarget(
+    ): WorkoutStepTarget {
+        val (min, max) = mapTargetValue(stepValueDTO)
+        return WorkoutStepTarget(
             targetType,
             mapTargetUnit(stepValueDTO.units),
-            mapTargetValue(stepValueDTO)
+            min, max
         )
+    }
 
     private fun mapTargetUnit(units: String): WorkoutStepTarget.TargetUnit =
         when (units) {
@@ -108,10 +113,10 @@ class IntervalsWorkoutMapper {
             else -> throw RuntimeException("unknown unit $units")
         }
 
-    private fun mapTargetValue(stepValueDTO: IntervalsWorkoutDocDTO.StepValueDTO): WorkoutStepTarget.TargetValue =
+    private fun mapTargetValue(stepValueDTO: IntervalsWorkoutDocDTO.StepValueDTO): Pair<Int, Int> =
         if (stepValueDTO.value != null) {
-            WorkoutStepTarget.TargetValue(stepValueDTO.value)
+            Pair(stepValueDTO.value, stepValueDTO.value)
         } else {
-            WorkoutStepTarget.TargetValue(stepValueDTO.start!!, stepValueDTO.end!!)
+            Pair(stepValueDTO.start!!, stepValueDTO.end!!)
         }
 }

@@ -27,7 +27,7 @@ class IntervalsWorkoutRepository(
             workout.duration?.seconds,
             workout.load?.toInt(),
             workout.description,
-            workout.externalContent
+            workout.externalData.externalContent
         )
         intervalsApiClient.createWorkout(intervalsProperties.athleteId, createWorkoutRequestDTO)
     }

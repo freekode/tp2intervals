@@ -12,5 +12,5 @@ data class Workout(
     val duration: Duration?,
     val load: Double?,
     val steps: List<WorkoutStep>,
-    val externalContent: String?
+    val externalData: WorkoutExternalData,
 )

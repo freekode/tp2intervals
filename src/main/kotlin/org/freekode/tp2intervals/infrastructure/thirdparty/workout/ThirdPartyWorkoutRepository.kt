@@ -11,6 +11,7 @@ import java.time.LocalDate
 class ThirdPartyWorkoutRepository(
     private val thirdPartyApiClient: ThirdPartyApiClient,
     private val thirdPartyWorkoutMapper: ThirdPartyWorkoutMapper,
+    private val workoutStepToThirdPartyStructureMapper: WorkoutStepToThirdPartyStructureMapper
 ) {
     fun getWorkouts(startDate: LocalDate, endDate: LocalDate): List<Workout> {
         val userId = getUserId()
@@ -22,7 +23,7 @@ class ThirdPartyWorkoutRepository(
     }
 
     fun planWorkout(workout: Workout) {
-        val structureStr = thirdPartyWorkoutMapper.mapToWorkoutStructureStr(workout)
+        val structureStr = workoutStepToThirdPartyStructureMapper.mapToWorkoutStructureStr(workout)
 
         val createRequest = CreateThirdPartyWorkoutDTO.planWorkout(
             getUserId(),
