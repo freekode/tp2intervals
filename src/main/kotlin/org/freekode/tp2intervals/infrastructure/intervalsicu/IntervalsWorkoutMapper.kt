@@ -24,7 +24,7 @@ class IntervalsWorkoutMapper {
 
     fun mapToActivity(eventDTO: IntervalsActivityDTO): Activity {
         return Activity(
-            eventDTO.start_date_local.toLocalDate(),
+            eventDTO.start_date_local,
             eventDTO.type!!.trainingType,
             eventDTO.name,
             eventDTO.moving_time?.let { Duration.ofSeconds(it) },

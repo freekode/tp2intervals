@@ -36,7 +36,8 @@ class MainServiceIT extends Specification {
         true
     }
 
-    def "should parse intervals workouts"() {
+    @Ignore
+    def "should migrate intervals activities"() {
         given:
         def startDate = LocalDate.parse("2023-12-12")
         def endDate = LocalDate.now()

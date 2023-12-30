@@ -39,7 +39,7 @@ class ThirdPartyWorkoutRepository(
     fun createActivity(activity: Activity) {
         val createRequest = CreateThirdPartyWorkoutDTO.createWorkout(
             getUserId(),
-            activity.date,
+            activity.startedAt,
             ThirdPartyWorkoutType.findByType(activity.type).value,
             activity.title,
             activity.duration?.toMinutes()?.toDouble()?.div(60),
