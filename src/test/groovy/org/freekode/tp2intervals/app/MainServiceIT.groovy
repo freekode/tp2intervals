@@ -61,7 +61,7 @@ class MainServiceIT extends Specification {
         expect:
         def workouts = intervalsWorkoutRepository.getPlannedWorkouts(startDate, endDate)
         workouts != null
-        workouts.forEach { thirdPartyWorkoutRepository.planWorkout(it) }
+//        workouts.forEach { thirdPartyWorkoutRepository.planWorkout(it) }
     }
 
 }

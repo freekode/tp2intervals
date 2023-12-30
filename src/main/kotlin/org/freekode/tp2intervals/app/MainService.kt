@@ -1,5 +1,6 @@
 package org.freekode.tp2intervals.app
 
+import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.infrastructure.intervalsicu.folder.IntervalsFolderRepository
 import org.freekode.tp2intervals.infrastructure.intervalsicu.workout.IntervalsWorkoutRepository
 import org.freekode.tp2intervals.infrastructure.thirdparty.workout.ThirdPartyWorkoutRepository
@@ -21,7 +22,18 @@ class MainService(
         }
     }
 
-    fun copyWorkoutsFromIntervals(date: LocalDate) {
+    fun copyRunWeightActivitiesFromIntervals(date: LocalDate) {
+        val workouts = intervalsWorkoutRepository.getActivities(date, date)
+        workouts.stream()
+            .filter { it.type == TrainingType.WEIGHT || it.type == TrainingType.RUN }
+            .forEach { thirdPartyWorkoutRepository.createActivity(it) }
+    }
 
+    fun planTodayTomorrowWorkouts() {
+        val startDate = LocalDate.now()
+        val endDate = LocalDate.now().plusDays(1)
+
+        val workouts = intervalsWorkoutRepository.getPlannedWorkouts(startDate, endDate)
+        workouts.forEach { thirdPartyWorkoutRepository.planWorkout(it) }
     }
 }
