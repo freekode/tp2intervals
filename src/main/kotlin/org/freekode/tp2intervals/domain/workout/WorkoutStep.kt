@@ -6,6 +6,7 @@ data class WorkoutStep(
     val repetitions: Int,
     val duration: Duration,
     val targets: List<WorkoutStepTarget>,
+    val intensity: IntensityType,
     val steps: List<WorkoutStep>
 ) {
 

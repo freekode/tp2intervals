@@ -1,4 +1,4 @@
-package org.freekode.tp2intervals.infrastructure.intervalsicu
+package org.freekode.tp2intervals.infrastructure.intervalsicu.workout
 
 import org.freekode.tp2intervals.domain.TrainingType
 
@@ -9,7 +9,9 @@ enum class IntervalsWorkoutType(
     VirtualRide(TrainingType.BIKE),
     Run(TrainingType.RUN),
     WeightTraining(TrainingType.WEIGHT),
-    NOTE(TrainingType.NOTE);
+    NOTE(TrainingType.NOTE),
+    Walk(TrainingType.WALK),
+    Other(TrainingType.UNKNOWN);
 
     companion object {
         fun findByType(trainingType: TrainingType): IntervalsWorkoutType {

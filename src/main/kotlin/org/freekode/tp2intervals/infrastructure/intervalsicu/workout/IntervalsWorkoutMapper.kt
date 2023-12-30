@@ -1,9 +1,11 @@
-package org.freekode.tp2intervals.infrastructure.intervalsicu
+package org.freekode.tp2intervals.infrastructure.intervalsicu.workout
 
 import org.freekode.tp2intervals.domain.activity.Activity
+import org.freekode.tp2intervals.domain.workout.IntensityType
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutStep
 import org.freekode.tp2intervals.domain.workout.WorkoutStepTarget
+import org.freekode.tp2intervals.infrastructure.intervalsicu.IntervalsActivityDTO
 import org.springframework.stereotype.Component
 import java.time.Duration
 
@@ -14,9 +16,9 @@ class IntervalsWorkoutMapper {
             eventDTO.start_date_local.toLocalDate(),
             eventDTO.type!!.trainingType,
             eventDTO.name,
+            eventDTO.description,
             eventDTO.moving_time?.let { Duration.ofSeconds(it) },
             eventDTO.icu_training_load?.toDouble(),
-            eventDTO.description,
             eventDTO.workout_doc?.let { mapToWorkoutSteps(it) } ?: listOf(),
             null
         )
@@ -32,7 +34,7 @@ class IntervalsWorkoutMapper {
         )
     }
 
-    private fun mapToWorkoutSteps(workoutDoc: IntervalsEventDTO.WorkoutDocDTO): List<WorkoutStep> {
+    private fun mapToWorkoutSteps(workoutDoc: IntervalsWorkoutDocDTO): List<WorkoutStep> {
         return workoutDoc.steps
             .map {
                 if (it.reps != null) {
@@ -43,18 +45,41 @@ class IntervalsWorkoutMapper {
             }
     }
 
-    private fun mapMultiStep(stepDTO: IntervalsEventDTO.WorkoutStepDTO): WorkoutStep {
+    private fun mapMultiStep(stepDTO: IntervalsWorkoutDocDTO.WorkoutStepDTO): WorkoutStep {
         return WorkoutStep(
             stepDTO.reps!!,
             stepDTO.duration?.let { Duration.ofSeconds(it) } ?: Duration.ZERO,
             listOf(),
+            IntensityType.default(),
             stepDTO.steps!!.map { mapSingleStep(it) }
         )
     }
 
-    private fun mapSingleStep(stepDTO: IntervalsEventDTO.WorkoutStepDTO): WorkoutStep {
-        val targets = mutableListOf<WorkoutStepTarget>()
+    private fun mapSingleStep(stepDTO: IntervalsWorkoutDocDTO.WorkoutStepDTO): WorkoutStep {
+        val targets = workoutStepTargets(stepDTO)
+        val intensity = intensityType(stepDTO)
 
+        return WorkoutStep(
+            1,
+            stepDTO.duration?.let { Duration.ofSeconds(it) } ?: Duration.ZERO,
+            targets,
+            intensity,
+            listOf()
+        )
+    }
+
+    private fun intensityType(stepDTO: IntervalsWorkoutDocDTO.WorkoutStepDTO): IntensityType {
+        return if (true == stepDTO.warmup) {
+            IntensityType.WARM_UP
+        } else if (true == stepDTO.cooldown) {
+            IntensityType.COOL_DOWN
+        } else {
+            IntensityType.default()
+        }
+    }
+
+    private fun workoutStepTargets(stepDTO: IntervalsWorkoutDocDTO.WorkoutStepDTO): MutableList<WorkoutStepTarget> {
+        val targets = mutableListOf<WorkoutStepTarget>()
         stepDTO.power
             ?.let {
                 mapStepTarget(it, WorkoutStepTarget.TargetType.POWER)
@@ -63,16 +88,13 @@ class IntervalsWorkoutMapper {
             ?.let {
                 mapStepTarget(it, WorkoutStepTarget.TargetType.CADENCE)
             }?.also { targets.add(it) }
-
-        return WorkoutStep(
-            1,
-            stepDTO.duration?.let { Duration.ofSeconds(it) } ?: Duration.ZERO,
-            targets,
-            listOf()
-        )
+        return targets
     }
 
-    private fun mapStepTarget(stepValueDTO: IntervalsEventDTO.StepValueDTO, targetType: WorkoutStepTarget.TargetType) =
+    private fun mapStepTarget(
+        stepValueDTO: IntervalsWorkoutDocDTO.StepValueDTO,
+        targetType: WorkoutStepTarget.TargetType
+    ) =
         WorkoutStepTarget(
             targetType,
             mapTargetUnit(stepValueDTO.units),
@@ -86,7 +108,7 @@ class IntervalsWorkoutMapper {
             else -> throw RuntimeException("unknown unit $units")
         }
 
-    private fun mapTargetValue(stepValueDTO: IntervalsEventDTO.StepValueDTO): WorkoutStepTarget.TargetValue =
+    private fun mapTargetValue(stepValueDTO: IntervalsWorkoutDocDTO.StepValueDTO): WorkoutStepTarget.TargetValue =
         if (stepValueDTO.value != null) {
             WorkoutStepTarget.TargetValue(stepValueDTO.value)
         } else {

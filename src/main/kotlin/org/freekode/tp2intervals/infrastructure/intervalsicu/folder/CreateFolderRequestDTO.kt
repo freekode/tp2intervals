@@ -1,4 +1,4 @@
-package org.freekode.tp2intervals.infrastructure.intervalsicu
+package org.freekode.tp2intervals.infrastructure.intervalsicu.folder
 
 class CreateFolderRequestDTO(
     val auto_rollout_day: Int,

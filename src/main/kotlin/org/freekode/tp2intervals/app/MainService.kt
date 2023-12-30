@@ -1,7 +1,7 @@
 package org.freekode.tp2intervals.app
 
-import org.freekode.tp2intervals.infrastructure.intervalsicu.IntervalsFolderRepository
-import org.freekode.tp2intervals.infrastructure.intervalsicu.IntervalsWorkoutRepository
+import org.freekode.tp2intervals.infrastructure.intervalsicu.folder.IntervalsFolderRepository
+import org.freekode.tp2intervals.infrastructure.intervalsicu.workout.IntervalsWorkoutRepository
 import org.freekode.tp2intervals.infrastructure.thirdparty.workout.ThirdPartyWorkoutRepository
 import org.springframework.stereotype.Service
 import java.time.LocalDate

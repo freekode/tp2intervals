@@ -1,7 +1,8 @@
 package org.freekode.tp2intervals.app
 
 import org.freekode.tp2intervals.domain.TrainingType
-import org.freekode.tp2intervals.infrastructure.intervalsicu.IntervalsWorkoutRepository
+import org.freekode.tp2intervals.infrastructure.intervalsicu.folder.IntervalsFolderRepository
+import org.freekode.tp2intervals.infrastructure.intervalsicu.workout.IntervalsWorkoutRepository
 import org.freekode.tp2intervals.infrastructure.thirdparty.workout.ThirdPartyWorkoutRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -23,17 +24,19 @@ class MainServiceIT extends Specification {
     @Autowired
     ThirdPartyWorkoutRepository thirdPartyWorkoutRepository
 
-    @Ignore
+    @Autowired
+    IntervalsFolderRepository intervalsFolderRepository
+
     def "should copy training plan"() {
         given:
-        def startDate = LocalDate.parse("2023-12-15")
-        def endDate = LocalDate.parse("2023-12-17")
+        def startDate = LocalDate.parse("2023-12-12")
+        def endDate = LocalDate.parse("2023-12-15")
 
-        when:
-        mainService.copyPlanFromThirdParty(startDate, endDate)
-
-        then:
-        true
+        expect:
+        def workouts = thirdPartyWorkoutRepository.getWorkouts(startDate, endDate)
+        workouts != null
+        def plan = intervalsFolderRepository.createPlan("My Plan - $startDate", startDate)
+        workouts.forEach { intervalsWorkoutRepository.createAndPlanWorkout(plan, it) }
     }
 
     @Ignore
@@ -42,13 +45,23 @@ class MainServiceIT extends Specification {
         def startDate = LocalDate.parse("2023-12-12")
         def endDate = LocalDate.now()
 
-        when:
+        expect:
         def workouts = intervalsWorkoutRepository.getActivities(startDate, endDate)
         workouts.stream()
                 .filter { it.type == TrainingType.WEIGHT || it.type == TrainingType.RUN }
                 .forEach { thirdPartyWorkoutRepository.createActivity(it) }
-
-        then:
-        workouts != null
     }
+
+    @Ignore
+    def "should migrate intervals workouts"() {
+        given:
+        def startDate = LocalDate.now()
+        def endDate = LocalDate.now().plusDays(1)
+
+        expect:
+        def workouts = intervalsWorkoutRepository.getPlannedWorkouts(startDate, endDate)
+        workouts != null
+//        workouts.forEach { thirdPartyWorkoutRepository.planWorkout(it) }
+    }
+
 }

@@ -1,4 +1,4 @@
-package org.freekode.tp2intervals.infrastructure.intervalsicu
+package org.freekode.tp2intervals.infrastructure.intervalsicu.folder
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDate

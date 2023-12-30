@@ -1,7 +1,9 @@
-package org.freekode.tp2intervals.infrastructure.intervalsicu
+package org.freekode.tp2intervals.infrastructure.intervalsicu.folder
 
 import org.freekode.tp2intervals.domain.plan.Folder
 import org.freekode.tp2intervals.domain.plan.FolderId
+import org.freekode.tp2intervals.infrastructure.intervalsicu.IntervalsApiClient
+import org.freekode.tp2intervals.infrastructure.intervalsicu.IntervalsProperties
 import org.springframework.stereotype.Repository
 import java.time.LocalDate
 

@@ -1,5 +1,6 @@
 package org.freekode.tp2intervals.infrastructure.intervalsicu
 
+import org.freekode.tp2intervals.infrastructure.intervalsicu.workout.IntervalsWorkoutType
 import java.time.LocalDateTime
 
 class IntervalsActivityDTO(

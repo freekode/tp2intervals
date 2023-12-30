@@ -8,9 +8,9 @@ data class Workout(
     val date: LocalDate,
     val type: TrainingType,
     val title: String,
+    val description: String?,
     val duration: Duration?,
     val load: Double?,
-    val description: String?,
     val steps: List<WorkoutStep>,
     val externalContent: String?
 )

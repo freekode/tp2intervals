@@ -2,10 +2,10 @@ package org.freekode.tp2intervals.infrastructure.thirdparty.workout
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutStep
 import org.freekode.tp2intervals.domain.workout.WorkoutStepTarget
-import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.infrastructure.thirdparty.ThirdPartyApiClient
 import org.springframework.stereotype.Repository
 import java.time.Duration
@@ -21,9 +21,9 @@ class ThirdPartyWorkoutMapper(
             tpWorkout.workoutDay.toLocalDate(),
             tpWorkout.getWorkoutType()!!.trainingType,
             tpWorkout.title.ifBlank { "Workout" },
+            tpWorkout.description,
             tpWorkout.totalTimePlanned?.let { Duration.ofMinutes((it * 60).toLong()) },
             tpWorkout.tssPlanned,
-            tpWorkout.description,
             listOf(),
             workoutContent
         )
@@ -34,9 +34,9 @@ class ThirdPartyWorkoutMapper(
             tpNote.noteDate.toLocalDate(),
             TrainingType.NOTE,
             tpNote.title,
-            null,
-            null,
             tpNote.description,
+            null,
+            null,
             listOf(),
             null,
         )
@@ -53,7 +53,7 @@ class ThirdPartyWorkoutMapper(
     }
 
     fun mapToWorkoutStructure(workout: Workout): ThirdPartyWorkoutStructureDTO {
-        val stepDTOs = listOf(mapSingleStep(workout.steps[0]))
+        val stepDTOs = workout.steps.map { if (it.isSingleStep()) mapSingleStep(it) else mapMultiStep(it) }
 
         return ThirdPartyWorkoutStructureDTO(
             stepDTOs,
@@ -71,13 +71,18 @@ class ThirdPartyWorkoutMapper(
                 ThirdPartyWorkoutStructureDTO.LengthUnit.second
             ),
             workoutStep.targets.map { mapToTargetDTO(it) },
-            null, null
+            ThirdPartyWorkoutStructureDTO.IntensityClass.findByIntensityType(workoutStep.intensity),
+            null
         )
         return ThirdPartyWorkoutStructureDTO.StructureDTO(
             ThirdPartyWorkoutStructureDTO.StructureType.step,
             ThirdPartyWorkoutStructureDTO.LengthDTO(1, ThirdPartyWorkoutStructureDTO.LengthUnit.repetition),
             listOf(stepDTO)
         )
+    }
+
+    private fun mapMultiStep(workoutStep: WorkoutStep): ThirdPartyWorkoutStructureDTO.StructureDTO {
+        throw RuntimeException("i can't")
     }
 
     private fun mapToTargetDTO(workoutStepTarget: WorkoutStepTarget) =
@@ -91,9 +96,7 @@ class ThirdPartyWorkoutMapper(
         }
 
     private fun downloadWorkoutContent(tpWorkoutId: String): String {
-        val userId = getUserId()
+        val userId = thirdPartyApiClient.getUser().userId!!
         return thirdPartyApiClient.downloadWorkoutZwo(userId, tpWorkoutId)
     }
-
-    private fun getUserId(): String = thirdPartyApiClient.getUser().userId!!
 }

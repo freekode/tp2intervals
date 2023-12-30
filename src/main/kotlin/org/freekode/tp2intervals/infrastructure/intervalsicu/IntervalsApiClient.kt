@@ -1,5 +1,9 @@
 package org.freekode.tp2intervals.infrastructure.intervalsicu
 
+import org.freekode.tp2intervals.infrastructure.intervalsicu.folder.CreateFolderRequestDTO
+import org.freekode.tp2intervals.infrastructure.intervalsicu.folder.FolderDTO
+import org.freekode.tp2intervals.infrastructure.intervalsicu.workout.CreateWorkoutRequestDTO
+import org.freekode.tp2intervals.infrastructure.intervalsicu.workout.IntervalsEventDTO
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
