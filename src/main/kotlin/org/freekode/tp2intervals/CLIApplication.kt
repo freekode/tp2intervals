@@ -17,7 +17,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients
 )
 class CLIApplication : CommandLineRunner {
     override fun run(vararg args: String) {
-        TODO("Not yet implemented")
+//        TODO("Not yet implemented")
     }
 }
 

@@ -3,24 +3,24 @@ package org.freekode.tp2intervals.infrastructure.thirdparty.workout
 import org.freekode.tp2intervals.domain.workout.IntensityType
 
 class ThirdPartyWorkoutStructureDTO(
-    var structure: List<StructureDTO>,
+    var structure: List<StructureStepDTO>,
     var primaryLengthMetric: String,
     var primaryIntensityMetric: String,
     var primaryIntensityTargetOrRange: String,
 ) {
-    class StructureDTO(
+    class StructureStepDTO(
         var type: StructureType,
         var length: LengthDTO,
         var steps: List<StepDTO>,
     ) {
         companion object {
-            fun singleStep(stepDTO: StepDTO): StructureDTO =
-                StructureDTO(StructureType.step, LengthDTO(1, LengthUnit.repetition), listOf(stepDTO))
+            fun singleStep(stepDTO: StepDTO): StructureStepDTO =
+                StructureStepDTO(StructureType.step, LengthDTO(1, LengthUnit.repetition), listOf(stepDTO))
 
-            fun multiStep(stepDTOs: List<StepDTO>): StructureDTO =
-                StructureDTO(
+            fun multiStep(repetitions: Int, stepDTOs: List<StepDTO>): StructureStepDTO =
+                StructureStepDTO(
                     StructureType.repetition,
-                    LengthDTO.repetitions(stepDTOs.size.toLong()),
+                    LengthDTO.repetitions(repetitions.toLong()),
                     stepDTOs
                 )
         }

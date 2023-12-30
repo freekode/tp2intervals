@@ -23,7 +23,7 @@ class WorkoutStepToThirdPartyStructureMapper(
     }
 
     private fun mapToWorkoutStructure(steps: List<WorkoutStep>): ThirdPartyWorkoutStructureDTO {
-        val stepDTOs = steps.map { if (it.isSingleStep()) mapSingleStep(it) else mapMultiStep(it) }
+        val stepDTOs = steps.map { mapToStructureStep(it) }
 
         return ThirdPartyWorkoutStructureDTO(
             stepDTOs,
@@ -33,14 +33,14 @@ class WorkoutStepToThirdPartyStructureMapper(
         )
     }
 
-    private fun mapSingleStep(workoutStep: WorkoutStep): ThirdPartyWorkoutStructureDTO.StructureDTO {
-        val singleStepDTO = mapToStepDTO(workoutStep)
-        return ThirdPartyWorkoutStructureDTO.StructureDTO.singleStep(singleStepDTO)
-    }
-
-    private fun mapMultiStep(workoutStep: WorkoutStep): ThirdPartyWorkoutStructureDTO.StructureDTO {
-        val stepDTOs = workoutStep.steps.map { mapToStepDTO(it) }
-        return ThirdPartyWorkoutStructureDTO.StructureDTO.multiStep(stepDTOs)
+    private fun mapToStructureStep(workoutStep: WorkoutStep): ThirdPartyWorkoutStructureDTO.StructureStepDTO {
+        if (workoutStep.isSingleStep()) {
+            val singleStepDTO = mapToStepDTO(workoutStep)
+            return ThirdPartyWorkoutStructureDTO.StructureStepDTO.singleStep(singleStepDTO)
+        } else {
+            val stepDTOs = workoutStep.steps.map { mapToStepDTO(it) }
+            return ThirdPartyWorkoutStructureDTO.StructureStepDTO.multiStep(workoutStep.repetitions, stepDTOs)
+        }
     }
 
     private fun mapToStepDTO(workoutStep: WorkoutStep) =
