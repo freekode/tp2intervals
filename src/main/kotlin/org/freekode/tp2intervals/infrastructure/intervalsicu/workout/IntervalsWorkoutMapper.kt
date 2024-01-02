@@ -46,12 +46,9 @@ class IntervalsWorkoutMapper {
     }
 
     private fun mapMultiStep(stepDTO: IntervalsWorkoutDocDTO.WorkoutStepDTO): WorkoutStep {
-        return WorkoutStep(
+        return WorkoutStep.multiStep(
             stepDTO.text ?: "Step",
             stepDTO.reps!!,
-            stepDTO.duration?.let { Duration.ofSeconds(it) } ?: Duration.ZERO,
-            listOf(),
-            StepIntensityType.default(),
             stepDTO.steps!!.map { mapSingleStep(it) }
         )
     }
@@ -60,13 +57,11 @@ class IntervalsWorkoutMapper {
         val targets = workoutStepTargets(stepDTO)
         val intensity = intensityType(stepDTO)
 
-        return WorkoutStep(
+        return WorkoutStep.singleStep(
             stepDTO.text ?: "Step",
-            1,
             stepDTO.duration?.let { Duration.ofSeconds(it) } ?: Duration.ZERO,
             targets,
-            intensity,
-            listOf()
+            intensity
         )
     }
 

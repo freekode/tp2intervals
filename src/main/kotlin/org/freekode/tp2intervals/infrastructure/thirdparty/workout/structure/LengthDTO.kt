@@ -13,6 +13,13 @@ class LengthDTO(
 
     fun isSingle() = value == 1L && unit == LengthUnit.repetition
 
+    fun getReps(): Long {
+        if (unit != LengthUnit.repetition) {
+            throw RuntimeException("not a repetition length")
+        }
+        return value
+    }
+
     fun mapDuration(): Duration {
         return when (unit) {
             LengthUnit.second -> Duration.ofSeconds(value)

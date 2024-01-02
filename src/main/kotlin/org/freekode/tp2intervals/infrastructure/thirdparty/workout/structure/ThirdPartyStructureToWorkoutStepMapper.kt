@@ -3,7 +3,6 @@ package org.freekode.tp2intervals.infrastructure.thirdparty.workout.structure
 import org.freekode.tp2intervals.domain.workout.StepIntensityType
 import org.freekode.tp2intervals.domain.workout.WorkoutStep
 import org.freekode.tp2intervals.domain.workout.WorkoutStepTarget
-import java.time.Duration
 
 class ThirdPartyStructureToWorkoutStepMapper(
     private val thirdPartyWorkoutStructureDTO: ThirdPartyWorkoutStructureDTO
@@ -12,27 +11,28 @@ class ThirdPartyStructureToWorkoutStepMapper(
     fun mapToWorkoutSteps(): List<WorkoutStep> {
         return thirdPartyWorkoutStructureDTO.structure.map {
             if (it.length.isSingle()) {
-                mapSingleStep(it)
+                mapSingleStep(it.steps[0])
             } else {
                 mapMultiStep(it)
             }
         }
     }
 
-    private fun mapSingleStep(structureStepDTO: StructureStepDTO): WorkoutStep {
-        val stepDTO = structureStepDTO.steps[0]
-        return WorkoutStep(
+    private fun mapSingleStep(stepDTO: StepDTO): WorkoutStep {
+        return WorkoutStep.singleStep(
             stepDTO.name,
-            1,
             stepDTO.length.mapDuration(),
             stepDTO.targets.map { mapTarget(it) },
             stepDTO.intensityClass?.type ?: StepIntensityType.ACTIVE,
-            listOf()
         )
     }
 
-    private fun mapMultiStep(it: StructureStepDTO): WorkoutStep {
-        return WorkoutStep("1", 1, Duration.ZERO, listOf(), StepIntensityType.REST, listOf())
+    private fun mapMultiStep(structureStepDTO: StructureStepDTO): WorkoutStep {
+        return WorkoutStep.multiStep(
+            "Reps",
+            structureStepDTO.length.getReps().toInt(),
+            structureStepDTO.steps.map { mapSingleStep(it) },
+        )
     }
 
     private fun mapTarget(targetDTO: TargetDTO): WorkoutStepTarget {
