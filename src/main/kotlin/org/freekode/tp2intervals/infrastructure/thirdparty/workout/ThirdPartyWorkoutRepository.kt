@@ -3,6 +3,7 @@ package org.freekode.tp2intervals.infrastructure.thirdparty.workout
 import org.freekode.tp2intervals.domain.activity.Activity
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.infrastructure.thirdparty.ThirdPartyApiClient
+import org.freekode.tp2intervals.infrastructure.thirdparty.workout.structure.WorkoutStepToThirdPartyStructureMapper
 import org.springframework.stereotype.Repository
 import java.time.LocalDate
 

@@ -1,20 +1,22 @@
 package org.freekode.tp2intervals.infrastructure.thirdparty.workout
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutExternalData
 import org.freekode.tp2intervals.infrastructure.thirdparty.ThirdPartyApiClient
+import org.freekode.tp2intervals.infrastructure.thirdparty.workout.structure.ThirdPartyStructureToWorkoutStepMapper
 import org.springframework.stereotype.Repository
 import java.time.Duration
 
 @Repository
 class ThirdPartyWorkoutMapper(
     private val thirdPartyApiClient: ThirdPartyApiClient,
-    private val objectMapper: ObjectMapper,
 ) {
     fun mapToWorkout(tpWorkout: ThirdPartyWorkoutDTO): Workout {
+        val steps = tpWorkout.structure
+            ?.let { ThirdPartyStructureToWorkoutStepMapper(it).mapToWorkoutSteps() }
+            ?: listOf()
         val workoutContent = mapWorkoutContent(tpWorkout)
+
         return Workout(
             tpWorkout.workoutDay.toLocalDate(),
             tpWorkout.getWorkoutType()!!.trainingType,
@@ -22,21 +24,17 @@ class ThirdPartyWorkoutMapper(
             tpWorkout.description,
             tpWorkout.totalTimePlanned?.let { Duration.ofMinutes((it * 60).toLong()) },
             tpWorkout.tssPlanned,
-            listOf(),
-            WorkoutExternalData(tpWorkout.workoutId, null, workoutContent)
+            steps,
+            WorkoutExternalData.thirdParty(tpWorkout.workoutId, workoutContent)
         )
     }
 
     fun mapToWorkout(tpNote: ThirdPartyNoteDTO): Workout {
-        return Workout(
+        return Workout.note(
             tpNote.noteDate.toLocalDate(),
-            TrainingType.NOTE,
             tpNote.title,
             tpNote.description,
-            null,
-            null,
-            listOf(),
-            WorkoutExternalData(tpNote.id.toString(), null, null)
+            WorkoutExternalData.thirdParty(tpNote.id.toString(), null)
         )
     }
 

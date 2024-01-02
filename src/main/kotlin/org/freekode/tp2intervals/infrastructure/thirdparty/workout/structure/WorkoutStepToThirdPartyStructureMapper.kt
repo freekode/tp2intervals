@@ -1,13 +1,14 @@
-package org.freekode.tp2intervals.infrastructure.thirdparty.workout
+package org.freekode.tp2intervals.infrastructure.thirdparty.workout.structure
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutStep
 import org.freekode.tp2intervals.domain.workout.WorkoutStepTarget
+import org.springframework.stereotype.Component
 import org.springframework.stereotype.Repository
 
-@Repository
+@Component
 class WorkoutStepToThirdPartyStructureMapper(
     private val objectMapper: ObjectMapper,
 ) {
@@ -27,38 +28,39 @@ class WorkoutStepToThirdPartyStructureMapper(
 
         return ThirdPartyWorkoutStructureDTO(
             stepDTOs,
-            "duration",
-            "percentOfFtp",
-            "range",
+            ThirdPartyWorkoutStructureDTO.LengthMetric.duration,
+            ThirdPartyWorkoutStructureDTO.IntensityMetric.percentOfFtp,
+            ThirdPartyWorkoutStructureDTO.IntensityTargetOrRange.range,
+            null
         )
     }
 
-    private fun mapToStructureStep(workoutStep: WorkoutStep): ThirdPartyWorkoutStructureDTO.StructureStepDTO {
+    private fun mapToStructureStep(workoutStep: WorkoutStep): StructureStepDTO {
         if (workoutStep.isSingleStep()) {
             val singleStepDTO = mapToStepDTO(workoutStep)
-            return ThirdPartyWorkoutStructureDTO.StructureStepDTO.singleStep(singleStepDTO)
+            return StructureStepDTO.singleStep(singleStepDTO)
         } else {
             val stepDTOs = workoutStep.steps.map { mapToStepDTO(it) }
-            return ThirdPartyWorkoutStructureDTO.StructureStepDTO.multiStep(workoutStep.repetitions, stepDTOs)
+            return StructureStepDTO.multiStep(workoutStep.repetitions, stepDTOs)
         }
     }
 
     private fun mapToStepDTO(workoutStep: WorkoutStep) =
-        ThirdPartyWorkoutStructureDTO.StepDTO(
+        StepDTO(
             workoutStep.title,
-            ThirdPartyWorkoutStructureDTO.LengthDTO.seconds(workoutStep.duration.seconds),
+            LengthDTO.seconds(workoutStep.duration.seconds),
             workoutStep.targets.map { mapToTargetDTO(it) },
-            ThirdPartyWorkoutStructureDTO.IntensityClass.findByIntensityType(workoutStep.intensity),
+            StepDTO.IntensityClass.findByIntensityType(workoutStep.intensity),
             null
         )
 
     private fun mapToTargetDTO(workoutStepTarget: WorkoutStepTarget) =
         when (workoutStepTarget.type) {
-            WorkoutStepTarget.TargetType.POWER -> ThirdPartyWorkoutStructureDTO.TargetDTO.powerTarget(
+            WorkoutStepTarget.TargetType.POWER -> TargetDTO.powerTarget(
                 workoutStepTarget.min, workoutStepTarget.max,
             )
 
-            WorkoutStepTarget.TargetType.CADENCE -> ThirdPartyWorkoutStructureDTO.TargetDTO.cadenceTarget(
+            WorkoutStepTarget.TargetType.CADENCE -> TargetDTO.cadenceTarget(
                 workoutStepTarget.min, workoutStepTarget.max,
             )
         }

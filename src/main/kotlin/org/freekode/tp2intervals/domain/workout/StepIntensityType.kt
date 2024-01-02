@@ -1,6 +1,6 @@
 package org.freekode.tp2intervals.domain.workout
 
-enum class IntensityType {
+enum class StepIntensityType {
     WARM_UP,
     ACTIVE,
     REST,

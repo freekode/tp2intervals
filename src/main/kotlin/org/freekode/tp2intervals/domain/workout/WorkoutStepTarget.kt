@@ -8,12 +8,11 @@ data class WorkoutStepTarget(
 ) {
     enum class TargetType {
         POWER,
-        CADENCE
+        CADENCE,
     }
 
     enum class TargetUnit {
         FTP_PERCENTAGE,
-        CADENCE,
-        UNKNOWN
+        RPM,
     }
 }

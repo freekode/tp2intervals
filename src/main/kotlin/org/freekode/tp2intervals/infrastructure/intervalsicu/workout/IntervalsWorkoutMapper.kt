@@ -1,7 +1,7 @@
 package org.freekode.tp2intervals.infrastructure.intervalsicu.workout
 
 import org.freekode.tp2intervals.domain.activity.Activity
-import org.freekode.tp2intervals.domain.workout.IntensityType
+import org.freekode.tp2intervals.domain.workout.StepIntensityType
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutExternalData
 import org.freekode.tp2intervals.domain.workout.WorkoutStep
@@ -21,7 +21,7 @@ class IntervalsWorkoutMapper {
             eventDTO.moving_time?.let { Duration.ofSeconds(it) },
             eventDTO.icu_training_load?.toDouble(),
             eventDTO.workout_doc?.let { mapToWorkoutSteps(it) } ?: listOf(),
-            WorkoutExternalData(null, eventDTO.id.toString(), null)
+            WorkoutExternalData.intervals(eventDTO.id.toString())
         )
     }
 
@@ -36,14 +36,13 @@ class IntervalsWorkoutMapper {
     }
 
     private fun mapToWorkoutSteps(workoutDoc: IntervalsWorkoutDocDTO): List<WorkoutStep> {
-        return workoutDoc.steps
-            .map {
-                if (it.reps != null) {
-                    mapMultiStep(it)
-                } else {
-                    mapSingleStep(it)
-                }
+        return workoutDoc.steps.map {
+            if (it.reps != null) {
+                mapMultiStep(it)
+            } else {
+                mapSingleStep(it)
             }
+        }
     }
 
     private fun mapMultiStep(stepDTO: IntervalsWorkoutDocDTO.WorkoutStepDTO): WorkoutStep {
@@ -52,7 +51,7 @@ class IntervalsWorkoutMapper {
             stepDTO.reps!!,
             stepDTO.duration?.let { Duration.ofSeconds(it) } ?: Duration.ZERO,
             listOf(),
-            IntensityType.default(),
+            StepIntensityType.default(),
             stepDTO.steps!!.map { mapSingleStep(it) }
         )
     }
@@ -71,13 +70,13 @@ class IntervalsWorkoutMapper {
         )
     }
 
-    private fun intensityType(stepDTO: IntervalsWorkoutDocDTO.WorkoutStepDTO): IntensityType {
+    private fun intensityType(stepDTO: IntervalsWorkoutDocDTO.WorkoutStepDTO): StepIntensityType {
         return if (true == stepDTO.warmup) {
-            IntensityType.WARM_UP
+            StepIntensityType.WARM_UP
         } else if (true == stepDTO.cooldown) {
-            IntensityType.COOL_DOWN
+            StepIntensityType.COOL_DOWN
         } else {
-            IntensityType.default()
+            StepIntensityType.default()
         }
     }
 
@@ -109,7 +108,7 @@ class IntervalsWorkoutMapper {
     private fun mapTargetUnit(units: String): WorkoutStepTarget.TargetUnit =
         when (units) {
             "%ftp" -> WorkoutStepTarget.TargetUnit.FTP_PERCENTAGE
-            "rpm" -> WorkoutStepTarget.TargetUnit.CADENCE
+            "rpm" -> WorkoutStepTarget.TargetUnit.RPM
             else -> throw RuntimeException("unknown unit $units")
         }
 

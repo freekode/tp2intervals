@@ -1,5 +1,6 @@
 package org.freekode.tp2intervals.infrastructure.thirdparty.workout
 
+import org.freekode.tp2intervals.infrastructure.thirdparty.workout.structure.ThirdPartyWorkoutStructureDTO
 import java.time.LocalDateTime
 
 class ThirdPartyWorkoutDTO(

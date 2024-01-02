@@ -13,4 +13,10 @@ data class Workout(
     val load: Double?,
     val steps: List<WorkoutStep>,
     val externalData: WorkoutExternalData,
-)
+) {
+    companion object {
+        fun note(date: LocalDate, title: String, description: String?, externalData: WorkoutExternalData): Workout {
+            return Workout(date, TrainingType.NOTE, title, description, null, null, listOf(), externalData)
+        }
+    }
+}
