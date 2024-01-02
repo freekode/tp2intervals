@@ -82,32 +82,28 @@ class IntervalsWorkoutMapper {
 
     private fun workoutStepTargets(stepDTO: IntervalsWorkoutDocDTO.WorkoutStepDTO): MutableList<WorkoutStepTarget> {
         val targets = mutableListOf<WorkoutStepTarget>()
-        stepDTO.power
-            ?.let {
-                mapStepTarget(it, WorkoutStepTarget.TargetType.POWER)
-            }?.also { targets.add(it) }
-        stepDTO.cadence
-            ?.let {
-                mapStepTarget(it, WorkoutStepTarget.TargetType.CADENCE)
-            }?.also { targets.add(it) }
+        addTargetIfExists(stepDTO.power, targets)
+        addTargetIfExists(stepDTO.cadence, targets)
+        addTargetIfExists(stepDTO.hr, targets)
         return targets
     }
 
-    private fun mapStepTarget(
-        stepValueDTO: IntervalsWorkoutDocDTO.StepValueDTO,
-        targetType: WorkoutStepTarget.TargetType
-    ): WorkoutStepTarget {
-        val (min, max) = mapTargetValue(stepValueDTO)
-        return WorkoutStepTarget(
-            targetType,
-            mapTargetUnit(stepValueDTO.units),
-            min, max
-        )
+    private fun addTargetIfExists(
+        stepValue: IntervalsWorkoutDocDTO.StepValueDTO?,
+        targets: MutableList<WorkoutStepTarget>
+    ) {
+        if (stepValue == null) {
+            return
+        }
+
+        val (min, max) = mapTargetValue(stepValue)
+        WorkoutStepTarget(mapTargetUnit(stepValue.units), min, max).also { targets.add(it) }
     }
 
     private fun mapTargetUnit(units: String): WorkoutStepTarget.TargetUnit =
         when (units) {
             "%ftp" -> WorkoutStepTarget.TargetUnit.FTP_PERCENTAGE
+            "%lthr" -> WorkoutStepTarget.TargetUnit.LTHR_PERCENTAGE
             "rpm" -> WorkoutStepTarget.TargetUnit.RPM
             else -> throw RuntimeException("unknown unit $units")
         }

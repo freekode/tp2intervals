@@ -55,14 +55,16 @@ class WorkoutStepToThirdPartyStructureMapper(
         )
 
     private fun mapToTargetDTO(workoutStepTarget: WorkoutStepTarget) =
-        when (workoutStepTarget.type) {
-            WorkoutStepTarget.TargetType.POWER -> TargetDTO.powerTarget(
+        when (workoutStepTarget.unit) {
+            WorkoutStepTarget.TargetUnit.FTP_PERCENTAGE -> TargetDTO.powerTarget(
                 workoutStepTarget.min, workoutStepTarget.max,
             )
 
-            WorkoutStepTarget.TargetType.CADENCE -> TargetDTO.cadenceTarget(
+            WorkoutStepTarget.TargetUnit.RPM -> TargetDTO.cadenceTarget(
                 workoutStepTarget.min, workoutStepTarget.max,
             )
+
+            else -> throw RuntimeException("i cant do it yet")
         }
 
 }

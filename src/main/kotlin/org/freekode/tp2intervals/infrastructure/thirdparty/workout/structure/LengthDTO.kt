@@ -14,10 +14,10 @@ class LengthDTO(
     fun isSingle() = value == 1L && unit == LengthUnit.repetition
 
     fun mapDuration(): Duration {
-        if (unit != LengthUnit.second) {
-            throw RuntimeException("i can't do that yet")
+        return when (unit) {
+            LengthUnit.second -> Duration.ofSeconds(value)
+            else -> throw RuntimeException("i can't do that yet with $unit")
         }
-        return Duration.ofSeconds(value)
     }
 
     enum class LengthUnit {

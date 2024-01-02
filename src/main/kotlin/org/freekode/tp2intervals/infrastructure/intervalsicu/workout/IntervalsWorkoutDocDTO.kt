@@ -11,6 +11,7 @@ class IntervalsWorkoutDocDTO(
         val duration: Long?,
         val power: StepValueDTO?,
         val cadence: StepValueDTO?,
+        val hr: StepValueDTO?,
         val steps: List<WorkoutStepDTO>?,
         val warmup: Boolean?,
         val cooldown: Boolean?

@@ -28,8 +28,8 @@ class MainServiceIT extends Specification {
 
     def "should do something"() {
         given:
-        def startDate = LocalDate.parse("2023-12-13")
-        def endDate = LocalDate.parse("2023-12-14")
+        def startDate = LocalDate.now()
+        def endDate = LocalDate.now().plusDays(1)
 
         expect:
         def workouts = thirdPartyWorkoutRepository.getWorkouts(startDate, endDate)

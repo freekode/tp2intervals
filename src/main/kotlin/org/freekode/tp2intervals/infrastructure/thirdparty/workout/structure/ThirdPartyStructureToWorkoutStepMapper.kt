@@ -36,9 +36,13 @@ class ThirdPartyStructureToWorkoutStepMapper(
     }
 
     private fun mapTarget(targetDTO: TargetDTO): WorkoutStepTarget {
+        val unit = if (targetDTO.unit != null) {
+            targetDTO.unit!!.targetUnit
+        } else {
+            thirdPartyWorkoutStructureDTO.primaryIntensityMetric.targetUnit
+        }
         return WorkoutStepTarget(
-            WorkoutStepTarget.TargetType.POWER,
-            thirdPartyWorkoutStructureDTO.primaryIntensityMetric.targetUnit,
+            unit,
             targetDTO.minValue,
             targetDTO.maxValue
         )
