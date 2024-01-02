@@ -17,14 +17,12 @@ class MainService(
     fun copyPlanFromThirdParty(startDate: LocalDate, endDate: LocalDate) {
         val workouts = thirdPartyWorkoutRepository.getWorkouts(startDate, endDate)
         val plan = intervalsFolderRepository.createPlan("My Plan - $startDate", startDate)
-        for (workout in workouts) {
-            intervalsWorkoutRepository.createAndPlanWorkout(plan, workout)
-        }
+        workouts.forEach { intervalsWorkoutRepository.createAndPlanWorkout(plan, it) }
     }
 
     fun copyRunWeightActivitiesFromIntervals(date: LocalDate) {
         val workouts = intervalsWorkoutRepository.getActivities(date, date)
-        workouts.stream()
+        workouts
             .filter { it.type == TrainingType.WEIGHT || it.type == TrainingType.RUN }
             .forEach { thirdPartyWorkoutRepository.createActivity(it) }
     }
