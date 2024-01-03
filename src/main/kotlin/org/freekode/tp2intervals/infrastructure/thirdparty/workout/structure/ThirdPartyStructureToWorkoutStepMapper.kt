@@ -1,6 +1,8 @@
 package org.freekode.tp2intervals.infrastructure.thirdparty.workout.structure
 
 import org.freekode.tp2intervals.domain.workout.StepIntensityType
+import org.freekode.tp2intervals.domain.workout.WorkoutMultiStep
+import org.freekode.tp2intervals.domain.workout.WorkoutSingleStep
 import org.freekode.tp2intervals.domain.workout.WorkoutStep
 import org.freekode.tp2intervals.domain.workout.WorkoutStepTarget
 
@@ -18,34 +20,38 @@ class ThirdPartyStructureToWorkoutStepMapper(
         }
     }
 
-    private fun mapSingleStep(stepDTO: StepDTO): WorkoutStep {
-        return WorkoutStep.singleStep(
+    private fun mapSingleStep(stepDTO: StepDTO): WorkoutSingleStep {
+        return WorkoutSingleStep(
             stepDTO.name,
             stepDTO.length.mapDuration(),
-            stepDTO.targets.map { mapTarget(it) },
+            getMainTarget(stepDTO.targets),
+            getSecondaryTarget(stepDTO.targets),
             stepDTO.intensityClass?.type ?: StepIntensityType.ACTIVE,
         )
     }
 
     private fun mapMultiStep(structureStepDTO: StructureStepDTO): WorkoutStep {
-        return WorkoutStep.multiStep(
+        return WorkoutMultiStep.multiStep(
             "Reps",
             structureStepDTO.length.getReps().toInt(),
             structureStepDTO.steps.map { mapSingleStep(it) },
         )
     }
 
-    private fun mapTarget(targetDTO: TargetDTO): WorkoutStepTarget {
-        val unit = if (targetDTO.unit != null) {
-            targetDTO.unit!!.targetUnit
-        } else {
-            thirdPartyWorkoutStructureDTO.primaryIntensityMetric.targetUnit
-        }
+    private fun getMainTarget(targets: List<TargetDTO>): WorkoutStepTarget {
+        val target = targets.first { it.unit == null }
         return WorkoutStepTarget(
-            unit,
-            targetDTO.minValue,
-            targetDTO.maxValue
+            thirdPartyWorkoutStructureDTO.primaryIntensityMetric.targetType,
+            thirdPartyWorkoutStructureDTO.primaryIntensityMetric.targetUnit,
+            target.minValue,
+            target.maxValue
         )
+    }
+
+    private fun getSecondaryTarget(targets: List<TargetDTO>): WorkoutStepTarget? {
+        return targets
+            .firstOrNull { it.unit != null }
+            ?.let { WorkoutStepTarget(it.unit!!.targetType, it.unit!!.targetUnit, it.minValue, it.maxValue) }
     }
 
 }

@@ -14,7 +14,10 @@ class TargetDTO(
             TargetDTO(minValue, maxValue, TargetUnitDTO.roundOrStridePerMinute)
     }
 
-    enum class TargetUnitDTO(val targetUnit: WorkoutStepTarget.TargetUnit) {
-        roundOrStridePerMinute(WorkoutStepTarget.TargetUnit.RPM)
+    enum class TargetUnitDTO(
+        val targetUnit: WorkoutStepTarget.TargetUnit,
+        val targetType: WorkoutStepTarget.TargetType
+    ) {
+        roundOrStridePerMinute(WorkoutStepTarget.TargetUnit.RPM, WorkoutStepTarget.TargetType.CADENCE)
     }
 }

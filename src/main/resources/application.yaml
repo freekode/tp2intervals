@@ -6,3 +6,7 @@ intervals:
   login:
   password:
   athlete-id:
+
+spring:
+  jackson:
+    default-property-inclusion: non_null

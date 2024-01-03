@@ -33,6 +33,7 @@ class MainServiceIT extends Specification {
 
         expect:
         def workouts = thirdPartyWorkoutRepository.getWorkouts(startDate, endDate)
-        workouts != null
+        def plan = intervalsFolderRepository.createPlan("My Plan - $startDate", startDate)
+        workouts.forEach { intervalsWorkoutRepository.createAndPlanWorkout(plan, it) }
     }
 }

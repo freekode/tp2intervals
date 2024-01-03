@@ -15,12 +15,17 @@ class ThirdPartyWorkoutStructureDTO(
         duration
     }
 
-    enum class IntensityMetric(val targetUnit: WorkoutStepTarget.TargetUnit) {
-        percentOfFtp(WorkoutStepTarget.TargetUnit.FTP_PERCENTAGE),
-        percentOfThresholdHr(WorkoutStepTarget.TargetUnit.LTHR_PERCENTAGE),
-        percentOfMaxHr(WorkoutStepTarget.TargetUnit.FTP_PERCENTAGE),
-        percentOfThresholdPace(WorkoutStepTarget.TargetUnit.FTP_PERCENTAGE),
-        rpe(WorkoutStepTarget.TargetUnit.FTP_PERCENTAGE)
+    enum class IntensityMetric(
+        val targetUnit: WorkoutStepTarget.TargetUnit,
+        val targetType: WorkoutStepTarget.TargetType
+    ) {
+        percentOfFtp(WorkoutStepTarget.TargetUnit.FTP_PERCENTAGE, WorkoutStepTarget.TargetType.POWER),
+        percentOfThresholdHr(WorkoutStepTarget.TargetUnit.LTHR_PERCENTAGE, WorkoutStepTarget.TargetType.HR),
+        percentOfMaxHr(WorkoutStepTarget.TargetUnit.FTP_PERCENTAGE, WorkoutStepTarget.TargetType.HR),
+
+        // TODO them
+        percentOfThresholdPace(WorkoutStepTarget.TargetUnit.FTP_PERCENTAGE, WorkoutStepTarget.TargetType.POWER),
+        rpe(WorkoutStepTarget.TargetUnit.FTP_PERCENTAGE, WorkoutStepTarget.TargetType.POWER)
     }
 
     enum class IntensityTargetOrRange {
