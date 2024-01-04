@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody
 
 @FeignClient(
     value = "IntervalsApiClient",
-    url = "https://intervals.icu",
+    url = "\${intervals.api-url}",
     dismiss404 = true,
     configuration = [IntervalsApiClientConfig::class]
 )

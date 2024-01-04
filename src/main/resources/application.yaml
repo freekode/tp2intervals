@@ -1,8 +1,9 @@
 third-party:
-  api-url:
+  api-url: https://localhost
   auth-cookie:
 
 intervals:
+  api-url: https://intervals.icu
   login: API_KEY
   password:
   athlete-id:

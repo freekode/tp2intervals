@@ -10,12 +10,6 @@ class CLIOptions {
         var option = Option.builder().longOpt("copy-plan").numberOfArgs(2).build()
         options.addOption(option)
 
-        option = Option.builder().longOpt("sync-weight").numberOfArgs(2).build()
-        options.addOption(option)
-
-        option = Option.builder().longOpt("sync-run").numberOfArgs(2).build()
-        options.addOption(option)
-
         option = Option.builder().longOpt("plan-workout").build()
         options.addOption(option)
 

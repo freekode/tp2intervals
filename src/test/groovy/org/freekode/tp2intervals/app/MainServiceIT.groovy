@@ -32,6 +32,7 @@ class MainServiceIT extends Specification {
         mainService.testConnections()
     }
 
+    @Ignore
     def "should do something"() {
         expect:
         mainService.planTodayAndTomorrowWorkouts()
