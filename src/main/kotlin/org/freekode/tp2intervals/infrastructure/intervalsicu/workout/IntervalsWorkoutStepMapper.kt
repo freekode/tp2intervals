@@ -28,7 +28,7 @@ class IntervalsWorkoutStepMapper {
             workoutStep.duration,
             target.min.toString(),
             target.max.toString(),
-            IntervalsWorkoutStep.TargetType.getByTargetType(target.type),
+            IntervalsWorkoutStep.TargetType.findByTargetUnit(target.unit),
             cadence?.min,
             cadence?.max
         )

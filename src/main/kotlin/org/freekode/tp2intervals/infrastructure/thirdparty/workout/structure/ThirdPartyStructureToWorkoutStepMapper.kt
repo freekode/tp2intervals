@@ -41,7 +41,6 @@ class ThirdPartyStructureToWorkoutStepMapper(
     private fun getMainTarget(targets: List<TargetDTO>): WorkoutStepTarget {
         val target = targets.first { it.unit == null }
         return WorkoutStepTarget(
-            thirdPartyWorkoutStructureDTO.primaryIntensityMetric.targetType,
             thirdPartyWorkoutStructureDTO.primaryIntensityMetric.targetUnit,
             target.minValue,
             target.maxValue
@@ -51,7 +50,7 @@ class ThirdPartyStructureToWorkoutStepMapper(
     private fun getSecondaryTarget(targets: List<TargetDTO>): WorkoutStepTarget? {
         return targets
             .firstOrNull { it.unit != null }
-            ?.let { WorkoutStepTarget(it.unit!!.targetType, it.unit!!.targetUnit, it.minValue, it.maxValue) }
+            ?.let { WorkoutStepTarget(it.unit!!.targetUnit, it.minValue, it.maxValue) }
     }
 
 }

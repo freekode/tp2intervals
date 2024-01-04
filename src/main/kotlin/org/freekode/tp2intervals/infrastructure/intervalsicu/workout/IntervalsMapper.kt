@@ -80,22 +80,21 @@ class IntervalsMapper {
 
     private fun workoutStepTargets(stepDTO: IntervalsWorkoutDocDTO.WorkoutStepDTO): Pair<WorkoutStepTarget, WorkoutStepTarget?> {
         val mainTarget = if (stepDTO.power != null) {
-            mapTarget(WorkoutStepTarget.TargetType.POWER, stepDTO.power)
+            mapTarget(stepDTO.power)
         } else if (stepDTO.hr != null) {
-            mapTarget(WorkoutStepTarget.TargetType.HR, stepDTO.hr)
+            mapTarget(stepDTO.hr)
         } else {
             throw RuntimeException("wtf")
         }
-        val cadenceTarget = stepDTO.cadence?.let { mapTarget(WorkoutStepTarget.TargetType.CADENCE, it) }
+        val cadenceTarget = stepDTO.cadence?.let { mapTarget(it) }
         return mainTarget to cadenceTarget
     }
 
     private fun mapTarget(
-        targetType: WorkoutStepTarget.TargetType,
         stepValue: IntervalsWorkoutDocDTO.StepValueDTO,
     ): WorkoutStepTarget {
         val (min, max) = mapTargetValue(stepValue)
-        return WorkoutStepTarget(targetType, stepValue.mapTargetUnit(), min, max)
+        return WorkoutStepTarget(stepValue.mapTargetUnit(), min, max)
     }
 
     private fun mapTargetValue(stepValueDTO: IntervalsWorkoutDocDTO.StepValueDTO): Pair<Int, Int> =

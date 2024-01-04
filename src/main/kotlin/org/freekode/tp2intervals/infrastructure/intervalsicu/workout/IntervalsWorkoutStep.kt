@@ -12,14 +12,16 @@ data class IntervalsWorkoutStep(
     val rpmMin: Int?,
     val rpmMax: Int?,
 ) {
-    enum class TargetType(val targetType: WorkoutStepTarget.TargetType, val strType: String) {
-        POWER(WorkoutStepTarget.TargetType.POWER, "%"),
-        HR(WorkoutStepTarget.TargetType.HR, "% HR"),
-        LTHR(WorkoutStepTarget.TargetType.HR, "% LTHR");
+    enum class TargetType(val targetUnit: WorkoutStepTarget.TargetUnit, val strType: String) {
+        POWER(WorkoutStepTarget.TargetUnit.FTP_PERCENTAGE, "%"),
+        HR(WorkoutStepTarget.TargetUnit.MAX_HR_PERCENTAGE, "% HR"),
+        LTHR(WorkoutStepTarget.TargetUnit.LTHR_PERCENTAGE, "% LTHR"),
+        PACE(WorkoutStepTarget.TargetUnit.PACE_PERCENTAGE, "% Pace");
 
         companion object {
-            fun getByTargetType(targetType: WorkoutStepTarget.TargetType): TargetType =
-                entries.first { it.targetType == targetType }
+            fun findByTargetUnit(targetUnit: WorkoutStepTarget.TargetUnit): TargetType =
+                entries.firstOrNull { it.targetUnit == targetUnit }.takeIf { it != null }
+                    ?: throw RuntimeException("cant much target unit $targetUnit")
         }
     }
 
