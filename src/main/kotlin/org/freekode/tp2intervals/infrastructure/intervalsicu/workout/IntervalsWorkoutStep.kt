@@ -21,7 +21,7 @@ data class IntervalsWorkoutStep(
         companion object {
             fun findByTargetUnit(targetUnit: WorkoutStepTarget.TargetUnit): TargetType =
                 entries.firstOrNull { it.targetUnit == targetUnit }.takeIf { it != null }
-                    ?: throw RuntimeException("cant much target unit $targetUnit")
+                    ?: throw IllegalArgumentException("cant much target unit $targetUnit")
         }
     }
 
