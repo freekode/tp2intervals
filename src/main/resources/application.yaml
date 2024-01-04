@@ -1,9 +1,9 @@
 third-party:
   api-url:
-  cookies:
+  auth-cookie:
 
 intervals:
-  login:
+  login: API_KEY
   password:
   athlete-id:
 

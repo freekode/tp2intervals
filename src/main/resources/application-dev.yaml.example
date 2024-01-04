@@ -1,0 +1,8 @@
+third-party:
+  api-url: https://localhost
+  auth-cookie: token-value
+
+intervals:
+  login: API_KEY
+  password: intervals-password
+  athlete-id: i00000

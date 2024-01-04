@@ -20,6 +20,10 @@ class IntervalsWorkoutRepository(
 
     fun createAndPlanWorkout(folder: Folder, workout: Workout) {
         val workoutString = intervalsWorkoutDocMapper.mapToIntervalsWorkout(workout)
+
+        var description = workout.description.orEmpty()
+        description += workoutString?.let { "\n\n- - - -\n$it" }.orEmpty()
+
         val createWorkoutRequestDTO = CreateWorkoutRequestDTO(
             folder.id.value,
             getWorkoutDayNumber(folder.startDate, workout.date),
@@ -27,7 +31,7 @@ class IntervalsWorkoutRepository(
             workout.title,
             workout.duration?.seconds,
             workout.load?.toInt(),
-            workout.description + "\n- - - -\n" + workoutString,
+            description,
             null,
         )
         intervalsApiClient.createWorkout(intervalsProperties.athleteId, createWorkoutRequestDTO)

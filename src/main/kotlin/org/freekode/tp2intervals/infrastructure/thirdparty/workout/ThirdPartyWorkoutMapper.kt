@@ -17,7 +17,9 @@ class ThirdPartyWorkoutMapper(
             ?.let { ThirdPartyStructureToWorkoutStepMapper(it).mapToWorkoutSteps() }
             ?: listOf()
 
-        val description = "${tpWorkout.description ?: ""}\n- - - -\n${tpWorkout.coachComments ?: ""}"
+        var description = tpWorkout.description.orEmpty()
+        description += tpWorkout.coachComments?.let { "\n- - - -\n$it" }.orEmpty()
+
         val workoutContent = getWorkoutContent(tpWorkout)
 
         return Workout(

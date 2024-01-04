@@ -9,7 +9,7 @@ class ThirdPartyApiTokenRepository(
     private val thirdPartyProperties: ThirdPartyProperties
 ) {
     fun getToken(): String {
-        val token = thirdPartyTokenApiClient.getToken(thirdPartyProperties.cookies.entries.joinToString("&"))
+        val token = thirdPartyTokenApiClient.getToken(thirdPartyProperties.authCookie)
         return token.accessToken!!
     }
 }

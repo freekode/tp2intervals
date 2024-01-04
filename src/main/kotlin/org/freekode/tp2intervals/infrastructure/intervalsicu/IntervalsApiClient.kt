@@ -18,6 +18,11 @@ import org.springframework.web.bind.annotation.RequestBody
 )
 interface IntervalsApiClient {
 
+    @GetMapping("/api/v1/athlete/{athleteId}")
+    fun getAthlete(
+        @PathVariable("athleteId") athleteId: String,
+    ): Map<String, Any>
+
     @PostMapping("/api/v1/athlete/{athleteId}/folders")
     fun createFolder(
         @PathVariable("athleteId") athleteId: String,

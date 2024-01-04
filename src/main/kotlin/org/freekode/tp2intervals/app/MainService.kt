@@ -11,7 +11,8 @@ import java.time.LocalDate
 class MainService(
     private val thirdPartyWorkoutRepository: ThirdPartyWorkoutRepository,
     private val intervalsFolderRepository: IntervalsFolderRepository,
-    private val intervalsWorkoutRepository: IntervalsWorkoutRepository
+    private val intervalsWorkoutRepository: IntervalsWorkoutRepository,
+    private val connectionTesters: List<ConnectionTester>,
 ) {
 
     fun copyPlanFromThirdParty(startDate: LocalDate, endDate: LocalDate) {
@@ -33,5 +34,9 @@ class MainService(
 
         val workouts = intervalsWorkoutRepository.getPlannedWorkouts(startDate, endDate)
         workouts.forEach { thirdPartyWorkoutRepository.planWorkout(it) }
+    }
+
+    fun testConnections() {
+        connectionTesters.forEach { it.test() }
     }
 }

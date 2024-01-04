@@ -8,7 +8,10 @@ import org.springframework.stereotype.Component
 
 @Component
 class IntervalsWorkoutStepMapper {
-    fun mapToIntervalsWorkout(workout: Workout): String {
+    fun mapToIntervalsWorkout(workout: Workout): String? {
+        if (workout.steps.isEmpty()) {
+            return null
+        }
         return workout.steps.joinToString(separator = "\n") { mapToIntervalsStep(it) }
     }
 

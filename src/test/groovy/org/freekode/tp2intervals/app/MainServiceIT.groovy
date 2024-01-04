@@ -7,6 +7,7 @@ import org.freekode.tp2intervals.infrastructure.thirdparty.workout.ThirdPartyWor
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
+import spock.lang.Ignore
 import spock.lang.Specification
 
 import java.time.LocalDate
@@ -26,14 +27,17 @@ class MainServiceIT extends Specification {
     @Autowired
     IntervalsFolderRepository intervalsFolderRepository
 
+    def "should test all connections"() {
+        expect:
+        mainService.testConnections()
+    }
+
     def "should do something"() {
         given:
-        def startDate = LocalDate.now()
-        def endDate = LocalDate.now().plusDays(1)
+        def startDate = LocalDate.parse("2022-12-05")
+        def endDate = LocalDate.parse("2023-01-29")
 
         expect:
-        def workouts = thirdPartyWorkoutRepository.getWorkouts(startDate, endDate)
-        def plan = intervalsFolderRepository.createPlan("My Plan - $startDate", startDate)
-        workouts.forEach { intervalsWorkoutRepository.createAndPlanWorkout(plan, it) }
+        mainService.copyPlanFromThirdParty(startDate, endDate)
     }
 }

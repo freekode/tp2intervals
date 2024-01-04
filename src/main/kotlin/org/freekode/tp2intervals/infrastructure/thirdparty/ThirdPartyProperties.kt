@@ -4,5 +4,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 
 @ConfigurationProperties("third-party")
 data class ThirdPartyProperties(
-    val cookies: Map<String, String>
+    val authCookie: String
 )
