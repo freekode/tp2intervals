@@ -14,8 +14,13 @@ data class IntervalsWorkoutStep(
 ) {
     enum class TargetType(val targetType: WorkoutStepTarget.TargetType, val strType: String) {
         POWER(WorkoutStepTarget.TargetType.POWER, "%"),
-        HR(WorkoutStepTarget.TargetType.HR, "HR"),
-        LTHR(WorkoutStepTarget.TargetType.HR, "% LTHR"),
+        HR(WorkoutStepTarget.TargetType.HR, "% HR"),
+        LTHR(WorkoutStepTarget.TargetType.HR, "% LTHR");
+
+        companion object {
+            fun getByTargetType(targetType: WorkoutStepTarget.TargetType): TargetType =
+                entries.first { it.targetType == targetType }
+        }
     }
 
     fun getStepString(): String {

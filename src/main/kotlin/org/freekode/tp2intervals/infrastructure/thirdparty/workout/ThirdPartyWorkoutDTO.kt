@@ -11,6 +11,7 @@ class ThirdPartyWorkoutDTO(
     var totalTimePlanned: Double?,
     var tssPlanned: Double?,
     var description: String?,
+    var coachComments: String?,
     var structure: ThirdPartyWorkoutStructureDTO?
 ) {
     fun getWorkoutType() = workoutTypeValueId?.let { ThirdPartyWorkoutType.findByValue(it) }

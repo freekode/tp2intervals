@@ -5,6 +5,7 @@ import org.freekode.tp2intervals.infrastructure.thirdparty.workout.CreateThirdPa
 import org.freekode.tp2intervals.infrastructure.thirdparty.workout.ThirdPartyNoteDTO
 import org.freekode.tp2intervals.infrastructure.thirdparty.workout.ThirdPartyWorkoutDTO
 import org.springframework.cloud.openfeign.FeignClient
+import org.springframework.core.io.Resource
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -35,11 +36,11 @@ interface ThirdPartyApiClient {
         @PathVariable("endDate") endDate: String
     ): List<ThirdPartyNoteDTO>
 
-    @GetMapping("/fitness/v6/athletes/{userId}/workouts/{workoutId}/fordevice/zwo")
-    fun downloadWorkoutZwo(
+    @GetMapping("/fitness/v6/athletes/{userId}/workouts/{workoutId}/fordevice/fit")
+    fun downloadWorkoutFit(
         @PathVariable("userId") userId: String,
         @PathVariable("workoutId") workoutId: String,
-    ): String
+    ): Resource
 
     @PostMapping("/fitness/v6/athletes/{userId}/workouts")
     fun createAndPlanWorkout(

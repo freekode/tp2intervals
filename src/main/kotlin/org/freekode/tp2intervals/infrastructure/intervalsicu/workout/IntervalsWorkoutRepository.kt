@@ -15,7 +15,7 @@ class IntervalsWorkoutRepository(
     private val intervalsApiClient: IntervalsApiClient,
     private val intervalsProperties: IntervalsProperties,
     private val intervalsMapper: IntervalsMapper,
-    private val intervalsWorkoutDocMapper: IntervalsWorkoutMapper
+    private val intervalsWorkoutDocMapper: IntervalsWorkoutStepMapper
 ) {
 
     fun createAndPlanWorkout(folder: Folder, workout: Workout) {
@@ -27,7 +27,7 @@ class IntervalsWorkoutRepository(
             workout.title,
             workout.duration?.seconds,
             workout.load?.toInt(),
-            workout.description + "\n-----\n" + workoutString,
+            workout.description + "\n- - - -\n" + workoutString,
             null,
         )
         intervalsApiClient.createWorkout(intervalsProperties.athleteId, createWorkoutRequestDTO)

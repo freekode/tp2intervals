@@ -27,7 +27,7 @@ class MainService(
             .forEach { thirdPartyWorkoutRepository.createActivity(it) }
     }
 
-    fun planTodayTomorrowWorkouts() {
+    fun planTodayAndTomorrowWorkouts() {
         val startDate = LocalDate.now()
         val endDate = LocalDate.now().plusDays(1)
 

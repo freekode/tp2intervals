@@ -7,7 +7,7 @@ import org.freekode.tp2intervals.domain.workout.WorkoutStep
 import org.springframework.stereotype.Component
 
 @Component
-class IntervalsWorkoutMapper {
+class IntervalsWorkoutStepMapper {
     fun mapToIntervalsWorkout(workout: Workout): String {
         return workout.steps.joinToString(separator = "\n") { mapToIntervalsStep(it) }
     }
@@ -28,7 +28,7 @@ class IntervalsWorkoutMapper {
             workoutStep.duration,
             target.min.toString(),
             target.max.toString(),
-            IntervalsWorkoutStep.TargetType.POWER,
+            IntervalsWorkoutStep.TargetType.getByTargetType(target.type),
             cadence?.min,
             cadence?.max
         )

@@ -6,6 +6,7 @@ import org.freekode.tp2intervals.infrastructure.thirdparty.ThirdPartyApiClient
 import org.freekode.tp2intervals.infrastructure.thirdparty.workout.structure.ThirdPartyStructureToWorkoutStepMapper
 import org.springframework.stereotype.Repository
 import java.time.Duration
+import java.util.*
 
 @Repository
 class ThirdPartyWorkoutMapper(
@@ -15,13 +16,15 @@ class ThirdPartyWorkoutMapper(
         val steps = tpWorkout.structure
             ?.let { ThirdPartyStructureToWorkoutStepMapper(it).mapToWorkoutSteps() }
             ?: listOf()
-        val workoutContent = mapWorkoutContent(tpWorkout)
+
+        val description = "${tpWorkout.description ?: ""}\n- - - -\n${tpWorkout.coachComments ?: ""}"
+        val workoutContent = getWorkoutContent(tpWorkout)
 
         return Workout(
             tpWorkout.workoutDay.toLocalDate(),
             tpWorkout.getWorkoutType()!!.trainingType,
             tpWorkout.title.ifBlank { "Workout" },
-            tpWorkout.description,
+            description,
             tpWorkout.totalTimePlanned?.let { Duration.ofMinutes((it * 60).toLong()) },
             tpWorkout.tssPlanned,
             steps,
@@ -38,15 +41,15 @@ class ThirdPartyWorkoutMapper(
         )
     }
 
-    private fun mapWorkoutContent(tpWorkout: ThirdPartyWorkoutDTO) =
-        if (tpWorkout.structure != null) {
-            downloadWorkoutContent(tpWorkout.workoutId)
-        } else {
-            null
+    private fun getWorkoutContent(tpWorkout: ThirdPartyWorkoutDTO): String? {
+        if (tpWorkout.structure == null) {
+            return null
         }
 
-    private fun downloadWorkoutContent(tpWorkoutId: String): String {
         val userId = thirdPartyApiClient.getUser().userId!!
-        return thirdPartyApiClient.downloadWorkoutZwo(userId, tpWorkoutId)
+        val resource = thirdPartyApiClient.downloadWorkoutFit(userId, tpWorkout.workoutId)
+        val byteArray = resource.contentAsByteArray
+        return Base64.getEncoder().encodeToString(byteArray)
     }
+
 }
