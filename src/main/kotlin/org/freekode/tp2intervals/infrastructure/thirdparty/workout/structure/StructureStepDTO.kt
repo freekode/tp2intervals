@@ -28,6 +28,6 @@ class StructureStepDTO(
     }
 
     enum class StructureType {
-        step, repetition,
+        step, repetition, rampUp
     }
 }

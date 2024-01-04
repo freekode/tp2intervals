@@ -11,9 +11,7 @@ class LengthDTO(
         fun repetitions(value: Long) = LengthDTO(value, LengthUnit.repetition)
     }
 
-    fun isSingle() = value == 1L && unit == LengthUnit.repetition
-
-    fun getReps(): Long {
+    fun reps(): Long {
         if (unit != LengthUnit.repetition) {
             throw RuntimeException("not a repetition length")
         }

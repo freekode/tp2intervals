@@ -33,11 +33,7 @@ class MainServiceIT extends Specification {
     }
 
     def "should do something"() {
-        given:
-        def startDate = LocalDate.parse("2022-12-05")
-        def endDate = LocalDate.parse("2023-01-29")
-
         expect:
-        mainService.copyPlanFromThirdParty(startDate, endDate)
+        mainService.planTodayAndTomorrowWorkouts()
     }
 }

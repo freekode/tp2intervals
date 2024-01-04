@@ -24,9 +24,12 @@ How to get authentication cookie for your user:
 3. Go to ThirdParty service and log in, if you are not
 4. Search in Network tab, request to `/users/v3/token`
 5. Copy value of `Production_tpAuth` cookie from the request
-6. Put key and value in the configuration, so it will looks like this:
+6. Put key and value in the configuration, so it will look like this:
    ```yaml
    third-party:
     auth-cookie: Production_tpAuth=<very long string>
    ```
 7. You are ready to go
+
+## Known Issues
+ATM only time duration intervals are supported

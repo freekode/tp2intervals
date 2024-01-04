@@ -12,10 +12,10 @@ class ThirdPartyStructureToWorkoutStepMapper(
 
     fun mapToWorkoutSteps(): List<WorkoutStep> {
         return thirdPartyWorkoutStructureDTO.structure.map {
-            if (it.length.isSingle()) {
-                mapSingleStep(it.steps[0])
-            } else {
-                mapMultiStep(it)
+            when (it.type) {
+                StructureStepDTO.StructureType.step -> mapSingleStep(it.steps[0])
+                StructureStepDTO.StructureType.repetition -> mapMultiStep(it)
+                StructureStepDTO.StructureType.rampUp -> mapMultiStep(it)
             }
         }
     }
@@ -33,7 +33,7 @@ class ThirdPartyStructureToWorkoutStepMapper(
     private fun mapMultiStep(structureStepDTO: StructureStepDTO): WorkoutStep {
         return WorkoutMultiStep.multiStep(
             "Reps",
-            structureStepDTO.length.getReps().toInt(),
+            structureStepDTO.length.reps().toInt(),
             structureStepDTO.steps.map { mapSingleStep(it) },
         )
     }
