@@ -3,7 +3,7 @@ package org.freekode.tp2intervals.infrastructure.intervalsicu.workout
 import org.freekode.tp2intervals.domain.activity.Activity
 import org.freekode.tp2intervals.domain.plan.Folder
 import org.freekode.tp2intervals.domain.workout.Workout
-import org.freekode.tp2intervals.infrastructure.config.ConfigurationRepository
+import org.freekode.tp2intervals.domain.config.AppConfigRepository
 import org.freekode.tp2intervals.infrastructure.intervalsicu.IntervalsApiClient
 import org.springframework.stereotype.Repository
 import java.time.LocalDate
@@ -13,7 +13,7 @@ import kotlin.math.absoluteValue
 @Repository
 class IntervalsWorkoutRepository(
     private val intervalsApiClient: IntervalsApiClient,
-    private val configurationRepository: ConfigurationRepository,
+    private val appConfigRepository: AppConfigRepository,
     private val intervalsMapper: IntervalsMapper,
     private val intervalsWorkoutDocMapper: IntervalsWorkoutStepMapper
 ) {
@@ -35,7 +35,7 @@ class IntervalsWorkoutRepository(
             null,
         )
         intervalsApiClient.createWorkout(
-            configurationRepository.getConfiguration().intervalsAthleteId,
+            appConfigRepository.getConfig().intervalsConfig.athleteId,
             createWorkoutRequestDTO
         )
     }
@@ -43,7 +43,7 @@ class IntervalsWorkoutRepository(
     fun getPlannedWorkouts(startDate: LocalDate, endDate: LocalDate): List<Workout> {
         val events =
             intervalsApiClient.getEvents(
-                configurationRepository.getConfiguration().intervalsAthleteId,
+                appConfigRepository.getConfig().intervalsConfig.athleteId,
                 startDate.toString(),
                 endDate.toString()
             )
@@ -55,7 +55,7 @@ class IntervalsWorkoutRepository(
     fun getActivities(startDate: LocalDate, endDate: LocalDate): List<Activity> {
         val activities =
             intervalsApiClient.getActivities(
-                configurationRepository.getConfiguration().intervalsAthleteId,
+                appConfigRepository.getConfig().intervalsConfig.athleteId,
                 startDate.toString(),
                 endDate.toString()
             )
