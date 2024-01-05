@@ -22,4 +22,5 @@ jobs:
           distribution: 'corretto'
 
       - name: Build project
-        run: ./boot/gradlew build
+        working-directory: ./boot
+        run: ./gradlew build
