@@ -3,5 +3,5 @@ MAINTAINER freekode.org
 
 ARG JAR_NAME='tp2intervals.jar'
 
-COPY build/libs/$JAR_NAME app.jar
+COPY boot/build/libs/$JAR_NAME app.jar
 ENTRYPOINT ["java", "-jar", "app.jar"]
