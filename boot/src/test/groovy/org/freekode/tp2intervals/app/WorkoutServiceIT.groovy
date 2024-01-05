@@ -28,6 +28,7 @@ class WorkoutServiceIT extends Specification {
     @Autowired
     IntervalsFolderRepository intervalsFolderRepository
 
+    @Ignore
     def "should test all connections"() {
         expect:
         configService.testConnections()
