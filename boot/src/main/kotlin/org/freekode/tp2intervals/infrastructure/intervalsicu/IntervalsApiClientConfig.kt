@@ -12,6 +12,6 @@ class IntervalsApiClientConfig(
 
     @Bean
     fun requestInterceptor(): RequestInterceptor {
-        return BasicAuthRequestInterceptor(login, appConfigRepository.getConfig().intervalsConfig.password)
+        return BasicAuthRequestInterceptor(login, appConfigRepository.getConfig().intervalsConfig.apiKey)
     }
 }

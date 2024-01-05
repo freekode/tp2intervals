@@ -9,7 +9,7 @@ class WorkoutController(
     private val workoutService: WorkoutService
 ) {
 
-    @GetMapping("plan-workout")
+    @GetMapping("/api/plan-workout")
     fun planWorkout() {
         workoutService.planTodayAndTomorrowWorkouts()
     }

@@ -13,24 +13,24 @@ class ConfigController(
     private val configService: ConfigService
 ) {
 
-    @GetMapping("test-connections")
+    @GetMapping("/api/test-connections")
     fun testConnections() = configService.testConnections()
 
-    @GetMapping("config")
+    @GetMapping("/api/config")
     fun getConfig(): AppConfigDTO {
         val config = configService.getConfig()
         return AppConfigDTO(
             config.tpConfig.authCookie,
-            config.intervalsConfig.password,
+            config.intervalsConfig.apiKey,
             config.intervalsConfig.athleteId
         )
     }
 
-    @PutMapping("config")
+    @PutMapping("/api/config")
     fun updateConfig(appConfigDTO: AppConfigDTO) {
         val appConfig = AppConfig(
             TrainingPeaksConfig(appConfigDTO.tpAuthCookie),
-            IntervalsConfig(appConfigDTO.intervalsLogin, appConfigDTO.intervalsAthleteId)
+            IntervalsConfig(appConfigDTO.intervalsApiKey, appConfigDTO.intervalsAthleteId)
         )
         configService.updateConfig(appConfig)
     }

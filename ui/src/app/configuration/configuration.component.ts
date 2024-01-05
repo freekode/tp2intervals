@@ -1,16 +1,18 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ConfigurationService } from 'infrastructure/configuration.service';
-import { ConfigurationData } from 'infrastructure/configuration-data';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ConfigService } from 'infrastructure/config.service';
+import { ConfigData } from 'infrastructure/config-data';
 import { Router } from '@angular/router';
-import { IntervalsClient } from 'infrastructure/intervals.client';
-import { catchError, EMPTY } from 'rxjs';
-
+import { MatCardModule } from "@angular/material/card";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatInputModule } from "@angular/material/input";
 
 @Component({
   selector: 'app-configuration',
+  standalone: true,
+  imports: [ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule],
   templateUrl: './configuration.component.html',
-  styleUrls: ['./configuration.component.scss']
+  styleUrl: './configuration.component.scss'
 })
 export class ConfigurationComponent implements OnInit {
 
@@ -21,37 +23,28 @@ export class ConfigurationComponent implements OnInit {
   constructor(
     private router: Router,
     private formBuilder: FormBuilder,
-    private configurationService: ConfigurationService,
-    private intervalsClient: IntervalsClient,
+    private configurationService: ConfigService,
   ) {
   }
 
   ngOnInit(): void {
-    let configuration = this.configurationService.getConfiguration();
+    let configuration = this.configurationService.getConfig();
 
-    this.formGroup.setValue({
-      athleteId: configuration.athleteId || null,
-      apiKey: configuration.apiKey || null,
-    });
+    // this.formGroup.setValue({
+    //   athleteId: configuration.athleteId || null,
+    //   apiKey: configuration.apiKey || null,
+    // });
   }
 
   onSubmit(): void {
-    let newConfiguration = new ConfigurationData(
+    let newConfiguration = new ConfigData(
+      this.formGroup.value.tpAuthCookie,
       this.formGroup.value.athleteId,
       this.formGroup.value.apiKey
     );
 
-    this.configurationService.setConfiguration(newConfiguration);
-    this.intervalsClient.test(newConfiguration.athleteId!).pipe(
-      catchError(err => {
-        if (err.status === 403) {
-          this.errorMessage = 'Wrong credentials';
-        }
-        return EMPTY;
-      })
-    ).subscribe(() => {
-      this.errorMessage = '';
-      this.router.navigate(['/wellness']);
+    this.configurationService.updateConfig(newConfiguration).subscribe(() => {
+      this.router.navigate(['/home']);
     });
   }
 
