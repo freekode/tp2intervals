@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestHeader
 
 @FeignClient(
     value = "ThirdPartyTokenApiClient",
-    url = "\${third-party.api-url}",
+    url = "\${training-peaks.api-url}",
     dismiss404 = true,
 )
 interface TrainingPeaksTokenApiClient {

@@ -8,11 +8,10 @@ import org.springframework.stereotype.Service
 import java.time.LocalDate
 
 @Service
-class MainService(
+class WorkoutService(
     private val trainingPeaksWorkoutRepository: TrainingPeaksWorkoutRepository,
     private val intervalsFolderRepository: IntervalsFolderRepository,
     private val intervalsWorkoutRepository: IntervalsWorkoutRepository,
-    private val connectionTesters: List<ConnectionTester>,
 ) {
 
     fun copyPlanFromThirdParty(startDate: LocalDate, endDate: LocalDate) {
@@ -34,9 +33,5 @@ class MainService(
 
         val workouts = intervalsWorkoutRepository.getPlannedWorkouts(startDate, endDate)
         workouts.forEach { trainingPeaksWorkoutRepository.planWorkout(it) }
-    }
-
-    fun testConnections() {
-        connectionTesters.forEach { it.test() }
     }
 }

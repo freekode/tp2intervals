@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody
 
 @FeignClient(
     value = "ThirdPartyApiClient",
-    url = "\${third-party.api-url}",
+    url = "\${training-peaks.api-url}",
     dismiss404 = true,
     primary = false,
     configuration = [TrainingPeaksApiClientConfig::class]

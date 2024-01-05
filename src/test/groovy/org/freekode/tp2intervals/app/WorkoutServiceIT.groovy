@@ -12,9 +12,12 @@ import spock.lang.Specification
 
 @SpringBootTest
 @ActiveProfiles("dev")
-class MainServiceIT extends Specification {
+class WorkoutServiceIT extends Specification {
     @Autowired
-    MainService mainService
+    WorkoutService mainService
+
+    @Autowired
+    ConfigService configService
 
     @Autowired
     IntervalsWorkoutRepository intervalsWorkoutRepository
@@ -27,7 +30,7 @@ class MainServiceIT extends Specification {
 
     def "should test all connections"() {
         expect:
-        mainService.testConnections()
+        configService.testConnections()
     }
 
     @Ignore

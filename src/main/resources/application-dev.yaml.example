@@ -1,4 +1,4 @@
-third-party:
+training-peaks:
   auth-cookie: Production_tpAuth=value
 
 intervals:

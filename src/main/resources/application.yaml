@@ -1,4 +1,4 @@
-third-party:
+training-peaks:
   api-url: https://tpapi.trainingpeaks.com
   auth-cookie:
 
