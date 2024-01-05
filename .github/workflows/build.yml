@@ -22,4 +22,4 @@ jobs:
           distribution: 'corretto'
 
       - name: Build project
-        run: ./gradlew build
+        run: ./boot/gradlew build
