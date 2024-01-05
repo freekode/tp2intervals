@@ -28,6 +28,7 @@ class CLIApplication(
     private val cliCommands: List<CLICommand>
 ) : CommandLineRunner {
     override fun run(vararg args: String) {
+        log.info("params ${args.toList()}")
         val optionMap = cliCommands.associateBy { it.option() }
 
         val options = Options()
@@ -38,12 +39,17 @@ class CLIApplication(
 
         try {
             val cmd = parser.parse(options, args)
+            if (cmd.options.isEmpty()) {
+                log.info("No commands passed")
+                return
+            }
+
             cmd.options.forEach {
-                optionMap[it]!!.run(it.values.toList())
+                optionMap[it]!!.run(it.valuesList)
             }
         } catch (e: ParseException) {
             log.error(e.message)
-            formatter.printHelp("utility-name", options)
+            formatter.printHelp("docker run ...", options)
             exitProcess(1)
         }
     }

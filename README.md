@@ -31,5 +31,14 @@ How to get authentication cookie for your user:
    ```
 7. You are ready to go
 
+## How to run
+```shell
+ docker run --rm -it \
+   -e INTERVALS_PASSWORD=6ny7mjfubb5ey3wsv0kx7o4me \
+   -e ATHLETE_ID=i55661 \
+   tp2intervals \
+   --plan-workout
+```
+
 ## Known Issues
 ATM only time duration intervals are supported
