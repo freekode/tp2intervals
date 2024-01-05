@@ -3,8 +3,8 @@ package org.freekode.tp2intervals.infrastructure.intervalsicu.workout
 import org.freekode.tp2intervals.domain.activity.Activity
 import org.freekode.tp2intervals.domain.plan.Folder
 import org.freekode.tp2intervals.domain.workout.Workout
+import org.freekode.tp2intervals.infrastructure.config.ConfigurationRepository
 import org.freekode.tp2intervals.infrastructure.intervalsicu.IntervalsApiClient
-import org.freekode.tp2intervals.infrastructure.intervalsicu.IntervalsProperties
 import org.springframework.stereotype.Repository
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
@@ -13,7 +13,7 @@ import kotlin.math.absoluteValue
 @Repository
 class IntervalsWorkoutRepository(
     private val intervalsApiClient: IntervalsApiClient,
-    private val intervalsProperties: IntervalsProperties,
+    private val configurationRepository: ConfigurationRepository,
     private val intervalsMapper: IntervalsMapper,
     private val intervalsWorkoutDocMapper: IntervalsWorkoutStepMapper
 ) {
@@ -34,12 +34,19 @@ class IntervalsWorkoutRepository(
             description,
             null,
         )
-        intervalsApiClient.createWorkout(intervalsProperties.athleteId, createWorkoutRequestDTO)
+        intervalsApiClient.createWorkout(
+            configurationRepository.getConfiguration().intervalsAthleteId,
+            createWorkoutRequestDTO
+        )
     }
 
     fun getPlannedWorkouts(startDate: LocalDate, endDate: LocalDate): List<Workout> {
         val events =
-            intervalsApiClient.getEvents(intervalsProperties.athleteId, startDate.toString(), endDate.toString())
+            intervalsApiClient.getEvents(
+                configurationRepository.getConfiguration().intervalsAthleteId,
+                startDate.toString(),
+                endDate.toString()
+            )
         return events
             .filter { it.category == IntervalsEventDTO.EventCategory.WORKOUT }
             .map { intervalsMapper.mapToWorkout(it) }
@@ -47,7 +54,11 @@ class IntervalsWorkoutRepository(
 
     fun getActivities(startDate: LocalDate, endDate: LocalDate): List<Activity> {
         val activities =
-            intervalsApiClient.getActivities(intervalsProperties.athleteId, startDate.toString(), endDate.toString())
+            intervalsApiClient.getActivities(
+                configurationRepository.getConfiguration().intervalsAthleteId,
+                startDate.toString(),
+                endDate.toString()
+            )
         return activities
             .map { intervalsMapper.mapToActivity(it) }
     }
