@@ -1,14 +1,14 @@
-package org.freekode.tp2intervals.infrastructure.thirdparty.workout.structure
+package org.freekode.tp2intervals.infrastructure.trainingpeaks.workout.structure
 
 import java.time.Duration
 
-class LengthDTO(
+class TPLengthDTO(
     var value: Long,
     var unit: LengthUnit,
 ) {
     companion object {
-        fun seconds(value: Long) = LengthDTO(value, LengthUnit.second)
-        fun repetitions(value: Long) = LengthDTO(value, LengthUnit.repetition)
+        fun seconds(value: Long) = TPLengthDTO(value, LengthUnit.second)
+        fun repetitions(value: Long) = TPLengthDTO(value, LengthUnit.repetition)
     }
 
     fun reps(): Long {

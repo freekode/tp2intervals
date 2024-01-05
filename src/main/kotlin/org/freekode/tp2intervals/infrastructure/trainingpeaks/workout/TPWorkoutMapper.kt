@@ -1,20 +1,20 @@
-package org.freekode.tp2intervals.infrastructure.thirdparty.workout
+package org.freekode.tp2intervals.infrastructure.trainingpeaks.workout
 
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutExternalData
-import org.freekode.tp2intervals.infrastructure.thirdparty.ThirdPartyApiClient
-import org.freekode.tp2intervals.infrastructure.thirdparty.workout.structure.ThirdPartyStructureToWorkoutStepMapper
-import org.springframework.stereotype.Repository
+import org.freekode.tp2intervals.infrastructure.trainingpeaks.TrainingPeaksApiClient
+import org.freekode.tp2intervals.infrastructure.trainingpeaks.workout.structure.TPStructureToWorkoutStepMapper
+import org.springframework.stereotype.Component
 import java.time.Duration
 import java.util.*
 
-@Repository
-class ThirdPartyWorkoutMapper(
-    private val thirdPartyApiClient: ThirdPartyApiClient,
+@Component
+class TPWorkoutMapper(
+    private val trainingPeaksApiClient: TrainingPeaksApiClient,
 ) {
-    fun mapToWorkout(tpWorkout: ThirdPartyWorkoutDTO): Workout {
+    fun mapToWorkout(tpWorkout: TPWorkoutDTO): Workout {
         val steps = tpWorkout.structure
-            ?.let { ThirdPartyStructureToWorkoutStepMapper(it).mapToWorkoutSteps() }
+            ?.let { TPStructureToWorkoutStepMapper(it).mapToWorkoutSteps() }
             ?: listOf()
 
         var description = tpWorkout.description.orEmpty()
@@ -34,7 +34,7 @@ class ThirdPartyWorkoutMapper(
         )
     }
 
-    fun mapToWorkout(tpNote: ThirdPartyNoteDTO): Workout {
+    fun mapToWorkout(tpNote: TPNoteDTO): Workout {
         return Workout.note(
             tpNote.noteDate.toLocalDate(),
             tpNote.title,
@@ -43,13 +43,13 @@ class ThirdPartyWorkoutMapper(
         )
     }
 
-    private fun getWorkoutContent(tpWorkout: ThirdPartyWorkoutDTO): String? {
+    private fun getWorkoutContent(tpWorkout: TPWorkoutDTO): String? {
         if (tpWorkout.structure == null) {
             return null
         }
 
-        val userId = thirdPartyApiClient.getUser().userId!!
-        val resource = thirdPartyApiClient.downloadWorkoutFit(userId, tpWorkout.workoutId)
+        val userId = trainingPeaksApiClient.getUser().userId!!
+        val resource = trainingPeaksApiClient.downloadWorkoutFit(userId, tpWorkout.workoutId)
         val byteArray = resource.contentAsByteArray
         return Base64.getEncoder().encodeToString(byteArray)
     }

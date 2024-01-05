@@ -1,8 +1,8 @@
-package org.freekode.tp2intervals.infrastructure.thirdparty
+package org.freekode.tp2intervals.infrastructure.trainingpeaks
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 
 @ConfigurationProperties("third-party")
-data class ThirdPartyProperties(
+data class TrainingPeaksProperties(
     val authCookie: String
 )

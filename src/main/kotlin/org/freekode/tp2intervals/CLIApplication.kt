@@ -7,7 +7,7 @@ import org.apache.commons.cli.Options
 import org.apache.commons.cli.ParseException
 import org.freekode.tp2intervals.cli.CLICommand
 import org.freekode.tp2intervals.infrastructure.intervalsicu.IntervalsProperties
-import org.freekode.tp2intervals.infrastructure.thirdparty.ThirdPartyProperties
+import org.freekode.tp2intervals.infrastructure.trainingpeaks.TrainingPeaksProperties
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.boot.CommandLineRunner
@@ -22,7 +22,7 @@ val log: Logger = LoggerFactory.getLogger(CLIApplication::class.java)
 @SpringBootApplication
 @EnableFeignClients
 @EnableConfigurationProperties(
-    IntervalsProperties::class, ThirdPartyProperties::class
+    IntervalsProperties::class, TrainingPeaksProperties::class
 )
 class CLIApplication(
     private val cliCommands: List<CLICommand>

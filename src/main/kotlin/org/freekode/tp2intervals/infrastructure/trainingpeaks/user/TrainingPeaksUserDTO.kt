@@ -1,8 +1,8 @@
-package org.freekode.tp2intervals.infrastructure.thirdparty.user
+package org.freekode.tp2intervals.infrastructure.trainingpeaks.user
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
-class ThirdPartyUserDTO(
+class TrainingPeaksUserDTO(
     var userId: String?
 ) {
     @JsonProperty("user")

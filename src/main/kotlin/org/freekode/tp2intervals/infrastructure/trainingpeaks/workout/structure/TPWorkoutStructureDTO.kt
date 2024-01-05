@@ -1,9 +1,9 @@
-package org.freekode.tp2intervals.infrastructure.thirdparty.workout.structure
+package org.freekode.tp2intervals.infrastructure.trainingpeaks.workout.structure
 
 import org.freekode.tp2intervals.domain.workout.WorkoutStepTarget
 
-class ThirdPartyWorkoutStructureDTO(
-    var structure: List<StructureStepDTO>,
+class TPWorkoutStructureDTO(
+    var structure: List<TPStructureStepDTO>,
     var primaryLengthMetric: LengthMetric,
     var primaryIntensityMetric: IntensityMetric,
     var primaryIntensityTargetOrRange: IntensityTargetOrRange?,

@@ -1,5 +1,5 @@
 third-party:
-  api-url: https://localhost
+  api-url: https://tpapi.trainingpeaks.com
   auth-cookie:
 
 intervals:

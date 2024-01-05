@@ -1,7 +1,6 @@
 third-party:
-  api-url: https://localhost
   auth-cookie: Production_tpAuth=value
 
 intervals:
-  password: intervals-password
+  password: 0000000000000000000000000
   athlete-id: i00000

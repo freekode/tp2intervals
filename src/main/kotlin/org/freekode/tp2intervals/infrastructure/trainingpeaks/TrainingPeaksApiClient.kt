@@ -1,9 +1,9 @@
-package org.freekode.tp2intervals.infrastructure.thirdparty
+package org.freekode.tp2intervals.infrastructure.trainingpeaks
 
-import org.freekode.tp2intervals.infrastructure.thirdparty.user.ThirdPartyUserDTO
-import org.freekode.tp2intervals.infrastructure.thirdparty.workout.CreateThirdPartyWorkoutDTO
-import org.freekode.tp2intervals.infrastructure.thirdparty.workout.ThirdPartyNoteDTO
-import org.freekode.tp2intervals.infrastructure.thirdparty.workout.ThirdPartyWorkoutDTO
+import org.freekode.tp2intervals.infrastructure.trainingpeaks.user.TrainingPeaksUserDTO
+import org.freekode.tp2intervals.infrastructure.trainingpeaks.workout.CreateTPWorkoutDTO
+import org.freekode.tp2intervals.infrastructure.trainingpeaks.workout.TPNoteDTO
+import org.freekode.tp2intervals.infrastructure.trainingpeaks.workout.TPWorkoutDTO
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.core.io.Resource
 import org.springframework.web.bind.annotation.GetMapping
@@ -16,25 +16,25 @@ import org.springframework.web.bind.annotation.RequestBody
     url = "\${third-party.api-url}",
     dismiss404 = true,
     primary = false,
-    configuration = [ThirdPartyApiClientConfig::class]
+    configuration = [TrainingPeaksApiClientConfig::class]
 )
-interface ThirdPartyApiClient {
+interface TrainingPeaksApiClient {
     @GetMapping("/users/v3/user")
-    fun getUser(): ThirdPartyUserDTO
+    fun getUser(): TrainingPeaksUserDTO
 
     @GetMapping("/fitness/v6/athletes/{userId}/workouts/{startDate}/{endDate}")
     fun getWorkouts(
         @PathVariable("userId") userId: String,
         @PathVariable("startDate") startDate: String,
         @PathVariable("endDate") endDate: String
-    ): List<ThirdPartyWorkoutDTO>
+    ): List<TPWorkoutDTO>
 
     @GetMapping("/fitness/v1/athletes/{userId}/calendarNote/{startDate}/{endDate}")
     fun getNotes(
         @PathVariable("userId") userId: String,
         @PathVariable("startDate") startDate: String,
         @PathVariable("endDate") endDate: String
-    ): List<ThirdPartyNoteDTO>
+    ): List<TPNoteDTO>
 
     @GetMapping("/fitness/v6/athletes/{userId}/workouts/{workoutId}/fordevice/fit")
     fun downloadWorkoutFit(
@@ -45,6 +45,6 @@ interface ThirdPartyApiClient {
     @PostMapping("/fitness/v6/athletes/{userId}/workouts")
     fun createAndPlanWorkout(
         @PathVariable("userId") userId: String,
-        @RequestBody createThirdPartyWorkoutDTO: CreateThirdPartyWorkoutDTO
+        @RequestBody createTPWorkoutDTO: CreateTPWorkoutDTO
     )
 }

@@ -1,11 +1,11 @@
-package org.freekode.tp2intervals.infrastructure.thirdparty.workout.structure
+package org.freekode.tp2intervals.infrastructure.trainingpeaks.workout.structure
 
 import org.freekode.tp2intervals.domain.workout.StepIntensityType
 
-class StepDTO(
+class TPStepDTO(
     var name: String,
-    var length: LengthDTO,
-    var targets: List<TargetDTO>,
+    var length: TPLengthDTO,
+    var targets: List<TPTargetDTO>,
     var intensityClass: IntensityClass?,
     var openDuration: Boolean?
 ) {

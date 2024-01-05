@@ -1,9 +1,9 @@
-package org.freekode.tp2intervals.infrastructure.thirdparty.workout
+package org.freekode.tp2intervals.infrastructure.trainingpeaks.workout
 
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-class CreateThirdPartyWorkoutDTO(
+class CreateTPWorkoutDTO(
     var athleteId: String,
     var workoutDay: LocalDateTime,
     var workoutTypeValueId: Int,
@@ -18,8 +18,8 @@ class CreateThirdPartyWorkoutDTO(
         fun planWorkout(
             athleteId: String, workoutDay: LocalDate, workoutTypeValueId: Int, title: String,
             totalTimePlanned: Double?, tssPlanned: Double?, structure: String?
-        ): CreateThirdPartyWorkoutDTO {
-            return CreateThirdPartyWorkoutDTO(
+        ): CreateTPWorkoutDTO {
+            return CreateTPWorkoutDTO(
                 athleteId,
                 workoutDay.atStartOfDay(),
                 workoutTypeValueId,
@@ -35,8 +35,8 @@ class CreateThirdPartyWorkoutDTO(
         fun createWorkout(
             athleteId: String, workoutDay: LocalDateTime, workoutTypeValueId: Int, title: String,
             totalTime: Double?, tssActual: Double?
-        ): CreateThirdPartyWorkoutDTO {
-            return CreateThirdPartyWorkoutDTO(
+        ): CreateTPWorkoutDTO {
+            return CreateTPWorkoutDTO(
                 athleteId,
                 workoutDay,
                 workoutTypeValueId,
