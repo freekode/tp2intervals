@@ -13,7 +13,6 @@ import org.springframework.stereotype.Repository
 @Repository
 class AppConfigRepositoryImpl(
     @Value("\${training-peaks.auth-cookie}") private val tpAuthCookie: String,
-    @Value("\${intervals.login}") private val intervalsLogin: String,
     @Value("\${intervals.password}") private val intervalsPassword: String,
     @Value("\${intervals.athlete-id}") private val intervalsAthleteId: String,
 ) : AppConfigRepository {
@@ -21,7 +20,7 @@ class AppConfigRepositoryImpl(
     override fun getConfig(): AppConfig {
         return AppConfig(
             TrainingPeaksConfig(tpAuthCookie),
-            IntervalsConfig(intervalsLogin, intervalsPassword, intervalsAthleteId)
+            IntervalsConfig(intervalsPassword, intervalsAthleteId)
         )
     }
 

@@ -4,7 +4,6 @@ training-peaks:
 
 intervals:
   api-url: https://intervals.icu
-  login: API_KEY
   password:
   athlete-id:
 

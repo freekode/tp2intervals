@@ -8,11 +8,10 @@ import org.springframework.context.annotation.Bean
 class IntervalsApiClientConfig(
     private val appConfigRepository: AppConfigRepository
 ) {
+    private val login = "API_KEY"
+
     @Bean
     fun requestInterceptor(): RequestInterceptor {
-        return BasicAuthRequestInterceptor(
-            appConfigRepository.getConfig().intervalsConfig.login,
-            appConfigRepository.getConfig().intervalsConfig.password
-        )
+        return BasicAuthRequestInterceptor(login, appConfigRepository.getConfig().intervalsConfig.password)
     }
 }
