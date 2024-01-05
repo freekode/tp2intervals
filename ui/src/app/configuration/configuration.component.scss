@@ -1,0 +1,17 @@
+.full-width {
+  width: 100%;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+}
+
+.col {
+  flex: 1;
+}
+
+.error-message {
+  margin-left: 10px;
+  color: red;
+}
