@@ -11,6 +11,6 @@ class TrainingPeaksConnectionTester(
     override fun name() = "TrainingPeaks"
 
     override fun test() {
-        trainingPeaksApiTokenRepository.getToken()
+        trainingPeaksApiTokenRepository.getTokenNow()
     }
 }

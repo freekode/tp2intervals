@@ -13,6 +13,10 @@ class TrainingPeaksApiTokenRepository(
 ) {
     @Cacheable(key = "'singleton'")
     fun getToken(): String {
+        return getTokenNow()
+    }
+
+    fun getTokenNow(): String {
         val token = trainingPeaksTokenApiClient.getToken(appConfigRepository.getConfig().tpConfig.authCookie)
         return token.accessToken!!
     }
