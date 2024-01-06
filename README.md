@@ -8,35 +8,16 @@ device.
 
 **Only for educational purposes**
 
-## Configuration
+## How to run
 
-| Property                     | Price                                                          |
-|------------------------------|----------------------------------------------------------------|
-| `training-peaks.auth-cookie` | Cookie from `token` request to get authentication token for TP |
-| `intervals.password`         | API password from Intervals.icu                                |
-| `intervals.athlete-id`       | Athlete ID from Intervals.icu                                  |
+Run with `docker-compose`
 
-### Authentication Cookie
+### TrainingPeaks Authentication Cookie
 
 How to get authentication cookie for your user:
 
-1. Copy cookie `Production_tpAuth` from the browser on TP page 
-2. Put cookie and value in the configuration, so it will look like this:
-   ```yaml
-   training-peaks:
-    auth-cookie: Production_tpAuth=<very long string>
-   ```
-3. You are ready to go
-
-## How to run
-
-```shell
- docker run --rm -it \
-   -e INTERVALS_PASSWORD=6ny7mjfubb5ey3wsv0kx7o4me \
-   -e ATHLETE_ID=i55661 \
-   tp2intervals \
-   --plan-workout
-```
+1. Copy only cookie `Production_tpAuth` or all of them from the browser on TrainingPeaks page 
+2. Save cookies on config page
 
 ## Known Issues
 
