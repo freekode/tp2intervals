@@ -17,8 +17,8 @@ class ConfigController(
     fun testConnections() = configService.testConnections()
 
     @GetMapping("/api/config")
-    fun getConfig(): AppConfigDTO {
-        val config = configService.getConfig()
+    fun getConfig(): AppConfigDTO? {
+        val config = configService.findConfig() ?: return null
         return AppConfigDTO(
             config.tpConfig.authCookie,
             config.intervalsConfig.apiKey,

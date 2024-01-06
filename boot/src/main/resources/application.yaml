@@ -10,3 +10,10 @@ intervals:
 spring:
   jackson:
     default-property-inclusion: non_null
+  datasource:
+    url: jdbc:h2:file:./database
+    username: sa
+    password: password
+    driverClassName: org.h2.Driver
+  jpa:
+    generate-ddl: true

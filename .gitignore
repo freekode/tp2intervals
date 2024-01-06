@@ -37,3 +37,5 @@ out/
 .vscode/
 
 application-dev.yaml
+database.mv.db
+database.trace.db
