@@ -1,5 +1,6 @@
 package org.freekode.tp2intervals.infrastructure.config
 
+import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.Id
 import jakarta.persistence.Table
@@ -8,7 +9,7 @@ import jakarta.persistence.Table
 @Entity
 data class AppConfigEntity(
     @Id val id: Int?,
-    val tpAuthCookie: String?,
+    @Column(length = 5000) val tpAuthCookie: String?,
     val intervalsApiKey: String?,
     val intervalsAthleteId: String?,
 ) {

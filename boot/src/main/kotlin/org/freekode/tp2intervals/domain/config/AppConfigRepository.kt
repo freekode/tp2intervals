@@ -5,5 +5,5 @@ interface AppConfigRepository {
 
     fun findConfig(): AppConfig?
 
-    fun updateConfig(appConfig: AppConfig)
+    fun updateConfig(appConfig: AppConfig): AppConfig
 }

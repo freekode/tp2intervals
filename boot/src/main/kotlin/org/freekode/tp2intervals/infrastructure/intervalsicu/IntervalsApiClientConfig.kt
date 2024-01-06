@@ -15,7 +15,7 @@ class IntervalsApiClientConfig(
     @Bean
     fun requestInterceptor(): RequestInterceptor {
         return RequestInterceptor { template ->
-            val apiKey = appConfigRepository.findConfig()?.intervalsConfig?.apiKey
+            val apiKey = appConfigRepository.getConfig().intervalsConfig.apiKey
             val authorization = Base64.getEncoder().encodeToString(("$login:$apiKey").toByteArray())
             template.header(HttpHeaders.AUTHORIZATION, "Basic $authorization")
         }

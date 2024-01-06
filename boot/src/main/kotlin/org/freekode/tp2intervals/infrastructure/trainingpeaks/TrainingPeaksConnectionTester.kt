@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component
 class TrainingPeaksConnectionTester(
     private val trainingPeaksApiTokenRepository: TrainingPeaksApiTokenRepository,
 ) : ConnectionTester {
+    override fun name() = "TrainingPeaks"
+
     override fun test() {
         trainingPeaksApiTokenRepository.getToken()
     }

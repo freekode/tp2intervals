@@ -9,6 +9,8 @@ class IntervalsConnectionTester(
     private val intervalsApiClient: IntervalsApiClient,
     private val appConfigRepository: AppConfigRepository,
 ) : ConnectionTester {
+    override fun name() = "Intervals.icu"
+
     override fun test() {
         intervalsApiClient.getAthlete(appConfigRepository.getConfig().intervalsConfig.athleteId)
     }

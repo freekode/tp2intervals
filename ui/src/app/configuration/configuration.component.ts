@@ -7,6 +7,7 @@ import { MatCardModule } from "@angular/material/card";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatButtonModule } from "@angular/material/button";
+import { catchError, EMPTY } from "rxjs";
 
 @Component({
   selector: 'app-configuration',
@@ -31,8 +32,9 @@ export class ConfigurationComponent implements OnInit {
   ngOnInit(): void {
     this.configurationService.getConfig().subscribe(config => {
       this.formGroup.setValue({
-        apiKey: config.intervalsApiKey || null,
+        tpAuthCookie: config.tpAuthCookie || null,
         athleteId: config.intervalsAthleteId || null,
+        apiKey: config.intervalsApiKey || null,
       });
     });
   }
@@ -40,17 +42,23 @@ export class ConfigurationComponent implements OnInit {
   onSubmit(): void {
     let newConfiguration = new ConfigData(
       this.formGroup.value.tpAuthCookie,
+      this.formGroup.value.apiKey,
       this.formGroup.value.athleteId,
-      this.formGroup.value.apiKey
     );
 
-    this.configurationService.updateConfig(newConfiguration).subscribe(() => {
+    this.configurationService.updateConfig(newConfiguration).pipe(
+      catchError(err => {
+        this.errorMessage = err.error.error;
+        return EMPTY;
+      })
+    ).subscribe(() => {
       this.router.navigate(['/home']);
     });
   }
 
   private getConfigurationForm(): FormGroup {
     return this.formBuilder.group({
+      tpAuthCookie: [null, Validators.required],
       athleteId: [null, Validators.required],
       apiKey: [null, Validators.required],
     });

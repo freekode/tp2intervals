@@ -10,7 +10,18 @@ class ConfigService(
     private val appConfigRepository: AppConfigRepository
 ) {
 
-    fun testConnections() = connectionTesters.forEach { it.test() }
+    fun testConnections(): List<String> {
+        return connectionTesters
+            .map {
+                try {
+                    it.test()
+                    ""
+                } catch (e: Exception) {
+                    e.message!!
+                }
+            }
+            .filter { it.isNotBlank() }
+    }
 
     fun findConfig(): AppConfig? = appConfigRepository.findConfig()
 
