@@ -21,4 +21,9 @@ export class ServiceClient {
     return this.httpClient
       .put(`/api/config`, configData)
   }
+
+  planWorkout(): Observable<any> {
+    return this.httpClient
+      .post(`/api/plan-workout`, {})
+  }
 }

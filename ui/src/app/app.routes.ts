@@ -10,7 +10,7 @@ export const routes: Routes = [
     canActivate: [canActivateHome]
   },
   {
-    path: 'configuration',
+    path: 'config',
     component: ConfigurationComponent,
   },
   {

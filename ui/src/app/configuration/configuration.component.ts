@@ -6,11 +6,12 @@ import { Router } from '@angular/router';
 import { MatCardModule } from "@angular/material/card";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
+import { MatButtonModule } from "@angular/material/button";
 
 @Component({
   selector: 'app-configuration',
   standalone: true,
-  imports: [ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule],
+  imports: [ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule],
   templateUrl: './configuration.component.html',
   styleUrl: './configuration.component.scss'
 })
@@ -28,12 +29,12 @@ export class ConfigurationComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    let configuration = this.configurationService.getConfig();
-
-    // this.formGroup.setValue({
-    //   athleteId: configuration.athleteId || null,
-    //   apiKey: configuration.apiKey || null,
-    // });
+    this.configurationService.getConfig().subscribe(config => {
+      this.formGroup.setValue({
+        apiKey: config.intervalsApiKey || null,
+        athleteId: config.intervalsAthleteId || null,
+      });
+    });
   }
 
   onSubmit(): void {
