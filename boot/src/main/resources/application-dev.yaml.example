@@ -1,6 +1,0 @@
-training-peaks:
-  auth-cookie: Production_tpAuth=value
-
-intervals:
-  password: 0000000000000000000000000
-  athlete-id: i00000

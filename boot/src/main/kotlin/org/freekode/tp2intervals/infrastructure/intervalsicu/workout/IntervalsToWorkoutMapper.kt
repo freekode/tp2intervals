@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component
 import java.time.Duration
 
 @Component
-class IntervalsMapper {
+class IntervalsToWorkoutMapper {
     fun mapToWorkout(eventDTO: IntervalsEventDTO): Workout {
         return Workout(
             eventDTO.start_date_local.toLocalDate(),

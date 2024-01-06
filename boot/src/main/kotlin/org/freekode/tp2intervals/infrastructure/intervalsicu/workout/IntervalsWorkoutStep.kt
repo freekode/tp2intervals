@@ -35,6 +35,6 @@ data class IntervalsWorkoutStep(
             ""
         }
 
-        return "- '$title' $durationStr $min-$max${targetType.strType} $rpmStr"
+        return "- ${title.replace("\\", "/")} $durationStr $min-$max${targetType.strType} $rpmStr"
     }
 }

@@ -14,8 +14,8 @@ import kotlin.math.absoluteValue
 class IntervalsWorkoutRepository(
     private val intervalsApiClient: IntervalsApiClient,
     private val appConfigRepository: AppConfigRepository,
-    private val intervalsMapper: IntervalsMapper,
-    private val intervalsWorkoutDocMapper: IntervalsWorkoutStepMapper
+    private val intervalsToWorkoutMapper: IntervalsToWorkoutMapper,
+    private val intervalsWorkoutDocMapper: WorkoutToIntervalsMapper
 ) {
 
     fun createAndPlanWorkout(folder: Folder, workout: Workout) {
@@ -49,7 +49,7 @@ class IntervalsWorkoutRepository(
             )
         return events
             .filter { it.category == IntervalsEventDTO.EventCategory.WORKOUT }
-            .map { intervalsMapper.mapToWorkout(it) }
+            .map { intervalsToWorkoutMapper.mapToWorkout(it) }
     }
 
     fun getActivities(startDate: LocalDate, endDate: LocalDate): List<Activity> {
@@ -60,7 +60,7 @@ class IntervalsWorkoutRepository(
                 endDate.toString()
             )
         return activities
-            .map { intervalsMapper.mapToActivity(it) }
+            .map { intervalsToWorkoutMapper.mapToActivity(it) }
     }
 
     private fun getWorkoutDayNumber(startDate: LocalDate, currentDate: LocalDate): Int {
