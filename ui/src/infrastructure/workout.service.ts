@@ -13,4 +13,8 @@ export class WorkoutService {
   planWorkout(): Observable<any> {
     return this.serviceClient.planWorkout()
   }
+
+  copyPlan(startDate, endDate): Observable<any> {
+    return this.serviceClient.copyPlan({startDate, endDate})
+  }
 }

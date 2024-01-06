@@ -18,7 +18,11 @@ import { catchError, EMPTY } from "rxjs";
 })
 export class ConfigurationComponent implements OnInit {
 
-  formGroup: FormGroup = this.getConfigurationForm();
+  formGroup: FormGroup = this.formBuilder.group({
+    tpAuthCookie: [null, Validators.required],
+    athleteId: [null, Validators.required],
+    apiKey: [null, Validators.required],
+  });
 
   errorMessage = '';
 
@@ -53,14 +57,6 @@ export class ConfigurationComponent implements OnInit {
       })
     ).subscribe(() => {
       this.router.navigate(['/home']);
-    });
-  }
-
-  private getConfigurationForm(): FormGroup {
-    return this.formBuilder.group({
-      tpAuthCookie: [null, Validators.required],
-      athleteId: [null, Validators.required],
-      apiKey: [null, Validators.required],
     });
   }
 }

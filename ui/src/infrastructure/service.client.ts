@@ -26,4 +26,9 @@ export class ServiceClient {
     return this.httpClient
       .post(`/api/plan-workout`, {})
   }
+
+  copyPlan(data) {
+    return this.httpClient
+      .post(`/api/copy-plan`, data)
+  }
 }
