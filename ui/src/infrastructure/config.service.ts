@@ -14,7 +14,7 @@ export class ConfigService {
   getConfig(): Observable<ConfigData> {
     return this.serviceClient.getConfig().pipe(
       map(response =>
-        new ConfigData(response.tpAuthCookie, response.intervalsApiKey, response.intervalsAthleteId))
+        new ConfigData(response?.tpAuthCookie, response?.intervalsApiKey, response?.intervalsAthleteId))
     )
   }
 

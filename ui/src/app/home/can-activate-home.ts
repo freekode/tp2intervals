@@ -13,7 +13,7 @@ export function canActivateHome(
       if (config.ifFilled()) {
         return true
       }
-      router.navigate(['/configuration']);
+      router.navigate(['/config']);
       return false
     })
   )
