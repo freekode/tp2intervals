@@ -22,7 +22,7 @@ device.
     java -jar tp2intervals.jar
     ```
    
-   If you want to have ui on different port
+   If you want to have UI on different port
     ```shell
     java -Dserver.port=9090 -jar tp2intervals.jar
     ```
