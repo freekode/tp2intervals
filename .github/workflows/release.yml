@@ -100,6 +100,7 @@ jobs:
         with:
           java-version: 21
           distribution: 'corretto'
+          cache: 'gradle'
 
       - uses: actions/setup-node@v4
         with:
@@ -121,4 +122,5 @@ jobs:
           VERSION: ${{needs.get-version.outputs.version}}
         with:
           draft: true
+          generateReleaseNotes: true
           artifacts: boot/build/libs/tp2intervals-$VERSION.jar
