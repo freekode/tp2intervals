@@ -124,4 +124,5 @@ jobs:
         with:
           draft: true
           generateReleaseNotes: true
-          artifacts: boot/build/libs/tp2intervals-$VERSION.jar
+          artifactErrorsFailBuild: true
+          artifacts: boot/build/libs/tp2intervals-${{ env.VERSION }}.jar
