@@ -81,4 +81,5 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          path: build/libs/tp2intervals.jar
+          path: boot/build/libs/tp2intervals.jar
+          if-no-files-found: error
