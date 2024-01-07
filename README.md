@@ -1,3 +1,6 @@
+[![build](https://github.com/freekode/tp2intervals/actions/workflows/build.yml/badge.svg)](https://github.com/freekode/tp2intervals/actions/workflows/build.yml)
+[![release](https://img.shields.io/github/release/freekode/tp2intervals)](https://github.com/freekode/tp2intervals/releases/latest)
+
 # TrainingPeaks to Intervals.icu
 
 App to sync planned workouts from TrainingPeaks to Intervals.icu and vice versa.
