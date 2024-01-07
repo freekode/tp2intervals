@@ -39,7 +39,7 @@ jobs:
     steps:
       - env:
           version: ${{needs.get-version.outputs.version}}
-        run: echo "$version"
+        run: echo "current version is $version"
 
       - uses: actions/checkout@v2
 
@@ -89,6 +89,10 @@ jobs:
       - get-version
 
     steps:
+      - env:
+          version: ${{needs.get-version.outputs.version}}
+        run: echo "current version is $version"
+
       - uses: actions/checkout@v2
 
       - uses: actions/setup-java@v3
