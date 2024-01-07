@@ -1,6 +1,8 @@
 name: build
 
 on:
+  push:
+    branches: [ main ]
   pull_request:
   workflow_dispatch:
 
@@ -31,3 +33,6 @@ jobs:
       - name: Build frontend
         working-directory: ./ui
         run: npm ci && npm run build
+
+      - name: Build image
+        run: docker build . --file Dockerfile --tag $IMAGE_NAME
