@@ -8,7 +8,7 @@ device.
 
 **Only for educational purposes**
 
-## How to run
+## How to start the app
 
 ### JAR
 1. You need Java 21. The project has executable jar.
@@ -48,12 +48,21 @@ services:
       - '8080:80'
 ```
 
-## TrainingPeaks Authentication Cookie
+## How to configure
+After you successfully started the application and able UI web page.
+You need to configure it to gain access to TrainingPeaks and to Intervals.icu
 
-How to get authentication cookie for your user:
+### TrainingPeaks Auth Cookie
+Copy cookie `Production_tpAuth` (key and value, smth like `Production_tpAuth=very_long_string`) from the browser on TrainingPeaks page.
 
-1. Copy cookie `Production_tpAuth` (key and value, smth like `Production_tpAuth=very_long_string`) from the browser on TrainingPeaks page 
-2. Save cookies on config page
+### Intervals API Key and Athlete Id
+These values available on [Settings page](https://intervals.icu/settings) in Developer Settings section.
+
+After you gathered all required configuration you can click Submit button on Configuration page.
+If everything is fine you will be redirected to home page where you can plan your workouts on TrainingPeaks.
+
+If your configuration is wrong. You will see an error that there is no access to TrainingPeaks or to Intervals.icu.
+Check all your values and save configuration again.
 
 ## Known IssuesATM
 
