@@ -11,7 +11,9 @@ device.
 ## How to start the app
 
 ### JAR
-1. You need Java 21. The project has executable jar.
+Easiest way to run the app.
+
+1. You need JDK 21. The project has executable jar.
    To start it first of all you need to have Java 21. You can install any JDK, links to installation instructions 
    [Amazon Corretto](https://docs.aws.amazon.com/corretto/latest/corretto-21-ug/downloads-list.html), 
    [OpenJDK](https://jdk.java.net/21/),
@@ -30,6 +32,8 @@ device.
 4. UI will be available on `http://localhost:8080` or on another port which you choose
 
 ### Docker
+If you already have a docker, that's suites you more.
+
 You need to have installed Docker engine, instruction how to install [you can find here.](https://docs.docker.com/engine/install/)
 
 Next run the project with docker command:
@@ -64,6 +68,6 @@ If everything is fine you will be redirected to home page where you can plan you
 If your configuration is wrong. You will see an error that there is no access to TrainingPeaks or to Intervals.icu.
 Check all your values and save configuration again.
 
-## Known IssuesATM
+## Known Issues
 
 Only time duration based intervals in workouts are supported

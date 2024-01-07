@@ -12,6 +12,7 @@ concurrency:
 
 env:
   IMAGE_NAME: tp2intervals
+  JAR_NAME: tp2intervals
 
 jobs:
   build:
