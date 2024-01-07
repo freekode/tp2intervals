@@ -16,7 +16,7 @@ device.
    [Amazon Corretto](https://docs.aws.amazon.com/corretto/latest/corretto-21-ug/downloads-list.html), 
    [OpenJDK](https://jdk.java.net/21/),
    [Oracle JDK](https://www.oracle.com/java/technologies/downloads/)
-2. Download project jar from the [latest release](https://github.com/freekode/tp2intervals/releases/latest)
+2. Download `tp2intervals.jar` from the [latest release](https://github.com/freekode/tp2intervals/releases/latest)
 3. Run the command
     ```shell
     java -jar tp2intervals.jar
