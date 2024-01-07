@@ -14,17 +14,10 @@ env:
   IMAGE_NAME: tp2intervals
 
 jobs:
-  get-version:
-    uses: .github/workflows/get-version.yml
-
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - env:
-          version: ${{needs.get-version.outputs.version}}
-        run: echo "current version is $version"
-
       - uses: actions/checkout@v2
 
       - uses: actions/setup-java@v3
@@ -46,6 +39,4 @@ jobs:
         run: npm ci && npm run build
 
       - name: Build image
-        env:
-          VERSION: ${{needs.get-version.outputs.version}}
-        run: docker build . --file Dockerfile --tag $IMAGE_NAME --build-arg JAR_NAME=$JAR_NAME-$VERSION.jar
+        run: docker build . --file Dockerfile --tag $IMAGE_NAME --build-arg JAR_NAME=$JAR_NAME-*.jar
