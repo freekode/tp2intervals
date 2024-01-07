@@ -10,6 +10,7 @@ plugins {
 }
 
 group = "org.freekode"
+version = "0.0.1"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_21

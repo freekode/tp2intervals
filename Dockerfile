@@ -14,6 +14,4 @@ COPY boot/build/libs/$JAR_NAME app.jar
 COPY docker/docker-start.sh /
 COPY docker/default.conf /etc/nginx/conf.d
 
-#EXPOSE 80
-
 CMD ["/docker-start.sh"]
