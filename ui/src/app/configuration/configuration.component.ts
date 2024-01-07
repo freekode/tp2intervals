@@ -8,11 +8,13 @@ import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatButtonModule } from "@angular/material/button";
 import { catchError, EMPTY } from "rxjs";
+import { MatProgressBarModule } from "@angular/material/progress-bar";
+import { NgIf } from "@angular/common";
 
 @Component({
   selector: 'app-configuration',
   standalone: true,
-  imports: [ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule],
+  imports: [ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatProgressBarModule, NgIf],
   templateUrl: './configuration.component.html',
   styleUrl: './configuration.component.scss'
 })
@@ -25,6 +27,7 @@ export class ConfigurationComponent implements OnInit {
   });
 
   errorMessage = '';
+  inProgress = false;
 
   constructor(
     private router: Router,
@@ -34,16 +37,19 @@ export class ConfigurationComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.inProgress = true
     this.configurationService.getConfig().subscribe(config => {
       this.formGroup.setValue({
         tpAuthCookie: config.tpAuthCookie || null,
         athleteId: config.intervalsAthleteId || null,
         apiKey: config.intervalsApiKey || null,
       });
+      this.inProgress = false
     });
   }
 
   onSubmit(): void {
+    this.inProgress = true
     let newConfiguration = new ConfigData(
       this.formGroup.value.tpAuthCookie,
       this.formGroup.value.apiKey,
@@ -56,6 +62,7 @@ export class ConfigurationComponent implements OnInit {
         return EMPTY;
       })
     ).subscribe(() => {
+      this.inProgress = false
       this.router.navigate(['/home']);
     });
   }

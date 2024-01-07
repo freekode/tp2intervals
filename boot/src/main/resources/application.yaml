@@ -8,9 +8,7 @@ spring:
   jackson:
     default-property-inclusion: non_null
   datasource:
-    url: jdbc:h2:file:./database
-    username: sa
-    password: password
+    url: jdbc:h2:file:./tp2intervals-db
     driverClassName: org.h2.Driver
   jpa:
     generate-ddl: true

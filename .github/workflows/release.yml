@@ -1,4 +1,4 @@
-name: docker-publish
+name: release
 
 on:
   push:
@@ -9,7 +9,8 @@ env:
   IMAGE_NAME: tp2intervals
 
 jobs:
-  push:
+  docker:
+    name: Docker Image Release
     runs-on: ubuntu-latest
 
     steps:
@@ -49,3 +50,35 @@ jobs:
           echo VERSION=$VERSION
           docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION
+
+
+  jar:
+    name: Jar Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-java@v3
+        with:
+          java-version: 21
+          distribution: 'corretto'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.10.0
+
+      - name: Build frontend
+        working-directory: ./ui
+        run: npm ci && npm run build
+
+      - name: Copy UI
+        run: cp -r ui/dist/ui/browser/ boot/src/main/resources/static
+
+      - name: Build backend
+        working-directory: ./boot
+        run: ./gradlew build
+
+      - uses: actions/upload-artifact@v4
+        with:
+          path: build/libs/tp2intervals.jar
