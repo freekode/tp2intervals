@@ -11,6 +11,9 @@
           <mat-form-field class="full-width">
             <mat-label>TrainingPeaks Auth Cookie</mat-label>
             <input matInput placeholder="Production_tpAuth=very_long_string" formControlName="tpAuthCookie">
+            @if (formGroup.controls['tpAuthCookie'].errors?.['pattern']) {
+              <mat-error>Must be in format Production_tpAuth=...</mat-error>
+            }
           </mat-form-field>
         </div>
       </div>

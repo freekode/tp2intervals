@@ -9,19 +9,19 @@ import { MatInputModule } from "@angular/material/input";
 import { MatButtonModule } from "@angular/material/button";
 import { catchError, EMPTY } from "rxjs";
 import { MatProgressBarModule } from "@angular/material/progress-bar";
-import { NgIf } from "@angular/common";
+import { JsonPipe, NgIf } from "@angular/common";
 
 @Component({
   selector: 'app-configuration',
   standalone: true,
-  imports: [ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatProgressBarModule, NgIf],
+  imports: [ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatProgressBarModule, NgIf, JsonPipe],
   templateUrl: './configuration.component.html',
   styleUrl: './configuration.component.scss'
 })
 export class ConfigurationComponent implements OnInit {
 
   formGroup: FormGroup = this.formBuilder.group({
-    tpAuthCookie: [null, Validators.required],
+    tpAuthCookie: [null, [Validators.required, Validators.pattern('^Production_tpAuth=.*$')]],
     athleteId: [null, Validators.required],
     apiKey: [null, Validators.required],
   });
@@ -58,6 +58,7 @@ export class ConfigurationComponent implements OnInit {
 
     this.configurationService.updateConfig(newConfiguration).pipe(
       catchError(err => {
+        this.inProgress = false
         this.errorMessage = err.error.error;
         return EMPTY;
       })
