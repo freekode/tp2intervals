@@ -58,11 +58,11 @@ class WorkoutStepToTPStructureMapper(
     private fun mapToTargetDTO(workoutStepTarget: WorkoutStepTarget) =
         when (workoutStepTarget.unit) {
             WorkoutStepTarget.TargetUnit.FTP_PERCENTAGE -> TPTargetDTO.powerTarget(
-                workoutStepTarget.min, workoutStepTarget.max,
+                workoutStepTarget.start, workoutStepTarget.end,
             )
 
             WorkoutStepTarget.TargetUnit.RPM -> TPTargetDTO.cadenceTarget(
-                workoutStepTarget.min, workoutStepTarget.max,
+                workoutStepTarget.start, workoutStepTarget.end,
             )
 
             else -> throw RuntimeException("i cant do it yet")

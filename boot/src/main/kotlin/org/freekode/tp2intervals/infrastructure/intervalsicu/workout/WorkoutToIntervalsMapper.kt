@@ -29,11 +29,11 @@ class WorkoutToIntervalsMapper {
         return IntervalsWorkoutStep(
             workoutStep.title,
             workoutStep.duration,
-            target.min.toString(),
-            target.max.toString(),
+            target.start.toString(),
+            target.end.toString(),
             IntervalsWorkoutStep.TargetType.findByTargetUnit(target.unit),
-            cadence?.min,
-            cadence?.max
+            cadence?.start,
+            cadence?.end
         )
     }
 
