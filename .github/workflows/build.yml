@@ -43,3 +43,7 @@ jobs:
 
       - name: Build image
         run: docker build . --file Dockerfile --tag $IMAGE_NAME --build-arg JAR_NAME=$JAR_NAME-*.jar
+
+#      - uses: actions/upload-artifact@v4
+#        with:
+#          path: build/libs/tp2intervals.jar

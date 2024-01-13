@@ -4,6 +4,9 @@ training-peaks:
 intervals:
   api-url: https://intervals.icu
 
+trainer-road:
+  api-url: https://www.trainerroad.com
+
 spring:
   jackson:
     default-property-inclusion: non_null
