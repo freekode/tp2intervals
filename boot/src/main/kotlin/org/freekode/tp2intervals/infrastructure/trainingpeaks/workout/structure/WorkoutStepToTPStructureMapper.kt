@@ -42,8 +42,7 @@ class WorkoutStepToTPStructureMapper(
         return if (workoutStep.isSingleStep()) {
             val singleStep = workoutStep as WorkoutSingleStep
             if (singleStep.ramp) {
-                val rampStepDuration = appConfigRepository.getConfig().rampStepDuration
-                mapMultiStep(workoutStep.rampToMultiStep(rampStepDuration))
+                mapMultiStep(workoutStep.convertRampToMultiStep())
             } else {
                 mapSingleStep(singleStep)
             }

@@ -12,10 +12,11 @@ class WorkoutSingleStep(
 ) : WorkoutStep {
     override fun isSingleStep() = true
 
-    fun rampToMultiStep(rampStepDuration: Int): WorkoutMultiStep {
+    fun convertRampToMultiStep(): WorkoutMultiStep {
         if (!ramp) {
             throw IllegalStateException("Step is not ramp step")
         }
+        val rampStepDuration = getRampStepDuration()
         val steps = mutableListOf<WorkoutSingleStep>()
         val stepsAmount = getRampSteps(rampStepDuration)
 
@@ -60,4 +61,13 @@ class WorkoutSingleStep(
         return WorkoutStepTarget(target.unit, stepStart, stepEnd)
     }
 
+    private fun getRampStepDuration(): Int {
+        return if (duration.toMinutes() in 1..10) {
+            60
+        } else if (duration.toMinutes() in 11..15) {
+            60 * 2
+        } else {
+            60 * 3
+        }
+    }
 }

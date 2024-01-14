@@ -4,27 +4,38 @@ class TPStructureStepDTO(
     var type: StructureType,
     var length: TPLengthDTO,
     var steps: List<TPStepDTO>,
-    val begin: Long?,
-    val end: Long?
+    val begin: Long? = null,
+    val end: Long? = null
 ) {
     companion object {
-        fun singleStep(tPStepDTO: TPStepDTO): TPStructureStepDTO =
+        fun singleStep(stepDTO: TPStepDTO): TPStructureStepDTO =
             TPStructureStepDTO(
                 StructureType.step,
                 TPLengthDTO.single(),
-                listOf(tPStepDTO),
-                null,
-                null
+                listOf(stepDTO),
             )
 
-        fun multiStep(repetitions: Int, tPStepDTOS: List<TPStepDTO>): TPStructureStepDTO =
+        fun multiStep(repetitions: Int, stepDTOs: List<TPStepDTO>): TPStructureStepDTO =
             TPStructureStepDTO(
                 StructureType.repetition,
                 TPLengthDTO.repetitions(repetitions.toLong()),
-                tPStepDTOS,
-                null,
-                null
+                stepDTOs,
             )
+
+        fun rampUp(stepDTOs: List<TPStepDTO>): TPStructureStepDTO =
+            TPStructureStepDTO(
+                StructureType.rampUp,
+                TPLengthDTO.single(),
+                stepDTOs,
+            )
+
+        fun rampDown(stepDTOs: List<TPStepDTO>): TPStructureStepDTO =
+            TPStructureStepDTO(
+                StructureType.rampDown,
+                TPLengthDTO.single(),
+                stepDTOs,
+            )
+
     }
 
     enum class StructureType {
