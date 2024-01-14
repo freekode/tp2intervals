@@ -11,6 +11,8 @@ import { MatProgressBarModule } from "@angular/material/progress-bar";
 import { NgIf } from "@angular/common";
 import { MatDatepickerModule } from "@angular/material/datepicker";
 import { MatNativeDateModule } from "@angular/material/core";
+import { NotificationService } from "infrastructure/notification.service";
+import { MatSnackBarModule } from "@angular/material/snack-bar";
 
 @Component({
   selector: 'app-home',
@@ -26,7 +28,8 @@ import { MatNativeDateModule } from "@angular/material/core";
     MatProgressBarModule,
     NgIf,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    MatSnackBarModule
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
@@ -44,7 +47,9 @@ export class HomeComponent {
   constructor(
     private router: Router,
     private formBuilder: FormBuilder,
-    private workoutService: WorkoutService) {
+    private workoutService: WorkoutService,
+    private notificationService: NotificationService
+    ) {
   }
 
   copyPlanSubmit() {
@@ -53,12 +58,16 @@ export class HomeComponent {
     let endDate = this.copyPlanFormGroup.value.endDate.toISOString().split('T')[0]
     this.workoutService.copyPlan(startDate, endDate).subscribe(() => {
       this.copyPlanInProgress = false
+      this.notificationService.success('Plans copied')
     })
   }
 
   planWorkoutClick() {
     this.planWorkoutInProgress = true
     this.workoutService.planWorkout()
-      .subscribe(() => this.planWorkoutInProgress = false)
+      .subscribe(() => {
+        this.planWorkoutInProgress = false
+        this.notificationService.success('Workouts planned')
+      })
   }
 }
