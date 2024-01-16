@@ -7,7 +7,7 @@ import { MatCardModule } from "@angular/material/card";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatButtonModule } from "@angular/material/button";
-import { catchError, EMPTY } from "rxjs";
+import { catchError, EMPTY, finalize } from "rxjs";
 import { MatProgressBarModule } from "@angular/material/progress-bar";
 import { NgIf } from "@angular/common";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
@@ -59,13 +59,8 @@ export class ConfigurationComponent implements OnInit {
     );
 
     this.configurationService.updateConfig(newConfiguration).pipe(
-      catchError(err => {
-        this.inProgress = false
-        this.notificationService.error(err.error.error)
-        return EMPTY;
-      })
+      finalize(() => this.inProgress = false)
     ).subscribe(() => {
-      this.inProgress = false
       this.notificationService.success('Configuration successfully saved')
       this.router.navigate(['/home']);
     });
