@@ -6,5 +6,6 @@ enum class TrainingType {
     WEIGHT,
     WALK,
     NOTE,
+    VIRTUAL_BIKE,
     UNKNOWN
 }

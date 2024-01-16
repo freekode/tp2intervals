@@ -1,8 +1,11 @@
 package org.freekode.tp2intervals.infrastructure.trainerroad
 
+import org.freekode.tp2intervals.infrastructure.trainerroad.activity.TrainerRoadActivityDTO
 import org.springframework.cloud.openfeign.FeignClient
+import org.springframework.core.io.Resource
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
 
 @FeignClient(
     value = "TrainerRoadApiClient",
@@ -19,6 +22,8 @@ interface TrainerRoadApiClient {
         @PathVariable("memberId") memberId: String,
         @PathVariable("startDate") startDate: String,
         @PathVariable("endDate") endDate: String,
-    ): List<Map<String, Any>>
+    ): List<TrainerRoadActivityDTO>
 
+    @PostMapping("/app/api/activities/{activityId}/exports/fit")
+    fun exportFit(@PathVariable activityId: String): Resource
 }

@@ -26,7 +26,7 @@ class ConfigService(
             return null
         } catch (e: FeignException) {
             if (e.status() == HttpStatus.FORBIDDEN.value() || e.status() == HttpStatus.UNAUTHORIZED.value()) {
-                return "${it.name()}: access denied"
+                return "${it.platform().title}: access denied"
             }
             throw e
         }

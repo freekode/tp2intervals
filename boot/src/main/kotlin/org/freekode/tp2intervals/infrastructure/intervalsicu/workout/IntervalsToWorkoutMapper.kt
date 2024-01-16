@@ -33,7 +33,8 @@ class IntervalsToWorkoutMapper {
             eventDTO.type!!.trainingType,
             eventDTO.name,
             eventDTO.moving_time?.let { Duration.ofSeconds(it) },
-            eventDTO.icu_training_load?.toDouble(),
+            eventDTO.icu_training_load,
+            null
         )
     }
 

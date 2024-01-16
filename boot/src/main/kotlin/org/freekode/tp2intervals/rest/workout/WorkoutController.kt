@@ -1,6 +1,6 @@
-package org.freekode.tp2intervals.rest
+package org.freekode.tp2intervals.rest.workout
 
-import org.freekode.tp2intervals.app.WorkoutService
+import org.freekode.tp2intervals.app.workout.WorkoutService
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
@@ -11,12 +11,12 @@ class WorkoutController(
     private val workoutService: WorkoutService
 ) {
 
-    @PostMapping("/api/plan-workout")
+    @PostMapping("/api/workout/plan-workout")
     fun planWorkout() {
         workoutService.planTodayAndTomorrowWorkouts()
     }
 
-    @PostMapping("/api/copy-plan")
+    @PostMapping("/api/workout/copy-plan")
     fun copyPlan(@RequestBody requestDTO: CopyPlanRequestDTO) {
         workoutService.copyPlanFromThirdParty(
             LocalDate.parse(requestDTO.startDate),

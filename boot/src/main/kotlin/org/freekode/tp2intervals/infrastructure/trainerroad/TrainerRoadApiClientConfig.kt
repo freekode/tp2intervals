@@ -13,8 +13,8 @@ class TrainerRoadApiClientConfig(
     @Bean
     fun requestInterceptor(): RequestInterceptor {
         return RequestInterceptor { template ->
-            val cookie = appConfigRepository.getConfig().tpConfig.authCookie
-            template.header(HttpHeaders.COOKIE, "Basic $cookie")
+            val cookie = appConfigRepository.getConfig().trConfig.authCookie
+            template.header(HttpHeaders.COOKIE, cookie)
         }
     }
 }

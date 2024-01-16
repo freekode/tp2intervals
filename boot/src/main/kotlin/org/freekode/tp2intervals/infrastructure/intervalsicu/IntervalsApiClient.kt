@@ -1,5 +1,6 @@
 package org.freekode.tp2intervals.infrastructure.intervalsicu
 
+import org.freekode.tp2intervals.infrastructure.intervalsicu.activity.CreateActivityRequestDTO
 import org.freekode.tp2intervals.infrastructure.intervalsicu.folder.CreateFolderRequestDTO
 import org.freekode.tp2intervals.infrastructure.intervalsicu.folder.FolderDTO
 import org.freekode.tp2intervals.infrastructure.intervalsicu.workout.CreateWorkoutRequestDTO
@@ -48,4 +49,9 @@ interface IntervalsApiClient {
         @PathVariable("startDate") startDate: String,
         @PathVariable("endDate") endDate: String,
     ): List<IntervalsActivityDTO>
+
+    @PostMapping("/api/v1/athlete/{athleteId}/activities")
+    fun createActivity(
+        @PathVariable athleteId: String,
+        @RequestBody createActivityRequestDTO: CreateActivityRequestDTO)
 }

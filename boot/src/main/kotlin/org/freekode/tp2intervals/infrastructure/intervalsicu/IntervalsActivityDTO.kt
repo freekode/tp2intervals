@@ -10,5 +10,5 @@ class IntervalsActivityDTO(
     val start_date_local: LocalDateTime,
     val type: IntervalsWorkoutType?,
     val moving_time: Long?,
-    val icu_training_load: Int?,
+    val icu_training_load: Long?,
 )

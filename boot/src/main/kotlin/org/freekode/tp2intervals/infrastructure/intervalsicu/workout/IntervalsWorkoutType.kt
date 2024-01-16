@@ -6,7 +6,7 @@ enum class IntervalsWorkoutType(
     val trainingType: TrainingType
 ) {
     Ride(TrainingType.BIKE),
-    VirtualRide(TrainingType.BIKE),
+    VirtualRide(TrainingType.VIRTUAL_BIKE),
     Run(TrainingType.RUN),
     WeightTraining(TrainingType.WEIGHT),
     NOTE(TrainingType.NOTE),

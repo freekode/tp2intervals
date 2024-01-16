@@ -3,6 +3,7 @@ package org.freekode.tp2intervals.infrastructure.config
 import org.freekode.tp2intervals.domain.config.AppConfig
 import org.freekode.tp2intervals.domain.config.AppConfigRepository
 import org.freekode.tp2intervals.domain.config.IntervalsConfig
+import org.freekode.tp2intervals.domain.config.TrainerRoadConfig
 import org.freekode.tp2intervals.domain.config.TrainingPeaksConfig
 import org.springframework.cache.annotation.CacheConfig
 import org.springframework.cache.annotation.CachePut
@@ -31,6 +32,7 @@ class AppConfigRepositoryImpl(
         val entity = AppConfigEntity(
             1,
             appConfig.tpConfig.authCookie,
+            appConfig.trConfig.authCookie,
             appConfig.intervalsConfig.apiKey,
             appConfig.intervalsConfig.athleteId
         )
@@ -39,6 +41,7 @@ class AppConfigRepositoryImpl(
 
     private fun toDomain(entity: AppConfigEntity) = AppConfig(
         TrainingPeaksConfig(entity.tpAuthCookie!!),
+        TrainerRoadConfig(entity.trAuthCookie!!),
         IntervalsConfig(entity.intervalsApiKey!!, entity.intervalsAthleteId!!)
     )
 }

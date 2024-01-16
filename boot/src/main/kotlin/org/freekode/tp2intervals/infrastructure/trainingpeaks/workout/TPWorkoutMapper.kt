@@ -1,12 +1,12 @@
 package org.freekode.tp2intervals.infrastructure.trainingpeaks.workout
 
+import java.time.Duration
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutExternalData
+import org.freekode.tp2intervals.infrastructure.Base64
 import org.freekode.tp2intervals.infrastructure.trainingpeaks.TrainingPeaksApiClient
 import org.freekode.tp2intervals.infrastructure.trainingpeaks.workout.structure.TPStructureToWorkoutStepMapper
 import org.springframework.stereotype.Component
-import java.time.Duration
-import java.util.*
 
 @Component
 class TPWorkoutMapper(
@@ -50,8 +50,7 @@ class TPWorkoutMapper(
 
         val userId = trainingPeaksApiClient.getUser().userId!!
         val resource = trainingPeaksApiClient.downloadWorkoutFit(userId, tpWorkout.workoutId)
-        val byteArray = resource.contentAsByteArray
-        return Base64.getEncoder().encodeToString(byteArray)
+        return Base64.toString(resource)
     }
 
 }

@@ -10,8 +10,9 @@ import jakarta.persistence.Table
 data class AppConfigEntity(
     @Id val id: Int?,
     @Column(length = 5000) val tpAuthCookie: String?,
+    @Column(length = 5000) val trAuthCookie: String?,
     val intervalsApiKey: String?,
     val intervalsAthleteId: String?,
 ) {
-    constructor() : this(null, null, null, null)
+    constructor() : this(null, null, null, null, null)
 }
