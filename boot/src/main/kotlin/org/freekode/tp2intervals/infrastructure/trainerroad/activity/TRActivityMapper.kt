@@ -3,7 +3,7 @@ package org.freekode.tp2intervals.infrastructure.trainerroad.activity
 import java.time.Duration
 import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.activity.Activity
-import org.freekode.tp2intervals.infrastructure.Base64
+import org.freekode.tp2intervals.infrastructure.utils.Base64
 import org.springframework.core.io.Resource
 import org.springframework.stereotype.Component
 

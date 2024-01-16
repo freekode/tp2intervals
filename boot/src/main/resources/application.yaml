@@ -10,6 +10,8 @@ trainer-road:
 spring:
   jackson:
     default-property-inclusion: non_null
+    serialization:
+      fail-on-empty-beans: false
   datasource:
     url: jdbc:h2:file:./tp2intervals-db
     driverClassName: org.h2.Driver

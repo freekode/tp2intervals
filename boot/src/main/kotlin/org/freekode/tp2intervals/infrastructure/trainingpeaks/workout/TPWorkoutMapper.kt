@@ -3,7 +3,7 @@ package org.freekode.tp2intervals.infrastructure.trainingpeaks.workout
 import java.time.Duration
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutExternalData
-import org.freekode.tp2intervals.infrastructure.Base64
+import org.freekode.tp2intervals.infrastructure.utils.Base64
 import org.freekode.tp2intervals.infrastructure.trainingpeaks.TrainingPeaksApiClient
 import org.freekode.tp2intervals.infrastructure.trainingpeaks.workout.structure.TPStructureToWorkoutStepMapper
 import org.springframework.stereotype.Component
