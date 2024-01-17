@@ -65,7 +65,8 @@ class IntervalsToWorkoutMapper {
             stepDTO.duration?.let { Duration.ofSeconds(it) } ?: Duration.ZERO,
             targets.first,
             targets.second,
-            intensity
+            intensity,
+            stepDTO.ramp == true
         )
     }
 

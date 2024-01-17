@@ -7,14 +7,16 @@ import { MatCardModule } from "@angular/material/card";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatButtonModule } from "@angular/material/button";
-import { catchError, EMPTY } from "rxjs";
+import { catchError, EMPTY, finalize } from "rxjs";
 import { MatProgressBarModule } from "@angular/material/progress-bar";
-import { JsonPipe, NgIf } from "@angular/common";
+import { NgIf } from "@angular/common";
+import { MatSnackBarModule } from "@angular/material/snack-bar";
+import { NotificationService } from "infrastructure/notification.service";
 
 @Component({
   selector: 'app-configuration',
   standalone: true,
-  imports: [ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatProgressBarModule, NgIf, JsonPipe],
+  imports: [ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatProgressBarModule, MatSnackBarModule, NgIf],
   templateUrl: './configuration.component.html',
   styleUrl: './configuration.component.scss'
 })
@@ -33,6 +35,7 @@ export class ConfigurationComponent implements OnInit {
     private router: Router,
     private formBuilder: FormBuilder,
     private configurationService: ConfigService,
+    private notificationService: NotificationService
   ) {
   }
 
@@ -57,12 +60,9 @@ export class ConfigurationComponent implements OnInit {
     );
 
     this.configurationService.updateConfig(newConfiguration).pipe(
-      catchError(err => {
-        this.inProgress = false
-        return EMPTY;
-      })
+      finalize(() => this.inProgress = false)
     ).subscribe(() => {
-      this.inProgress = false
+      this.notificationService.success('Configuration successfully saved')
       this.router.navigate(['/home']);
     });
   }

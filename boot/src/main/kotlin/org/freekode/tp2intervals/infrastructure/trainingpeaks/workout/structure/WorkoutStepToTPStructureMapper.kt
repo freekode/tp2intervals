@@ -2,6 +2,7 @@ package org.freekode.tp2intervals.infrastructure.trainingpeaks.workout.structure
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.freekode.tp2intervals.domain.config.AppConfigRepository
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutMultiStep
 import org.freekode.tp2intervals.domain.workout.WorkoutSingleStep
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component
 @Component
 class WorkoutStepToTPStructureMapper(
     private val objectMapper: ObjectMapper,
+    private val appConfigRepository: AppConfigRepository
 ) {
 
     fun mapToWorkoutStructureStr(workout: Workout): String? {
@@ -37,13 +39,26 @@ class WorkoutStepToTPStructureMapper(
     }
 
     private fun mapToStructureStep(workoutStep: WorkoutStep): TPStructureStepDTO {
-        if (workoutStep.isSingleStep()) {
-            val singleStepDTO = mapToStepDTO(workoutStep as WorkoutSingleStep)
-            return TPStructureStepDTO.singleStep(singleStepDTO)
+        return if (workoutStep.isSingleStep()) {
+            val singleStep = workoutStep as WorkoutSingleStep
+            if (singleStep.ramp) {
+                mapMultiStep(workoutStep.convertRampToMultiStep())
+            } else {
+                mapSingleStep(singleStep)
+            }
         } else {
-            val stepDTOs = (workoutStep as WorkoutMultiStep).steps.map { mapToStepDTO(it) }
-            return TPStructureStepDTO.multiStep(workoutStep.repetitions, stepDTOs)
+            mapMultiStep(workoutStep as WorkoutMultiStep)
         }
+    }
+
+    private fun mapSingleStep(singleStep: WorkoutSingleStep): TPStructureStepDTO {
+        val singleStepDTO = mapToStepDTO(singleStep)
+        return TPStructureStepDTO.singleStep(singleStepDTO)
+    }
+
+    private fun mapMultiStep(workoutStep: WorkoutMultiStep): TPStructureStepDTO {
+        val stepDTOs = workoutStep.steps.map { mapToStepDTO(it) }
+        return TPStructureStepDTO.multiStep(workoutStep.repetitions, stepDTOs)
     }
 
     private fun mapToStepDTO(workoutStep: WorkoutSingleStep) =
@@ -58,11 +73,11 @@ class WorkoutStepToTPStructureMapper(
     private fun mapToTargetDTO(workoutStepTarget: WorkoutStepTarget) =
         when (workoutStepTarget.unit) {
             WorkoutStepTarget.TargetUnit.FTP_PERCENTAGE -> TPTargetDTO.powerTarget(
-                workoutStepTarget.min, workoutStepTarget.max,
+                workoutStepTarget.start, workoutStepTarget.end,
             )
 
             WorkoutStepTarget.TargetUnit.RPM -> TPTargetDTO.cadenceTarget(
-                workoutStepTarget.min, workoutStepTarget.max,
+                workoutStepTarget.start, workoutStepTarget.end,
             )
 
             else -> throw RuntimeException("i cant do it yet")
