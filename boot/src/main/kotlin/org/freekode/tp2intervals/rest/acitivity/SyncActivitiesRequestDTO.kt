@@ -1,5 +1,6 @@
 package org.freekode.tp2intervals.rest.acitivity
 
 class SyncActivitiesRequestDTO(
-    val date: String,
+    val startDate: String,
+    val endDate: String,
 )
