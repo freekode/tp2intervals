@@ -16,7 +16,7 @@ class TrainerRoadActivityRepository(
 
     override fun getActivities(startDate: LocalDate, endDate: LocalDate): List<Activity> {
         val memberId = trainerRoadApiClient.getMember().Username
-        val activities = trainerRoadApiClient.getActivities(memberId, startDate.toString(), endDate.toString())
+        val activities = trainerRoadApiClient.getActivities(memberId!!, startDate.toString(), endDate.toString())
         return activities
             .map { mapToActivity(it) }
     }

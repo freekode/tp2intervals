@@ -21,7 +21,7 @@ class IntervalsActivityRepository(
     override fun getActivities(startDate: LocalDate, endDate: LocalDate): List<Activity> {
         val activities =
             intervalsApiClient.getActivities(
-                appConfigRepository.getConfig().intervalsConfig.athleteId,
+                appConfigRepository.getConfig().intervalsConfig!!.athleteId,
                 startDate.toString(),
                 endDate.toString()
             )
@@ -31,7 +31,7 @@ class IntervalsActivityRepository(
 
     override fun createActivity(activity: Activity) {
         intervalsApiClient.createActivity(
-            appConfigRepository.getConfig().intervalsConfig.athleteId,
+            appConfigRepository.getConfig().intervalsConfig!!.athleteId,
             MyMultipartFile("file", activity.resource!!)
         )
     }

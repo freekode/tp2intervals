@@ -15,7 +15,7 @@ import java.time.LocalDate
 @Repository
 class TrainingPeaksWorkoutRepository(
     private val trainingPeaksApiClient: TrainingPeaksApiClient,
-    private val thirdPartyWorkoutMapper: TPWorkoutMapper,
+    private val tpWorkoutMapper: TPWorkoutMapper,
     private val workoutStepToTPStructureMapper: WorkoutStepToTPStructureMapper
 ) : WorkoutRepository, ActivityRepository {
     override fun platform() = Platform.TRAINING_PEAKS
@@ -39,8 +39,8 @@ class TrainingPeaksWorkoutRepository(
         val userId = getUserId()
         val tpWorkouts = trainingPeaksApiClient.getWorkouts(userId, startDate.toString(), endDate.toString())
         val tpNotes = trainingPeaksApiClient.getNotes(userId, startDate.toString(), endDate.toString())
-        val workouts = tpWorkouts.map { thirdPartyWorkoutMapper.mapToWorkout(it) }
-        val notes = tpNotes.map { thirdPartyWorkoutMapper.mapToWorkout(it) }
+        val workouts = tpWorkouts.map { tpWorkoutMapper.mapToWorkout(it) }
+        val notes = tpNotes.map { tpWorkoutMapper.mapToWorkout(it) }
         return workouts + notes
     }
 

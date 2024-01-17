@@ -1,7 +1,6 @@
 package org.freekode.tp2intervals.app.workout
 
 import org.freekode.tp2intervals.app.Platform
-import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.plan.Plan
 import org.springframework.stereotype.Service
 import java.time.LocalDate
@@ -15,7 +14,7 @@ class WorkoutService(
     private val intervalsWorkoutRepository = workoutRepositoryStrategy.getRepository(Platform.INTERVALS)
     private val intervalsPlanRepository = planRepositoryStrategy.getRepository(Platform.INTERVALS)
 
-    fun copyPlanFromThirdParty(startDate: LocalDate, endDate: LocalDate) {
+    fun copyPlanFromTrainingPeaks(startDate: LocalDate, endDate: LocalDate) {
         val workouts = trainingPeaksWorkoutRepository.getPlannedWorkouts(startDate, endDate)
         val plan = intervalsPlanRepository.createPlan("My Plan - $startDate", startDate)
         workouts.forEach { intervalsWorkoutRepository.planWorkout(it, plan) }

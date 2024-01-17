@@ -31,17 +31,19 @@ class AppConfigRepositoryImpl(
     override fun updateConfig(appConfig: AppConfig): AppConfig {
         val entity = AppConfigEntity(
             1,
-            appConfig.tpConfig.authCookie,
-            appConfig.trConfig.authCookie,
+            appConfig.tpConfig?.authCookie,
+            appConfig.trConfig?.authCookie,
             appConfig.intervalsConfig.apiKey,
             appConfig.intervalsConfig.athleteId
         )
         return toDomain(h2ConfigRepository.save(entity))
     }
 
-    private fun toDomain(entity: AppConfigEntity) = AppConfig(
-        TrainingPeaksConfig(entity.tpAuthCookie!!),
-        TrainerRoadConfig(entity.trAuthCookie!!),
-        IntervalsConfig(entity.intervalsApiKey!!, entity.intervalsAthleteId!!)
-    )
+    private fun toDomain(entity: AppConfigEntity): AppConfig {
+        return AppConfig(
+            entity.tpAuthCookie?.let { TrainingPeaksConfig(it) },
+            entity.trAuthCookie?.let { TrainerRoadConfig(it) },
+            IntervalsConfig(entity.intervalsApiKey!!, entity.intervalsAthleteId!!)
+        )
+    }
 }

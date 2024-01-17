@@ -21,12 +21,12 @@ import { JsonPipe, NgIf } from "@angular/common";
 export class ConfigurationComponent implements OnInit {
 
   formGroup: FormGroup = this.formBuilder.group({
-    tpAuthCookie: [null, [Validators.required, Validators.pattern('^Production_tpAuth=.*$')]],
+    tpAuthCookie: [null, [Validators.pattern('^Production_tpAuth=.*$')]],
+    trAuthCookie: [null, [Validators.pattern('^TrainerRoadAuth=.*$')]],
     athleteId: [null, Validators.required],
     apiKey: [null, Validators.required],
   });
 
-  errorMessage = '';
   inProgress = false;
 
   constructor(
@@ -59,7 +59,6 @@ export class ConfigurationComponent implements OnInit {
     this.configurationService.updateConfig(newConfiguration).pipe(
       catchError(err => {
         this.inProgress = false
-        this.errorMessage = err.error.error;
         return EMPTY;
       })
     ).subscribe(() => {

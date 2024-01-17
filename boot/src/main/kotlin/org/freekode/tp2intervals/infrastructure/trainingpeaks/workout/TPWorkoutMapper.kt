@@ -30,7 +30,7 @@ class TPWorkoutMapper(
             tpWorkout.totalTimePlanned?.let { Duration.ofMinutes((it * 60).toLong()) },
             tpWorkout.tssPlanned,
             steps,
-            WorkoutExternalData.thirdParty(tpWorkout.workoutId, workoutContent)
+            WorkoutExternalData.trainingPeaks(tpWorkout.workoutId, workoutContent)
         )
     }
 
@@ -39,7 +39,7 @@ class TPWorkoutMapper(
             tpNote.noteDate.toLocalDate(),
             tpNote.title,
             tpNote.description,
-            WorkoutExternalData.thirdParty(tpNote.id.toString(), null)
+            WorkoutExternalData.trainingPeaks(tpNote.id.toString(), null)
         )
     }
 

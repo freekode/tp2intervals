@@ -18,7 +18,7 @@ class WorkoutController(
 
     @PostMapping("/api/workout/copy-plan")
     fun copyPlan(@RequestBody requestDTO: CopyPlanRequestDTO) {
-        workoutService.copyPlanFromThirdParty(
+        workoutService.copyPlanFromTrainingPeaks(
             LocalDate.parse(requestDTO.startDate),
             LocalDate.parse(requestDTO.endDate)
         )

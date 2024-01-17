@@ -21,6 +21,18 @@
       <div class="row">
         <div class="col">
           <mat-form-field class="full-width">
+            <mat-label>TrainerRoad Auth Cookie</mat-label>
+            <input matInput placeholder="TrainerRoadAuth==very_long_string" formControlName="trAuthCookie">
+            @if (formGroup.controls['trAuthCookie'].errors?.['pattern']) {
+              <mat-error>Must be in format TrainerRoadAuth==...</mat-error>
+            }
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="full-width">
             <mat-label>Intervals API Key</mat-label>
             <input matInput placeholder="123456qwerty123456qwerty1" formControlName="apiKey">
           </mat-form-field>
@@ -46,7 +58,6 @@
       >
         Submit
       </button>
-      <div class="error-message">{{errorMessage}}</div>
     </mat-card-actions>
 
     <mat-card-footer>

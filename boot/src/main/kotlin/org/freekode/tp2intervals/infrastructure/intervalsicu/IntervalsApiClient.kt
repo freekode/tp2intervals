@@ -1,6 +1,5 @@
 package org.freekode.tp2intervals.infrastructure.intervalsicu
 
-import feign.Param
 import org.freekode.tp2intervals.infrastructure.intervalsicu.activity.CreateActivityResponseDTO
 import org.freekode.tp2intervals.infrastructure.intervalsicu.folder.CreateFolderRequestDTO
 import org.freekode.tp2intervals.infrastructure.intervalsicu.folder.FolderDTO
@@ -24,9 +23,7 @@ import org.springframework.web.multipart.MultipartFile
 interface IntervalsApiClient {
 
     @GetMapping("/api/v1/athlete/{athleteId}")
-    fun getAthlete(
-        @PathVariable("athleteId") athleteId: String,
-    ): Map<String, Any>
+    fun getAthlete(@PathVariable("athleteId") athleteId: String): Map<String, Any>
 
     @PostMapping("/api/v1/athlete/{athleteId}/folders")
     fun createFolder(
