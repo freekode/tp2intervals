@@ -7,7 +7,7 @@ import { MatCardModule } from "@angular/material/card";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatButtonModule } from "@angular/material/button";
-import { catchError, EMPTY, finalize } from "rxjs";
+import { finalize } from "rxjs";
 import { MatProgressBarModule } from "@angular/material/progress-bar";
 import { NgIf } from "@angular/common";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
@@ -44,6 +44,7 @@ export class ConfigurationComponent implements OnInit {
     this.configurationService.getConfig().subscribe(config => {
       this.formGroup.setValue({
         tpAuthCookie: config.tpAuthCookie || null,
+        trAuthCookie: config.trAuthCookie || null,
         athleteId: config.intervalsAthleteId || null,
         apiKey: config.intervalsApiKey || null,
       });
@@ -55,6 +56,7 @@ export class ConfigurationComponent implements OnInit {
     this.inProgress = true
     let newConfiguration = new ConfigData(
       this.formGroup.value.tpAuthCookie,
+      this.formGroup.value.trAuthCookie,
       this.formGroup.value.apiKey,
       this.formGroup.value.athleteId,
     );
