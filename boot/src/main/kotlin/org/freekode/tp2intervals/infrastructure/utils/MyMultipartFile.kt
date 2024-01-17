@@ -14,7 +14,7 @@ class MyMultipartFile(
 
     override fun getInputStream(): ByteArrayInputStream = ByteArrayInputStream(content)
 
-    override fun getName(): String = "filename"
+    override fun getName(): String = "file"
 
     override fun getOriginalFilename(): String? = null
 

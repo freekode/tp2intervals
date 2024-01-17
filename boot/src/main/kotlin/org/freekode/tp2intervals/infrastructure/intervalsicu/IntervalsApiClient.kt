@@ -1,11 +1,13 @@
 package org.freekode.tp2intervals.infrastructure.intervalsicu
 
-import org.freekode.tp2intervals.infrastructure.intervalsicu.activity.CreateActivityRequestDTO
+import feign.Param
+import org.freekode.tp2intervals.infrastructure.intervalsicu.activity.CreateActivityResponseDTO
 import org.freekode.tp2intervals.infrastructure.intervalsicu.folder.CreateFolderRequestDTO
 import org.freekode.tp2intervals.infrastructure.intervalsicu.folder.FolderDTO
 import org.freekode.tp2intervals.infrastructure.intervalsicu.workout.CreateWorkoutRequestDTO
 import org.freekode.tp2intervals.infrastructure.intervalsicu.workout.IntervalsEventDTO
 import org.springframework.cloud.openfeign.FeignClient
+import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -52,9 +54,9 @@ interface IntervalsApiClient {
         @PathVariable("endDate") endDate: String,
     ): List<IntervalsActivityDTO>
 
-    @PostMapping("/api/v1/athlete/{athleteId}/activities")
+    @PostMapping("/api/v1/athlete/{athleteId}/activities", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun createActivity(
         @PathVariable athleteId: String,
         @RequestPart("file") file: MultipartFile
-    )
+    ): CreateActivityResponseDTO
 }
