@@ -13,7 +13,7 @@ class TRActivityMapper {
         val type = if (dto.CompletedRide.IsOutside) TrainingType.BIKE else TrainingType.VIRTUAL_BIKE
 
         return Activity(
-            dto.Date,
+            dto.CompletedRide.Date,
             type,
             dto.CompletedRide.Name,
             Duration.ofSeconds(dto.CompletedRide.Duration),

@@ -1,6 +1,7 @@
 package org.freekode.tp2intervals.app
 
-
+import org.freekode.tp2intervals.app.config.ConfigService
+import org.freekode.tp2intervals.app.workout.WorkoutService
 import org.freekode.tp2intervals.infrastructure.intervalsicu.folder.IntervalsFolderRepository
 import org.freekode.tp2intervals.infrastructure.intervalsicu.workout.IntervalsWorkoutRepository
 import org.freekode.tp2intervals.infrastructure.trainingpeaks.workout.TrainingPeaksWorkoutRepository

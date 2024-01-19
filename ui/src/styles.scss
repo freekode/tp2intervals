@@ -15,3 +15,16 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     --mdc-snackbar-container-color: #43a446;
   }
 }
+
+.row {
+  display: flex;
+  flex-direction: row;
+}
+
+.col {
+  flex: 1;
+}
+
+mat-card {
+  margin-bottom: 20px;
+}

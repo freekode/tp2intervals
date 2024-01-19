@@ -8,6 +8,6 @@ data class SyncActivitiesRequest(
     val startDate: LocalDate,
     val endDate: LocalDate,
     val types: List<TrainingType>,
-    val fromPlatform: Platform,
-    val toPlatform: Platform
+    val sourcePlatform: Platform,
+    val targetPlatform: Platform
 )

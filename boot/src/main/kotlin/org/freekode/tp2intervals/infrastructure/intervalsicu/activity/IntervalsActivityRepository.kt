@@ -21,9 +21,9 @@ class IntervalsActivityRepository(
     override fun getActivities(startDate: LocalDate, endDate: LocalDate): List<Activity> {
         val activities =
             intervalsApiClient.getActivities(
-                appConfigRepository.getConfig().intervalsConfig!!.athleteId,
-                startDate.toString(),
-                endDate.toString()
+                appConfigRepository.getConfig().intervalsConfig.athleteId,
+                startDate.atStartOfDay().toString(),
+                endDate.atStartOfDay().plusDays(1).minusSeconds(1).toString()
             )
         return activities
             .map { intervalsToWorkoutMapper.mapToActivity(it) }

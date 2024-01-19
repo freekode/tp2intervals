@@ -9,6 +9,7 @@ class TrainerRoadActivityDTO(
 ) {
     class CompletedRideDTO(
         val Name: String,
+        val Date: LocalDateTime,
         val IsOutside: Boolean,
         val Tss: Long,
         val EstimatedDuration: Long,

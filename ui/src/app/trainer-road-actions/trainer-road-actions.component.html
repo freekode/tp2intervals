@@ -1,0 +1,42 @@
+<form [formGroup]="syncWorkoutsFormGroup" novalidate (ngSubmit)="syncWorkoutsSubmit()">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Sync Workouts</mat-card-title>
+      <mat-card-subtitle>
+        Copies workouts from TrainerRoad to Intervals
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="example-form-field">
+            <mat-label>Date Range</mat-label>
+            <mat-date-range-input
+              [rangePicker]="datepicker">
+              <input matStartDate placeholder="Start Date" formControlName="startDate">
+              <input matEndDate placeholder="End Date" formControlName="endDate">
+            </mat-date-range-input>
+            <mat-datepicker-toggle matIconSuffix [for]="datepicker"></mat-datepicker-toggle>
+            <mat-date-range-picker #datepicker></mat-date-range-picker>
+          </mat-form-field>
+        </div>
+      </div>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        [disabled]="syncWorkoutsFormGroup.invalid"
+      >
+        Submit
+      </button>
+    </mat-card-actions>
+
+    <mat-card-footer>
+      <mat-progress-bar *ngIf="copyPlanInProgress" mode="query"></mat-progress-bar>
+    </mat-card-footer>
+  </mat-card>
+</form>
