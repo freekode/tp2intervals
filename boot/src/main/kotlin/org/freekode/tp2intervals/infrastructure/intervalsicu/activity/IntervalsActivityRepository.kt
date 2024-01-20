@@ -31,7 +31,7 @@ class IntervalsActivityRepository(
 
     override fun createActivity(activity: Activity) {
         intervalsApiClient.createActivity(
-            appConfigRepository.getConfig().intervalsConfig!!.athleteId,
+            appConfigRepository.getConfig().intervalsConfig.athleteId,
             MyMultipartFile("file", activity.resource!!)
         )
     }

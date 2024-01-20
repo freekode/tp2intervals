@@ -34,10 +34,10 @@ class ConfigController(
     fun updateConfig(@RequestBody appConfigDTO: AppConfigDTO): ResponseEntity<ErrorResponseDTO> {
         val appConfig = toDomain(appConfigDTO)
         val errors = configService.validateAllConfiguration(appConfig)
+        configService.updateConfig(appConfig)
         if (errors.isNotEmpty()) {
             return ResponseEntity.badRequest().body(ErrorResponseDTO(errors.joinToString()))
         }
-        configService.updateConfig(appConfig)
         return ResponseEntity.ok().build()
     }
 
