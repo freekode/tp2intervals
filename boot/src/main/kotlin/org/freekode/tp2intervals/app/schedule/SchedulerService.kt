@@ -18,11 +18,10 @@ class SchedulerService(
         val jobBuilder = RecurringJobBuilder
             .aRecurringJob()
             .withCron(cron)
-            .withName("Sync activities")
             .withId(jobId)
             .withDetails { runnable.run() }
         jobScheduler.createRecurrently(jobBuilder)
-        log.info("Schedule sync job")
+        log.info("Scheduled job")
     }
 
     fun stopJob(jobId: String) {

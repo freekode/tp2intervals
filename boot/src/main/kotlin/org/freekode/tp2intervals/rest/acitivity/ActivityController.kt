@@ -19,12 +19,17 @@ class ActivityController(
 
     @PutMapping("/api/activity/sync-activities/trainer-road/intervals")
     fun syncActivities(@RequestBody requestDTO: SyncActivitiesRequestDTO) {
-        activityService.syncActivities(getSyncRequest(requestDTO))
+        activityService.syncActivities(
+            getSyncRequest(
+                LocalDate.parse(requestDTO.startDate),
+                LocalDate.parse(requestDTO.endDate)
+            )
+        )
     }
 
     @PostMapping("/api/activity/sync-activities/trainer-road/intervals/job")
-    fun startJobSyncActivities(@RequestBody requestDTO: SyncActivitiesRequestDTO) {
-        activityService.scheduleSyncActivitiesJob(getSyncRequest(requestDTO))
+    fun startJobSyncActivities() {
+        activityService.scheduleSyncActivitiesJob(getSyncRequest(LocalDate.now(), LocalDate.now()))
     }
 
     @GetMapping("/api/activity/sync-activities/trainer-road/intervals/job")
@@ -37,9 +42,9 @@ class ActivityController(
         activityService.stopJob(Platform.TRAINER_ROAD, Platform.INTERVALS)
     }
 
-    private fun getSyncRequest(requestDTO: SyncActivitiesRequestDTO) =
+    private fun getSyncRequest(startDate: LocalDate, endDate: LocalDate) =
         SyncActivitiesRequest(
-            LocalDate.parse(requestDTO.startDate), LocalDate.parse(requestDTO.endDate),
+            startDate, endDate,
             listOf(TrainingType.BIKE),
             Platform.TRAINER_ROAD, Platform.INTERVALS
         )
