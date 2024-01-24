@@ -1,10 +1,9 @@
 package org.freekode.tp2intervals.rest.acitivity
 
 import java.time.LocalDate
-import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.app.activity.ActivityService
-import org.freekode.tp2intervals.app.activity.ActivitySyncJobScheduler
 import org.freekode.tp2intervals.app.activity.SyncActivitiesRequest
+import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.TrainingType
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -16,32 +15,32 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class ActivityController(
     private val activityService: ActivityService,
-    private val activitySyncJobScheduler: ActivitySyncJobScheduler
 ) {
 
-    @PutMapping("/api/activity/sync-workouts/trainer-road/intervals")
+    @PutMapping("/api/activity/sync-activities/trainer-road/intervals")
     fun syncActivities(@RequestBody requestDTO: SyncActivitiesRequestDTO) {
-        activityService.syncActivities(
-            SyncActivitiesRequest(
-                LocalDate.parse(requestDTO.startDate), LocalDate.parse(requestDTO.endDate),
-                listOf(TrainingType.BIKE),
-                Platform.TRAINER_ROAD, Platform.INTERVALS
-            )
-        )
+        activityService.syncActivities(getSyncRequest(requestDTO))
     }
 
-    @PostMapping("/api/activity/sync-workouts/trainer-road/intervals/job")
-    fun startJobSyncActivities() {
-        activitySyncJobScheduler.startJob(Platform.TRAINER_ROAD, Platform.INTERVALS)
+    @PostMapping("/api/activity/sync-activities/trainer-road/intervals/job")
+    fun startJobSyncActivities(@RequestBody requestDTO: SyncActivitiesRequestDTO) {
+        activityService.scheduleSyncActivitiesJob(getSyncRequest(requestDTO))
     }
 
-    @GetMapping("/api/activity/sync-workouts/trainer-road/intervals/job")
-    fun checkJobSyncActivities() {
-        activitySyncJobScheduler.checkJob()
+    @GetMapping("/api/activity/sync-activities/trainer-road/intervals/job")
+    fun getJobSyncActivities(): JobDTO? {
+        return activityService.getJob(Platform.TRAINER_ROAD, Platform.INTERVALS)?.let { JobDTO(it.id) }
     }
 
-    @DeleteMapping("/api/activity/sync-workouts/trainer-road/intervals/job")
+    @DeleteMapping("/api/activity/sync-activities/trainer-road/intervals/job")
     fun stopJobSyncActivities() {
-        activitySyncJobScheduler.endJob()
+        activityService.stopJob(Platform.TRAINER_ROAD, Platform.INTERVALS)
     }
+
+    private fun getSyncRequest(requestDTO: SyncActivitiesRequestDTO) =
+        SyncActivitiesRequest(
+            LocalDate.parse(requestDTO.startDate), LocalDate.parse(requestDTO.endDate),
+            listOf(TrainingType.BIKE),
+            Platform.TRAINER_ROAD, Platform.INTERVALS
+        )
 }

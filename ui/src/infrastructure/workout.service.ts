@@ -3,6 +3,9 @@ import { Observable } from "rxjs";
 import { ServiceClient } from "./service.client";
 
 
+/**
+ * @deprecated use workout.client.ts
+ */
 @Injectable({
   providedIn: 'root'
 })

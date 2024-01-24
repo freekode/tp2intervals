@@ -14,6 +14,7 @@ import { Router } from "@angular/router";
 import { WorkoutService } from "infrastructure/workout.service";
 import { NotificationService } from "infrastructure/notification.service";
 import { finalize } from "rxjs";
+import { WorkoutClient } from "infrastructure/workout.client";
 
 @Component({
   selector: 'app-trainer-road-actions',
@@ -41,15 +42,22 @@ export class TrainerRoadActionsComponent {
     endDate: [null, Validators.required],
   });
 
+  jobStarted = true
   copyPlanInProgress = false
-  planWorkoutInProgress = false
 
   constructor(
     private router: Router,
     private formBuilder: FormBuilder,
     private workoutService: WorkoutService,
+    private workoutClient: WorkoutClient,
     private notificationService: NotificationService
   ) {
+  }
+
+  ngOnInit(): void {
+    this.workoutClient.getJobPlanWorkout().subscribe(response => {
+      this.jobStarted = !!response?.id
+    })
   }
 
   syncWorkoutsSubmit() {
@@ -60,6 +68,19 @@ export class TrainerRoadActionsComponent {
       finalize(() => this.copyPlanInProgress = false)
     ).subscribe(() => {
       this.notificationService.success('Workouts are synced')
+    })
+  }
+
+
+  startJob() {
+    this.workoutClient.startJobPlanWorkout().subscribe(() => {
+      this.jobStarted = true
+    })
+  }
+
+  stopJob() {
+    this.workoutClient.stopJobPlanWorkout().subscribe(() => {
+      this.jobStarted = false
     })
   }
 }
