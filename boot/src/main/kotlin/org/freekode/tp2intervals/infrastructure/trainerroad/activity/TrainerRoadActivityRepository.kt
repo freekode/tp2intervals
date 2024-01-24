@@ -1,6 +1,6 @@
 package org.freekode.tp2intervals.infrastructure.trainerroad.activity
 
-import org.freekode.tp2intervals.app.Platform
+import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.activity.Activity
 import org.freekode.tp2intervals.domain.activity.ActivityRepository
 import org.freekode.tp2intervals.infrastructure.trainerroad.TrainerRoadApiClient

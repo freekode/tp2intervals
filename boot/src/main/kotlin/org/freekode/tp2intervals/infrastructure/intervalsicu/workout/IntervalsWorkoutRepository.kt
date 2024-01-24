@@ -1,20 +1,20 @@
 package org.freekode.tp2intervals.infrastructure.intervalsicu.workout
 
-import org.freekode.tp2intervals.app.Platform
-import org.freekode.tp2intervals.domain.config.AppConfigRepository
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
+import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.plan.Plan
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutRepository
 import org.freekode.tp2intervals.infrastructure.intervalsicu.IntervalsApiClient
+import org.freekode.tp2intervals.infrastructure.intervalsicu.configuration.IntervalsConfigurationRepository
 import org.springframework.stereotype.Repository
-import java.time.LocalDate
-import java.time.temporal.ChronoUnit
 import kotlin.math.absoluteValue
 
 @Repository
 class IntervalsWorkoutRepository(
     private val intervalsApiClient: IntervalsApiClient,
-    private val appConfigRepository: AppConfigRepository,
+    private val intervalsConfigurationRepository: IntervalsConfigurationRepository,
     private val intervalsToWorkoutMapper: IntervalsToWorkoutMapper,
     private val intervalsWorkoutDocMapper: WorkoutToIntervalsMapper
 ) : WorkoutRepository {
@@ -36,7 +36,7 @@ class IntervalsWorkoutRepository(
             null,
         )
         intervalsApiClient.createWorkout(
-            appConfigRepository.getConfig().intervalsConfig.athleteId,
+            intervalsConfigurationRepository.getConfiguration().athleteId,
             createWorkoutRequestDTO
         )
     }
@@ -46,7 +46,7 @@ class IntervalsWorkoutRepository(
     override fun getPlannedWorkouts(startDate: LocalDate, endDate: LocalDate): List<Workout> {
         val events =
             intervalsApiClient.getEvents(
-                appConfigRepository.getConfig().intervalsConfig.athleteId,
+                intervalsConfigurationRepository.getConfiguration().athleteId,
                 startDate.toString(),
                 endDate.toString()
             )

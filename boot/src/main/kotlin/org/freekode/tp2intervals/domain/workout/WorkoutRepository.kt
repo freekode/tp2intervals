@@ -1,6 +1,6 @@
 package org.freekode.tp2intervals.domain.workout
 
-import org.freekode.tp2intervals.app.Platform
+import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.plan.Plan
 import java.time.LocalDate
 

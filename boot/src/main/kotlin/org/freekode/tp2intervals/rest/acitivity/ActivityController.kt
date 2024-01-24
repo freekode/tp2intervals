@@ -1,7 +1,7 @@
 package org.freekode.tp2intervals.rest.acitivity
 
 import java.time.LocalDate
-import org.freekode.tp2intervals.app.Platform
+import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.app.activity.ActivityService
 import org.freekode.tp2intervals.app.activity.ActivitySyncJobScheduler
 import org.freekode.tp2intervals.app.activity.SyncActivitiesRequest

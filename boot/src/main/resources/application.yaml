@@ -18,12 +18,10 @@ spring:
   jpa:
     open-in-view: false
     database-platform: org.hibernate.community.dialect.SQLiteDialect
-    hibernate:
-      ddl-auto: update
 
-org:
-  jobrunr:
-    dashboard:
-      enabled: true
-    background-job-server:
-      enabled: true
+#org:
+#  jobrunr:
+#    dashboard:
+#      enabled: true
+#    background-job-server:
+#      enabled: true

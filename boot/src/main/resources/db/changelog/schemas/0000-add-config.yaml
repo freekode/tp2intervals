@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: _
+      author: _
+      changes:
+        - createTable:
+            tableName: config
+            columns:
+
+              - column:
+                  name: key
+                  type: varchar
+                  constraints:
+                    primaryKey: true
+                    unique: true
+
+              - column:
+                  name: value
+                  type: varchar(5000)
+                  constraints:
+                    nullable: false

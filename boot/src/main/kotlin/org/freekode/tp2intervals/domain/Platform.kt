@@ -1,4 +1,4 @@
-package org.freekode.tp2intervals.app
+package org.freekode.tp2intervals.domain
 
 enum class Platform(val title: String) {
     INTERVALS("Intervals.icu"),

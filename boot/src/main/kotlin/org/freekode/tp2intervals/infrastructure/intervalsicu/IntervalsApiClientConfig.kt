@@ -2,12 +2,12 @@ package org.freekode.tp2intervals.infrastructure.intervalsicu
 
 import feign.RequestInterceptor
 import java.util.*
-import org.freekode.tp2intervals.domain.config.AppConfigRepository
+import org.freekode.tp2intervals.infrastructure.intervalsicu.configuration.IntervalsConfigurationRepository
 import org.springframework.context.annotation.Bean
 import org.springframework.http.HttpHeaders
 
 class IntervalsApiClientConfig(
-    private val appConfigRepository: AppConfigRepository
+    private val intervalsConfigurationRepository: IntervalsConfigurationRepository
 ) {
 
     companion object {
@@ -22,7 +22,7 @@ class IntervalsApiClientConfig(
     @Bean
     fun requestInterceptor(): RequestInterceptor {
         return RequestInterceptor { template ->
-            val apiKey = appConfigRepository.getConfig().intervalsConfig.apiKey
+            val apiKey = intervalsConfigurationRepository.getConfiguration().apiKey
             val authorization = getAuthorizationHeader(apiKey)
             template.header(HttpHeaders.AUTHORIZATION, authorization)
         }

@@ -2,7 +2,7 @@ package org.freekode.tp2intervals.infrastructure.trainingpeaks.workout.structure
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.freekode.tp2intervals.domain.config.AppConfigRepository
+import org.freekode.tp2intervals.domain.config.AppConfigurationRepository
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutMultiStep
 import org.freekode.tp2intervals.domain.workout.WorkoutSingleStep
@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component
 @Component
 class WorkoutStepToTPStructureMapper(
     private val objectMapper: ObjectMapper,
-    private val appConfigRepository: AppConfigRepository
 ) {
 
     fun mapToWorkoutStructureStr(workout: Workout): String? {
