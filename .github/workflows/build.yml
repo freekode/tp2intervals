@@ -15,7 +15,7 @@ env:
   JAR_NAME: tp2intervals
 
 jobs:
-  build:
+  docker:
     runs-on: ubuntu-latest
 
     steps:
@@ -36,6 +36,27 @@ jobs:
       - name: Build project
         run: ./scripts/build-docker.sh $IMAGE_NAME $JAR_NAME '*'
 
-#      - uses: actions/upload-artifact@v4
-#        with:
-#          path: build/libs/tp2intervals.jar
+  jar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-java@v3
+        with:
+          java-version: 21
+          distribution: 'corretto'
+          cache: 'gradle'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.10.0
+          cache: 'npm'
+          cache-dependency-path: 'ui/package-lock.json'
+
+      - name: Build project
+        run: ./scripts/build-jar.sh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          path: build/libs/$JAR_NAME-*.jar
