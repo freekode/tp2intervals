@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatGridListModule } from "@angular/material/grid-list";
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
@@ -11,9 +11,9 @@ import { MatDatepickerModule } from "@angular/material/datepicker";
 import { MatNativeDateModule } from "@angular/material/core";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { Router } from "@angular/router";
-import { WorkoutService } from "infrastructure/workout.service";
 import { NotificationService } from "infrastructure/notification.service";
 import { finalize } from "rxjs";
+import { WorkoutClient } from "infrastructure/workout.client";
 
 @Component({
   selector: 'app-training-peaks-actions',
@@ -35,29 +35,36 @@ import { finalize } from "rxjs";
   templateUrl: './training-peaks-actions.component.html',
   styleUrl: './training-peaks-actions.component.scss'
 })
-export class TrainingPeaksActionsComponent {
+export class TrainingPeaksActionsComponent implements OnInit {
 
   copyPlanFormGroup: FormGroup = this.formBuilder.group({
     startDate: [null, Validators.required],
     endDate: [null, Validators.required],
   });
 
+  jobStarted = true
   copyPlanInProgress = false
   planWorkoutInProgress = false
 
   constructor(
     private router: Router,
     private formBuilder: FormBuilder,
-    private workoutService: WorkoutService,
+    private workoutClient: WorkoutClient,
     private notificationService: NotificationService
   ) {
+  }
+
+  ngOnInit(): void {
+    this.workoutClient.getJobPlanWorkout().subscribe(response => {
+      this.jobStarted = !!response?.id
+    })
   }
 
   copyPlanSubmit() {
     this.copyPlanInProgress = true
     let startDate = this.copyPlanFormGroup.value.startDate.toISOString().split('T')[0]
     let endDate = this.copyPlanFormGroup.value.endDate.toISOString().split('T')[0]
-    this.workoutService.copyPlan(startDate, endDate).pipe(
+    this.workoutClient.copyPlan(startDate, endDate).pipe(
       finalize(() => this.copyPlanInProgress = false)
     ).subscribe(() => {
       this.notificationService.success('Plan copied')
@@ -66,10 +73,22 @@ export class TrainingPeaksActionsComponent {
 
   planWorkoutClick() {
     this.planWorkoutInProgress = true
-    this.workoutService.planWorkout().pipe(
+    this.workoutClient.planWorkout().pipe(
       finalize(() => this.planWorkoutInProgress = false)
     ).subscribe(() => {
       this.notificationService.success('Workouts planned')
+    })
+  }
+
+  startJob() {
+    this.workoutClient.startJobPlanWorkout().subscribe(() => {
+      this.jobStarted = true
+    })
+  }
+
+  stopJob() {
+    this.workoutClient.stopJobPlanWorkout().subscribe(() => {
+      this.jobStarted = false
     })
   }
 }

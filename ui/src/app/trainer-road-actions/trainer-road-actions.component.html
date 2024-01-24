@@ -1,4 +1,4 @@
-<form [formGroup]="syncWorkoutsFormGroup" novalidate (ngSubmit)="syncWorkoutsSubmit()">
+<form [formGroup]="syncActivitiesFormGroup" novalidate (ngSubmit)="syncActivitiesSubmit()">
   <mat-card>
     <mat-card-header>
       <mat-card-title>Sync Workouts</mat-card-title>
@@ -30,7 +30,7 @@
         color="primary"
         class="action-button"
         type="submit"
-        [disabled]="syncWorkoutsFormGroup.invalid"
+        [disabled]="syncActivitiesFormGroup.invalid"
       >
         Submit
       </button>
@@ -59,7 +59,7 @@
     </mat-card-actions>
 
     <mat-card-footer>
-      <mat-progress-bar *ngIf="copyPlanInProgress" mode="query"></mat-progress-bar>
+      <mat-progress-bar *ngIf="syncActivitiesInProgress" mode="query"></mat-progress-bar>
     </mat-card-footer>
   </mat-card>
 </form>

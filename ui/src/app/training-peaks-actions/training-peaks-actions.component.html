@@ -49,10 +49,33 @@
   <mat-card-actions>
     <button
       mat-raised-button
+      class="action-button"
       color="primary"
       (click)="planWorkoutClick()"
     >
       Submit
+    </button>
+
+    <button
+      mat-raised-button
+      color="primary"
+      class="action-button"
+      type="button"
+      [disabled]="jobStarted"
+      (click)="startJob()"
+    >
+      Start Job
+    </button>
+
+    <button
+      mat-raised-button
+      color="accent"
+      class="action-button"
+      type="button"
+      [disabled]="!jobStarted"
+      (click)="stopJob()"
+    >
+      Stop Job
     </button>
   </mat-card-actions>
 

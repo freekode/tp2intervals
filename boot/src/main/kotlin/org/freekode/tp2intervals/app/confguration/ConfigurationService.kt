@@ -15,13 +15,11 @@ class ConfigurationService(
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val configurationValidatorMap = configurationValidators.associateBy { it.platform() }
 
+    fun getConfiguration(key: String): String? = appConfigurationRepository.getConfiguration(key)
+
     fun getConfigurations(): AppConfiguration = appConfigurationRepository.getConfigurations()
 
-    fun updateConfiguration(request: UpdateConfigurationRequest): List<String> {
-        val errors = validateAllConfiguration(AppConfiguration(request.configMap))
-        appConfigurationRepository.updateConfig(request)
-        return errors
-    }
+    fun updateConfiguration(request: UpdateConfigurationRequest) = appConfigurationRepository.updateConfig(request)
 
     fun validateAllConfiguration(appConfiguration: AppConfiguration): List<String> {
         return configurationValidatorMap.keys.mapNotNull { validateConfiguration(it, appConfiguration) }

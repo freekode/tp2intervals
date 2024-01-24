@@ -2,9 +2,9 @@ package org.freekode.tp2intervals.app.workout
 
 import org.freekode.tp2intervals.app.schedule.SchedulerService
 import org.freekode.tp2intervals.domain.Platform
+import org.freekode.tp2intervals.domain.config.AppConfigurationRepository
 import org.freekode.tp2intervals.domain.plan.Plan
 import org.jobrunr.jobs.RecurringJob
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
 @Service
@@ -12,7 +12,7 @@ class WorkoutService(
     private val workoutRepositoryStrategy: WorkoutRepositoryStrategy,
     private val planRepositoryStrategy: PlanRepositoryStrategy,
     private val schedulerService: SchedulerService,
-    @Value("\${app.plan-workouts-cron}") private val planWorkoutsCron: String
+    private val appConfigurationRepository: AppConfigurationRepository
 ) {
     fun copyPlan(request: CopyPlanRequest) {
         val sourceWorkoutRepository = workoutRepositoryStrategy.getRepository(request.sourcePlatform)
@@ -33,6 +33,7 @@ class WorkoutService(
     }
 
     fun schedulePlanWorkoutsJob(request: PlanWorkoutsRequest) {
+        val planWorkoutsCron = appConfigurationRepository.getConfiguration("generic.plan-workouts-cron")!!
         val jobId = getJobId(request.sourcePlatform, request.targetPlatform)
         schedulerService.startJob(jobId, planWorkoutsCron) { planWorkouts(request) }
     }

@@ -1,7 +1,7 @@
 package org.freekode.tp2intervals.domain.config
 
 interface AppConfigurationRepository {
-    fun getConfiguration(key: String): AppConfiguration?
+    fun getConfiguration(key: String): String?
 
     fun getConfigurations(): AppConfiguration
 

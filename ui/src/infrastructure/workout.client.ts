@@ -31,8 +31,8 @@ export class WorkoutClient {
       .delete(`/api/workout/plan-workout/intervals/training-peaks/job`)
   }
 
-  copyPlan(data) {
+  copyPlan(startDate, endDate) {
     return this.httpClient
-      .post(`/api/workout/copy-plan/training-peaks/intervals`, data)
+      .post(`/api/workout/copy-plan/training-peaks/intervals`, {startDate, endDate})
   }
 }

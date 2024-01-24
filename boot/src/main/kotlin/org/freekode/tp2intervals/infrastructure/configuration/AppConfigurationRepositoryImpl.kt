@@ -14,10 +14,9 @@ class AppConfigurationRepositoryImpl(
     private val dBConfigurationRepository: DBConfigurationRepository,
 ) : AppConfigurationRepository {
 
-    @Deprecated("just dont need it")
     @Cacheable(key = "#key")
-    override fun getConfiguration(key: String): AppConfiguration? {
-        return dBConfigurationRepository.findByIdOrNull(key)?.let { toDomain(it) }
+    override fun getConfiguration(key: String): String? {
+        return dBConfigurationRepository.findByIdOrNull(key)?.value
     }
 
     override fun getConfigurations(): AppConfiguration {
@@ -37,9 +36,5 @@ class AppConfigurationRepositoryImpl(
     private fun toDomain(entities: Iterable<AppConfigurationEntryEntity>): AppConfiguration {
         val configMap = entities.associateBy { it.key!! }.mapValues { it.value.value!! }
         return AppConfiguration(configMap)
-    }
-
-    private fun toDomain(entity: AppConfigurationEntryEntity): AppConfiguration {
-        return AppConfiguration(mapOf(Pair(entity.key!!, entity.value!!)))
     }
 }

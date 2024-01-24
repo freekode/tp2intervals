@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { ConfigData } from './config-data';
 import { map, Observable } from "rxjs";
-import { ServiceClient } from "./service.client";
+import { ConfigurationClient } from "./configuration.client";
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class ConfigService {
-  constructor(private serviceClient: ServiceClient) {
+  constructor(private serviceClient: ConfigurationClient) {
   }
 
   getConfig(): Observable<ConfigData> {

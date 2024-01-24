@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatGridListModule } from "@angular/material/grid-list";
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
@@ -11,10 +11,9 @@ import { MatDatepickerModule } from "@angular/material/datepicker";
 import { MatNativeDateModule } from "@angular/material/core";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { Router } from "@angular/router";
-import { WorkoutService } from "infrastructure/workout.service";
 import { NotificationService } from "infrastructure/notification.service";
 import { finalize } from "rxjs";
-import { WorkoutClient } from "infrastructure/workout.client";
+import { ActivityClient } from "infrastructure/activity.client";
 
 @Component({
   selector: 'app-trainer-road-actions',
@@ -36,50 +35,48 @@ import { WorkoutClient } from "infrastructure/workout.client";
   templateUrl: './trainer-road-actions.component.html',
   styleUrl: './trainer-road-actions.component.scss'
 })
-export class TrainerRoadActionsComponent {
-  syncWorkoutsFormGroup: FormGroup = this.formBuilder.group({
+export class TrainerRoadActionsComponent implements OnInit {
+  syncActivitiesFormGroup: FormGroup = this.formBuilder.group({
     startDate: [null, Validators.required],
     endDate: [null, Validators.required],
   });
 
   jobStarted = true
-  copyPlanInProgress = false
+  syncActivitiesInProgress = false
 
   constructor(
     private router: Router,
     private formBuilder: FormBuilder,
-    private workoutService: WorkoutService,
-    private workoutClient: WorkoutClient,
+    private activityClient: ActivityClient,
     private notificationService: NotificationService
   ) {
   }
 
   ngOnInit(): void {
-    this.workoutClient.getJobPlanWorkout().subscribe(response => {
+    this.activityClient.getJobSyncActivities().subscribe(response => {
       this.jobStarted = !!response?.id
     })
   }
 
-  syncWorkoutsSubmit() {
-    this.copyPlanInProgress = true
-    let startDate = this.syncWorkoutsFormGroup.value.startDate.toISOString().split('T')[0]
-    let endDate = this.syncWorkoutsFormGroup.value.endDate.toISOString().split('T')[0]
-    this.workoutService.copyPlan(startDate, endDate).pipe(
-      finalize(() => this.copyPlanInProgress = false)
+  syncActivitiesSubmit() {
+    this.syncActivitiesInProgress = true
+    let startDate = this.syncActivitiesFormGroup.value.startDate.toISOString().split('T')[0]
+    let endDate = this.syncActivitiesFormGroup.value.endDate.toISOString().split('T')[0]
+    this.activityClient.syncActivities(startDate, endDate).pipe(
+      finalize(() => this.syncActivitiesInProgress = false)
     ).subscribe(() => {
-      this.notificationService.success('Workouts are synced')
+      this.notificationService.success('Activities are synced')
     })
   }
 
-
   startJob() {
-    this.workoutClient.startJobPlanWorkout().subscribe(() => {
+    this.activityClient.startJobSyncActivities().subscribe(() => {
       this.jobStarted = true
     })
   }
 
   stopJob() {
-    this.workoutClient.stopJobPlanWorkout().subscribe(() => {
+    this.activityClient.stopJobSyncActivities().subscribe(() => {
       this.jobStarted = false
     })
   }

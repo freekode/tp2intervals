@@ -25,8 +25,8 @@ class ConfigurationController(
 
     @PutMapping("/api/configuration")
     fun updateConfiguration(@RequestBody requestDTO: UpdateConfigurationRequestDTO): ResponseEntity<ErrorResponseDTO> {
-        val errors =
-            configurationService.updateConfiguration(UpdateConfigurationRequest(requestDTO.config))
+        configurationService.updateConfiguration(UpdateConfigurationRequest(requestDTO.config))
+        val errors = configurationService.validateAllConfiguration(AppConfiguration(requestDTO.config))
         if (errors.isNotEmpty()) {
             return ResponseEntity.badRequest().body(ErrorResponseDTO(errors.joinToString()))
         }

@@ -3,15 +3,18 @@ package org.freekode.tp2intervals.app.activity
 import org.freekode.tp2intervals.app.schedule.SchedulerService
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.activity.Activity
+import org.freekode.tp2intervals.domain.config.AppConfigurationRepository
 import org.jobrunr.jobs.RecurringJob
 import org.jobrunr.scheduling.cron.Cron
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
 @Service
 class ActivityService(
     private val activityRepositoryStrategy: ActivityRepositoryStrategy,
-    private val schedulerService: SchedulerService
+    private val schedulerService: SchedulerService,
+    private val appConfigurationRepository: AppConfigurationRepository,
 ) {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -32,8 +35,9 @@ class ActivityService(
     }
 
     fun scheduleSyncActivitiesJob(request: SyncActivitiesRequest) {
+        val syncActivitiesCron = appConfigurationRepository.getConfiguration("generic.sync-activities-cron")!!
         val jobId = getJobId(request.sourcePlatform, request.targetPlatform)
-        schedulerService.startJob(jobId, Cron.every10minutes()) { syncActivities(request) }
+        schedulerService.startJob(jobId, syncActivitiesCron) { syncActivities(request) }
     }
 
     fun stopJob(sourcePlatform: Platform, targetPlatform: Platform) {

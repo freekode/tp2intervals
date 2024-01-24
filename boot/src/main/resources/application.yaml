@@ -8,7 +8,11 @@ trainer-road:
   api-url: https://www.trainerroad.com
 
 app:
-  plan-workouts-cron: 0 22 * * *
+  default-configurations:
+    - key: 'generic.plan-workouts-cron'
+      value: '0 22 * * *'
+    - key: 'generic.sync-activities-cron'
+      value: '*/10 * * * *'
 
 spring:
   jackson:
