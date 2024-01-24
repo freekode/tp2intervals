@@ -14,21 +14,21 @@ export class ServiceClient {
 
   getConfig(): Observable<any> {
     return this.httpClient
-      .get(`/api/config`)
+      .get(`/api/configuration`)
   }
 
   updateConfig(configData: ConfigData): Observable<any> {
     return this.httpClient
-      .put(`/api/config`, configData)
+      .put(`/api/configuration`, configData)
   }
 
   planWorkout(): Observable<any> {
     return this.httpClient
-      .post(`/api/plan-workout`, {})
+      .post(`/api/workout/plan-workout`, {})
   }
 
   copyPlan(data) {
     return this.httpClient
-      .post(`/api/copy-plan`, data)
+      .post(`/api/workout/copy-plan`, data)
   }
 }

@@ -18,7 +18,7 @@ class ConfigurationController(
 ) {
 
     @GetMapping("/api/configuration")
-    fun getConfigurations(): AppConfigurationDTO? {
+    fun getConfigurations(): AppConfigurationDTO {
         val configurations = configurationService.getConfigurations()
         return AppConfigurationDTO(configurations.configMap)
     }

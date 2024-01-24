@@ -10,7 +10,7 @@ export function canActivateHome(
 
   return configService.getConfig().pipe(
     map(config => {
-      if (config.ifFilled()) {
+      if (config.hasRequiredConfig()) {
         return true
       }
       router.navigate(['/config']);

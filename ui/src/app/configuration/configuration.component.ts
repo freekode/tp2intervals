@@ -23,10 +23,10 @@ import { NotificationService } from "infrastructure/notification.service";
 export class ConfigurationComponent implements OnInit {
 
   formGroup: FormGroup = this.formBuilder.group({
-    tpAuthCookie: [null, [Validators.pattern('^Production_tpAuth=.*$')]],
-    trAuthCookie: [null, [Validators.pattern('^TrainerRoadAuth=.*$')]],
-    athleteId: [null, Validators.required],
-    apiKey: [null, Validators.required],
+    'trainingpeaks.auth-cookie': [null, [Validators.pattern('^Production_tpAuth=.*$')]],
+    'trainerroad.auth-cookie': [null, [Validators.pattern('^TrainerRoadAuth=.*$')]],
+    'intervals.api-key': [null, Validators.required],
+    'intervals.athlete-id': [null, Validators.required],
   });
 
   inProgress = false;
@@ -42,24 +42,14 @@ export class ConfigurationComponent implements OnInit {
   ngOnInit(): void {
     this.inProgress = true
     this.configurationService.getConfig().subscribe(config => {
-      this.formGroup.setValue({
-        tpAuthCookie: config.tpAuthCookie || null,
-        trAuthCookie: config.trAuthCookie || null,
-        athleteId: config.intervalsAthleteId || null,
-        apiKey: config.intervalsApiKey || null,
-      });
+      this.formGroup.patchValue(config.config);
       this.inProgress = false
     });
   }
 
   onSubmit(): void {
     this.inProgress = true
-    let newConfiguration = new ConfigData(
-      this.formGroup.value.tpAuthCookie,
-      this.formGroup.value.trAuthCookie,
-      this.formGroup.value.apiKey,
-      this.formGroup.value.athleteId,
-    );
+    let newConfiguration = new ConfigData(this.formGroup.getRawValue());
 
     this.configurationService.updateConfig(newConfiguration).pipe(
       finalize(() => this.inProgress = false)
