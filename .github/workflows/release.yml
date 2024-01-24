@@ -53,18 +53,8 @@ jobs:
         with:
           node-version: 20.10.0
 
-      - name: Build backend
-        working-directory: ./boot
-        run: ./gradlew build
-
-      - name: Build frontend
-        working-directory: ./ui
-        run: npm ci && npm run build
-
-      - name: Build image
-        env:
-          VERSION: ${{needs.get-version.outputs.version}}
-        run: docker build . --file Dockerfile --tag $IMAGE_NAME --build-arg JAR_NAME=$JAR_NAME-$VERSION.jar
+      - name: Build project
+        run: ./scripts/build-docker.sh $IMAGE_NAME $JAR_NAME '*'
 
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
@@ -107,16 +97,8 @@ jobs:
         with:
           node-version: 20.10.0
 
-      - name: Build frontend
-        working-directory: ./ui
-        run: npm ci && npm run build
-
-      - name: Copy UI
-        run: cp -r ui/dist/ui/browser/ boot/src/main/resources/static
-
-      - name: Build backend
-        working-directory: ./boot
-        run: ./gradlew build
+      - name: Build project
+        run: ./scripts/build-jar.sh
 
       - uses: ncipollo/release-action@v1
         env:
