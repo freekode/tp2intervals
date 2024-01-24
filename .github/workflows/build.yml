@@ -59,4 +59,4 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          path: build/libs/$JAR_NAME-*.jar
+          path: build/libs/${{ env.JAR_NAME }}-*.jar
