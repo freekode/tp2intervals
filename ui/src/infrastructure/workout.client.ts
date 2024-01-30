@@ -13,26 +13,26 @@ export class WorkoutClient {
 
   planWorkout(): Observable<any> {
     return this.httpClient
-      .post(`/api/workout/plan-workout/INTERVALS/TRAINING_PEAKS`, {})
-  }
-
-  startJobPlanWorkout(): Observable<any> {
-    return this.httpClient
-      .post(`/api/workout/plan-workout/INTERVALS/TRAINING_PEAKS/job`, {})
-  }
-
-  getJobPlanWorkout(): Observable<any> {
-    return this.httpClient
-      .get(`/api/workout/plan-workout/INTERVALS/TRAINING_PEAKS/job`)
-  }
-
-  stopJobPlanWorkout(): Observable<any> {
-    return this.httpClient
-      .delete(`/api/workout/plan-workout/INTERVALS/TRAINING_PEAKS/job`)
+      .post(`/api/workout/plan/INTERVALS/TRAINING_PEAKS`, {})
   }
 
   copyPlan(startDate, endDate) {
     return this.httpClient
-      .post(`/api/workout/copy-plan/TRAINING_PEAKS/INTERVALS`, {startDate, endDate})
+      .post(`/api/workout/copy/TRAINING_PEAKS/INTERVALS`, {startDate, endDate})
+  }
+
+  startJobPlanWorkout(): Observable<any> {
+    return this.httpClient
+      .post(`/api/workout/plan/INTERVALS/TRAINING_PEAKS/job`, {})
+  }
+
+  getJobPlanWorkout(): Observable<any> {
+    return this.httpClient
+      .get(`/api/workout/plan/INTERVALS/TRAINING_PEAKS/job`)
+  }
+
+  stopJobPlanWorkout(): Observable<any> {
+    return this.httpClient
+      .delete(`/api/workout/plan/INTERVALS/TRAINING_PEAKS/job`)
   }
 }

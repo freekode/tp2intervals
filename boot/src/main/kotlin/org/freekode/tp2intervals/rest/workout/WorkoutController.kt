@@ -15,7 +15,7 @@ class WorkoutController(
     private val workoutService: WorkoutService
 ) {
 
-    @PostMapping("/api/workout/plan-workout/{sourcePlatform}/{targetPlatform}")
+    @PostMapping("/api/workout/plan/{sourcePlatform}/{targetPlatform}")
     fun planWorkout(
         @PathVariable sourcePlatform: Platform,
         @PathVariable targetPlatform: Platform
@@ -23,7 +23,7 @@ class WorkoutController(
         workoutService.planWorkouts(PlanWorkoutsRequest.fromTodayToTomorrow(sourcePlatform, targetPlatform))
     }
 
-    @PostMapping("/api/workout/copy-plan/{sourcePlatform}/{targetPlatform}")
+    @PostMapping("/api/workout/copy/{sourcePlatform}/{targetPlatform}")
     fun copyPlan(
         @RequestBody requestDTO: CopyPlanRequestDTO,
         @PathVariable sourcePlatform: Platform,

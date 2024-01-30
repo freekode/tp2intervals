@@ -6,7 +6,7 @@ import org.freekode.tp2intervals.app.activity.SyncActivitiesRequest
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.TrainingType
 import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 
@@ -15,7 +15,7 @@ class ActivityController(
     private val activityService: ActivityService,
 ) {
 
-    @PutMapping("/api/activity/sync-activities/{sourcePlatform}/{targetPlatform}/sync")
+    @PostMapping("/api/activity/sync/{sourcePlatform}/{targetPlatform}")
     fun syncActivities(
         @RequestBody requestDTO: SyncActivitiesRequestDTO,
         @PathVariable sourcePlatform: Platform,
