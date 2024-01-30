@@ -14,7 +14,7 @@ class IntervalsEventTypeMapper {
             TrainingType.UNKNOWN to "Other",
         )
 
-        fun findByIntervalsType(intervalsType: String?): TrainingType =
+        fun getByIntervalsType(intervalsType: String): TrainingType =
             typeMap.filterValues { it == intervalsType }.keys.firstOrNull() ?: TrainingType.UNKNOWN
 
         fun getByTrainingType(trainingType: TrainingType): String = typeMap[trainingType]!!

@@ -13,5 +13,5 @@ class IntervalsActivityDTO(
     val moving_time: Long?,
     val icu_training_load: Int?,
 ) {
-    fun mapType(): TrainingType = IntervalsEventTypeMapper.findByIntervalsType(type)
+    fun mapType(): TrainingType = type?.let { IntervalsEventTypeMapper.getByIntervalsType(it) } ?: TrainingType.UNKNOWN
 }

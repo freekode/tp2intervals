@@ -16,7 +16,7 @@ class IntervalsEventDTO(
     val workout_doc: IntervalsWorkoutDocDTO?
 ) {
 
-    fun mapType(): TrainingType = IntervalsEventTypeMapper.findByIntervalsType(type)
+    fun mapType(): TrainingType = type?.let { IntervalsEventTypeMapper.getByIntervalsType(it) } ?: TrainingType.UNKNOWN
 
     fun mapDuration(): Duration? = moving_time?.let { Duration.ofSeconds(it) }
 

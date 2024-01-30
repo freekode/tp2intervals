@@ -2,6 +2,7 @@ package org.freekode.tp2intervals.infrastructure.trainingpeaks.workout
 
 import org.freekode.tp2intervals.infrastructure.trainingpeaks.workout.structure.TPWorkoutStructureDTO
 import java.time.LocalDateTime
+import org.freekode.tp2intervals.domain.TrainingType
 
 class TPWorkoutDTO(
     var workoutId: String,
@@ -14,5 +15,5 @@ class TPWorkoutDTO(
     var coachComments: String?,
     var structure: TPWorkoutStructureDTO?
 ) {
-    fun getWorkoutType() = workoutTypeValueId?.let { TPWorkoutType.findByValue(it) }
+    fun getWorkoutType(): TrainingType? = workoutTypeValueId?.let { TPWorkoutTypeMapper.getByValue(it) }
 }
