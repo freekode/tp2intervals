@@ -1,8 +1,6 @@
 <mat-toolbar color="primary">
-  <button mat-icon-button [routerLink]="['/config']">
-    <mat-icon>settings</mat-icon>
-  </button>
-  <span [routerLink]="['/']">tp2Intervals</span>
+  <button mat-flat-button color="primary" [routerLink]="['/']">tp2Intervals</button>
+  <button mat-flat-button color="primary" [routerLink]="['/config']">Configuration</button>
   <span class="spacer"></span>
 </mat-toolbar>
 <router-outlet></router-outlet>
