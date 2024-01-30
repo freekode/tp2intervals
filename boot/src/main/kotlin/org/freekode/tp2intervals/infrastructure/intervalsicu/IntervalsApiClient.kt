@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile
     value = "IntervalsApiClient",
     url = "\${intervals.api-url}",
     dismiss404 = true,
+    primary = false,
     configuration = [IntervalsApiClientConfig::class]
 )
 interface IntervalsApiClient {

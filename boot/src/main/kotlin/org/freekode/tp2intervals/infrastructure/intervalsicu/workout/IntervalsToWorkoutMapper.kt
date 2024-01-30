@@ -17,10 +17,10 @@ class IntervalsToWorkoutMapper {
     fun mapToWorkout(eventDTO: IntervalsEventDTO): Workout {
         return Workout(
             eventDTO.start_date_local.toLocalDate(),
-            eventDTO.type!!.trainingType,
+            eventDTO.mapType(),
             eventDTO.name,
             eventDTO.description,
-            eventDTO.moving_time?.let { Duration.ofSeconds(it) },
+            eventDTO.mapDuration(),
             eventDTO.icu_training_load?.toDouble(),
             eventDTO.workout_doc?.let { mapToWorkoutSteps(it) } ?: listOf(),
             WorkoutExternalData.intervals(eventDTO.id.toString())
@@ -30,7 +30,7 @@ class IntervalsToWorkoutMapper {
     fun mapToActivity(eventDTO: IntervalsActivityDTO): Activity {
         return Activity(
             eventDTO.start_date_local,
-            eventDTO.type!!.trainingType,
+            eventDTO.mapType(),
             eventDTO.name,
             eventDTO.moving_time.let { Duration.ofSeconds(it) },
             eventDTO.icu_training_load,

@@ -28,7 +28,7 @@ class IntervalsWorkoutRepository(
         val createWorkoutRequestDTO = CreateWorkoutRequestDTO(
             plan.id.value,
             getWorkoutDayNumber(plan.startDate, workout.date),
-            IntervalsWorkoutType.findByType(workout.type),
+            IntervalsEventTypeMapper.getByTrainingType(workout.type),
             workout.title,
             workout.duration?.seconds,
             workout.load?.toInt(),

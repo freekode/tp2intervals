@@ -24,7 +24,7 @@ class TPWorkoutMapper(
 
         return Workout(
             tpWorkout.workoutDay.toLocalDate(),
-            tpWorkout.getWorkoutType()!!.trainingType,
+            tpWorkout.getWorkoutType()!!,
             tpWorkout.title.ifBlank { "Workout" },
             description,
             tpWorkout.totalTimePlanned?.let { Duration.ofMinutes((it * 60).toLong()) },
