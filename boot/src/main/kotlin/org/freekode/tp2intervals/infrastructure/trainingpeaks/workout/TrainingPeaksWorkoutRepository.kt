@@ -29,7 +29,7 @@ class TrainingPeaksWorkoutRepository(
         val createRequest = CreateTPWorkoutDTO.planWorkout(
             getUserId(),
             workout.date,
-            TPWorkoutType.findByType(workout.type).value,
+            TPWorkoutTypeMapper.getByType(workout.type),
             workout.title,
             workout.duration?.toMinutes()?.toDouble()?.div(60),
             workout.load,
@@ -42,7 +42,7 @@ class TrainingPeaksWorkoutRepository(
         val createRequest = CreateTPWorkoutDTO.createWorkout(
             getUserId(),
             activity.startedAt,
-            TPWorkoutType.findByType(activity.type).value,
+            TPWorkoutTypeMapper.getByType(activity.type),
             activity.title,
             activity.duration?.toMinutes()?.toDouble()?.div(60),
             activity.load,
