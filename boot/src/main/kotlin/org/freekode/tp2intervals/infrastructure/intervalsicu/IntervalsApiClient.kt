@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody
     value = "IntervalsApiClient",
     url = "\${intervals.api-url}",
     dismiss404 = true,
+    primary = false,
     configuration = [IntervalsApiClientConfig::class]
 )
 interface IntervalsApiClient {
