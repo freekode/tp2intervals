@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: _
+      author: _
+      changes:
+        - createTable:
+            tableName: schedule_requests
+            columns:
+              - column:
+                  name: id
+                  type: i
+                  constraints:
+                    primaryKey: true
+                    unique: true
+
+              - column:
+                  name: request_json
+                  type: varchar(5000)
+                  constraints:
+                    nullable: false

@@ -19,3 +19,25 @@ databaseChangeLog:
                   type: varchar(5000)
                   constraints:
                     nullable: false
+
+        - insert:
+            tableName: config
+            columns:
+              - column:
+                  name: key
+                  value: 'generic.sync-activities-cron'
+
+              - column:
+                  name: value
+                  value: '0 */10 * * * *'
+
+        - insert:
+            tableName: config
+            columns:
+              - column:
+                  name: key
+                  value: 'generic.plan-workouts-cron'
+
+              - column:
+                  name: value
+                  value: '0 */10 * * * *'

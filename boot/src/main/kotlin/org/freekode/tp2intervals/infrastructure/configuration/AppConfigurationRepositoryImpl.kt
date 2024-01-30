@@ -11,25 +11,25 @@ import org.springframework.stereotype.Repository
 @CacheConfig(cacheNames = ["appConfiguration"])
 @Repository
 class AppConfigurationRepositoryImpl(
-    private val dBConfigurationRepository: DBConfigurationRepository,
+    private val configurationCrudRepository: ConfigurationCrudRepository,
 ) : AppConfigurationRepository {
 
     @Cacheable(key = "#key")
     override fun getConfiguration(key: String): String? {
-        return dBConfigurationRepository.findByIdOrNull(key)?.value
+        return configurationCrudRepository.findByIdOrNull(key)?.value
     }
 
     override fun getConfigurations(): AppConfiguration {
-        return toDomain(dBConfigurationRepository.findAll())
+        return toDomain(configurationCrudRepository.findAll())
     }
 
     override fun getConfigurationByPrefix(prefix: String): AppConfiguration {
-        return toDomain(dBConfigurationRepository.findByKeyLike("$prefix%"))
+        return toDomain(configurationCrudRepository.findByKeyLike("$prefix%"))
     }
 
     override fun updateConfig(request: UpdateConfigurationRequest) {
         request.configMap.forEach { (key, value) ->
-            dBConfigurationRepository.save(AppConfigurationEntryEntity(key, value))
+            configurationCrudRepository.save(AppConfigurationEntryEntity(key, value))
         }
     }
 

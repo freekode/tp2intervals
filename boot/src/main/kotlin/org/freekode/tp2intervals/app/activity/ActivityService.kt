@@ -4,10 +4,7 @@ import org.freekode.tp2intervals.app.schedule.SchedulerService
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.activity.Activity
 import org.freekode.tp2intervals.domain.config.AppConfigurationRepository
-import org.jobrunr.jobs.RecurringJob
-import org.jobrunr.scheduling.cron.Cron
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
 @Service
@@ -44,7 +41,7 @@ class ActivityService(
         schedulerService.stopJob(getJobId(sourcePlatform, targetPlatform))
     }
 
-    fun getJob(sourcePlatform: Platform, targetPlatform: Platform): RecurringJob? {
+    fun getJob(sourcePlatform: Platform, targetPlatform: Platform): String {
         return schedulerService.getJob(getJobId(sourcePlatform, targetPlatform))
     }
 

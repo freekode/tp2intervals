@@ -29,7 +29,7 @@ class WorkoutController(
 
     @GetMapping("/api/workout/plan-workout/intervals/training-peaks/job")
     fun getJobPlanWorkout(): JobDTO? {
-        return workoutService.getJob(Platform.INTERVALS, Platform.TRAINING_PEAKS)?.let { JobDTO(it.id) }
+        return workoutService.getJob(Platform.INTERVALS, Platform.TRAINING_PEAKS)?.let { JobDTO(it) }
     }
 
     @DeleteMapping("/api/workout/plan-workout/intervals/training-peaks/job")

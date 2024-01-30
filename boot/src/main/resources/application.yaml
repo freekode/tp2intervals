@@ -7,12 +7,6 @@ intervals:
 trainer-road:
   api-url: https://www.trainerroad.com
 
-app:
-  default-configurations:
-    - key: 'generic.plan-workouts-cron'
-      value: '0 22 * * *'
-    - key: 'generic.sync-activities-cron'
-      value: '*/10 * * * *'
 
 spring:
   jackson:
@@ -25,10 +19,3 @@ spring:
   jpa:
     open-in-view: false
     database-platform: org.hibernate.community.dialect.SQLiteDialect
-
-org:
-  jobrunr:
-    dashboard:
-      enabled: true
-    background-job-server:
-      enabled: true

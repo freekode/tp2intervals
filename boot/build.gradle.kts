@@ -39,7 +39,6 @@ dependencies {
     implementation("org.xerial:sqlite-jdbc:3.45.0.0")
     implementation("org.liquibase:liquibase-core")
 
-    implementation("org.jobrunr:jobrunr-spring-boot-3-starter:6.3.4")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
