@@ -14,8 +14,7 @@ class ActivityScheduledJobs(
     private val objectMapper: ObjectMapper
 ) {
 
-    @Scheduled(cron = "#{syncActivitiesJobCron}")
+//    @Scheduled(cron = "#{syncActivitiesJobCron}")
     fun syncActivitiesJob() {
-        scheduleCrudRepository
     }
 }

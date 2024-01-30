@@ -53,9 +53,9 @@ export class TrainerRoadActionsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.activityClient.getJobSyncActivities().subscribe(response => {
-      this.jobStarted = !!response?.id
-    })
+    // this.activityClient.getJobSyncActivities().subscribe(response => {
+    //   this.jobStarted = !!response?.id
+    // })
   }
 
   syncActivitiesSubmit() {

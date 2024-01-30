@@ -23,8 +23,6 @@ import { NotificationService } from "infrastructure/notification.service";
 export class ConfigurationComponent implements OnInit {
 
   formGroup: FormGroup = this.formBuilder.group({
-    'generic.plan-workouts-cron': [null],
-    'generic.sync-activities-cron': [null],
     'trainingpeaks.auth-cookie': [null, [Validators.pattern('^Production_tpAuth=.*$')]],
     'trainerroad.auth-cookie': [null, [Validators.pattern('^TrainerRoadAuth=.*$')]],
     'intervals.api-key': [null, Validators.required],

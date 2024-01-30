@@ -55,9 +55,9 @@ export class TrainingPeaksActionsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.workoutClient.getJobPlanWorkout().subscribe(response => {
-      this.jobStarted = !!response?.id
-    })
+    // this.workoutClient.getJobPlanWorkout().subscribe(response => {
+    //   this.jobStarted = !!response?.id
+    // })
   }
 
   copyPlanSubmit() {

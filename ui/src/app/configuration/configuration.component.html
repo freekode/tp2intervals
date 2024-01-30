@@ -5,11 +5,12 @@
     </mat-card-header>
 
     <mat-card-content>
+
       <div class="row">
         <div class="col">
           <mat-form-field class="full-width">
-            <mat-label>Cron for Plan Workouts job</mat-label>
-            <input matInput placeholder="* * * * *" formControlName="generic.plan-workouts-cron">
+            <mat-label>Intervals API Key</mat-label>
+            <input matInput placeholder="123456qwerty123456qwerty1" formControlName="intervals.api-key">
           </mat-form-field>
         </div>
       </div>
@@ -17,11 +18,29 @@
       <div class="row">
         <div class="col">
           <mat-form-field class="full-width">
-            <mat-label>Cron for Sync Activities job</mat-label>
-            <input matInput placeholder="* * * * *" formControlName="generic.sync-activities-cron">
+            <mat-label>Intervals Athlete Id</mat-label>
+            <input matInput placeholder="i00000" formControlName="intervals.athlete-id">
           </mat-form-field>
         </div>
       </div>
+
+<!--      <div class="row">-->
+<!--        <div class="col">-->
+<!--          <mat-form-field class="full-width">-->
+<!--            <mat-label>Cron for Plan Workouts job</mat-label>-->
+<!--            <input matInput placeholder="* * * * *" formControlName="generic.plan-workouts-cron">-->
+<!--          </mat-form-field>-->
+<!--        </div>-->
+<!--      </div>-->
+
+<!--      <div class="row">-->
+<!--        <div class="col">-->
+<!--          <mat-form-field class="full-width">-->
+<!--            <mat-label>Cron for Sync Activities job</mat-label>-->
+<!--            <input matInput placeholder="* * * * *" formControlName="generic.sync-activities-cron">-->
+<!--          </mat-form-field>-->
+<!--        </div>-->
+<!--      </div>-->
 
       <div class="row">
         <div class="col">
@@ -47,25 +66,8 @@
         </div>
       </div>
 
-      <div class="row">
-        <div class="col">
-          <mat-form-field class="full-width">
-            <mat-label>Intervals API Key</mat-label>
-            <input matInput placeholder="123456qwerty123456qwerty1" formControlName="intervals.api-key">
-          </mat-form-field>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col">
-          <mat-form-field class="full-width">
-            <mat-label>Intervals Athlete Id</mat-label>
-            <input matInput placeholder="i00000" formControlName="intervals.athlete-id">
-          </mat-form-field>
-        </div>
-      </div>
-
     </mat-card-content>
+
     <mat-card-actions>
       <button
         mat-raised-button
