@@ -13,26 +13,26 @@ export class WorkoutClient {
 
   planWorkout(): Observable<any> {
     return this.httpClient
-      .post(`/api/workout/plan-workout/intervals/training-peaks`, {})
+      .post(`/api/workout/plan-workout/INTERVALS/TRAINING_PEAKS`, {})
   }
 
   startJobPlanWorkout(): Observable<any> {
     return this.httpClient
-      .post(`/api/workout/plan-workout/intervals/training-peaks/job`, {})
+      .post(`/api/workout/plan-workout/INTERVALS/TRAINING_PEAKS/job`, {})
   }
 
   getJobPlanWorkout(): Observable<any> {
     return this.httpClient
-      .get(`/api/workout/plan-workout/intervals/training-peaks/job`)
+      .get(`/api/workout/plan-workout/INTERVALS/TRAINING_PEAKS/job`)
   }
 
   stopJobPlanWorkout(): Observable<any> {
     return this.httpClient
-      .delete(`/api/workout/plan-workout/intervals/training-peaks/job`)
+      .delete(`/api/workout/plan-workout/INTERVALS/TRAINING_PEAKS/job`)
   }
 
   copyPlan(startDate, endDate) {
     return this.httpClient
-      .post(`/api/workout/copy-plan/training-peaks/intervals`, {startDate, endDate})
+      .post(`/api/workout/copy-plan/TRAINING_PEAKS/INTERVALS`, {startDate, endDate})
   }
 }

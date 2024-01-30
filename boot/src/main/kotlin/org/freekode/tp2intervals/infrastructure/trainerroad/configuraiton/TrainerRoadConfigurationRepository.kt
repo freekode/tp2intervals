@@ -8,7 +8,7 @@ class TrainerRoadConfigurationRepository(
     private val appConfigurationRepository: AppConfigurationRepository
 ) {
     companion object {
-        const val CONFIG_PREFIX = "trainerroad"
+        const val CONFIG_PREFIX = "trainer-road"
     }
 
     fun getConfiguration(): TrainerRoadConfiguration {

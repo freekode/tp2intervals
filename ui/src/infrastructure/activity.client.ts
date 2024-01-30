@@ -13,21 +13,21 @@ export class ActivityClient {
 
   syncActivities(startDate, endDate): Observable<any> {
     return this.httpClient
-      .post(`/api/activity/sync-activities/trainer-road/intervals`, {startDate, endDate})
+      .post(`/api/activity/sync-activities/TRAINER_ROAD/INTERVALS`, {startDate, endDate})
   }
 
   startJobSyncActivities(): Observable<any> {
     return this.httpClient
-      .post(`/api/activity/sync-activities/trainer-road/intervals/job`, {})
+      .post(`/api/activity/sync-activities/TRAINER_ROAD/INTERVALS/job`, {})
   }
 
   getJobSyncActivities(): Observable<any> {
     return this.httpClient
-      .get(`/api/activity/sync-activities/trainer-road/intervals/job`)
+      .get(`/api/activity/sync-activities/TRAINER_ROAD/INTERVALS/job`)
   }
 
   stopJobSyncActivities(): Observable<any> {
     return this.httpClient
-      .delete(`/api/activity/sync-activities/trainer-road/intervals/job`)
+      .delete(`/api/activity/sync-activities/TRAINER_ROAD/INTERVALS/job`)
   }
 }

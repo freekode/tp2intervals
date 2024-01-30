@@ -8,7 +8,7 @@ class TrainingPeaksConfigurationRepository(
     private val appConfigurationRepository: AppConfigurationRepository
 ) {
     companion object {
-        const val CONFIG_PREFIX = "trainingpeaks"
+        const val CONFIG_PREFIX = "training-peaks"
     }
 
     fun getConfiguration(): TrainingPeaksConfiguration {

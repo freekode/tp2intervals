@@ -23,8 +23,8 @@ import { NotificationService } from "infrastructure/notification.service";
 export class ConfigurationComponent implements OnInit {
 
   formGroup: FormGroup = this.formBuilder.group({
-    'trainingpeaks.auth-cookie': [null, [Validators.pattern('^Production_tpAuth=.*$')]],
-    'trainerroad.auth-cookie': [null, [Validators.pattern('^TrainerRoadAuth=.*$')]],
+    'training-peaks.auth-cookie': [null, [Validators.pattern('^Production_tpAuth=.*$')]],
+    'trainer-road.auth-cookie': [null, [Validators.pattern('^TrainerRoadAuth=.*$')]],
     'intervals.api-key': [null, Validators.required],
     'intervals.athlete-id': [null, Validators.required],
   });

@@ -46,8 +46,8 @@
         <div class="col">
           <mat-form-field class="full-width">
             <mat-label>TrainingPeaks Auth Cookie</mat-label>
-            <input matInput placeholder="Production_tpAuth=very_long_string" formControlName="trainingpeaks.auth-cookie">
-            @if (formGroup.controls['trainingpeaks.auth-cookie'].errors?.['pattern']) {
+            <input matInput placeholder="Production_tpAuth=very_long_string" formControlName="training-peaks.auth-cookie">
+            @if (formGroup.controls['training-peaks.auth-cookie'].errors?.['pattern']) {
               <mat-error>Must be in format Production_tpAuth=...</mat-error>
             }
           </mat-form-field>
@@ -58,8 +58,8 @@
         <div class="col">
           <mat-form-field class="full-width">
             <mat-label>TrainerRoad Auth Cookie</mat-label>
-            <input matInput placeholder="TrainerRoadAuth=very_long_string" formControlName="trainerroad.auth-cookie">
-            @if (formGroup.controls['trainerroad.auth-cookie'].errors?.['pattern']) {
+            <input matInput placeholder="TrainerRoadAuth=very_long_string" formControlName="trainer-road.auth-cookie">
+            @if (formGroup.controls['trainer-road.auth-cookie'].errors?.['pattern']) {
               <mat-error>Must be in format TrainerRoadAuth=...</mat-error>
             }
           </mat-form-field>
