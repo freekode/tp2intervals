@@ -59,10 +59,21 @@ export class TrainerRoadActionsComponent implements OnInit {
   }
 
   syncActivitiesSubmit() {
+    this.syncActivities(
+      this.syncActivitiesFormGroup.value.startDate,
+      this.syncActivitiesFormGroup.value.endDate
+    )
+  }
+
+  syncTodayActivities() {
+    this.syncActivities(new Date(), new Date())
+  }
+
+  private syncActivities(startDate, endDate) {
     this.syncActivitiesInProgress = true
-    let startDate = this.syncActivitiesFormGroup.value.startDate.toISOString().split('T')[0]
-    let endDate = this.syncActivitiesFormGroup.value.endDate.toISOString().split('T')[0]
-    this.activityClient.syncActivities(startDate, endDate).pipe(
+    let startDateStr = startDate.toISOString().split('T')[0]
+    let endDateStr = endDate.toISOString().split('T')[0]
+    this.activityClient.syncActivities(startDateStr, endDateStr).pipe(
       finalize(() => this.syncActivitiesInProgress = false)
     ).subscribe(() => {
       this.notificationService.success('Activities are synced')

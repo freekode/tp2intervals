@@ -32,7 +32,17 @@
         type="submit"
         [disabled]="syncActivitiesFormGroup.invalid"
       >
-        Submit
+        Sync for range
+      </button>
+
+      <button
+        mat-flat-button
+        color="primary"
+        class="action-button"
+        type="button"
+        (click)="syncTodayActivities()"
+      >
+        Sync for today
       </button>
 
 <!--      <button-->
