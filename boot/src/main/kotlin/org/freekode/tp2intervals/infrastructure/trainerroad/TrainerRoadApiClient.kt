@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping
     value = "TrainerRoadApiClient",
     url = "\${trainer-road.api-url}",
     dismiss404 = true,
+    primary = false,
     configuration = [TrainerRoadApiClientConfig::class]
 )
 interface TrainerRoadApiClient {
