@@ -25,7 +25,7 @@ class ActivityController(
             SyncActivitiesRequest(
                 LocalDate.parse(requestDTO.startDate),
                 LocalDate.parse(requestDTO.endDate),
-                listOf(TrainingType.BIKE),
+                listOf(TrainingType.VIRTUAL_BIKE),
                 sourcePlatform, targetPlatform
             )
         )
