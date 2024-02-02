@@ -75,6 +75,7 @@ jobs:
         run: |
           jpackage \
             --name $JAR_NAME \
+            --dist executable
             --input artifact \
             --main-jar `ls artifact` \
             --type ${{ matrix.environment.jpackage-type }}
@@ -85,7 +86,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.environment.name }}
-          path: ${{ env.JAR_NAME }}
+          path: executable
           if-no-files-found: error
           compression-level: 0
 
