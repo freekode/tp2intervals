@@ -52,9 +52,9 @@ jobs:
           - os: ubuntu-latest
             name: linux
             jpackage-type: app-image
-          - os: windows-latest
-            name: windows
-            jpackage-type: exe
+          - os: macos-latest
+            name: macos
+            jpackage-type: dmg
 
     runs-on: ${{ matrix.environment.os }}
     steps:
@@ -95,8 +95,8 @@ jobs:
 
       - uses: actions/download-artifact@master
         with:
-          name: jar
-          path: jar
+          name: ${{ env.JAR_NAME }}.jar
+          path: artifact
 
       - name: Build project
-        run: docker build . --file Dockerfile --tag $IMAGE_NAME --build-arg JAR_PATH=jar/$JAR_NAME-*.jar
+        run: docker build . --file Dockerfile --tag $IMAGE_NAME --build-arg JAR_PATH=artifact/$JAR_NAME-*.jar
