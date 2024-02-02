@@ -42,6 +42,9 @@ jobs:
           if-no-files-found: error
           compression-level: 0
 
+      - name: Output artifact name
+        run: echo "artifact-name=$${{ env.JAR_NAME }}-jar" >> "$GITHUB_OUTPUT"
+
 
   executable:
     needs:
@@ -71,12 +74,14 @@ jobs:
           cache: 'gradle'
 
       - uses: actions/download-artifact@master
+        env:
+          artifact-name: ${{ needs.jar.outputs.artifact-name }}
         with:
-          name: ${{ env.JAR_NAME }}-jar
+          name: ${{ env.artifact-name }}
           path: artifact
 
       - name: Create executable
-        run: ./scripts/${{ matrix.environment.script }} $JAR_NAME 0.0.0 artifact executable
+        run: ./scripts/${{ matrix.environment.script }} $JAR_NAME 1 artifact executable
 
       - uses: actions/upload-artifact@v4
         with:
@@ -91,11 +96,17 @@ jobs:
     needs:
       - jar
     steps:
+      - env:
+          artifact-name: ${{ needs.jar.outputs.artifact-name }}
+        run: echo "Artifact name is $artifact-name"
+
       - uses: actions/checkout@v2
 
       - uses: actions/download-artifact@master
+        env:
+          artifact-name: ${{ needs.jar.outputs.artifact-name }}
         with:
-          name: ${{ env.JAR_NAME }}.jar
+          name: ${{ env.artifact-name }}
           path: artifact
 
       - name: Build project
