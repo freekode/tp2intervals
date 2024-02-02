@@ -75,7 +75,7 @@ jobs:
         run: |
           jpackage \
             --name $JAR_NAME \
-            --dist executable
+            --dist executable \
             --input artifact \
             --main-jar `ls artifact` \
             --type ${{ matrix.environment.jpackage-type }}
