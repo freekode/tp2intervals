@@ -57,7 +57,7 @@ jobs:
             name: macos
             script: jpackage-macos.sh
           - os: windows-latest
-            name: macos
+            name: windows
             script: jpackage-windows.bat
 
     runs-on: ${{ matrix.environment.os }}
@@ -76,7 +76,7 @@ jobs:
           path: artifact
 
       - name: Create executable
-        run: ./scripts/${{ matrix.environment.script }} $JAR_NAME snapshot artifact executable
+        run: ./scripts/${{ matrix.environment.script }} $JAR_NAME 0.0.0 artifact executable
 
       - uses: actions/upload-artifact@v4
         with:
