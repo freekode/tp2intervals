@@ -13,6 +13,7 @@ concurrency:
 env:
   IMAGE_NAME: tp2intervals
   JAR_NAME: tp2intervals
+  JAR_ARTIFACT_NAME: tp2intervals-jar
 
 jobs:
   jar:
@@ -37,7 +38,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.JAR_NAME }}-jar
+          name: ${{ env.JAR_ARTIFACT_NAME }}
           path: boot/build/libs/${{ env.JAR_NAME }}-[0-9].[0-9].[0-9].jar
           if-no-files-found: error
           compression-level: 0
@@ -74,14 +75,12 @@ jobs:
           cache: 'gradle'
 
       - uses: actions/download-artifact@master
-        env:
-          artifact-name: ${{ needs.jar.outputs.artifact-name }}
         with:
-          name: ${{ env.artifact-name }}
+          name: ${{ env.JAR_ARTIFACT_NAME }}
           path: artifact
 
       - name: Create executable
-        run: ./scripts/${{ matrix.environment.script }} $JAR_NAME 1 artifact executable
+        run: ./scripts/${{ matrix.environment.script }} $JAR_NAME 0.0.0 artifact executable
 
       - uses: actions/upload-artifact@v4
         with:
@@ -96,17 +95,11 @@ jobs:
     needs:
       - jar
     steps:
-      - env:
-          artifact-name: ${{ needs.jar.outputs.artifact-name }}
-        run: echo "Artifact name is $artifact-name"
-
       - uses: actions/checkout@v2
 
       - uses: actions/download-artifact@master
-        env:
-          artifact-name: ${{ needs.jar.outputs.artifact-name }}
         with:
-          name: ${{ env.artifact-name }}
+          name: ${{ env.JAR_ARTIFACT_NAME }}
           path: artifact
 
       - name: Build project
