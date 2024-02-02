@@ -37,7 +37,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: jar
+          name: ${{ env.JAR_NAME }}.jar
           path: boot/build/libs/${{ env.JAR_NAME }}-[0-9].[0-9].[0-9].jar
           if-no-files-found: error
           compression-level: 0
@@ -68,15 +68,15 @@ jobs:
 
       - uses: actions/download-artifact@master
         with:
-          name: jar
-          path: jar
+          name: ${{ env.JAR_NAME }}.jar
+          path: artifact
 
       - name: Create executable
         run: |
           jpackage \
             --name $JAR_NAME \
-            --input jar \
-            --main-jar $JAR_NAME-*.jar \
+            --input artifact \
+            --main-jar `ls artifact` \
             --type ${{ matrix.environment.jpackage-type }}
 
       - uses: actions/upload-artifact@v4
