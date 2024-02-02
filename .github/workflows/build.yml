@@ -47,14 +47,18 @@ jobs:
     needs:
       - jar
     strategy:
+      fail-fast: false
       matrix:
         environment:
           - os: ubuntu-latest
             name: linux
-            jpackage-type: app-image
+            script: jpackage-linux.sh
           - os: macos-latest
             name: macos
-            jpackage-type: dmg
+            script: jpackage-macos.sh
+          - os: windows-latest
+            name: macos
+            script: jpackage-windows.bat
 
     runs-on: ${{ matrix.environment.os }}
     steps:
@@ -72,13 +76,7 @@ jobs:
           path: artifact
 
       - name: Create executable
-        run: |
-          jpackage \
-            --name $JAR_NAME \
-            --dest executable \
-            --input artifact \
-            --main-jar `ls artifact` \
-            --type ${{ matrix.environment.jpackage-type }}
+        run: ./scripts/${{ matrix.environment.script }} $JAR_NAME snapshot artifact executable
 
       - uses: actions/upload-artifact@v4
         with:
