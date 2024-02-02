@@ -44,7 +44,7 @@ jobs:
           compression-level: 0
 
       - name: Output artifact name
-        run: echo "artifact-name=$${{ env.JAR_NAME }}-jar" >> "$GITHUB_OUTPUT"
+        run: echo "artifact-name=${{ env.JAR_NAME }}-jar" >> "$GITHUB_OUTPUT"
 
 
   executable:
@@ -80,7 +80,7 @@ jobs:
           path: artifact
 
       - name: Create executable
-        run: ./scripts/${{ matrix.environment.script }} $JAR_NAME 0.0.0 artifact executable
+        run: ./scripts/${{ matrix.environment.script }} $JAR_NAME 1 artifact executable
 
       - uses: actions/upload-artifact@v4
         with:
