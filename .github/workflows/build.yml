@@ -51,13 +51,13 @@ jobs:
       matrix:
         environment:
           - os: ubuntu-latest
-            name: linux
+            name: ${{ env.JAR_NAME }}-linux
             script: jpackage-linux.sh
           - os: macos-latest
-            name: macos
+            name: ${{ env.JAR_NAME }}-macos
             script: jpackage-macos.sh
           - os: windows-latest
-            name: windows
+            name: ${{ env.JAR_NAME }}-windows
             script: jpackage-windows.bat
 
     runs-on: ${{ matrix.environment.os }}
