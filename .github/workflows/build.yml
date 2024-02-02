@@ -56,10 +56,5 @@ jobs:
         with:
           name: jar
 
-      - name: check
-        run: |
-          ls
-          ls jar
-
       - name: Build project
-        run: docker build . --file Dockerfile --tag $IMAGE_NAME --build-arg JAR_PATH=jar/tp2intervals-*.jar
+        run: docker build . --file Dockerfile --tag $IMAGE_NAME --build-arg JAR_PATH=tp2intervals-*.jar
