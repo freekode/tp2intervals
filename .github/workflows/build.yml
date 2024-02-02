@@ -43,7 +43,7 @@ jobs:
           compression-level: 0
 
 
-  executable_matrix:
+  executable:
     needs:
       - jar
     strategy:
@@ -56,7 +56,7 @@ jobs:
             name: windows
             jpackage-type: exe
 
-    runs-on: ${{ executable_matrix.environment.os }}
+    runs-on: ${{ matrix.environment.os }}
     steps:
       - uses: actions/setup-java@v3
         with:
@@ -75,11 +75,11 @@ jobs:
             --name $JAR_NAME \
             --input jar \
             --main-jar $JAR_NAME-*.jar \
-            --type ${{ executable_matrix.environment.jpackage-type }}
+            --type ${{ matrix.environment.jpackage-type }}
 
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ executable_matrix.environment.name }}
+          name: ${{ matrix.environment.name }}
           path: ${{ env.JAR_NAME }}
           if-no-files-found: error
           compression-level: 0
