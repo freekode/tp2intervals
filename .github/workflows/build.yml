@@ -75,7 +75,7 @@ jobs:
         run: |
           jpackage \
             --name $JAR_NAME \
-            --dist executable \
+            --dest executable \
             --input artifact \
             --main-jar `ls artifact` \
             --type ${{ matrix.environment.jpackage-type }}
@@ -89,6 +89,7 @@ jobs:
           path: executable
           if-no-files-found: error
           compression-level: 0
+
 
   docker:
     runs-on: ubuntu-latest
