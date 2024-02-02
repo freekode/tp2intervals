@@ -79,6 +79,9 @@ jobs:
             --main-jar `ls artifact` \
             --type ${{ matrix.environment.jpackage-type }}
 
+      - name: Just check
+        run: ls -al
+
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.environment.name }}
