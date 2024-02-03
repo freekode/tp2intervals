@@ -12,8 +12,6 @@ on:
 
 jobs:
   build-executable:
-    needs:
-      - jar
     strategy:
       fail-fast: false
       matrix:
