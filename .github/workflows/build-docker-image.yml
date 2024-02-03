@@ -1,0 +1,29 @@
+name: Build Docker Image
+
+on:
+  workflow_call:
+    inputs:
+      jar-name:
+        required: true
+        type: string
+      jar-artifact-name:
+        required: true
+        type: string
+      image-name:
+        required: true
+        type: string
+
+jobs:
+  docker-image:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/download-artifact@master
+        with:
+          name: ${{ inputs.jar-artifact-name }}
+          path: artifact
+
+      - name: Build project
+        run: docker build . --file Dockerfile --tag ${{ inputs.image-name }} --build-arg JAR_PATH=artifact/${{ inputs.jar-name }}-*.jar

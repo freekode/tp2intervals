@@ -1,0 +1,40 @@
+name: build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  IMAGE_NAME: tp2intervals
+  JAR_NAME: tp2intervals
+  JAR_ARTIFACT_NAME: tp2intervals-jar
+
+jobs:
+  jar:
+    uses: ./.github/workflows/build-jar.yml
+    with:
+      jar-name: tp2intervals
+      jar-artifact-name: tp2intervals-jar
+
+  executable:
+    needs:
+      - jar
+    uses: ./.github/workflows/build-executable.yml
+    with:
+      jar-name: tp2intervals
+      jar-artifact-name: tp2intervals-jar
+
+  docker-image:
+    needs:
+      - jar
+    uses: ./.github/workflows/build-docker-image.yml
+    with:
+      jar-name: tp2intervals
+      jar-artifact-name: tp2intervals-jar
+      image-name: tp2intervals
