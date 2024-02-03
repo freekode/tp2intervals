@@ -6,14 +6,14 @@ on:
       jar-name:
         required: true
         type: string
+      jar-artifact-name:
+        required: true
+        type: string
 
 jobs:
   build-jar:
     runs-on: ubuntu-latest
-    env:
-      artifact-name: ${{ inputs.jar-name }}-jar
-    outputs:
-      artifact-name: ${{ steps.output-step.outputs.artifact-name }}
+
     steps:
       - uses: actions/checkout@v2
 
@@ -34,11 +34,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.artifact-name }}
+          name: ${{ inputs.jar-artifact-name }}
           path: boot/build/libs/${{ inputs.jar-name }}-[0-9].[0-9].[0-9].jar
           if-no-files-found: error
           compression-level: 0
-
-      - id: output-step
-        name: Output artifact name
-        run: echo "artifact-name=${{ env.artifact-name }}" >> "$GITHUB_OUTPUT"

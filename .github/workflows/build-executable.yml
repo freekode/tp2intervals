@@ -1,0 +1,54 @@
+name: Build Executables
+
+on:
+  workflow_call:
+    inputs:
+      jar-name:
+        required: true
+        type: string
+      jar-artifact-name:
+        required: true
+        type: string
+
+jobs:
+  build-executable:
+    needs:
+      - jar
+    strategy:
+      fail-fast: false
+      matrix:
+        environment:
+          #          - os: ubuntu-latest
+          #            name: linux
+          #            script: jpackage-linux.sh
+          - os: macos-latest
+            name: macos
+            script: jpackage-macos.sh
+          - os: windows-latest
+            name: windows
+            script: jpackage-windows.bat
+
+    runs-on: ${{ matrix.environment.os }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-java@v3
+        with:
+          java-version: 21
+          distribution: 'corretto'
+          cache: 'gradle'
+
+      - uses: actions/download-artifact@master
+        with:
+          name: ${{ inputs.jar-artifact-name }}
+          path: artifact
+
+      - name: Create executable
+        run: ./scripts/${{ matrix.environment.script }} ${{ inputs.jar-name }} 1 artifact executable
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.jar-name }}-${{ matrix.environment.name }}
+          path: executable
+          if-no-files-found: error
+          compression-level: 0
