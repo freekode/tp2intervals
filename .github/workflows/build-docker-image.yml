@@ -43,3 +43,4 @@ jobs:
         with:
           name: ${{ inputs.image-name }}-docker
           path: docker-image/${{ inputs.image-name }}.tar
+          if-no-files-found: error
