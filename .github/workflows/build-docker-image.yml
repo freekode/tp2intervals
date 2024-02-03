@@ -20,9 +20,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
       - uses: actions/download-artifact@master
         with:
           name: ${{ inputs.jar-artifact-name }}
@@ -30,17 +27,3 @@ jobs:
 
       - name: Build project
         run: docker build . --file Dockerfile --tag ${{ inputs.image-name }} --build-arg JAR_PATH=artifact/${{ inputs.jar-name }}-*.jar
-
-      - name: Build and export
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          tags: ${{ inputs.image-name }}:latest
-          outputs: type=docker,dest=docker-image/${{ inputs.image-name }}.tar
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ inputs.image-name }}-docker
-          path: docker-image/${{ inputs.image-name }}.tar
-          if-no-files-found: error
