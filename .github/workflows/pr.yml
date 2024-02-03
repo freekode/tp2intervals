@@ -19,8 +19,7 @@ jobs:
   jar:
     uses: ./.github/workflows/build-jar.yml
     with:
-      jar-name: ${{ env.JAR_NAME }}
-      artifact-name: ${{ env.JAR_ARTIFACT_NAME }}
+      jar-name: tp2intervals
 
   executable:
     needs:
