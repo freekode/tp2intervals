@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       artifact-name: ${{ inputs.jar-name }}-jar
+    outputs:
+      artifact-name: ${{ steps.output-step.outputs.artifact-name }}
     steps:
       - uses: actions/checkout@v2
 
@@ -37,5 +39,6 @@ jobs:
           if-no-files-found: error
           compression-level: 0
 
-      - name: Output artifact name
+      - id: output-step
+        name: Output artifact name
         run: echo "artifact-name=${{ env.artifact-name }}" >> "$GITHUB_OUTPUT"
