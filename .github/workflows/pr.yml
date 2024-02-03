@@ -41,7 +41,7 @@ jobs:
     runs-on: ${{ matrix.environment.os }}
     steps:
       - env:
-          version: ${{needs.jar.outputs.artifact-name}}
+          version: ${{needs.jar.outputs}}
         run: echo "test output is $version"
 
       - uses: actions/checkout@v2
