@@ -1,6 +1,6 @@
 package org.freekode.tp2intervals.infrastructure.intervalsicu.workout
 
-import org.freekode.tp2intervals.domain.activity.Activity
+import java.time.Duration
 import org.freekode.tp2intervals.domain.workout.StepIntensityType
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutExternalData
@@ -8,13 +8,13 @@ import org.freekode.tp2intervals.domain.workout.WorkoutMultiStep
 import org.freekode.tp2intervals.domain.workout.WorkoutSingleStep
 import org.freekode.tp2intervals.domain.workout.WorkoutStep
 import org.freekode.tp2intervals.domain.workout.WorkoutStepTarget
-import org.freekode.tp2intervals.infrastructure.intervalsicu.IntervalsActivityDTO
-import org.springframework.stereotype.Component
-import java.time.Duration
 
-@Component
-class IntervalsToWorkoutMapper {
-    fun mapToWorkout(eventDTO: IntervalsEventDTO): Workout {
+class IntervalsToWorkoutMapper(
+    private val eventDTO: IntervalsEventDTO
+) {
+    private val intervalsWorkoutTargetMapper = eventDTO.workout_doc?.zoneTimes?.let { IntervalsWorkoutTargetMapper(it) }
+
+    fun mapToWorkout(): Workout {
         return Workout(
             eventDTO.start_date_local.toLocalDate(),
             eventDTO.mapType(),
@@ -24,16 +24,6 @@ class IntervalsToWorkoutMapper {
             eventDTO.icu_training_load?.toDouble(),
             eventDTO.workout_doc?.let { mapToWorkoutSteps(it) } ?: listOf(),
             WorkoutExternalData.intervals(eventDTO.id.toString())
-        )
-    }
-
-    fun mapToActivity(eventDTO: IntervalsActivityDTO): Activity {
-        return Activity(
-            eventDTO.start_date_local,
-            eventDTO.mapType(),
-            eventDTO.name,
-            eventDTO.moving_time?.let { Duration.ofSeconds(it) },
-            eventDTO.icu_training_load?.toDouble(),
         )
     }
 
@@ -80,28 +70,18 @@ class IntervalsToWorkoutMapper {
     }
 
     private fun workoutStepTargets(stepDTO: IntervalsWorkoutDocDTO.WorkoutStepDTO): Pair<WorkoutStepTarget, WorkoutStepTarget?> {
+        if (intervalsWorkoutTargetMapper == null) {
+            throw RuntimeException("Can't map step targets without mapper, probably zoneTimes are empty")
+        }
+
         val mainTarget = if (stepDTO.power != null) {
-            mapTarget(stepDTO.power)
+            intervalsWorkoutTargetMapper.map(stepDTO.power)
         } else if (stepDTO.hr != null) {
-            mapTarget(stepDTO.hr)
+            intervalsWorkoutTargetMapper.map(stepDTO.hr)
         } else {
             throw RuntimeException("wtf")
         }
-        val cadenceTarget = stepDTO.cadence?.let { mapTarget(it) }
+        val cadenceTarget = stepDTO.cadence?.let { intervalsWorkoutTargetMapper.map(it) }
         return mainTarget to cadenceTarget
     }
-
-    private fun mapTarget(
-        stepValue: IntervalsWorkoutDocDTO.StepValueDTO,
-    ): WorkoutStepTarget {
-        val (min, max) = mapTargetValue(stepValue)
-        return WorkoutStepTarget(stepValue.mapTargetUnit(), min, max)
-    }
-
-    private fun mapTargetValue(stepValueDTO: IntervalsWorkoutDocDTO.StepValueDTO): Pair<Int, Int> =
-        if (stepValueDTO.value != null) {
-            stepValueDTO.value to stepValueDTO.value
-        } else {
-            stepValueDTO.start!! to stepValueDTO.end!!
-        }
 }

@@ -1,0 +1,94 @@
+[
+  {
+    "id": 31046418,
+    "start_date_local": "2024-02-04T00:00:00",
+    "icu_training_load": 6,
+    "icu_atl": 46.014618,
+    "icu_ctl": 24.314484,
+    "type": "Ride",
+    "calendar_id": 1,
+    "uid": "165cfd12-34c2-4602-a25f-0f29d1c29a31",
+    "athlete_id": "i55661",
+    "category": "WORKOUT",
+    "end_date_local": "2024-02-05T00:00:00",
+    "name": "test workout hr",
+    "description": "hr zone test\n\n- 10m Z2 HR",
+    "indoor": false,
+    "color": null,
+    "moving_time": 600,
+    "icu_ftp": null,
+    "atl_days": null,
+    "ctl_days": null,
+    "updated": "2024-02-04T19:29:57.098+00:00",
+    "not_on_fitness_chart": false,
+    "show_as_note": false,
+    "show_on_ctl_line": false,
+    "target": null,
+    "joules": 0,
+    "joules_above_ftp": 0,
+    "workout_doc": {
+      "steps": [
+        {
+          "hr": {
+            "units": "hr_zone",
+            "value": 2
+          },
+          "duration": 600
+        }
+      ],
+      "locales": [],
+      "options": {},
+      "distance": 0,
+      "duration": 600,
+      "zoneTimes": [
+        {
+          "id": "Z1",
+          "secs": 0
+        },
+        {
+          "id": "Z2",
+          "secs": 600
+        },
+        {
+          "id": "Z3",
+          "secs": 0
+        },
+        {
+          "id": "Z4",
+          "secs": 0
+        },
+        {
+          "id": "Z5",
+          "secs": 0
+        }
+      ],
+      "description": "hr zone test",
+      "average_watts": 0,
+      "normalized_power": 0,
+      "variability_index": null,
+      "polarization_index": 0
+    },
+    "push_errors": null,
+    "athlete_cannot_edit": false,
+    "hide_from_athlete": false,
+    "structure_read_only": false,
+    "created_by_id": "i55661",
+    "shared_event_id": null,
+    "entered": false,
+    "tags": null,
+    "attachments": null,
+    "oauth_client_id": null,
+    "external_id": null,
+    "load_target": null,
+    "time_target": null,
+    "distance_target": null,
+    "plan_athlete_id": null,
+    "plan_folder_id": null,
+    "plan_workout_id": null,
+    "plan_applied": null,
+    "distance": 0.0,
+    "icu_intensity": 60.0,
+    "plan_name": null,
+    "paired_activity_id": null
+  }
+]
