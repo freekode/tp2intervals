@@ -8,7 +8,7 @@ trainer-road:
   api-url: https://www.trainerroad.com
 
 app:
-  db-path: ./tp2intervals-db
+  db-path: ./tp2intervals.db
 
 spring:
   jackson:
