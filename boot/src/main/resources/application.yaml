@@ -12,3 +12,7 @@ spring:
     driverClassName: org.h2.Driver
   jpa:
     generate-ddl: true
+
+logging:
+  file:
+    name: tp2intervals.log

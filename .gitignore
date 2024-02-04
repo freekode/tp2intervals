@@ -42,3 +42,4 @@ database.mv.db
 database.trace.db
 tp2intervals-db.mv.db
 tp2intervals-db.trace.db
+*.log
