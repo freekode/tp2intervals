@@ -8,6 +8,10 @@ import AutoUnpackNativesPlugin from '@electron-forge/plugin-auto-unpack-natives'
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
+    extraResource: [
+        '../boot/build/libs/tp2intervals-static.jar',
+        '../devops/jdks/linux/x64'
+    ]
   },
   rebuildConfig: {},
   makers: [

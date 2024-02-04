@@ -1,14 +1,13 @@
 {
   "name": "tp2intervals",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Sync Third Party apps to Intervals.icu",
   "scripts": {
     "electron:build": "tsc --project tsconfig.json",
-    "electron:s": "electron-forge start",
-    "electron:start": "concurrently \"npm run electron:build\" \"ng serve\" \"wait-on http://localhost:4200 && electron-forge start\"",
-    "electron:package": "npm run electron:build && npm run build && electron-forge package",
-    "electron:make": "npm run electron:build && npm run build && electron-forge make",
-    "electron:publish-app": "npm run electron:build && npm run build && electron-forge publish"
+    "electron:start": "concurrently \"npm run electron:build\" \"npm run start --prefix ../ui\" \"wait-on http://localhost:4200 && electron-forge start\"",
+    "electron:package": "npm run electron:build && npm run build --prefix ../ui && electron-forge package",
+    "electron:make": "npm run electron:build && npm run build --prefix ../ui && electron-forge make",
+    "electron:publish-app": "npm run electron:build && npm run build --prefix ../ui && electron-forge publish"
   },
   "main": "dist/index.js",
   "private": true,
