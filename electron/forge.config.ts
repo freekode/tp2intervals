@@ -10,14 +10,14 @@ const config: ForgeConfig = {
     asar: true,
     extraResource: [
         '../boot/build/libs/tp2intervals-static.jar',
-        '../devops/jdks/linux/x64'
+        '../devops/jdktool/jdks/linux/x64'
     ]
   },
   rebuildConfig: {},
   makers: [
     new MakerSquirrel({}),
     new MakerZIP({}, ['darwin']),
-    new MakerRpm({}),
+    // new MakerRpm({}),
     new MakerDeb({}),
   ],
   plugins: [new AutoUnpackNativesPlugin({})],

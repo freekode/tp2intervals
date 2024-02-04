@@ -1,5 +1,5 @@
 import { app, BrowserWindow } from 'electron';
-import installExtension from 'electron-devtools-installer';
+// import installExtension from 'electron-devtools-installer';
 import path from 'path';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -21,7 +21,7 @@ const createWindow = (): void => {
 
   // This should be the name of your angular project instead of `my-app`
   const startURL = app.isPackaged
-    ? `file://${path.join(__dirname, 'my-app', 'index.html')}`
+    ? `file://${path.join(__dirname, 'browser', 'index.html')}`
     : `http://localhost:4200`;
 
   mainWindow.loadURL(startURL);
@@ -30,9 +30,9 @@ const createWindow = (): void => {
 app.whenReady().then(() => {
   // Install Angular DevTools
   // https://angular.io/guide/devtools
-  installExtension('ienfalfjdbdpebioblfackkekamfmbnh')
-    .then((name) => console.log(`Added Extension:  ${name}`))
-    .catch((err) => console.log('An error occurred: ', err));
+  // installExtension('ienfalfjdbdpebioblfackkekamfmbnh')
+  //   .then((name) => console.log(`Added Extension:  ${name}`))
+  //   .catch((err) => console.log('An error occurred: ', err));
 });
 
 // This method will be called when Electron has finished
