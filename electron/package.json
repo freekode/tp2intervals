@@ -9,17 +9,18 @@
   },
   "license": "GNU GPLv3",
   "scripts": {
-    "ui:build": "npm run build --prefix ../ui -- --output-path=../electron/dist --delete-output-path=false --base-href=./",
+    "build": "tsc --project tsconfig.json",
+    "start": "concurrently \"npm run build\" \"npm run ui:start\" \"wait-on http://localhost:4200 && electron-forge start\"",
+    "package": "npm run build && npm run ui:build && electron-forge package",
+    "make": "npm run build && npm run ui:build && electron-forge make",
+    "publish-app": "npm run build && npm run ui:build && electron-forge publish",
     "ui:start": "npm run start --prefix ../ui",
-    "electron:build": "tsc --project tsconfig.json",
-    "electron:start": "concurrently \"npm run electron:build\" \"npm run ui:start\" \"wait-on http://localhost:4200 && electron-forge start\"",
-    "electron:package": "npm run electron:build && npm run ui:build && electron-forge package",
-    "electron:make": "npm run electron:build && npm run ui:build && electron-forge make",
-    "electron:publish-app": "npm run electron:build && npm run ui:build && electron-forge publish"
+    "ui:build": "npm run build --prefix ../ui -- --output-path=../electron/dist --delete-output-path=false --base-href=./"
   },
   "main": "dist/index.js",
   "private": true,
   "dependencies": {
+    "electron-log": "^5.1.1",
     "electron-squirrel-startup": "^1.0.0"
   },
   "devDependencies": {

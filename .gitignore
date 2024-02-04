@@ -37,9 +37,6 @@ out/
 .vscode/
 
 application-dev.yaml
-
-tp2intervals.db
-
+tp2intervals.sqlite
 node_modules
-
 *.log

@@ -7,16 +7,13 @@ intervals:
 trainer-road:
   api-url: https://www.trainerroad.com
 
-app:
-  db-path: ./tp2intervals.db
-
 spring:
   jackson:
     default-property-inclusion: non_null
     serialization:
       fail-on-empty-beans: false
   datasource:
-    url: jdbc:sqlite:${app.db-path}
+    url: jdbc:sqlite:tp2intervals.sqlite
     driver-class-name: org.sqlite.JDBC
   jpa:
     open-in-view: false
