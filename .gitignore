@@ -43,3 +43,5 @@ database.trace.db
 tp2intervals-db
 
 node_modules
+
+*.log
