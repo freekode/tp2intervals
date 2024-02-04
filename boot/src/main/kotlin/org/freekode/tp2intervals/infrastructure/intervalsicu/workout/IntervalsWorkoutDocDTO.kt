@@ -33,6 +33,7 @@ class IntervalsWorkoutDocDTO(
             )
         }
 
-        fun mapTargetUnit(): WorkoutStepTarget.TargetUnit = unitsMap[units]!!
+        fun mapTargetUnit(): WorkoutStepTarget.TargetUnit =
+            unitsMap[units] ?: throw RuntimeException("Can't handle units for $units")
     }
 }
