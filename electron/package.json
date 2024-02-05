@@ -1,0 +1,41 @@
+{
+  "name": "tp2intervals",
+  "productName": "tp2intervals",
+  "version": "0.1.0",
+  "description": "Sync Third Party apps to Intervals.icu",
+  "author": {
+    "name": "freekode",
+    "email": "iam@freekode.org"
+  },
+  "license": "GNU GPLv3",
+  "scripts": {
+    "build": "tsc --project tsconfig.json",
+    "start": "concurrently \"npm run build\" \"npm run ui:start\" \"wait-on http://localhost:4200 && electron-forge start\"",
+    "package": "npm run build && npm run ui:build && electron-forge package",
+    "make": "npm run build && npm run ui:build && electron-forge make",
+    "publish-app": "npm run build && npm run ui:build && electron-forge publish",
+    "ui:start": "npm run start --prefix ../ui",
+    "ui:build": "npm run build --prefix ../ui -- --output-path=../electron/dist --delete-output-path=false --base-href=./"
+  },
+  "main": "dist/index.js",
+  "private": true,
+  "dependencies": {
+    "electron-log": "^5.1.1",
+    "electron-squirrel-startup": "^1.0.0"
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^7.2.0",
+    "@electron-forge/maker-deb": "^7.2.0",
+    "@electron-forge/maker-rpm": "^7.2.0",
+    "@electron-forge/maker-squirrel": "^7.2.0",
+    "@electron-forge/maker-zip": "^7.2.0",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.2.0",
+    "concurrently": "^8.2.2",
+    "electron": "^28.2.1",
+    "electron-devtools-installer": "^3.2.0",
+    "ts-loader": "^9.5.1",
+    "ts-node": "^10.9.2",
+    "typescript": "~5.2.2",
+    "wait-on": "^7.2.0"
+  }
+}

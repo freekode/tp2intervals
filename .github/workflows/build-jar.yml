@@ -30,7 +30,7 @@ jobs:
           cache-dependency-path: 'ui/package-lock.json'
 
       - name: Build project
-        run: ./scripts/build-jar.sh
+        run: ./devops/build-jar.sh
 
       - uses: actions/upload-artifact@v4
         with:
