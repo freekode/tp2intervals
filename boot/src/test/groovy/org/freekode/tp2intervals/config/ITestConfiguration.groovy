@@ -13,13 +13,13 @@ import java.nio.charset.Charset
 
 @TestConfiguration
 class ITestConfiguration {
-    @Bean
-    @Primary
-    IntervalsApiClient intervalsApiClient(
-            ObjectMapper objectMapper,
-            @Value("classpath:intervals-events-response.json") Resource eventsResponse) {
-        new MockIntervalsApiClient(objectMapper, eventsResponse.getContentAsString(Charset.defaultCharset()))
-    }
+//    @Bean
+//    @Primary
+//    IntervalsApiClient intervalsApiClient(
+//            ObjectMapper objectMapper,
+//            @Value("classpath:intervals-events-response.json") Resource eventsResponse) {
+//        new MockIntervalsApiClient(objectMapper, eventsResponse.getContentAsString(Charset.defaultCharset()))
+//    }
 
     @Bean
     @Primary

@@ -3,6 +3,7 @@ package org.freekode.tp2intervals.infrastructure.intervalsicu.workout
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.freekode.tp2intervals.config.ISpringConfiguration
 import org.freekode.tp2intervals.config.MockIntervalsApiClient
+import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.config.AppConfigurationRepository
 import org.freekode.tp2intervals.domain.config.UpdateConfigurationRequest
 import org.freekode.tp2intervals.infrastructure.intervalsicu.IntervalsApiClient
@@ -33,21 +34,21 @@ class IntervalsWorkoutRepositoryIT extends ISpringConfiguration {
         ))
     }
 
-    def "should parse and map planned workouts"() {
+    def "should parse and convert workouts"() {
         when:
         def workouts = intervalsWorkoutRepository.getPlannedWorkouts(LocalDate.now(), LocalDate.now())
 
         then:
-        workouts != null
+        workouts.size() == 4
     }
 
     @TestConfiguration
-    class IntervalsTestConfiguration {
+    static class IntervalsTestConfiguration {
         @Bean
         @Primary
         IntervalsApiClient intervalsApiClient(
                 ObjectMapper objectMapper,
-                @Value("classpath:intervals-events-response-note.json") Resource eventsResponse) {
+                @Value("classpath:intervals-events-response.json") Resource eventsResponse) {
             new MockIntervalsApiClient(objectMapper, eventsResponse.getContentAsString(Charset.defaultCharset()))
         }
     }
