@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired
 
 import java.time.LocalDate
 
-class TrainerRoadActivityRepositoryTest extends ISpringConfiguration {
+class TrainerRoadActivityRepositoryIT extends ISpringConfiguration {
     @Autowired
     TrainerRoadActivityRepository trainerRoadActivityRepository
 
