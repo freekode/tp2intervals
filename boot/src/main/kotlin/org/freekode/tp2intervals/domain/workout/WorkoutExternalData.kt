@@ -6,7 +6,7 @@ data class WorkoutExternalData(
     val externalContent: String?
 ) {
     companion object {
-        fun thirdParty(tpId: String, externalContent: String?) = WorkoutExternalData(tpId, null, externalContent)
+        fun trainingPeaks(tpId: String, externalContent: String?) = WorkoutExternalData(tpId, null, externalContent)
 
         fun intervals(intervalsId: String) = WorkoutExternalData(null, intervalsId, null)
     }

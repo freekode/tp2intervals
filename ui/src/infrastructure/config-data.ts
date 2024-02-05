@@ -1,15 +1,19 @@
-export class ConfigData {
-  tpAuthCookie: string
-  intervalsApiKey: string
-  intervalsAthleteId: string
+const requiredConfigKeys = ['intervals.api-key', 'intervals.athlete-id']
 
-  constructor(tpAuthCookie: string, intervalsApiKey: string, intervalsAthleteId: string) {
-    this.tpAuthCookie = tpAuthCookie;
-    this.intervalsApiKey = intervalsApiKey;
-    this.intervalsAthleteId = intervalsAthleteId;
+export class ConfigData {
+  config: { [id: string]: string; }
+
+
+  constructor(config: { [id: string]: string; }) {
+    this.config = {}
+    Object.keys(config).forEach(key => {
+      if (!!config[key]) {
+        this.config[key] = config[key]
+      }
+    })
   }
 
-  ifFilled(): boolean {
-    return !!this.tpAuthCookie && !!this.intervalsApiKey && !!this.intervalsAthleteId
+  hasRequiredConfig(): boolean {
+    return Object.keys(this.config).filter(key => requiredConfigKeys.indexOf(key) > -1).length == 2
   }
 }

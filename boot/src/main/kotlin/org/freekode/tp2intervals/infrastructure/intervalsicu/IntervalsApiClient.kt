@@ -1,14 +1,18 @@
 package org.freekode.tp2intervals.infrastructure.intervalsicu
 
+import org.freekode.tp2intervals.infrastructure.intervalsicu.activity.CreateActivityResponseDTO
 import org.freekode.tp2intervals.infrastructure.intervalsicu.folder.CreateFolderRequestDTO
 import org.freekode.tp2intervals.infrastructure.intervalsicu.folder.FolderDTO
 import org.freekode.tp2intervals.infrastructure.intervalsicu.workout.CreateWorkoutRequestDTO
 import org.freekode.tp2intervals.infrastructure.intervalsicu.workout.IntervalsEventDTO
 import org.springframework.cloud.openfeign.FeignClient
+import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestPart
+import org.springframework.web.multipart.MultipartFile
 
 @FeignClient(
     value = "IntervalsApiClient",
@@ -20,9 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody
 interface IntervalsApiClient {
 
     @GetMapping("/api/v1/athlete/{athleteId}")
-    fun getAthlete(
-        @PathVariable("athleteId") athleteId: String,
-    ): Map<String, Any>
+    fun getAthlete(@PathVariable("athleteId") athleteId: String): Map<String, Any>
 
     @PostMapping("/api/v1/athlete/{athleteId}/folders")
     fun createFolder(
@@ -36,7 +38,7 @@ interface IntervalsApiClient {
         @RequestBody createWorkoutRequestDTO: CreateWorkoutRequestDTO
     )
 
-    @GetMapping("/api/v1/athlete/{athleteId}/events?oldest={startDate}&newest={endDate}")
+    @GetMapping("/api/v1/athlete/{athleteId}/events?oldest={startDate}&newest={endDate}&resolve=true")
     fun getEvents(
         @PathVariable("athleteId") athleteId: String,
         @PathVariable("startDate") startDate: String,
@@ -49,4 +51,10 @@ interface IntervalsApiClient {
         @PathVariable("startDate") startDate: String,
         @PathVariable("endDate") endDate: String,
     ): List<IntervalsActivityDTO>
+
+    @PostMapping("/api/v1/athlete/{athleteId}/activities", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    fun createActivity(
+        @PathVariable athleteId: String,
+        @RequestPart("file") file: MultipartFile
+    ): CreateActivityResponseDTO
 }

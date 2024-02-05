@@ -1,0 +1,85 @@
+<form [formGroup]="copyPlanFormGroup" novalidate (ngSubmit)="copyPlanSubmit()">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Copy Plan</mat-card-title>
+      <mat-card-subtitle>Create a training plan based on workouts from TrainingPeak in selected date range
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="example-form-field">
+            <mat-label>Date Range</mat-label>
+            <mat-date-range-input
+              [rangePicker]="copyPlanDatePicker">
+              <input matStartDate placeholder="Start Date" formControlName="startDate">
+              <input matEndDate placeholder="End Date" formControlName="endDate">
+            </mat-date-range-input>
+            <mat-datepicker-toggle matIconSuffix [for]="copyPlanDatePicker"></mat-datepicker-toggle>
+            <mat-date-range-picker #copyPlanDatePicker></mat-date-range-picker>
+          </mat-form-field>
+        </div>
+      </div>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        [disabled]="copyPlanFormGroup.invalid"
+      >
+        Submit
+      </button>
+    </mat-card-actions>
+
+    <mat-card-footer>
+      <mat-progress-bar *ngIf="copyPlanInProgress" mode="query"></mat-progress-bar>
+    </mat-card-footer>
+  </mat-card>
+</form>
+
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Plan Workout</mat-card-title>
+    <mat-card-subtitle>Copy planned structured workout from Intervals to TrainingPeaks</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-actions>
+    <button
+      mat-raised-button
+      class="action-button"
+      color="primary"
+      (click)="planWorkoutClick()"
+    >
+      Submit
+    </button>
+
+<!--    <button-->
+<!--      mat-raised-button-->
+<!--      color="primary"-->
+<!--      class="action-button"-->
+<!--      type="button"-->
+<!--      [disabled]="jobStarted"-->
+<!--      (click)="startJob()"-->
+<!--    >-->
+<!--      Start Job-->
+<!--    </button>-->
+
+<!--    <button-->
+<!--      mat-raised-button-->
+<!--      color="accent"-->
+<!--      class="action-button"-->
+<!--      type="button"-->
+<!--      [disabled]="!jobStarted"-->
+<!--      (click)="stopJob()"-->
+<!--    >-->
+<!--      Stop Job-->
+<!--    </button>-->
+  </mat-card-actions>
+
+  <mat-card-footer>
+    <mat-progress-bar *ngIf="planWorkoutInProgress" mode="query"></mat-progress-bar>
+  </mat-card-footer>
+</mat-card>

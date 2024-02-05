@@ -9,20 +9,8 @@
       <div class="row">
         <div class="col">
           <mat-form-field class="full-width">
-            <mat-label>TrainingPeaks Auth Cookie</mat-label>
-            <input matInput placeholder="Production_tpAuth=very_long_string" formControlName="tpAuthCookie">
-            @if (formGroup.controls['tpAuthCookie'].errors?.['pattern']) {
-              <mat-error>Must be in format Production_tpAuth=...</mat-error>
-            }
-          </mat-form-field>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col">
-          <mat-form-field class="full-width">
             <mat-label>Intervals API Key</mat-label>
-            <input matInput placeholder="123456qwerty123456qwerty1" formControlName="apiKey">
+            <input matInput placeholder="123456qwerty123456qwerty1" formControlName="intervals.api-key">
           </mat-form-field>
         </div>
       </div>
@@ -31,12 +19,55 @@
         <div class="col">
           <mat-form-field class="full-width">
             <mat-label>Intervals Athlete Id</mat-label>
-            <input matInput placeholder="i00000" formControlName="athleteId">
+            <input matInput placeholder="i00000" formControlName="intervals.athlete-id">
           </mat-form-field>
         </div>
       </div>
 
+<!--      <div class="row">-->
+<!--        <div class="col">-->
+<!--          <mat-form-field class="full-width">-->
+<!--            <mat-label>Cron for Plan Workouts job</mat-label>-->
+<!--            <input matInput placeholder="* * * * *" formControlName="generic.plan-workouts-cron">-->
+<!--          </mat-form-field>-->
+<!--        </div>-->
+<!--      </div>-->
+
+<!--      <div class="row">-->
+<!--        <div class="col">-->
+<!--          <mat-form-field class="full-width">-->
+<!--            <mat-label>Cron for Sync Activities job</mat-label>-->
+<!--            <input matInput placeholder="* * * * *" formControlName="generic.sync-activities-cron">-->
+<!--          </mat-form-field>-->
+<!--        </div>-->
+<!--      </div>-->
+
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="full-width">
+            <mat-label>TrainingPeaks Auth Cookie</mat-label>
+            <input matInput placeholder="Production_tpAuth=very_long_string" formControlName="training-peaks.auth-cookie">
+            @if (formGroup.controls['training-peaks.auth-cookie'].errors?.['pattern']) {
+              <mat-error>Must be in format Production_tpAuth=...</mat-error>
+            }
+          </mat-form-field>
+        </div>
+      </div>
+
+<!--      <div class="row">-->
+<!--        <div class="col">-->
+<!--          <mat-form-field class="full-width">-->
+<!--            <mat-label>TrainerRoad Auth Cookie</mat-label>-->
+<!--            <input matInput placeholder="TrainerRoadAuth=very_long_string" formControlName="trainer-road.auth-cookie">-->
+<!--            @if (formGroup.controls['trainer-road.auth-cookie'].errors?.['pattern']) {-->
+<!--              <mat-error>Must be in format TrainerRoadAuth=...</mat-error>-->
+<!--            }-->
+<!--          </mat-form-field>-->
+<!--        </div>-->
+<!--      </div>-->
+
     </mat-card-content>
+
     <mat-card-actions>
       <button
         mat-raised-button

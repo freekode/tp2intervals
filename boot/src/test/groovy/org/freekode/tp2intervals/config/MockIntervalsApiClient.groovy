@@ -4,10 +4,13 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.freekode.tp2intervals.infrastructure.intervalsicu.IntervalsActivityDTO
 import org.freekode.tp2intervals.infrastructure.intervalsicu.IntervalsApiClient
+import org.freekode.tp2intervals.infrastructure.intervalsicu.activity.CreateActivityResponseDTO
 import org.freekode.tp2intervals.infrastructure.intervalsicu.folder.CreateFolderRequestDTO
 import org.freekode.tp2intervals.infrastructure.intervalsicu.folder.FolderDTO
 import org.freekode.tp2intervals.infrastructure.intervalsicu.workout.CreateWorkoutRequestDTO
 import org.freekode.tp2intervals.infrastructure.intervalsicu.workout.IntervalsEventDTO
+import org.jetbrains.annotations.NotNull
+import org.springframework.web.multipart.MultipartFile
 
 class MockIntervalsApiClient implements IntervalsApiClient {
     List<IntervalsEventDTO> events
@@ -38,6 +41,11 @@ class MockIntervalsApiClient implements IntervalsApiClient {
 
     @Override
     List<IntervalsActivityDTO> getActivities(String athleteId, String startDate, String endDate) {
+        return null
+    }
+
+    @Override
+    CreateActivityResponseDTO createActivity(String athleteId, MultipartFile file) {
         return null
     }
 }

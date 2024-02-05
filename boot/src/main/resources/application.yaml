@@ -4,14 +4,20 @@ training-peaks:
 intervals:
   api-url: https://intervals.icu
 
+trainer-road:
+  api-url: https://www.trainerroad.com
+
 spring:
   jackson:
     default-property-inclusion: non_null
+    serialization:
+      fail-on-empty-beans: false
   datasource:
-    url: jdbc:h2:file:./tp2intervals-db
-    driverClassName: org.h2.Driver
+    url: jdbc:sqlite:tp2intervals.sqlite
+    driver-class-name: org.sqlite.JDBC
   jpa:
-    generate-ddl: true
+    open-in-view: false
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
 
 logging:
   file:

@@ -37,9 +37,6 @@ out/
 .vscode/
 
 application-dev.yaml
-
-database.mv.db
-database.trace.db
-tp2intervals-db.mv.db
-tp2intervals-db.trace.db
-*.log
+tp2intervals.sqlite
+*.log*
+node_modules

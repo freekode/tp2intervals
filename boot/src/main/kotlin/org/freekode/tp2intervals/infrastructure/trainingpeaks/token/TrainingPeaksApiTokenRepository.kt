@@ -1,6 +1,6 @@
 package org.freekode.tp2intervals.infrastructure.trainingpeaks.token
 
-import org.freekode.tp2intervals.domain.config.AppConfigRepository
+import org.freekode.tp2intervals.infrastructure.trainingpeaks.configuraiton.TrainingPeaksConfigurationRepository
 import org.springframework.cache.annotation.CacheConfig
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Repository
@@ -9,15 +9,15 @@ import org.springframework.stereotype.Repository
 @Repository
 class TrainingPeaksApiTokenRepository(
     private val trainingPeaksTokenApiClient: TrainingPeaksTokenApiClient,
-    private val appConfigRepository: AppConfigRepository
+    private val trainingPeaksConfigurationRepository: TrainingPeaksConfigurationRepository,
 ) {
     @Cacheable(key = "'singleton'")
     fun getToken(): String {
-        return getTokenNow()
+        return getToken(trainingPeaksConfigurationRepository.getConfiguration().authCookie)
     }
 
-    fun getTokenNow(): String {
-        val token = trainingPeaksTokenApiClient.getToken(appConfigRepository.getConfig().tpConfig.authCookie)
+    fun getToken(authCookie: String): String {
+        val token = trainingPeaksTokenApiClient.getToken(authCookie)
         return token.accessToken!!
     }
 }

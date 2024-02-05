@@ -1,4 +1,4 @@
-/* You can add global styles to this file, and also import other style files */
+@import "bootstrap-icons/font/bootstrap-icons.css";
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
@@ -14,4 +14,17 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   &.app-notification-success {
     --mdc-snackbar-container-color: #43a446;
   }
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+}
+
+.col {
+  flex: 1;
+}
+
+mat-card {
+  margin-bottom: 20px;
 }

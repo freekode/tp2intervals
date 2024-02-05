@@ -1,32 +1,36 @@
 package org.freekode.tp2intervals.infrastructure.intervalsicu.workout
 
-import org.freekode.tp2intervals.domain.activity.Activity
-import org.freekode.tp2intervals.domain.plan.Folder
-import org.freekode.tp2intervals.domain.workout.Workout
-import org.freekode.tp2intervals.domain.config.AppConfigRepository
-import org.freekode.tp2intervals.infrastructure.intervalsicu.IntervalsApiClient
-import org.springframework.stereotype.Repository
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
+import org.freekode.tp2intervals.domain.Platform
+import org.freekode.tp2intervals.domain.plan.Plan
+import org.freekode.tp2intervals.domain.workout.Workout
+import org.freekode.tp2intervals.domain.workout.WorkoutRepository
+import org.freekode.tp2intervals.infrastructure.intervalsicu.IntervalsApiClient
+import org.freekode.tp2intervals.infrastructure.intervalsicu.IntervalsException
+import org.freekode.tp2intervals.infrastructure.intervalsicu.configuration.IntervalsConfigurationRepository
+import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Repository
 import kotlin.math.absoluteValue
 
 @Repository
 class IntervalsWorkoutRepository(
     private val intervalsApiClient: IntervalsApiClient,
-    private val appConfigRepository: AppConfigRepository,
-    private val intervalsToWorkoutMapper: IntervalsToWorkoutMapper,
-    private val intervalsWorkoutDocMapper: WorkoutToIntervalsMapper
-) {
+    private val intervalsConfigurationRepository: IntervalsConfigurationRepository,
+    private val intervalsWorkoutDocMapper: WorkoutToIntervalsConverter
+) : WorkoutRepository {
 
-    fun createAndPlanWorkout(folder: Folder, workout: Workout) {
+    private val log = LoggerFactory.getLogger(this.javaClass)
+
+    override fun planWorkout(workout: Workout, plan: Plan) {
         val workoutString = intervalsWorkoutDocMapper.mapToIntervalsWorkout(workout)
 
         var description = workout.description.orEmpty()
         description += workoutString?.let { "\n\n- - - -\n$it" }.orEmpty()
 
         val createWorkoutRequestDTO = CreateWorkoutRequestDTO(
-            folder.id.value,
-            getWorkoutDayNumber(folder.startDate, workout.date),
+            plan.id.value,
+            getWorkoutDayNumber(plan.startDate, workout.date),
             IntervalsEventTypeMapper.getByTrainingType(workout.type),
             workout.title,
             workout.duration?.seconds,
@@ -35,32 +39,32 @@ class IntervalsWorkoutRepository(
             null,
         )
         intervalsApiClient.createWorkout(
-            appConfigRepository.getConfig().intervalsConfig.athleteId,
+            intervalsConfigurationRepository.getConfiguration().athleteId,
             createWorkoutRequestDTO
         )
     }
 
-    fun getPlannedWorkouts(startDate: LocalDate, endDate: LocalDate): List<Workout> {
+    override fun platform() = Platform.INTERVALS
+
+    override fun getPlannedWorkouts(startDate: LocalDate, endDate: LocalDate): List<Workout> {
         val events =
             intervalsApiClient.getEvents(
-                appConfigRepository.getConfig().intervalsConfig.athleteId,
+                intervalsConfigurationRepository.getConfiguration().athleteId,
                 startDate.toString(),
                 endDate.toString()
             )
         return events
             .filter { it.category == IntervalsEventDTO.EventCategory.WORKOUT }
-            .map { intervalsToWorkoutMapper.mapToWorkout(it) }
+            .mapNotNull { toWorkout(it) }
     }
 
-    fun getActivities(startDate: LocalDate, endDate: LocalDate): List<Activity> {
-        val activities =
-            intervalsApiClient.getActivities(
-                appConfigRepository.getConfig().intervalsConfig.athleteId,
-                startDate.toString(),
-                endDate.toString()
-            )
-        return activities
-            .map { intervalsToWorkoutMapper.mapToActivity(it) }
+    private fun toWorkout(eventDTO: IntervalsEventDTO): Workout? {
+        return try {
+            IntervalsToWorkoutConverter(eventDTO).toWorkout()
+        } catch (e: IntervalsException) {
+            log.warn("Can't convert a workout ${eventDTO.name} on ${eventDTO.start_date_local}, skipping...", e)
+            return null
+        }
     }
 
     private fun getWorkoutDayNumber(startDate: LocalDate, currentDate: LocalDate): Int {

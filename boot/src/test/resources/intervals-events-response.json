@@ -1,39 +1,533 @@
 [
   {
-    "id": 11111111,
-    "start_date_local": "2024-01-30T00:00:00",
-    "icu_training_load": 63,
-    "icu_atl": 39.453323,
-    "icu_ctl": 22.090675,
-    "type": "Yoga",
+    "id": 31113662,
+    "start_date_local": "2024-02-05T00:00:00",
+    "icu_training_load": 35,
+    "icu_atl": 56.502525,
+    "icu_ctl": 26.663237,
+    "type": "VirtualRide",
     "calendar_id": 1,
-    "uid": "dab16101-24d8-4264-979f-515f83e4a6a3",
+    "uid": "b7201710-c619-411f-a9bf-a4398f70f904",
     "athlete_id": "i11111",
     "category": "WORKOUT",
-    "end_date_local": "2024-01-31T00:00:00",
-    "name": "test yoga",
-    "description": null,
+    "end_date_local": "2024-02-06T00:00:00",
+    "name": "virtual ride test",
+    "description": "- 10m ramp 10-60%\n- 10m Z2 \n- 10m 40% 90rpm\n- 10m 10-30% 80-90rpm\n- 10m Z3-Z4",
+    "indoor": true,
+    "color": null,
+    "moving_time": 3000,
+    "icu_ftp": null,
+    "atl_days": null,
+    "ctl_days": null,
+    "updated": "2024-02-05T11:01:32.968+00:00",
+    "not_on_fitness_chart": false,
+    "show_as_note": false,
+    "show_on_ctl_line": false,
+    "target": null,
+    "joules": 361200,
+    "joules_above_ftp": 0,
+    "workout_doc": {
+      "duration": 3000,
+      "distance": 0.0,
+      "ftp": 240,
+      "target": "POWER",
+      "steps": [
+        {
+          "duration": 600,
+          "ramp": true,
+          "power": {
+            "start": 10.0,
+            "end": 60.0,
+            "units": "%ftp"
+          },
+          "_power": {
+            "value": 84.0,
+            "start": 24.0,
+            "end": 144.0
+          }
+        },
+        {
+          "duration": 600,
+          "power": {
+            "value": 2.0,
+            "units": "power_zone"
+          },
+          "_power": {
+            "start": 134.0,
+            "end": 180.0
+          }
+        },
+        {
+          "duration": 600,
+          "power": {
+            "value": 40.0,
+            "units": "%ftp"
+          },
+          "cadence": {
+            "value": 90.0,
+            "units": "rpm"
+          },
+          "_power": {
+            "value": 96.0,
+            "start": 96.0,
+            "end": 96.0
+          }
+        },
+        {
+          "duration": 600,
+          "power": {
+            "start": 10.0,
+            "end": 30.0,
+            "units": "%ftp"
+          },
+          "cadence": {
+            "start": 80.0,
+            "end": 90.0,
+            "units": "rpm"
+          },
+          "_power": {
+            "value": 48.0,
+            "start": 24.0,
+            "end": 72.0
+          }
+        },
+        {
+          "duration": 600,
+          "power": {
+            "start": 3.0,
+            "end": 4.0,
+            "units": "power_zone"
+          },
+          "_power": {
+            "start": 182.0,
+            "end": 252.0
+          }
+        }
+      ],
+      "zoneTimes": [
+        {
+          "id": "Z1",
+          "max": 55,
+          "name": "Z1",
+          "secs": 1740,
+          "zone": 1,
+          "color": "#009e80",
+          "maxWatts": 132,
+          "minWatts": 1,
+          "percentRange": "0% - 55%"
+        },
+        {
+          "id": "Z2",
+          "max": 75,
+          "name": "Z2",
+          "secs": 660,
+          "zone": 2,
+          "color": "#009e00",
+          "maxWatts": 180,
+          "minWatts": 133,
+          "percentRange": "56% - 75%"
+        },
+        {
+          "id": "Z3",
+          "max": 90,
+          "name": "Z3",
+          "secs": 0,
+          "zone": 3,
+          "color": "#ffcb0e",
+          "maxWatts": 216,
+          "minWatts": 181,
+          "percentRange": "76% - 90%"
+        },
+        {
+          "id": "Z4",
+          "max": 105,
+          "name": "Z4",
+          "secs": 600,
+          "zone": 4,
+          "color": "#ff7f0e",
+          "maxWatts": 252,
+          "minWatts": 217,
+          "percentRange": "91% - 105%"
+        },
+        {
+          "id": "Z5",
+          "max": 120,
+          "name": "Z5",
+          "secs": 0,
+          "zone": 5,
+          "color": "#dd0447",
+          "maxWatts": 288,
+          "minWatts": 253,
+          "percentRange": "106% - 120%"
+        },
+        {
+          "id": "Z6",
+          "max": 150,
+          "name": "Z6",
+          "secs": 0,
+          "zone": 6,
+          "color": "#6633cc",
+          "maxWatts": 360,
+          "minWatts": 289,
+          "percentRange": "121% - 150%"
+        },
+        {
+          "id": "Z7",
+          "max": 999,
+          "name": "Z7",
+          "secs": 0,
+          "zone": 7,
+          "color": "#504861",
+          "maxWatts": 9999,
+          "minWatts": 361,
+          "percentRange": "151% +"
+        },
+        {
+          "id": "SS",
+          "gap": true,
+          "max": 97,
+          "min": 84,
+          "name": "Sweet Spot",
+          "secs": 600,
+          "zone": 8,
+          "color": "#ffa00e",
+          "maxWatts": 232,
+          "minWatts": 201,
+          "percentRange": "84% - 97%"
+        }
+      ],
+      "options": {},
+      "locales": []
+    },
+    "push_errors": null,
+    "athlete_cannot_edit": false,
+    "hide_from_athlete": false,
+    "structure_read_only": false,
+    "created_by_id": "i11111",
+    "shared_event_id": null,
+    "entered": false,
+    "tags": null,
+    "attachments": null,
+    "oauth_client_id": null,
+    "external_id": null,
+    "load_target": null,
+    "time_target": null,
+    "distance_target": null,
+    "plan_athlete_id": null,
+    "plan_folder_id": null,
+    "plan_workout_id": null,
+    "plan_applied": null,
+    "distance": 0.0,
+    "icu_intensity": 64.8074,
+    "plan_name": null,
+    "paired_activity_id": null
+  },
+  {
+    "id": 31113663,
+    "start_date_local": "2024-02-05T00:00:00",
+    "icu_training_load": 32,
+    "icu_atl": 56.502525,
+    "icu_ctl": 26.663237,
+    "type": "Other",
+    "calendar_id": 1,
+    "uid": "7a559d2c-bd2b-48c8-b889-5aab93720b64",
+    "athlete_id": "i11111",
+    "category": "WORKOUT",
+    "end_date_local": "2024-02-06T00:00:00",
+    "name": "other test",
+    "description": "",
+    "indoor": null,
+    "color": null,
+    "moving_time": 2700,
+    "icu_ftp": null,
+    "atl_days": null,
+    "ctl_days": null,
+    "updated": "2024-02-05T10:59:03.605+00:00",
+    "not_on_fitness_chart": false,
+    "show_as_note": false,
+    "show_on_ctl_line": false,
+    "target": null,
+    "joules": 0,
+    "joules_above_ftp": 0,
+    "workout_doc": {
+      "duration": 0,
+      "distance": 0.0,
+      "target": "POWER",
+      "steps": [],
+      "options": {},
+      "locales": []
+    },
+    "push_errors": null,
+    "athlete_cannot_edit": false,
+    "hide_from_athlete": false,
+    "structure_read_only": false,
+    "created_by_id": "i11111",
+    "shared_event_id": null,
+    "entered": false,
+    "tags": null,
+    "attachments": null,
+    "oauth_client_id": null,
+    "external_id": null,
+    "load_target": null,
+    "time_target": null,
+    "distance_target": null,
+    "plan_athlete_id": null,
+    "plan_folder_id": null,
+    "plan_workout_id": null,
+    "plan_applied": null,
+    "distance": 0.0,
+    "icu_intensity": 65.319725,
+    "plan_name": null,
+    "paired_activity_id": null
+  },
+  {
+    "id": 31113686,
+    "start_date_local": "2024-02-05T00:00:00",
+    "icu_training_load": 35,
+    "icu_atl": 56.502525,
+    "icu_ctl": 26.663237,
+    "type": "Ride",
+    "calendar_id": 1,
+    "uid": "9cfc856c-73ac-407e-910e-8c78db08bdbb",
+    "athlete_id": "i11111",
+    "category": "WORKOUT",
+    "end_date_local": "2024-02-06T00:00:00",
+    "name": "power test",
+    "description": "\n- 10m 10-30%\n- 10m 40%\n- 10m ramp 10-60%\n- 10m Z2\n- 10m Z3-Z4",
     "indoor": false,
+    "color": null,
+    "moving_time": 3000,
+    "icu_ftp": null,
+    "atl_days": null,
+    "ctl_days": null,
+    "updated": "2024-02-05T10:59:15.097+00:00",
+    "not_on_fitness_chart": false,
+    "show_as_note": false,
+    "show_on_ctl_line": false,
+    "target": null,
+    "joules": 361200,
+    "joules_above_ftp": 0,
+    "workout_doc": {
+      "duration": 3000,
+      "distance": 0.0,
+      "ftp": 240,
+      "target": "POWER",
+      "steps": [
+        {
+          "duration": 600,
+          "power": {
+            "start": 10.0,
+            "end": 30.0,
+            "units": "%ftp"
+          },
+          "_power": {
+            "value": 48.0,
+            "start": 24.0,
+            "end": 72.0
+          }
+        },
+        {
+          "duration": 600,
+          "power": {
+            "value": 40.0,
+            "units": "%ftp"
+          },
+          "_power": {
+            "value": 96.0,
+            "start": 93.0,
+            "end": 99.0
+          }
+        },
+        {
+          "duration": 600,
+          "ramp": true,
+          "power": {
+            "start": 10.0,
+            "end": 60.0,
+            "units": "%ftp"
+          },
+          "_power": {
+            "value": 84.0,
+            "start": 24.0,
+            "end": 144.0
+          }
+        },
+        {
+          "duration": 600,
+          "power": {
+            "value": 2.0,
+            "units": "power_zone"
+          },
+          "_power": {
+            "start": 134.0,
+            "end": 180.0
+          }
+        },
+        {
+          "duration": 600,
+          "power": {
+            "start": 3.0,
+            "end": 4.0,
+            "units": "power_zone"
+          },
+          "_power": {
+            "start": 182.0,
+            "end": 252.0
+          }
+        }
+      ],
+      "zoneTimes": [
+        {
+          "id": "Z1",
+          "max": 55,
+          "name": "Z1",
+          "secs": 1740,
+          "zone": 1,
+          "color": "#009e80",
+          "maxWatts": 132,
+          "minWatts": 1,
+          "percentRange": "0% - 55%"
+        },
+        {
+          "id": "Z2",
+          "max": 75,
+          "name": "Z2",
+          "secs": 660,
+          "zone": 2,
+          "color": "#009e00",
+          "maxWatts": 180,
+          "minWatts": 133,
+          "percentRange": "56% - 75%"
+        },
+        {
+          "id": "Z3",
+          "max": 90,
+          "name": "Z3",
+          "secs": 0,
+          "zone": 3,
+          "color": "#ffcb0e",
+          "maxWatts": 216,
+          "minWatts": 181,
+          "percentRange": "76% - 90%"
+        },
+        {
+          "id": "Z4",
+          "max": 105,
+          "name": "Z4",
+          "secs": 600,
+          "zone": 4,
+          "color": "#ff7f0e",
+          "maxWatts": 252,
+          "minWatts": 217,
+          "percentRange": "91% - 105%"
+        },
+        {
+          "id": "Z5",
+          "max": 120,
+          "name": "Z5",
+          "secs": 0,
+          "zone": 5,
+          "color": "#dd0447",
+          "maxWatts": 288,
+          "minWatts": 253,
+          "percentRange": "106% - 120%"
+        },
+        {
+          "id": "Z6",
+          "max": 150,
+          "name": "Z6",
+          "secs": 0,
+          "zone": 6,
+          "color": "#6633cc",
+          "maxWatts": 360,
+          "minWatts": 289,
+          "percentRange": "121% - 150%"
+        },
+        {
+          "id": "Z7",
+          "max": 999,
+          "name": "Z7",
+          "secs": 0,
+          "zone": 7,
+          "color": "#504861",
+          "maxWatts": 9999,
+          "minWatts": 361,
+          "percentRange": "151% +"
+        },
+        {
+          "id": "SS",
+          "gap": true,
+          "max": 97,
+          "min": 84,
+          "name": "Sweet Spot",
+          "secs": 600,
+          "zone": 8,
+          "color": "#ffa00e",
+          "maxWatts": 232,
+          "minWatts": 201,
+          "percentRange": "84% - 97%"
+        }
+      ],
+      "options": {},
+      "locales": []
+    },
+    "push_errors": null,
+    "athlete_cannot_edit": false,
+    "hide_from_athlete": false,
+    "structure_read_only": false,
+    "created_by_id": "i11111",
+    "shared_event_id": null,
+    "entered": false,
+    "tags": null,
+    "attachments": null,
+    "oauth_client_id": null,
+    "external_id": null,
+    "load_target": null,
+    "time_target": null,
+    "distance_target": null,
+    "plan_athlete_id": null,
+    "plan_folder_id": null,
+    "plan_workout_id": null,
+    "plan_applied": null,
+    "distance": 0.0,
+    "icu_intensity": 64.8074,
+    "plan_name": null,
+    "paired_activity_id": null
+  },
+  {
+    "id": 31113688,
+    "start_date_local": "2024-02-05T00:00:00",
+    "icu_training_load": 13,
+    "icu_atl": 56.502525,
+    "icu_ctl": 26.663237,
+    "type": "Yoga",
+    "calendar_id": 1,
+    "uid": "4523bfbb-a57a-44bf-be3b-8afda81239ec",
+    "athlete_id": "i11111",
+    "category": "WORKOUT",
+    "end_date_local": "2024-02-06T00:00:00",
+    "name": "yoga (other) test",
+    "description": "",
+    "indoor": null,
     "color": null,
     "moving_time": 1380,
     "icu_ftp": null,
     "atl_days": null,
     "ctl_days": null,
-    "updated": "2024-01-30T10:14:14.659+00:00",
+    "updated": "2024-02-05T10:59:17.035+00:00",
     "not_on_fitness_chart": false,
     "show_as_note": false,
     "show_on_ctl_line": false,
     "target": null,
-    "joules": null,
-    "joules_above_ftp": null,
+    "joules": 0,
+    "joules_above_ftp": 0,
     "workout_doc": {
-      "steps": [],
-      "locales": [],
-      "options": {},
-      "distance": 0,
       "duration": 0,
-      "average_watts": null,
-      "variability_index": null
+      "distance": 0.0,
+      "target": "POWER",
+      "steps": [],
+      "options": {},
+      "locales": []
     },
     "push_errors": null,
     "athlete_cannot_edit": false,
@@ -54,90 +548,31 @@
     "plan_workout_id": null,
     "plan_applied": null,
     "distance": 0.0,
-    "icu_intensity": 128.19821,
+    "icu_intensity": 58.234905,
     "plan_name": null,
     "paired_activity_id": null
   },
   {
-    "id": 30651111,
-    "start_date_local": "2024-01-30T00:00:00",
-    "icu_training_load": null,
-    "icu_atl": null,
-    "icu_ctl": null,
-    "type": "Other",
-    "calendar_id": 1,
-    "uid": "97e311c0-a17f-44d0-91d8-48d367d6f19a",
-    "athlete_id": "i11111",
-    "category": "WORKOUT",
-    "end_date_local": "2024-01-31T00:00:00",
-    "name": "test other",
-    "description": null,
-    "indoor": null,
-    "color": null,
-    "moving_time": null,
-    "icu_ftp": null,
-    "atl_days": null,
-    "ctl_days": null,
-    "updated": "2024-01-30T10:45:19.790+00:00",
-    "not_on_fitness_chart": false,
-    "show_as_note": false,
-    "show_on_ctl_line": false,
-    "target": null,
-    "joules": null,
-    "joules_above_ftp": null,
-    "workout_doc": {
-      "steps": [],
-      "locales": [],
-      "options": {},
-      "distance": 0,
-      "duration": 0,
-      "average_watts": null,
-      "variability_index": null
-    },
-    "push_errors": null,
-    "athlete_cannot_edit": false,
-    "hide_from_athlete": false,
-    "structure_read_only": false,
-    "created_by_id": "i11111",
-    "shared_event_id": null,
-    "entered": false,
-    "tags": null,
-    "attachments": null,
-    "oauth_client_id": null,
-    "external_id": null,
-    "load_target": null,
-    "time_target": null,
-    "distance_target": null,
-    "plan_athlete_id": null,
-    "plan_folder_id": null,
-    "plan_workout_id": null,
-    "plan_applied": null,
-    "distance": 0.0,
-    "icu_intensity": null,
-    "plan_name": null,
-    "paired_activity_id": null
-  },
-  {
-    "id": 30654004,
-    "start_date_local": "2024-01-30T00:00:00",
+    "id": 31115158,
+    "start_date_local": "2024-02-05T00:00:00",
     "icu_training_load": null,
     "icu_atl": null,
     "icu_ctl": null,
     "type": null,
     "calendar_id": 1,
-    "uid": "2f68bd20-915b-426d-9c56-2c51a6a2f207",
+    "uid": "d85038d2-b5d1-4d94-afbf-2419f850df8e",
     "athlete_id": "i11111",
     "category": "NOTE",
-    "end_date_local": "2024-01-31T00:00:00",
-    "name": "test note",
-    "description": null,
+    "end_date_local": "2024-02-06T00:00:00",
+    "name": "note test",
+    "description": "",
     "indoor": false,
     "color": null,
     "moving_time": null,
     "icu_ftp": null,
     "atl_days": null,
     "ctl_days": null,
-    "updated": "2024-01-30T10:45:43.586+00:00",
+    "updated": "2024-02-05T11:08:56.819+00:00",
     "not_on_fitness_chart": false,
     "show_as_note": false,
     "show_on_ctl_line": false,
@@ -168,40 +603,241 @@
     "plan_name": null
   },
   {
-    "id": 30662881,
-    "start_date_local": "2024-01-30T00:00:00",
-    "icu_training_load": null,
-    "icu_atl": null,
-    "icu_ctl": null,
-    "type": "VirtualRide",
+    "id": 31113683,
+    "start_date_local": "2024-02-05T00:00:00",
+    "icu_training_load": 4,
+    "icu_atl": 56.502525,
+    "icu_ctl": 26.663237,
+    "type": "Run",
     "calendar_id": 1,
-    "uid": "38ffcf58-bd12-4c7d-ab9d-e7e071c6e808",
+    "uid": "6df11cee-42e1-41e7-aa6e-90c9324122c2",
     "athlete_id": "i11111",
     "category": "WORKOUT",
-    "end_date_local": "2024-01-31T00:00:00",
-    "name": "virtual",
-    "description": null,
-    "indoor": true,
+    "end_date_local": "2024-02-06T00:00:00",
+    "name": "pace test",
+    "description": "\n- 10m 30% Pace\n- 10m 30-40% Pace",
+    "indoor": false,
     "color": null,
-    "moving_time": null,
+    "moving_time": 1200,
     "icu_ftp": null,
     "atl_days": null,
     "ctl_days": null,
-    "updated": "2024-01-30T12:10:39.509+00:00",
+    "updated": "2024-02-05T10:59:13.663+00:00",
     "not_on_fitness_chart": false,
     "show_as_note": false,
     "show_on_ctl_line": false,
     "target": null,
-    "joules": null,
-    "joules_above_ftp": null,
+    "joules": 0,
+    "joules_above_ftp": 0,
     "workout_doc": {
-      "steps": [],
-      "locales": [],
+      "duration": 1200,
+      "distance": 1026.3158,
+      "target": "PACE",
+      "steps": [
+        {
+          "duration": 600,
+          "pace": {
+            "value": 30.0,
+            "units": "%pace"
+          },
+          "_pace": {
+            "value": 0.7894736528396606,
+            "start": 0.7697368115186691,
+            "end": 0.8092104941606522
+          },
+          "_distance": 473.6842
+        },
+        {
+          "duration": 600,
+          "pace": {
+            "start": 30.0,
+            "end": 40.0,
+            "units": "%pace"
+          },
+          "_pace": {
+            "value": 0.9210526347160339,
+            "start": 0.7894736528396606,
+            "end": 1.0526316165924072
+          },
+          "_distance": 552.6316
+        }
+      ],
+      "zoneTimes": [
+        {
+          "id": "Z1",
+          "secs": 1200
+        },
+        {
+          "id": "Z2",
+          "secs": 0
+        },
+        {
+          "id": "Z3",
+          "secs": 0
+        },
+        {
+          "id": "Z4",
+          "secs": 0
+        },
+        {
+          "id": "Z5",
+          "secs": 0
+        },
+        {
+          "id": "Z6",
+          "secs": 0
+        },
+        {
+          "id": "Z7",
+          "secs": 0
+        }
+      ],
       "options": {},
-      "distance": 0,
-      "duration": 0,
-      "average_watts": null,
-      "variability_index": null
+      "locales": []
+    },
+    "push_errors": null,
+    "athlete_cannot_edit": false,
+    "hide_from_athlete": false,
+    "structure_read_only": false,
+    "created_by_id": "i11111",
+    "shared_event_id": null,
+    "entered": false,
+    "tags": null,
+    "attachments": null,
+    "oauth_client_id": null,
+    "external_id": null,
+    "load_target": null,
+    "time_target": null,
+    "distance_target": null,
+    "plan_athlete_id": null,
+    "plan_folder_id": null,
+    "plan_workout_id": null,
+    "plan_applied": null,
+    "distance": 1026.3158,
+    "icu_intensity": 34.641018,
+    "plan_name": null,
+    "paired_activity_id": null
+  },
+  {
+    "id": 31115159,
+    "start_date_local": "2024-02-05T00:00:00",
+    "icu_training_load": 24,
+    "icu_atl": 56.502525,
+    "icu_ctl": 26.663237,
+    "type": "Ride",
+    "calendar_id": 1,
+    "uid": "fdd259ca-c032-485d-bb95-51ecbbbee2a0",
+    "athlete_id": "i11111",
+    "category": "WORKOUT",
+    "end_date_local": "2024-02-06T00:00:00",
+    "name": "hr test",
+    "description": "\n- 10m 30-40% HR\n- 10m 40% HR\n- 10m ramp 45-60% HR\n- 10m Z2 HR\n- 10m Z3-Z4 HR",
+    "indoor": false,
+    "color": null,
+    "moving_time": 3000,
+    "icu_ftp": null,
+    "atl_days": null,
+    "ctl_days": null,
+    "updated": "2024-02-05T11:09:00.839+00:00",
+    "not_on_fitness_chart": false,
+    "show_as_note": false,
+    "show_on_ctl_line": false,
+    "target": null,
+    "joules": 0,
+    "joules_above_ftp": 0,
+    "workout_doc": {
+      "duration": 3000,
+      "distance": 0.0,
+      "ftp": 240,
+      "target": "HR",
+      "steps": [
+        {
+          "duration": 600,
+          "hr": {
+            "start": 30.0,
+            "end": 40.0,
+            "units": "%hr"
+          },
+          "_hr": {
+            "value": 69.0,
+            "start": 59.0,
+            "end": 79.0
+          }
+        },
+        {
+          "duration": 600,
+          "hr": {
+            "value": 40.0,
+            "units": "%hr"
+          },
+          "_hr": {
+            "value": 79.0,
+            "start": 77.0,
+            "end": 81.0
+          }
+        },
+        {
+          "duration": 600,
+          "ramp": true,
+          "hr": {
+            "start": 45.0,
+            "end": 60.0,
+            "units": "%hr"
+          },
+          "_hr": {
+            "value": 104.0,
+            "start": 89.0,
+            "end": 119.0
+          }
+        },
+        {
+          "duration": 600,
+          "hr": {
+            "value": 2.0,
+            "units": "hr_zone"
+          },
+          "_hr": {
+            "start": 116.0,
+            "end": 140.0
+          }
+        },
+        {
+          "duration": 600,
+          "hr": {
+            "start": 3.0,
+            "end": 4.0,
+            "units": "hr_zone"
+          },
+          "_hr": {
+            "start": 141.0,
+            "end": 178.0
+          }
+        }
+      ],
+      "zoneTimes": [
+        {
+          "id": "Z1",
+          "secs": 1800
+        },
+        {
+          "id": "Z2",
+          "secs": 600
+        },
+        {
+          "id": "Z3",
+          "secs": 0
+        },
+        {
+          "id": "Z4",
+          "secs": 600
+        },
+        {
+          "id": "Z5",
+          "secs": 0
+        }
+      ],
+      "options": {},
+      "locales": []
     },
     "push_errors": null,
     "athlete_cannot_edit": false,
@@ -222,7 +858,99 @@
     "plan_workout_id": null,
     "plan_applied": null,
     "distance": 0.0,
-    "icu_intensity": null,
+    "icu_intensity": 53.66563,
+    "plan_name": null,
+    "paired_activity_id": null
+  },
+  {
+    "id": 31046418,
+    "start_date_local": "2024-02-04T00:00:00",
+    "icu_training_load": 6,
+    "icu_atl": 46.014618,
+    "icu_ctl": 24.314484,
+    "type": "Ride",
+    "calendar_id": 1,
+    "uid": "165cfd12-34c2-4602-a25f-0f29d1c29a31",
+    "athlete_id": "i55661",
+    "category": "WORKOUT",
+    "end_date_local": "2024-02-05T00:00:00",
+    "name": "test workout hr",
+    "description": "hr zone test\n\n- 10m Z2 HR",
+    "indoor": false,
+    "color": null,
+    "moving_time": 600,
+    "icu_ftp": null,
+    "atl_days": null,
+    "ctl_days": null,
+    "updated": "2024-02-04T19:29:57.098+00:00",
+    "not_on_fitness_chart": false,
+    "show_as_note": false,
+    "show_on_ctl_line": false,
+    "target": null,
+    "joules": 0,
+    "joules_above_ftp": 0,
+    "workout_doc": {
+      "steps": [
+        {
+          "hr": {
+            "units": "hr_zone",
+            "value": 2
+          },
+          "duration": 600
+        }
+      ],
+      "locales": [],
+      "options": {},
+      "distance": 0,
+      "duration": 600,
+      "zoneTimes": [
+        {
+          "id": "Z1",
+          "secs": 0
+        },
+        {
+          "id": "Z2",
+          "secs": 600
+        },
+        {
+          "id": "Z3",
+          "secs": 0
+        },
+        {
+          "id": "Z4",
+          "secs": 0
+        },
+        {
+          "id": "Z5",
+          "secs": 0
+        }
+      ],
+      "description": "hr zone test",
+      "average_watts": 0,
+      "normalized_power": 0,
+      "variability_index": null,
+      "polarization_index": 0
+    },
+    "push_errors": null,
+    "athlete_cannot_edit": false,
+    "hide_from_athlete": false,
+    "structure_read_only": false,
+    "created_by_id": "i55661",
+    "shared_event_id": null,
+    "entered": false,
+    "tags": null,
+    "attachments": null,
+    "oauth_client_id": null,
+    "external_id": null,
+    "load_target": null,
+    "time_target": null,
+    "distance_target": null,
+    "plan_athlete_id": null,
+    "plan_folder_id": null,
+    "plan_workout_id": null,
+    "plan_applied": null,
+    "distance": 0.0,
+    "icu_intensity": 60.0,
     "plan_name": null,
     "paired_activity_id": null
   }

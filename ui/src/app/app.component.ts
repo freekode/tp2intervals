@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { MatCardModule } from "@angular/material/card";
@@ -13,6 +13,9 @@ import { MatButtonModule } from "@angular/material/button";
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent {
-  title = 'ui';
+export class AppComponent implements OnInit{
+  ngOnInit(): void {
+    console.log('wwww', window.bootAddress)
+  }
+
 }

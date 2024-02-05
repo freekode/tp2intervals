@@ -7,7 +7,7 @@ import { MatCardModule } from "@angular/material/card";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatButtonModule } from "@angular/material/button";
-import { catchError, EMPTY, finalize } from "rxjs";
+import { finalize } from "rxjs";
 import { MatProgressBarModule } from "@angular/material/progress-bar";
 import { NgIf } from "@angular/common";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
@@ -23,9 +23,10 @@ import { NotificationService } from "infrastructure/notification.service";
 export class ConfigurationComponent implements OnInit {
 
   formGroup: FormGroup = this.formBuilder.group({
-    tpAuthCookie: [null, [Validators.required, Validators.pattern('^Production_tpAuth=.*$')]],
-    athleteId: [null, Validators.required],
-    apiKey: [null, Validators.required],
+    'training-peaks.auth-cookie': [null, [Validators.pattern('^Production_tpAuth=.*$')]],
+    'trainer-road.auth-cookie': [null, [Validators.pattern('^TrainerRoadAuth=.*$')]],
+    'intervals.api-key': [null, Validators.required],
+    'intervals.athlete-id': [null, Validators.required],
   });
 
   inProgress = false;
@@ -41,22 +42,14 @@ export class ConfigurationComponent implements OnInit {
   ngOnInit(): void {
     this.inProgress = true
     this.configurationService.getConfig().subscribe(config => {
-      this.formGroup.setValue({
-        tpAuthCookie: config.tpAuthCookie || null,
-        athleteId: config.intervalsAthleteId || null,
-        apiKey: config.intervalsApiKey || null,
-      });
+      this.formGroup.patchValue(config.config);
       this.inProgress = false
     });
   }
 
   onSubmit(): void {
     this.inProgress = true
-    let newConfiguration = new ConfigData(
-      this.formGroup.value.tpAuthCookie,
-      this.formGroup.value.apiKey,
-      this.formGroup.value.athleteId,
-    );
+    let newConfiguration = new ConfigData(this.formGroup.getRawValue());
 
     this.configurationService.updateConfig(newConfiguration).pipe(
       finalize(() => this.inProgress = false)
