@@ -38,7 +38,7 @@ interface IntervalsApiClient {
         @RequestBody createWorkoutRequestDTO: CreateWorkoutRequestDTO
     )
 
-    @GetMapping("/api/v1/athlete/{athleteId}/events?oldest={startDate}&newest={endDate}")
+    @GetMapping("/api/v1/athlete/{athleteId}/events?oldest={startDate}&newest={endDate}&resolve=true")
     fun getEvents(
         @PathVariable("athleteId") athleteId: String,
         @PathVariable("startDate") startDate: String,

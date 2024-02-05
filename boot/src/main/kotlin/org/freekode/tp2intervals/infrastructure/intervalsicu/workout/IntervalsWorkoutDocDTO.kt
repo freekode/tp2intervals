@@ -5,14 +5,17 @@ import org.freekode.tp2intervals.domain.workout.WorkoutStepTarget
 class IntervalsWorkoutDocDTO(
     val steps: List<WorkoutStepDTO>,
     val duration: Long?,
+    val zoneTimes: List<IntervalsWorkoutZoneDTO>?
 ) {
     class WorkoutStepDTO(
         val text: String?,
         val reps: Int?,
         val duration: Long?,
         val power: StepValueDTO?,
+        val _power: StepValueDTO?,
         val cadence: StepValueDTO?,
         val hr: StepValueDTO?,
+        val _hr: StepValueDTO?,
         val steps: List<WorkoutStepDTO>?,
         val warmup: Boolean?,
         val cooldown: Boolean?,
