@@ -7,7 +7,9 @@ import org.freekode.tp2intervals.domain.plan.Plan
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutRepository
 import org.freekode.tp2intervals.infrastructure.intervalsicu.IntervalsApiClient
+import org.freekode.tp2intervals.infrastructure.intervalsicu.IntervalsException
 import org.freekode.tp2intervals.infrastructure.intervalsicu.configuration.IntervalsConfigurationRepository
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Repository
 import kotlin.math.absoluteValue
 
@@ -17,6 +19,8 @@ class IntervalsWorkoutRepository(
     private val intervalsConfigurationRepository: IntervalsConfigurationRepository,
     private val intervalsWorkoutDocMapper: WorkoutToIntervalsConverter
 ) : WorkoutRepository {
+
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
     override fun planWorkout(workout: Workout, plan: Plan) {
         val workoutString = intervalsWorkoutDocMapper.mapToIntervalsWorkout(workout)
@@ -51,7 +55,16 @@ class IntervalsWorkoutRepository(
             )
         return events
             .filter { it.category == IntervalsEventDTO.EventCategory.WORKOUT }
-            .map { IntervalsToWorkoutConverter(it).toWorkout() }
+            .mapNotNull { toWorkout(it) }
+    }
+
+    private fun toWorkout(eventDTO: IntervalsEventDTO): Workout? {
+        return try {
+            IntervalsToWorkoutConverter(eventDTO).toWorkout()
+        } catch (e: IntervalsException) {
+            log.warn("Can't convert a workout ${eventDTO.name} on ${eventDTO.start_date_local}, skipping...", e)
+            return null
+        }
     }
 
     private fun getWorkoutDayNumber(startDate: LocalDate, currentDate: LocalDate): Int {

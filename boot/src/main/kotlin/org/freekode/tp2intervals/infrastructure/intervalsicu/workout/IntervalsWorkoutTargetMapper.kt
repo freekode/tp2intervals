@@ -1,6 +1,7 @@
 package org.freekode.tp2intervals.infrastructure.intervalsicu.workout
 
 import org.freekode.tp2intervals.domain.workout.WorkoutStepTarget
+import org.freekode.tp2intervals.infrastructure.intervalsicu.IntervalsException
 
 class IntervalsWorkoutTargetMapper(
     private val zones: List<IntervalsWorkoutDocDTO.IntervalsWorkoutZoneDTO>?
@@ -11,9 +12,9 @@ class IntervalsWorkoutTargetMapper(
         } else if (stepDTO.hr != null) {
             toWorkoutStepTarget(stepDTO.hr)
         } else if (stepDTO.pace != null) {
-            throw RuntimeException("Can't handle steps with pace target yet")
+            throw IntervalsException("Can't handle steps with pace target yet")
         } else {
-            throw RuntimeException("Unknown target in step $stepDTO")
+            throw IntervalsException("Unknown target in step $stepDTO")
         }
         return mainTarget
     }
@@ -25,10 +26,9 @@ class IntervalsWorkoutTargetMapper(
     private fun toWorkoutStepTarget(stepValueDTO: IntervalsWorkoutDocDTO.StepValueDTO): WorkoutStepTarget {
         return when (stepValueDTO.units) {
             "%ftp" -> mapSimpleUnit(WorkoutStepTarget.TargetUnit.FTP_PERCENTAGE, stepValueDTO)
-//            "%lthr" -> mapSimpleUnit(WorkoutStepTarget.TargetUnit.LTHR_PERCENTAGE, stepValueDTO)
             "rpm" -> mapSimpleUnit(WorkoutStepTarget.TargetUnit.RPM, stepValueDTO)
             "power_zone" -> mapPowerZoneTarget(stepValueDTO)
-            else -> throw RuntimeException("Can't handle units for ${stepValueDTO.units}")
+            else -> throw IntervalsException("Can't handle ${stepValueDTO.units} units ")
         }
     }
 
@@ -66,5 +66,6 @@ class IntervalsWorkoutTargetMapper(
             stepValueDTO.start!! to stepValueDTO.end!!
         }
 
-    private fun getZoneMap() : Map<Int, IntervalsWorkoutDocDTO.IntervalsWorkoutZoneDTO> = zones!!.associateBy { it.zone!! }
+    private fun getZoneMap(): Map<Int, IntervalsWorkoutDocDTO.IntervalsWorkoutZoneDTO> =
+        zones!!.associateBy { it.zone!! }
 }
