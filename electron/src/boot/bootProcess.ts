@@ -5,9 +5,9 @@ import log from 'electron-log';
 import { isWindows } from "./platform";
 
 export class BootProcess {
-    private readonly bootPath = path.join(process.resourcesPath, 'tp2intervals-static.jar');
+    private readonly bootPath = path.join(process.resourcesPath, 'tp2intervals.jar');
     private readonly bootDbPath = path.join(app.getPath('userData'), 'tp2intervals.sqlite');
-    private readonly jdkPath = path.join(process.resourcesPath, 'jdk', 'bin', isWindows ? 'java.exe' : 'java');
+    private readonly jdkPath = path.join(process.resourcesPath, 'x64', 'jdk', 'bin', isWindows ? 'java.exe' : 'java');
     private readonly port: number;
     private readonly address: string;
 

@@ -9,10 +9,9 @@ const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
     extraResource: [
-      '../boot/build/libs/tp2intervals-static.jar',
+      '../boot/build/libs/tp2intervals.jar',
       '../devops/jdktool/jdks/linux/x64'
     ],
-
   },
   rebuildConfig: {},
   makers: [

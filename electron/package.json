@@ -11,6 +11,7 @@
   "scripts": {
     "build": "tsc --project tsconfig.json",
     "start": "concurrently \"npm run build\" \"npm run ui:start\" \"wait-on http://localhost:4200 && electron-forge start\"",
+    "p": "npm run build && electron-forge package",
     "package": "npm run ui:build && npm run build && electron-forge package",
     "make": "npm run ui:build && npm run build && electron-forge make",
     "publish": "npm run ui:build && npm run build && electron-forge publish",
@@ -26,7 +27,8 @@
   "private": true,
   "dependencies": {
     "electron-log": "^5.1.1",
-    "electron-squirrel-startup": "^1.0.0"
+    "electron-squirrel-startup": "^1.0.0",
+    "electron-devtools-installer": "^3.2.0"
   },
   "devDependencies": {
     "@electron-forge/cli": "^7.2.0",
@@ -38,7 +40,6 @@
     "@electron-forge/plugin-auto-unpack-natives": "^7.2.0",
     "concurrently": "^8.2.2",
     "electron": "^28.2.1",
-    "electron-devtools-installer": "^3.2.0",
     "run-script-os": "^1.1.6",
     "ts-loader": "^9.5.1",
     "ts-node": "^10.9.2",

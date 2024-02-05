@@ -1,6 +1,7 @@
 import { app, BrowserWindow } from 'electron';
 import installExtension from 'electron-devtools-installer';
 import path from 'path';
+import { BootProcess } from "./boot/bootProcess";
 
 if (require('electron-squirrel-startup')) {
   app.quit();
@@ -8,7 +9,7 @@ if (require('electron-squirrel-startup')) {
 
 let mainWindow: BrowserWindow | null;
 
-const createWindow = (): void => {
+const createWindow = () => {
   mainWindow = new BrowserWindow({
     height: 800,
     width: 1280,
@@ -30,9 +31,15 @@ const installDevTools = () => {
     .catch((err) => console.log('An error occurred: ', err));
 }
 
+const startBootProcess = async () => {
+  let bootProcess = new BootProcess();
+  await bootProcess.start()
+}
+
 app.whenReady()
   .then(async () => {
     createWindow();
+    await startBootProcess()
   })
   .catch(console.log);
 
