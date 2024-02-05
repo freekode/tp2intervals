@@ -26,4 +26,4 @@ jobs:
           path: artifact
 
       - name: Build project
-        run: docker build . --file Dockerfile --tag ${{ inputs.image-name }} --build-arg JAR_PATH=artifact/${{ inputs.jar-name }}.jar
+        run: docker build . --file Dockerfile --tag ${{ inputs.image-name }}
