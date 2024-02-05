@@ -12,8 +12,9 @@ class IntervalsToActivityMapper(
             eventDTO.start_date_local,
             eventDTO.mapType(),
             eventDTO.name,
-            eventDTO.moving_time?.let { Duration.ofSeconds(it) },
-            eventDTO.icu_training_load?.toDouble(),
+            eventDTO.moving_time.let { Duration.ofSeconds(it) },
+            eventDTO.icu_training_load,
+            null
         )
     }
 }

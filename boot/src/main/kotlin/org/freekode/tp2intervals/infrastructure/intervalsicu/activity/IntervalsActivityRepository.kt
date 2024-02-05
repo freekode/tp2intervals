@@ -6,6 +6,7 @@ import org.freekode.tp2intervals.domain.activity.Activity
 import org.freekode.tp2intervals.domain.activity.ActivityRepository
 import org.freekode.tp2intervals.infrastructure.intervalsicu.IntervalsApiClient
 import org.freekode.tp2intervals.infrastructure.intervalsicu.configuration.IntervalsConfigurationRepository
+import org.freekode.tp2intervals.infrastructure.intervalsicu.workout.IntervalsToActivityMapper
 import org.freekode.tp2intervals.infrastructure.intervalsicu.workout.IntervalsToWorkoutMapper
 import org.freekode.tp2intervals.infrastructure.utils.MyMultipartFile
 import org.springframework.stereotype.Repository
@@ -13,7 +14,6 @@ import org.springframework.stereotype.Repository
 @Repository
 class IntervalsActivityRepository(
     private val intervalsApiClient: IntervalsApiClient,
-    private val intervalsToWorkoutMapper: IntervalsToWorkoutMapper,
     private val intervalsConfigurationRepository: IntervalsConfigurationRepository
 ) : ActivityRepository {
     override fun platform() = Platform.INTERVALS
@@ -26,7 +26,7 @@ class IntervalsActivityRepository(
                 endDate.atStartOfDay().plusDays(1).minusSeconds(1).toString()
             )
         return activities
-            .map { intervalsToWorkoutMapper.mapToActivity(it) }
+            .map { IntervalsToActivityMapper(it).mapToActivity() }
     }
 
     override fun createActivity(activity: Activity) {
