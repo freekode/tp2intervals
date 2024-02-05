@@ -41,3 +41,4 @@ application-dev.yaml
 database.mv.db
 database.trace.db
 tp2intervals-db
+*.log
