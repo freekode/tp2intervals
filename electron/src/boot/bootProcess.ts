@@ -9,7 +9,7 @@ export class BootProcess {
     private readonly bootDbPath = path.join(app.getPath('userData'), 'tp2intervals.sqlite');
     private readonly jdkPath = path.join(process.resourcesPath, 'x64', 'jdk', 'bin', isWindows ? 'java.exe' : 'java');
     private readonly port: number;
-    private readonly address: string;
+    readonly address: string;
 
     private childProcess?: ChildProcessWithoutNullStreams = undefined;
 
@@ -53,5 +53,22 @@ export class BootProcess {
             this.childProcess?.kill();
         });
     }
+}
 
+let bootProcess: BootProcess | undefined;
+
+export function getBootProcess(): BootProcess | undefined {
+  return bootProcess;
+}
+
+export async function initBootProcess(): Promise<BootProcess> {
+  if (bootProcess) {
+    return bootProcess;
+  }
+  bootProcess = new BootProcess();
+  bootProcess.start().catch((e) => {
+    log.error('Error starting daemon', e);
+    app.exit(1);
+  });
+  return bootProcess;
 }
