@@ -11,11 +11,16 @@
   "scripts": {
     "build": "tsc --project tsconfig.json",
     "start": "concurrently \"npm run build\" \"npm run ui:start\" \"wait-on http://localhost:4200 && electron-forge start\"",
-    "package": "npm run build && npm run ui:build && electron-forge package",
-    "make": "npm run build && npm run ui:build && electron-forge make",
-    "publish-app": "npm run build && npm run ui:build && electron-forge publish",
+    "package": "npm run ui:build && npm run build && electron-forge package",
+    "make": "npm run ui:build && npm run build && electron-forge make",
+    "publish": "npm run ui:build && npm run build && electron-forge publish",
+
+    "jdk:download": "run-script-os",
+    "jdk:download:darwin:linux": "../devops/jdktool/jdkutil.py clean:jdks download unzip",
+    "jdk:download:win32": "python ../devops/jdktool/jdkutil.py clean:jdks download unzip",
+
     "ui:start": "npm run start --prefix ../ui",
-    "ui:build": "npm run build --prefix ../ui -- --output-path=../electron/dist --delete-output-path=false --base-href=./"
+    "ui:build": "npm run build --prefix ../ui -- --output-path=../electron/dist --base-href=./"
   },
   "main": "dist/index.js",
   "private": true,
@@ -26,6 +31,7 @@
   "devDependencies": {
     "@electron-forge/cli": "^7.2.0",
     "@electron-forge/maker-deb": "^7.2.0",
+    "@electron-forge/maker-dmg": "^7.2.0",
     "@electron-forge/maker-rpm": "^7.2.0",
     "@electron-forge/maker-squirrel": "^7.2.0",
     "@electron-forge/maker-zip": "^7.2.0",
@@ -33,6 +39,7 @@
     "concurrently": "^8.2.2",
     "electron": "^28.2.1",
     "electron-devtools-installer": "^3.2.0",
+    "run-script-os": "^1.1.6",
     "ts-loader": "^9.5.1",
     "ts-node": "^10.9.2",
     "typescript": "~5.2.2",
