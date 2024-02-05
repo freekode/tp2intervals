@@ -7,7 +7,7 @@ import org.freekode.tp2intervals.domain.workout.WorkoutStep
 import org.springframework.stereotype.Component
 
 @Component
-class WorkoutToIntervalsMapper {
+class WorkoutToIntervalsConverter {
     fun mapToIntervalsWorkout(workout: Workout): String? {
         if (workout.steps.isEmpty()) {
             return null

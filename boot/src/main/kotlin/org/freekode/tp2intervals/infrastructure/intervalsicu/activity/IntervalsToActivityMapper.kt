@@ -1,4 +1,4 @@
-package org.freekode.tp2intervals.infrastructure.intervalsicu.workout
+package org.freekode.tp2intervals.infrastructure.intervalsicu.activity
 
 import java.time.Duration
 import org.freekode.tp2intervals.domain.activity.Activity
