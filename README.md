@@ -2,10 +2,9 @@
 [![release](https://img.shields.io/github/release/freekode/tp2intervals)](https://github.com/freekode/tp2intervals/releases/latest)
 
 # Third Party to Intervals.icu
-Sync workouts and activities between TrainerRoad, TrainingPeaks and Intervals.icu.
+Sync workouts and activities between TrainingPeaks and Intervals.icu.
 
-The app can create Intervals training plan from planned workouts on TrainerRoad.
-Plan workouts for today and tomorrow from Intervals to TrainingPeaks. And can sync activities from TrainerRoad to Intervals.
+Plan workouts for today and tomorrow from Intervals to TrainingPeaks.
 
 **Only for educational purposes**
 
@@ -55,13 +54,10 @@ services:
 
 ## How to configure
 After you successfully started the application and were able to open the web UI page.
-You need to configure it to gain access to Intervals.icu and to TrainingPeaks or TrainerRoad.
+You need to configure it to gain access to Intervals.icu and to TrainingPeaks.
 
 ### TrainingPeaks Auth Cookie
 Copy cookie `Production_tpAuth` (key and value, smth like `Production_tpAuth=very_long_string`) from the browser on TrainingPeaks page.
-
-### TrainerRoad Auth Cookie
-Very similar to TrainerRoad. Copy cookie `TrainerRoadAuth` (key and value, smth like `TrainerRoadAuth=very_long_string`) from the browser on TrainerRoad page.
 
 ### Intervals API Key and Athlete Id
 These values available on [Settings page](https://intervals.icu/settings) in Developer Settings section.
