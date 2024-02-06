@@ -10,11 +10,11 @@ import org.freekode.tp2intervals.domain.workout.WorkoutStepTarget
 import org.springframework.stereotype.Component
 
 @Component
-class WorkoutStepToTPStructureMapper(
+class WorkoutStepToTPStructureConverter(
     private val objectMapper: ObjectMapper,
 ) {
 
-    fun mapToWorkoutStructureStr(workout: Workout): String? {
+    fun toWorkoutStructureStr(workout: Workout): String? {
         if (workout.steps.isEmpty()) {
             return null
         }

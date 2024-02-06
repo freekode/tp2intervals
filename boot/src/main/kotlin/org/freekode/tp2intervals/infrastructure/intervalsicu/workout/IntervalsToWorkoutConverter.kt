@@ -11,7 +11,7 @@ import org.freekode.tp2intervals.domain.workout.WorkoutStep
 class IntervalsToWorkoutConverter(
     private val eventDTO: IntervalsEventDTO
 ) {
-    private val zones: List<IntervalsWorkoutDocDTO.IntervalsWorkoutZoneDTO>? = eventDTO.workout_doc?.zoneTimes
+    private val workoutDoc: IntervalsWorkoutDocDTO? = eventDTO.workout_doc
 
     fun toWorkout(): Workout {
         return Workout(
@@ -36,7 +36,9 @@ class IntervalsToWorkoutConverter(
         }
     }
 
-    private fun mapMultiStep(stepDTO: IntervalsWorkoutDocDTO.WorkoutStepDTO): WorkoutMultiStep {
+    private fun mapMultiStep(
+        stepDTO: IntervalsWorkoutDocDTO.WorkoutStepDTO
+    ): WorkoutMultiStep {
         return WorkoutMultiStep(
             stepDTO.text ?: "Step",
             stepDTO.reps!!,
@@ -44,10 +46,16 @@ class IntervalsToWorkoutConverter(
         )
     }
 
-    private fun mapSingleStep(stepDTO: IntervalsWorkoutDocDTO.WorkoutStepDTO): WorkoutSingleStep {
-        val targetMapper = IntervalsWorkoutTargetMapper(zones)
+    private fun mapSingleStep(
+        stepDTO: IntervalsWorkoutDocDTO.WorkoutStepDTO
+    ): WorkoutSingleStep {
+        val targetMapper = IntervalsWorkoutTargetMapper(
+            workoutDoc!!.ftp?.toDouble(),
+            workoutDoc.lthr?.toDouble(),
+            workoutDoc.threshold_pace?.toDouble()
+        )
         val mainTarget = targetMapper.mapMainTarget(stepDTO)
-        val cadenceTarget = targetMapper.mapCadenceTarget(stepDTO.cadence)
+        val cadenceTarget = stepDTO.cadence?.let { targetMapper.mapCadenceTarget(it) }
         val intensity = mapIntensityType(stepDTO)
 
         return WorkoutSingleStep(

@@ -1,8 +1,11 @@
 package org.freekode.tp2intervals.infrastructure.intervalsicu.workout
 
 class IntervalsWorkoutDocDTO(
-    val steps: List<WorkoutStepDTO>,
     val duration: Long?,
+    val ftp: Int?,
+    val lthr: Int?,
+    val threshold_pace: Int?,
+    val steps: List<WorkoutStepDTO>,
     val zoneTimes: List<IntervalsWorkoutZoneDTO>?
 ) {
     class WorkoutStepDTO(
@@ -10,8 +13,11 @@ class IntervalsWorkoutDocDTO(
         val reps: Int?,
         val duration: Long?,
         val power: StepValueDTO?,
+        val _power: ResolvedStepValueDTO?,
         val hr: StepValueDTO?,
+        val _hr: ResolvedStepValueDTO?,
         val pace: StepValueDTO?,
+        val _pace: ResolvedStepValueDTO?,
         val cadence: StepValueDTO?,
         val steps: List<WorkoutStepDTO>?,
         val warmup: Boolean?,
@@ -24,6 +30,12 @@ class IntervalsWorkoutDocDTO(
         val value: Int?,
         val start: Int?,
         val end: Int?,
+    )
+
+    class ResolvedStepValueDTO(
+        val value: Int?,
+        val start: Int,
+        val end: Int,
     )
 
     class IntervalsWorkoutZoneDTO(

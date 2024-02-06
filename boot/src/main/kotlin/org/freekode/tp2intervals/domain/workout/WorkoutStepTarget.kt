@@ -7,7 +7,7 @@ data class WorkoutStepTarget(
 ) {
     enum class TargetUnit {
         FTP_PERCENTAGE,
-        MAX_HR_PERCENTAGE,
+        @Deprecated("use LTHR_PERCENTAGE") MAX_HR_PERCENTAGE,
         LTHR_PERCENTAGE,
         PACE_PERCENTAGE,
         RPM,

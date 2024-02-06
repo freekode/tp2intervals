@@ -7,7 +7,7 @@ import org.freekode.tp2intervals.domain.plan.Plan
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutRepository
 import org.freekode.tp2intervals.infrastructure.trainingpeaks.TrainingPeaksApiClient
-import org.freekode.tp2intervals.infrastructure.trainingpeaks.workout.structure.WorkoutStepToTPStructureMapper
+import org.freekode.tp2intervals.infrastructure.trainingpeaks.workout.structure.WorkoutStepToTPStructureConverter
 import org.springframework.stereotype.Repository
 import java.time.LocalDate
 
@@ -16,12 +16,12 @@ import java.time.LocalDate
 class TrainingPeaksWorkoutRepository(
     private val trainingPeaksApiClient: TrainingPeaksApiClient,
     private val tpWorkoutMapper: TPWorkoutMapper,
-    private val workoutStepToTPStructureMapper: WorkoutStepToTPStructureMapper
+    private val workoutStepToTPStructureConverter: WorkoutStepToTPStructureConverter
 ) : WorkoutRepository, ActivityRepository {
     override fun platform() = Platform.TRAINING_PEAKS
 
     override fun planWorkout(workout: Workout, plan: Plan) {
-        val structureStr = workoutStepToTPStructureMapper.mapToWorkoutStructureStr(workout)
+        val structureStr = workoutStepToTPStructureConverter.toWorkoutStructureStr(workout)
 
         val createRequest = CreateTPWorkoutDTO.planWorkout(
             getUserId(),
