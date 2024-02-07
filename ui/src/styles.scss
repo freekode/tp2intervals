@@ -13,6 +13,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
   &.app-notification-success {
     --mdc-snackbar-container-color: #43a446;
+    white-space: pre-wrap;
   }
 }
 

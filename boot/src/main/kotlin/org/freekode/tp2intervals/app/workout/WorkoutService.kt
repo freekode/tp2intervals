@@ -23,12 +23,22 @@ class WorkoutService(
         workouts.forEach { targetWorkoutRepository.planWorkout(it, plan) }
     }
 
-    fun planWorkouts(request: PlanWorkoutsRequest) {
+    fun planWorkouts(request: PlanWorkoutsRequest): PlanWorkoutsResponse {
         val sourceWorkoutRepository = workoutRepositoryStrategy.getRepository(request.sourcePlatform)
         val targetWorkoutRepository = workoutRepositoryStrategy.getRepository(request.targetPlatform)
 
-        val workouts = sourceWorkoutRepository.getPlannedWorkouts(request.startDate, request.endDate)
-        workouts.forEach { targetWorkoutRepository.planWorkout(it, Plan.empty()) }
+        val allWorkoutsToPlan = sourceWorkoutRepository.getPlannedWorkouts(request.startDate, request.endDate)
+        val filteredWorkoutsToPlan = allWorkoutsToPlan
+            .filter { request.types.contains(it.type) }
+
+        val response = PlanWorkoutsResponse(
+            filteredWorkoutsToPlan.size,
+            allWorkoutsToPlan.size - filteredWorkoutsToPlan.size,
+            request.startDate,
+            request.endDate
+        )
+        filteredWorkoutsToPlan.forEach { targetWorkoutRepository.planWorkout(it, Plan.empty()) }
+        return response
     }
 
     fun schedulePlanWorkoutsJob(request: PlanWorkoutsRequest) {

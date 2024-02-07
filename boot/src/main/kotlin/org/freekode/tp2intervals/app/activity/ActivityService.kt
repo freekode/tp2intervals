@@ -15,19 +15,19 @@ class ActivityService(
 ) {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    fun syncActivities(syncActivitiesRequest: SyncActivitiesRequest) {
-        log.info("Sync activities by request $syncActivitiesRequest")
-        val sourceActivityRepository = activityRepositoryStrategy.getRepository(syncActivitiesRequest.sourcePlatform)
-        val targetActivityRepository = activityRepositoryStrategy.getRepository(syncActivitiesRequest.targetPlatform)
+    fun syncActivities(request: SyncActivitiesRequest) {
+        log.info("Sync activities by request $request")
+        val sourceActivityRepository = activityRepositoryStrategy.getRepository(request.sourcePlatform)
+        val targetActivityRepository = activityRepositoryStrategy.getRepository(request.targetPlatform)
 
-        val sourceActivities =
-            sourceActivityRepository.getActivities(syncActivitiesRequest.startDate, syncActivitiesRequest.endDate)
-        val targetActivities =
-            targetActivityRepository.getActivities(syncActivitiesRequest.startDate, syncActivitiesRequest.endDate)
+        val targetActivities = targetActivityRepository.getActivities(request.startDate, request.endDate)
+            .filter { request.types.contains(it.type) }
+
+        val sourceActivities = sourceActivityRepository.getActivities(request.startDate, request.endDate)
+            .filter { request.types.contains(it.type) }
+            .filter { !targetActivities.contains(it) }
 
         sourceActivities
-            .filter { sourceActivity: Activity -> targetActivities.none { it.isSame(sourceActivity) } }
-            .filter { syncActivitiesRequest.types.contains(it.type) }
             .forEach { targetActivityRepository.createActivity(it) }
     }
 

@@ -14,6 +14,8 @@ import { Router } from "@angular/router";
 import { NotificationService } from "infrastructure/notification.service";
 import { finalize } from "rxjs";
 import { WorkoutClient } from "infrastructure/workout.client";
+import { MatSelectModule } from "@angular/material/select";
+import { ConfigurationClient } from "infrastructure/configuration.client";
 
 @Component({
   selector: 'app-training-peaks-actions',
@@ -30,7 +32,8 @@ import { WorkoutClient } from "infrastructure/workout.client";
     NgIf,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatSelectModule
   ],
   templateUrl: './training-peaks-actions.component.html',
   styleUrl: './training-peaks-actions.component.scss'
@@ -42,19 +45,36 @@ export class TrainingPeaksActionsComponent implements OnInit {
     endDate: [null, Validators.required],
   });
 
+  planWorkoutFormGroup: FormGroup = this.formBuilder.group({
+    trainingTypes: [null, Validators.required],
+  });
+
   jobStarted = true
   copyPlanInProgress = false
   planWorkoutInProgress = false
+
+  trainingTypes: any[];
+
+  private readonly selectedTrainingTypes = ['BIKE', 'VIRTUAL_BIKE'];
+  private readonly todayDate = new Date().toISOString().split('T')[0]
+  private readonly tomorrowDate = new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0]
 
   constructor(
     private router: Router,
     private formBuilder: FormBuilder,
     private workoutClient: WorkoutClient,
+    private configurationClient: ConfigurationClient,
     private notificationService: NotificationService
   ) {
   }
 
   ngOnInit(): void {
+    this.configurationClient.getTrainingTypes().subscribe(types => {
+      this.trainingTypes = types
+      this.planWorkoutFormGroup.patchValue({
+        trainingTypes: this.selectedTrainingTypes
+      })
+    })
     // this.workoutClient.getJobPlanWorkout().subscribe(response => {
     //   this.jobStarted = !!response?.id
     // })
@@ -71,12 +91,23 @@ export class TrainingPeaksActionsComponent implements OnInit {
     })
   }
 
-  planWorkoutClick() {
+  planTodayClick() {
+    this.planWorkouts(this.todayDate)
+  }
+
+  planTomorrowClick() {
+    this.planWorkouts(this.tomorrowDate)
+  }
+
+  private planWorkouts(date) {
     this.planWorkoutInProgress = true
-    this.workoutClient.planWorkout().pipe(
+    let trainingTypes = this.planWorkoutFormGroup.value.trainingTypes
+
+    this.workoutClient.planWorkout(date, date, trainingTypes).pipe(
       finalize(() => this.planWorkoutInProgress = false)
-    ).subscribe(() => {
-      this.notificationService.success('Workouts planned')
+    ).subscribe((response) => {
+      this.notificationService.success(
+        `Planned ${response.planned} workout(s)\n Filtered out ${response.filteredOut} workout(s)\n From ${response.startDate} to ${response.endDate}`)
     })
   }
 

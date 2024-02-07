@@ -21,4 +21,9 @@ export class ConfigurationClient {
     return this.httpClient
       .put(`/api/configuration`, configData)
   }
+
+  getTrainingTypes(): Observable<any> {
+    return this.httpClient
+      .get('/api/configuration/training-types')
+  }
 }

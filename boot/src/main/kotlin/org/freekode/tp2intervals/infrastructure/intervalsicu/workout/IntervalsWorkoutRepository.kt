@@ -17,13 +17,13 @@ import kotlin.math.absoluteValue
 class IntervalsWorkoutRepository(
     private val intervalsApiClient: IntervalsApiClient,
     private val intervalsConfigurationRepository: IntervalsConfigurationRepository,
-    private val intervalsWorkoutDocMapper: WorkoutToIntervalsConverter
+    private val workoutToIntervalsConverter: WorkoutToIntervalsConverter
 ) : WorkoutRepository {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     override fun planWorkout(workout: Workout, plan: Plan) {
-        val workoutString = intervalsWorkoutDocMapper.mapToIntervalsWorkout(workout)
+        val workoutString = workoutToIntervalsConverter.toIntervalsWorkout(workout)
 
         var description = workout.description.orEmpty()
         description += workoutString?.let { "\n\n- - - -\n$it" }.orEmpty()

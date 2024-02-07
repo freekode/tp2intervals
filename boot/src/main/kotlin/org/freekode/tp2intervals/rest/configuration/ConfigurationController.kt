@@ -2,6 +2,7 @@ package org.freekode.tp2intervals.rest.configuration
 
 import org.freekode.tp2intervals.app.confguration.ConfigurationService
 import org.freekode.tp2intervals.domain.Platform
+import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.config.AppConfiguration
 import org.freekode.tp2intervals.domain.config.UpdateConfigurationRequest
 import org.freekode.tp2intervals.rest.ErrorResponseDTO
@@ -55,5 +56,10 @@ class ConfigurationController(
             return ResponseEntity.badRequest().body(ErrorResponseDTO(error))
         }
         return ResponseEntity.ok().build()
+    }
+
+    @GetMapping("/api/configuration/training-types")
+    fun getAllTrainingTypes(): List<TrainingTypeDTO> {
+        return TrainingType.entries.map { TrainingTypeDTO(it) }
     }
 }
