@@ -1,7 +1,7 @@
 import { contextBridge, ipcRenderer } from 'electron';
 import { bootAddressSupplier } from "./boot/renderer";
 
-// contextBridge.exposeInMainWorld('bootAddress', bootAddressSupplier())
+contextBridge.exposeInMainWorld('bootAddress', bootAddressSupplier())
 
 contextBridge.exposeInMainWorld('electron', {
   send: (channel: string, data: any) => {
