@@ -1,32 +1,40 @@
-import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
+import { ActuatorProcess } from './actuator-process';
 import path from 'path';
 import { app } from 'electron';
+import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import log from 'electron-log';
 import { isWindows } from "./platform";
 
-export class BootProcess {
+let process: any
+
+export class PackagedBootProcess extends ActuatorProcess {
   private readonly bootJarPath = path.join(process.resourcesPath, 'tp2intervals.jar');
   private readonly jdkPath = path.join(process.resourcesPath, 'x64', 'jdk', 'bin', isWindows ? 'java.exe' : 'java');
   private readonly bootDbPath = path.join(app.getPath('userData'), 'tp2intervals.sqlite');
   private readonly bootLogPath = app.getPath('logs');
   private readonly port: number;
-  readonly address: string;
+  private readonly address: string;
 
   private childProcess?: ChildProcessWithoutNullStreams = undefined;
 
   constructor() {
-    this.port = Math.floor(Math.random() * 10000) + 10000;
+    super();
+    this.port = Math.floor(Math.random() * 10000) + 10000; // todo: check if port is available
     this.address = `http://localhost:${this.port}`;
   }
 
-  async start(): Promise<void> {
-    log.info('boot db location', this.bootDbPath);
-    log.info('boot log location', this.bootLogPath);
+  getAddress(): string {
+    return this.address;
+  }
 
+  async start(): Promise<void> {
     if (this.childProcess) {
-      log.warn('Packaged boot is already started');
+      log.warn('Packaged Process is already started');
       return;
     }
+
+    log.info('boot db location', this.bootDbPath);
+    log.info('boot log location', this.bootLogPath);
 
     const env = {
       SERVER_PORT: String(this.port),
@@ -39,6 +47,14 @@ export class BootProcess {
       env: {...process.env, ...env},
     });
     this.initProcessEvents();
+  }
+
+  async stop(): Promise<void> {
+    if (this.childProcess) {
+      log.info('Stopping daemon process...');
+      this.childProcess.kill();
+      this.childProcess = undefined;
+    }
   }
 
   private initProcessEvents() {
@@ -58,22 +74,4 @@ export class BootProcess {
       this.childProcess?.kill();
     });
   }
-}
-
-let bootProcess: BootProcess | undefined;
-
-export function getBootProcess(): BootProcess | undefined {
-  return bootProcess;
-}
-
-export async function initBootProcess(): Promise<BootProcess> {
-  if (bootProcess) {
-    return bootProcess;
-  }
-  bootProcess = new BootProcess();
-  bootProcess.start().catch((e) => {
-    log.error('Error starting daemon', e);
-    app.exit(1);
-  });
-  return bootProcess;
 }

@@ -1,15 +1,13 @@
 import { app, BrowserWindow } from 'electron';
 import path from 'path';
-import { initBootProcess } from "./boot/bootProcess";
 import './boot/main'
+import { getBootController, initBootController } from "./boot/boot-controller";
 
-// Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
   app.quit();
 }
 
-const createWindow = () => {
-  // Create the browser window.
+const createMainWindow = () => {
   const mainWindow = new BrowserWindow({
     width: 1280,
     height: 600,
@@ -24,13 +22,15 @@ const createWindow = () => {
     mainWindow.loadURL('http://localhost:4200');
   }
 
+  getBootController()?.initializeSubscriptions(mainWindow);
+
   mainWindow.webContents.openDevTools();
 };
 
 app.whenReady()
   .then(async () => {
-    createWindow();
-    await initBootProcess()
+    createMainWindow();
+    await initBootController()
   })
   .catch(console.log);
 
@@ -42,6 +42,6 @@ app.on('window-all-closed', () => {
 
 app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow();
+    createMainWindow();
   }
 });

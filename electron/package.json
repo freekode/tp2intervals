@@ -23,8 +23,10 @@
     "ui:build": "npm run build --prefix ../ui -- --base-href=./"
   },
   "dependencies": {
+    "axios": "^1.6.7",
     "electron-log": "^5.1.1",
-    "electron-squirrel-startup": "^1.0.0"
+    "electron-squirrel-startup": "^1.0.0",
+    "typed-emitter": "^2.1.0"
   },
   "devDependencies": {
     "@electron-forge/cli": "^7.2.0",
