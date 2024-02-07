@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class WorkoutToIntervalsConverter {
-    fun mapToIntervalsWorkout(workout: Workout): String? {
+    fun toIntervalsWorkout(workout: Workout): String? {
         if (workout.steps.isEmpty()) {
             return null
         }

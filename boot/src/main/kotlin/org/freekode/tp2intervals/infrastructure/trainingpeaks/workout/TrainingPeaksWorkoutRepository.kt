@@ -1,5 +1,6 @@
 package org.freekode.tp2intervals.infrastructure.trainingpeaks.workout
 
+import java.time.LocalDate
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.activity.Activity
 import org.freekode.tp2intervals.domain.activity.ActivityRepository
@@ -9,7 +10,6 @@ import org.freekode.tp2intervals.domain.workout.WorkoutRepository
 import org.freekode.tp2intervals.infrastructure.trainingpeaks.TrainingPeaksApiClient
 import org.freekode.tp2intervals.infrastructure.trainingpeaks.workout.structure.WorkoutStepToTPStructureMapper
 import org.springframework.stereotype.Repository
-import java.time.LocalDate
 
 
 @Repository
@@ -38,7 +38,9 @@ class TrainingPeaksWorkoutRepository(
     override fun getPlannedWorkouts(startDate: LocalDate, endDate: LocalDate): List<Workout> {
         val userId = getUserId()
         val tpWorkouts = trainingPeaksApiClient.getWorkouts(userId, startDate.toString(), endDate.toString())
-        val tpNotes = trainingPeaksApiClient.getNotes(userId, startDate.toString(), endDate.toString())
+
+        val noteEndDate = getNoteEndDate(startDate, endDate)
+        val tpNotes = trainingPeaksApiClient.getNotes(userId, startDate.toString(), noteEndDate.toString())
         val workouts = tpWorkouts.map { tpWorkoutMapper.mapToWorkout(it) }
         val notes = tpNotes.map { tpWorkoutMapper.mapToWorkout(it) }
         return workouts + notes
@@ -59,6 +61,13 @@ class TrainingPeaksWorkoutRepository(
         )
         trainingPeaksApiClient.createAndPlanWorkout(getUserId(), createRequest)
     }
+
+    private fun getNoteEndDate(startDate: LocalDate, endDate: LocalDate): LocalDate? =
+        if (startDate == endDate) {
+            endDate.plusDays(1)
+        } else {
+            endDate
+        }
 
     private fun getUserId(): String = trainingPeaksApiClient.getUser().userId!!
 }

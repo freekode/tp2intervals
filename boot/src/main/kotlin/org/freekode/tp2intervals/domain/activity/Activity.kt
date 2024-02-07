@@ -13,19 +13,33 @@ data class Activity(
     val load: Long?,
     val resource: String?
 ) {
-    fun isSame(other: Activity): Boolean {
-        return startedAt == other.startedAt && compareDuration(other)
-    }
-
-    private fun compareDuration(other: Activity): Boolean {
+    private fun compareDuration(otherDuration: Duration): Boolean {
         val durationVariationPercentage = 5
         return Math.percentageDiff(
             duration.seconds.toDouble(),
-            other.duration.seconds.toDouble()
+            otherDuration.seconds.toDouble()
         ) <= durationVariationPercentage
     }
 
     override fun toString(): String {
         return "Activity(startedAt=$startedAt, type=$type, title='$title', duration=$duration, load=$load)"
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Activity
+
+        if (startedAt != other.startedAt) return false
+        if (compareDuration(other.duration)) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = startedAt.hashCode()
+        result = 31 * result + duration.hashCode()
+        return result
     }
 }

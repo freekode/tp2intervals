@@ -30,7 +30,7 @@ class WorkoutController(
                 targetPlatform
             )
         )
-        return PlanWorkoutsResponseDTO(response.planned, response.startDate, response.endDate)
+        return PlanWorkoutsResponseDTO(response.planned, response.filteredOut, response.startDate, response.endDate)
     }
 
     @PostMapping("/api/workout/copy/{sourcePlatform}/{targetPlatform}")

@@ -106,7 +106,8 @@ export class TrainingPeaksActionsComponent implements OnInit {
     this.workoutClient.planWorkout(date, date, trainingTypes).pipe(
       finalize(() => this.planWorkoutInProgress = false)
     ).subscribe((response) => {
-      this.notificationService.success(`Planned ${response.planned} workout(s) from ${response.startDate} to ${response.endDate}`)
+      this.notificationService.success(
+        `Planned ${response.planned} workout(s)\n Filtered out ${response.filteredOut} workout(s)\n From ${response.startDate} to ${response.endDate}`)
     })
   }
 

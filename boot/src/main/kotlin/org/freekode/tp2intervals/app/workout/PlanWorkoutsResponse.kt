@@ -4,6 +4,7 @@ import java.time.LocalDate
 
 data class PlanWorkoutsResponse(
     val planned: Int,
+    val filteredOut: Int,
     val startDate: LocalDate,
     val endDate: LocalDate
 )
