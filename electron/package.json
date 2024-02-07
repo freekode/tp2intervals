@@ -1,8 +1,14 @@
 {
-  "name": "electron",
-  "productName": "electron",
+  "name": "tp2intervals",
+  "productName": "tp2intervals",
   "version": "1.0.0",
   "description": "My Electron application description",
+  "keywords": [],
+  "author": {
+    "name": "freekode",
+    "email": "iam@freekode.org"
+  },
+  "license": "MIT",
   "main": ".vite/build/main.js",
   "scripts": {
     "start": "electron-forge start",
@@ -11,16 +17,12 @@
     "publish": "electron-forge publish",
     "lint": "eslint --ext .ts,.tsx ."
   },
-  "keywords": [],
-  "author": {
-    "name": "Evgeny",
-    "email": "iam@freekode.org"
+  "dependencies": {
+    "electron-squirrel-startup": "^1.0.0"
   },
-  "license": "MIT",
   "devDependencies": {
     "@electron-forge/cli": "^7.2.0",
     "@electron-forge/maker-deb": "^7.2.0",
-    "@electron-forge/maker-rpm": "^7.2.0",
     "@electron-forge/maker-squirrel": "^7.2.0",
     "@electron-forge/maker-zip": "^7.2.0",
     "@electron-forge/plugin-auto-unpack-natives": "^7.2.0",
@@ -32,8 +34,5 @@
     "eslint-plugin-import": "^2.29.1",
     "ts-node": "^10.9.2",
     "typescript": "~4.5.4"
-  },
-  "dependencies": {
-    "electron-squirrel-startup": "^1.0.0"
   }
 }
