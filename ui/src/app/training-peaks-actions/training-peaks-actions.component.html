@@ -9,7 +9,7 @@
     <mat-card-content>
       <div class="row">
         <div class="col">
-          <mat-form-field class="example-form-field">
+          <mat-form-field>
             <mat-label>Date Range</mat-label>
             <mat-date-range-input
               [rangePicker]="copyPlanDatePicker">
@@ -40,46 +40,74 @@
   </mat-card>
 </form>
 
-<mat-card>
-  <mat-card-header>
-    <mat-card-title>Plan Workout</mat-card-title>
-    <mat-card-subtitle>Copy planned structured workout from Intervals to TrainingPeaks</mat-card-subtitle>
-  </mat-card-header>
+<form [formGroup]="planWorkoutFormGroup" novalidate>
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Plan Workout</mat-card-title>
+      <mat-card-subtitle>Copy planned structured workout from Intervals to TrainingPeaks</mat-card-subtitle>
+    </mat-card-header>
 
-  <mat-card-actions>
-    <button
-      mat-raised-button
-      class="action-button"
-      color="primary"
-      (click)="planWorkoutClick()"
-    >
-      Submit
-    </button>
+    <mat-card-content>
+      <div class="row">
+        <div class="col">
+          <mat-form-field>
+            <mat-label>Workout Types</mat-label>
+            <mat-select formControlName="trainingTypes" multiple>
+              @for (type of trainingTypes; track type) {
+                <mat-option [value]="type.value">{{type.title}}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+    </mat-card-content>
 
-<!--    <button-->
-<!--      mat-raised-button-->
-<!--      color="primary"-->
-<!--      class="action-button"-->
-<!--      type="button"-->
-<!--      [disabled]="jobStarted"-->
-<!--      (click)="startJob()"-->
-<!--    >-->
-<!--      Start Job-->
-<!--    </button>-->
+    <mat-card-actions>
+      <button
+        mat-raised-button
+        class="action-button"
+        color="primary"
+        (click)="planTodayClick()"
+        [disabled]="planWorkoutFormGroup.invalid"
+      >
+        Plan for Today
+      </button>
 
-<!--    <button-->
-<!--      mat-raised-button-->
-<!--      color="accent"-->
-<!--      class="action-button"-->
-<!--      type="button"-->
-<!--      [disabled]="!jobStarted"-->
-<!--      (click)="stopJob()"-->
-<!--    >-->
-<!--      Stop Job-->
-<!--    </button>-->
-  </mat-card-actions>
+      <button
+        mat-raised-button
+        class="action-button"
+        color="primary"
+        (click)="planTomorrowClick()"
+        [disabled]="planWorkoutFormGroup.invalid"
+      >
+        Plan for Tomorrow
+      </button>
 
-  <mat-card-footer>
-    <mat-progress-bar *ngIf="planWorkoutInProgress" mode="query"></mat-progress-bar>
-  </mat-card-footer>
-</mat-card>
+      <!--    <button-->
+      <!--      mat-raised-button-->
+      <!--      color="primary"-->
+      <!--      class="action-button"-->
+      <!--      type="button"-->
+      <!--      [disabled]="jobStarted"-->
+      <!--      (click)="startJob()"-->
+      <!--    >-->
+      <!--      Start Job-->
+      <!--    </button>-->
+
+      <!--    <button-->
+      <!--      mat-raised-button-->
+      <!--      color="accent"-->
+      <!--      class="action-button"-->
+      <!--      type="button"-->
+      <!--      [disabled]="!jobStarted"-->
+      <!--      (click)="stopJob()"-->
+      <!--    >-->
+      <!--      Stop Job-->
+      <!--    </button>-->
+    </mat-card-actions>
+
+    <mat-card-footer>
+      <mat-progress-bar *ngIf="planWorkoutInProgress" mode="query"></mat-progress-bar>
+    </mat-card-footer>
+  </mat-card>
+</form>

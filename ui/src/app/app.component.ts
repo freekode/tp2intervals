@@ -15,7 +15,5 @@ import { MatButtonModule } from "@angular/material/button";
 })
 export class AppComponent implements OnInit{
   ngOnInit(): void {
-    console.log('wwww', window.bootAddress)
   }
-
 }

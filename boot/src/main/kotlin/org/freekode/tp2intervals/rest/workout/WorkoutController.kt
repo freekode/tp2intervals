@@ -17,15 +17,25 @@ class WorkoutController(
 
     @PostMapping("/api/workout/plan/{sourcePlatform}/{targetPlatform}")
     fun planWorkout(
+        @RequestBody requestDTO: DateRangeDTO,
         @PathVariable sourcePlatform: Platform,
         @PathVariable targetPlatform: Platform
-    ) {
-        workoutService.planWorkouts(PlanWorkoutsRequest.fromTodayToTomorrow(sourcePlatform, targetPlatform))
+    ): PlanWorkoutsResponseDTO {
+        val response = workoutService.planWorkouts(
+            PlanWorkoutsRequest(
+                LocalDate.parse(requestDTO.startDate),
+                LocalDate.parse(requestDTO.endDate),
+                requestDTO.types,
+                sourcePlatform,
+                targetPlatform
+            )
+        )
+        return PlanWorkoutsResponseDTO(response.planned, response.startDate, response.endDate)
     }
 
     @PostMapping("/api/workout/copy/{sourcePlatform}/{targetPlatform}")
     fun copyPlan(
-        @RequestBody requestDTO: CopyPlanRequestDTO,
+        @RequestBody requestDTO: DateRangeDTO,
         @PathVariable sourcePlatform: Platform,
         @PathVariable targetPlatform: Platform
     ) {
