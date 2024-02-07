@@ -1,7 +1,7 @@
 {
   "name": "tp2intervals",
   "productName": "tp2intervals",
-  "version": "1.0.0",
+  "version": "0.2.0",
   "description": "My Electron application description",
   "keywords": [],
   "author": {
@@ -12,12 +12,18 @@
   "main": ".vite/build/main.js",
   "scripts": {
     "start": "electron-forge start",
-    "package": "electron-forge package",
-    "make": "electron-forge make",
-    "publish": "electron-forge publish",
-    "lint": "eslint --ext .ts,.tsx ."
+    "package": "npm run ui:build && electron-forge package",
+    "make": "npm run ui:build && electron-forge make",
+    "publish": "npm run ui:build && electron-forge publish",
+    "lint": "eslint --ext .ts,.tsx .",
+    "jdk:download": "run-script-os",
+    "jdk:download:darwin:linux": "../devops/jdktool/jdkutil.py clean:jdks download unzip",
+    "jdk:download:win32": "python ../devops/jdktool/jdkutil.py clean:jdks download unzip",
+    "ui:start": "npm run start --prefix ../ui",
+    "ui:build": "npm run build --prefix ../ui -- --base-href=./"
   },
   "dependencies": {
+    "electron-log": "^5.1.1",
     "electron-squirrel-startup": "^1.0.0"
   },
   "devDependencies": {
@@ -33,6 +39,7 @@
     "eslint": "^8.56.0",
     "eslint-plugin-import": "^2.29.1",
     "ts-node": "^10.9.2",
-    "typescript": "~4.5.4"
+    "typescript": "~4.5.4",
+    "vite": "^5.0.12"
   }
 }

@@ -16,3 +16,11 @@ export const httpErrorInterceptor: HttpInterceptorFn = (
     })
   );
 };
+
+export const httpHostInterceptor: HttpInterceptorFn = (
+  req: HttpRequest<any>,
+  next: HttpHandlerFn,
+) => {
+  const apiReq = req.clone({url: `http://localhost:8080/${req.url.replace(/^\/|\/$/g, '')}`});
+  return next(apiReq);
+};

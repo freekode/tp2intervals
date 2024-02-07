@@ -22,3 +22,4 @@ spring:
 logging:
   file:
     name: tp2intervals.log
+    path:
