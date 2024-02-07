@@ -35,7 +35,7 @@ export class BootController {
   }
 
   async stop() {
-    log.info('Stopping daemon...');
+    log.info('Stopping boot...');
     this.stopHealthCheck();
     await this.process.stop();
     this.started = false;
@@ -57,14 +57,15 @@ export class BootController {
     }
     log.info('Starting health check interval');
     this.healthCheckInterval = setInterval(async () => {
-      log.silly('Running daemon health check...');
+      log.silly('Running process health check...');
       const {healthy, message} = await this.process.doHealthCheck();
-      log.silly(`Daemon health check result: ${healthy} - ${message}`);
+      log.silly(`Process health check result: ${healthy} - ${message}`);
+
       if (healthy) {
         if (!this.started) {
           log.info('Process is ready!');
           systemEvents.emit('boot-ready');
-        } else if (!this.running && this.started) {
+        } else if (this.running && this.started) {
           log.info('Process is healthy!');
           systemEvents.emit('boot-healthy');
         }

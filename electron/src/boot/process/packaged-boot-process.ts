@@ -5,13 +5,10 @@ import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import log from 'electron-log';
 import { isWindows } from "./platform";
 
-let process: any
-
 export class PackagedBootProcess extends ActuatorProcess {
   private readonly bootJarPath = path.join(process.resourcesPath, 'tp2intervals.jar');
   private readonly jdkPath = path.join(process.resourcesPath, 'x64', 'jdk', 'bin', isWindows ? 'java.exe' : 'java');
   private readonly bootDbPath = path.join(app.getPath('userData'), 'tp2intervals.sqlite');
-  private readonly bootLogPath = app.getPath('logs');
   private readonly port: number;
   private readonly address: string;
 
@@ -34,12 +31,10 @@ export class PackagedBootProcess extends ActuatorProcess {
     }
 
     log.info('boot db location', this.bootDbPath);
-    log.info('boot log location', this.bootLogPath);
 
     const env = {
       SERVER_PORT: String(this.port),
       SPRING_DATASOURCE_URL: `jdbc:sqlite:${this.bootDbPath}`,
-      LOGGING_FILE_PATH: String(this.bootLogPath),
     };
 
     log.info('Running boot from jar...');
@@ -51,7 +46,7 @@ export class PackagedBootProcess extends ActuatorProcess {
 
   async stop(): Promise<void> {
     if (this.childProcess) {
-      log.info('Stopping daemon process...');
+      log.info('Stopping boot process...');
       this.childProcess.kill();
       this.childProcess = undefined;
     }
