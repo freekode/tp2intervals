@@ -19,7 +19,7 @@ export class PackagedBootProcess extends ActuatorProcess {
 
   constructor() {
     super();
-    this.port = Math.floor(Math.random() * 10000) + 10000; // todo: check if port is available
+    this.port = Math.floor(Math.random() * 10000) + 10000;
     this.address = `http://localhost:${this.port}`;
   }
 
