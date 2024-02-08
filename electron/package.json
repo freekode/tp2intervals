@@ -11,7 +11,7 @@
   "license": "MIT",
   "main": ".vite/build/main.js",
   "scripts": {
-    "start": "electron-forge start",
+    "start": "concurrently \"npm run ui:start\" \"wait-on http://localhost:4200 && electron-forge start\"",
     "package": "npm run prepare-external-resoruces && electron-forge package",
     "make": "npm run prepare-external-resoruces && electron-forge make",
     "publish": "npm run prepare-external-resoruces && electron-forge publish",
@@ -24,7 +24,6 @@
     "ui:build": "npm run build --prefix ../ui -- --base-href=./"
   },
   "dependencies": {
-    "axios": "^1.6.7",
     "electron-log": "^5.1.1",
     "electron-squirrel-startup": "^1.0.0",
     "typed-emitter": "^2.1.0"
@@ -36,14 +35,17 @@
     "@electron-forge/maker-zip": "^7.2.0",
     "@electron-forge/plugin-auto-unpack-natives": "^7.2.0",
     "@electron-forge/plugin-vite": "^7.2.0",
+    "@types/node": "^20.11.16",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
+    "concurrently": "^8.2.2",
     "electron": "28.2.1",
     "eslint": "^8.56.0",
     "eslint-plugin-import": "^2.29.1",
     "run-script-os": "^1.1.6",
     "ts-node": "^10.9.2",
     "typescript": "~4.5.4",
-    "vite": "^5.0.12"
+    "vite": "^5.0.12",
+    "wait-on": "^7.2.0"
   }
 }

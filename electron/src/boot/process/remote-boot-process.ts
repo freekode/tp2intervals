@@ -14,7 +14,7 @@ export class RemoteDaemon extends ActuatorProcess {
   }
 
   async start(): Promise<void> {
-    log.warn('Cant start emote process');
+    log.warn('Cant start remote process');
   }
 
   async stop(): Promise<void> {

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 cd ./boot
-./gradlew build -x test
+./gradlew build
 
 cd -
 

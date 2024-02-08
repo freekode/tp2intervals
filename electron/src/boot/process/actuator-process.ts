@@ -1,10 +1,9 @@
-import axios from 'axios';
 import { Process, ProcessHealthResult } from './process';
 
 export abstract class ActuatorProcess implements Process {
   async doHealthCheck(): Promise<ProcessHealthResult> {
     try {
-      const response = await axios.get(`${this.getAddress()}/actuator/health`);
+      const response = await fetch(`${this.getAddress()}/actuator/health`);
       if (response.status >= 200 && response.status < 300) {
         return { healthy: true };
       }

@@ -2,7 +2,6 @@ import { app, BrowserWindow, shell } from 'electron';
 import path from 'path';
 import './boot/main'
 import { getBootController, initBootController } from "./boot/boot-controller";
-import { isMac } from "./boot/process/platform";
 import { systemEvents } from "./boot/events";
 import log from "electron-log";
 
@@ -16,7 +15,7 @@ let mainWindow: BrowserWindow | null = null;
 
 const getSplashWindowPageUrl = () => {
   if (app.isPackaged) {
-    return path.join(__dirname, `../../../ui/browser/assets/loading.html`);
+    return 'file://' + path.join(__dirname, `../../../ui/browser/assets/loading.html`);
   } else {
     return 'http://localhost:4200/assets/loading.html';
   }
@@ -24,7 +23,7 @@ const getSplashWindowPageUrl = () => {
 
 const getMainWindowPageUrl = () => {
   if (app.isPackaged) {
-    return path.join(__dirname, `../../../ui/browser/index.html`);
+    return 'file://' + path.join(__dirname, `../../../ui/browser/index.html`);
   } else {
     return 'http://localhost:4200';
   }
@@ -62,12 +61,12 @@ const createSplashWindow = async () => {
 const createMainWindow = async () => {
   mainWindow = new BrowserWindow({
     show: false,
-    width: 1440,
-    height: 900,
-    minWidth: 700,
-    minHeight: 500,
-    frame: isMac,
-    titleBarStyle: isMac ? 'hidden' : undefined,
+    width: 650,
+    height: 700,
+    minWidth: 500,
+    minHeight: 400,
+    // frame: isMac,
+    // titleBarStyle: isMac ? 'hidden' : undefined,
     trafficLightPosition: {x: 12, y: 12},
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
