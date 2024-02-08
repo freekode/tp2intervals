@@ -16,7 +16,11 @@ const config: ForgeConfig = {
   makers: [
     new MakerSquirrel({}),
     new MakerZIP({}, ['darwin']),
-    new MakerDeb({})],
+    new MakerDeb({
+      options: {
+        maintainer: 'freekode <iam@freekode.org>'
+      }
+    })],
   plugins: [
     new VitePlugin({
       build: [

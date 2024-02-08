@@ -3,7 +3,7 @@ import log from 'electron-log';
 import { Process } from './process/process';
 import { PackagedBootProcess } from './process/packaged-boot-process';
 import { systemEvents } from "./events";
-import { RemoteDaemon } from "./process/remote-boot-process";
+import { RemoteProcess } from "./process/remote-boot-process";
 
 export class BootController {
   private started: boolean = false;
@@ -67,14 +67,14 @@ export class BootController {
           log.info('Process is ready!');
           systemEvents.emit('boot-ready');
         } else if (this.running && this.started) {
-          log.info('Process is healthy!');
+          log.verbose('Process is healthy!');
           systemEvents.emit('boot-healthy');
         }
         this.running = true;
         this.started = true;
       } else {
         if (this.running && this.started) {
-          log.info('Process is unhealthy!');
+          log.warn('Process is unhealthy!');
           systemEvents.emit('boot-unhealthy');
         }
         this.running = false;
@@ -105,7 +105,7 @@ export async function initBootController(): Promise<BootController> {
   if (app.isPackaged) {
     bootController = new BootController(new PackagedBootProcess());
   } else {
-    bootController = new BootController(new RemoteDaemon('http://localhost:8080'));
+    bootController = new BootController(new RemoteProcess('http://localhost:8080'));
   }
 
   bootController.start().catch((e) => {

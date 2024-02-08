@@ -1,7 +1,7 @@
 import log from 'electron-log';
 import { ActuatorProcess } from "./actuator-process";
 
-export class RemoteDaemon extends ActuatorProcess {
+export class RemoteProcess extends ActuatorProcess {
   private readonly address: string;
 
   constructor(address: string) {
