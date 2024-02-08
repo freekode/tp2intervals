@@ -18,6 +18,7 @@ export abstract class ActuatorProcess implements Process {
       return { healthy: false, message: `Unknown error: ${err}` };
     }
   }
+
   abstract getAddress(): string;
 
   abstract start(): Promise<void>;

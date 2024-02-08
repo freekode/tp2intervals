@@ -1,35 +1,118 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, shell } from 'electron';
 import path from 'path';
 import './boot/main'
 import { getBootController, initBootController } from "./boot/boot-controller";
+import { isMac } from "./boot/process/platform";
+import { systemEvents } from "./boot/events";
+import log from "electron-log";
+
 
 if (require('electron-squirrel-startup')) {
   app.quit();
 }
 
-const createMainWindow = () => {
-  const mainWindow = new BrowserWindow({
-    width: 1280,
-    height: 600,
+let splashWindow: BrowserWindow | null = null;
+let mainWindow: BrowserWindow | null = null;
+
+const getSplashWindowPageUrl = () => {
+  if (app.isPackaged) {
+    return path.join(__dirname, `../../../ui/browser/assets/loading.html`);
+  } else {
+    return 'http://localhost:4200/assets/loading.html';
+  }
+}
+
+const getMainWindowPageUrl = () => {
+  if (app.isPackaged) {
+    return path.join(__dirname, `../../../ui/browser/index.html`);
+  } else {
+    return 'http://localhost:4200';
+  }
+}
+
+const createSplashWindow = async () => {
+  splashWindow = new BrowserWindow({
+    show: true,
+    title: 'Loading',
+    width: 500,
+    height: 300,
+    resizable: false,
+    frame: false,
+    center: true,
+    webPreferences: {
+      devTools: false,
+      preload: path.join(__dirname, 'preload.js'),
+    },
+  });
+
+  splashWindow.loadURL(getSplashWindowPageUrl())
+
+  splashWindow.on('ready-to-show', () => {
+    if (!splashWindow) {
+      throw new Error('"splashWindow" is not defined');
+    }
+    splashWindow.show();
+  });
+
+  splashWindow.on('closed', () => {
+    splashWindow = null;
+  });
+};
+
+const createMainWindow = async () => {
+  mainWindow = new BrowserWindow({
+    show: false,
+    width: 1440,
+    height: 900,
+    minWidth: 700,
+    minHeight: 500,
+    frame: isMac,
+    titleBarStyle: isMac ? 'hidden' : undefined,
+    trafficLightPosition: {x: 12, y: 12},
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },
   });
 
-  if (app.isPackaged) {
-    mainWindow.loadFile(path.join(__dirname, `../../../ui/browser/index.html`));
-  } else {
-    mainWindow.loadURL('http://localhost:4200');
-  }
+  mainWindow.loadURL(getMainWindowPageUrl())
+
+  mainWindow.on('ready-to-show', () => {
+    if (!mainWindow) {
+      throw new Error('"mainWindow" is not defined');
+    }
+    if (splashWindow) {
+      splashWindow.close();
+      splashWindow = null;
+    }
+    mainWindow.show();
+    mainWindow.focus();
+  });
+
+  mainWindow.on('closed', () => {
+    mainWindow = null;
+  });
+
+  // Open urls in the user's browser
+  mainWindow.webContents.setWindowOpenHandler((edata) => {
+    shell.openExternal(edata.url);
+    return {action: 'deny'};
+  });
 
   getBootController()?.initializeSubscriptions(mainWindow);
 
-  mainWindow.webContents.openDevTools();
+  // Remove this if your app does not use auto updates
+  // eslint-disable-next-line
+  log.transports.console.level = 'info';
+  // initializeAppUpdaterSubscriptions(mainWindow);
 };
 
 app.whenReady()
   .then(async () => {
-    createMainWindow();
+    await createSplashWindow();
+    systemEvents.on('boot-ready', () => {
+      log.info('Creating main window (boot ready event)');
+      createMainWindow();
+    });
     await initBootController()
   })
   .catch(console.log);
@@ -37,11 +120,5 @@ app.whenReady()
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
-  }
-});
-
-app.on('activate', () => {
-  if (BrowserWindow.getAllWindows().length === 0) {
-    createMainWindow();
   }
 });

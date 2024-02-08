@@ -3,7 +3,7 @@ import { inject } from "@angular/core";
 import { catchError, throwError } from "rxjs";
 import { NotificationService } from "infrastructure/notification.service";
 
-let host = window.bootAddress || `http://localhost:8080`
+let host = window.bootAddress || ''
 
 export const httpErrorInterceptor: HttpInterceptorFn = (
   req: HttpRequest<any>,

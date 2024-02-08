@@ -3,6 +3,7 @@ import log from 'electron-log';
 import { Process } from './process/process';
 import { PackagedBootProcess } from './process/packaged-boot-process';
 import { systemEvents } from "./events";
+import { RemoteDaemon } from "./process/remote-boot-process";
 
 export class BootController {
   private started: boolean = false;
@@ -101,7 +102,12 @@ export async function initBootController(): Promise<BootController> {
     return bootController;
   }
 
-  bootController = new BootController(new PackagedBootProcess());
+  if (app.isPackaged) {
+    bootController = new BootController(new PackagedBootProcess());
+  } else {
+    bootController = new BootController(new RemoteDaemon('http://localhost:8080'));
+  }
+
   bootController.start().catch((e) => {
     log.error('Error starting boot', e);
     app.exit(1);
