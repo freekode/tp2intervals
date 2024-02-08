@@ -18,8 +18,3 @@ spring:
   jpa:
     open-in-view: false
     database-platform: org.hibernate.community.dialect.SQLiteDialect
-
-logging:
-  file:
-    name: tp2intervals.log
-    path:
