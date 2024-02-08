@@ -20,8 +20,8 @@ class TPWorkoutStructureDTO(
     ) {
         percentOfFtp(WorkoutStepTarget.TargetUnit.FTP_PERCENTAGE),
         percentOfThresholdHr(WorkoutStepTarget.TargetUnit.LTHR_PERCENTAGE),
-        percentOfMaxHr(WorkoutStepTarget.TargetUnit.MAX_HR_PERCENTAGE),
         percentOfThresholdPace(WorkoutStepTarget.TargetUnit.PACE_PERCENTAGE),
+        percentOfMaxHr(WorkoutStepTarget.TargetUnit.UNKNOWN),
         rpe(WorkoutStepTarget.TargetUnit.UNKNOWN)
     }
 
