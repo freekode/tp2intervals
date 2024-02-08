@@ -5,5 +5,8 @@ cd ./boot
 
 cd -
 
+npm ci --prefix electron
+npm ci --prefix ui
+
 cd ./electron
-npm ci && npm run make
+npm run make
