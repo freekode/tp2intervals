@@ -1,3 +1,8 @@
+import EventEmitter from 'events';
+import TypedEmitter from 'typed-emitter/rxjs';
+
+export const systemEvents = new EventEmitter() as TypedEmitter<Events>;
+
 export type Events = {
   'boot-ready': () => void;
   'boot-healthy': () => void;

@@ -1,6 +1,6 @@
 import { app, BrowserWindow, shell } from 'electron';
 import path from 'path';
-import './boot/main'
+import './boot'
 import { getBootController, initBootController } from "./boot/boot-controller";
 import { systemEvents } from "./boot/events";
 import log from "electron-log";
@@ -100,7 +100,6 @@ const createMainWindow = async () => {
   getBootController()?.initializeSubscriptions(mainWindow);
 
   // Remove this if your app does not use auto updates
-  // eslint-disable-next-line
   log.transports.console.level = 'info';
   // initializeAppUpdaterSubscriptions(mainWindow);
 };

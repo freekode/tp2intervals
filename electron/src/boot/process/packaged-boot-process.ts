@@ -3,7 +3,7 @@ import path from 'path';
 import { app } from 'electron';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import log from 'electron-log';
-import { isWindows } from "./platform";
+import { isWindows } from "../platform";
 
 export class PackagedBootProcess extends ActuatorProcess {
   private readonly bootJarPath = path.join(process.resourcesPath, 'tp2intervals.jar');
@@ -35,6 +35,7 @@ export class PackagedBootProcess extends ActuatorProcess {
     const env = {
       SERVER_PORT: String(this.port),
       SPRING_DATASOURCE_URL: `jdbc:sqlite:${this.bootDbPath}`,
+      SPRING_PROFILES_ACTIVE: `prod`,
     };
 
     log.info('Running boot from jar...');
