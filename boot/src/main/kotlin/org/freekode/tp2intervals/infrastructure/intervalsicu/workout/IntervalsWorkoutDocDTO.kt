@@ -4,7 +4,8 @@ class IntervalsWorkoutDocDTO(
     val duration: Long?,
     val ftp: Int?,
     val lthr: Int?,
-    val threshold_pace: Int?,
+    val threshold_pace: Float?,
+    val pace_units: String?,
     val steps: List<WorkoutStepDTO>,
     val zoneTimes: List<IntervalsWorkoutZoneDTO>?
 ) {
