@@ -100,9 +100,7 @@ const createMainWindow = async () => {
 
   getBootController()?.initializeSubscriptions(mainWindow);
 
-  // Remove this if your app does not use auto updates
   log.transports.console.level = 'info';
-  // initializeAppUpdaterSubscriptions(mainWindow);
 };
 
 app.whenReady()
