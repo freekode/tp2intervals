@@ -1,7 +1,8 @@
 #!/bin/bash
 
 cd ./ui
-npm ci && npm run build
+npm ci
+npm run build
 
 cd ../
 cp -r ui/dist/ui/browser boot/src/main/resources/static

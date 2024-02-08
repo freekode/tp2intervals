@@ -68,6 +68,7 @@ const createMainWindow = async () => {
     // frame: isMac,
     // titleBarStyle: isMac ? 'hidden' : undefined,
     trafficLightPosition: {x: 12, y: 12},
+    autoHideMenuBar: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },
