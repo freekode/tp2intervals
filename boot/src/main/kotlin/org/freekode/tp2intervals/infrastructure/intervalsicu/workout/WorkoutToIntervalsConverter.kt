@@ -31,7 +31,7 @@ class WorkoutToIntervalsConverter {
             workoutStep.duration,
             target.start.toString(),
             target.end.toString(),
-            IntervalsWorkoutStep.TargetType.findByTargetUnit(target.unit),
+            target.unit,
             cadence?.start,
             cadence?.end
         )
