@@ -38,7 +38,7 @@ jobs:
       - name: Build jar
         if: ${{ matrix.environment.os == 'windows-latest' }}
         run: |
-          dir boot
+          cd boot
           ./gradlew.bat build
 
       - name: Build electron
