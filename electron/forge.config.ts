@@ -8,7 +8,7 @@ const config: ForgeConfig = {
   packagerConfig: {
     extraResource: [
       '../boot/build/libs/tp2intervals.jar',
-      '../devops/jdktool/jdks/linux/x64',
+      '../devops/jdktool/jdks/${process.platform}/${process.arch}',
       '../ui/dist/ui'
     ]
   },

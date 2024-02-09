@@ -9,4 +9,4 @@ npm ci --prefix electron
 npm ci --prefix ui
 
 cd ./electron
-npm run make
+npm run make --platform all

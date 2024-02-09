@@ -2,12 +2,13 @@
   "name": "tp2intervals",
   "productName": "tp2intervals",
   "version": "0.2.0",
-  "description": "My Electron application description",
-  "keywords": [],
+  "description": "Third Party synchronization with Intervals.icu",
+  "keywords": ["trainingpeaks", "trainerroad", "intervals.icu"],
   "author": {
     "name": "freekode",
     "email": "iam@freekode.org"
   },
+  "repository": "https://github.com/freekode/tp2intervals",
   "license": "MIT",
   "main": ".vite/build/main.js",
   "scripts": {
