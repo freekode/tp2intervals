@@ -29,8 +29,19 @@ jobs:
           cache: 'npm'
           cache-dependency-path: '**/package-lock.json'
 
-      - name: Make executable
-        run: ./devops/build-electron.sh
+      - name: Build jar
+        if: ${{ matrix.environment.os != 'windows-latest' }}
+        run: ./gradlew build
+
+      - name: Build jar
+        if: ${{ matrix.environment.os == 'windows-latest' }}
+        run: ./gradlew.bat build
+
+      - name: Build electron
+        run: |
+          npm ci --prefix electron
+          npm ci --prefix ui
+          npm run make --prefix electron
 
       - uses: actions/upload-artifact@v4
         with:
