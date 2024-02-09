@@ -32,29 +32,4 @@ jobs:
       image-name: tp2intervals
 
   electron:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - uses: actions/setup-java@v3
-        with:
-          java-version: 21
-          distribution: 'corretto'
-          cache: 'gradle'
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20.10.0
-          cache: 'npm'
-          cache-dependency-path: '**/package-lock.json'
-
-      - name: Build project
-        run: ./devops/build-electron.sh
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: electron
-          path: electron/out/make/**/*[.deb|.dmg|.exe]
-          if-no-files-found: error
-          compression-level: 0
+    uses: ./.github/workflows/build-electron.yml
