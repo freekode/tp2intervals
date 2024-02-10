@@ -53,6 +53,7 @@ export class BootController {
   }
 
   private startHealthCheck() {
+    // todo add health check time limit
     if (this.healthCheckInterval) {
       return;
     }

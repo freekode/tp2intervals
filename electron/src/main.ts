@@ -4,7 +4,9 @@ import './boot'
 import { getBootController, initBootController } from "./boot/boot-controller";
 import { systemEvents } from "./boot/events";
 import log from "electron-log";
+import { updateElectronApp } from 'update-electron-app';
 
+updateElectronApp()
 
 if (require('electron-squirrel-startup')) {
   app.quit();
@@ -30,6 +32,7 @@ const getMainWindowPageUrl = () => {
 }
 
 const createSplashWindow = async () => {
+  // todo add icon
   splashWindow = new BrowserWindow({
     show: true,
     title: 'Loading',
@@ -59,6 +62,7 @@ const createSplashWindow = async () => {
 };
 
 const createMainWindow = async () => {
+  // todo add icon
   mainWindow = new BrowserWindow({
     show: false,
     width: 650,

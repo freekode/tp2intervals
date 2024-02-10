@@ -3,6 +3,8 @@ import MakerSquirrel from '@electron-forge/maker-squirrel';
 import MakerZIP from '@electron-forge/maker-zip';
 import MakerDeb from '@electron-forge/maker-deb';
 import VitePlugin from '@electron-forge/plugin-vite';
+import PublisherGithub from '@electron-forge/publisher-github';
+import MakerAppImage from "electron-forge-maker-appimage";
 
 const config: ForgeConfig = {
   packagerConfig: {
@@ -12,15 +14,20 @@ const config: ForgeConfig = {
       '../ui/dist/ui'
     ]
   },
-  rebuildConfig: {},
   makers: [
     new MakerSquirrel({}),
     new MakerZIP({}, ['darwin']),
-    new MakerDeb({
-      options: {
-        maintainer: 'freekode <iam@freekode.org>'
-      }
-    })],
+    new MakerAppImage()
+  ],
+  publishers: [
+    new PublisherGithub({
+      repository: {
+        owner: 'freekode',
+        name: 'tp2intervals'
+      },
+      draft: true
+    })
+  ],
   plugins: [
     new VitePlugin({
       build: [

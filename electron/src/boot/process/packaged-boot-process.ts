@@ -3,7 +3,7 @@ import path from 'path';
 import { app } from 'electron';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import log from 'electron-log';
-import { isWindows } from "../platform";
+import { isWindows } from "../environment";
 
 export class PackagedBootProcess extends ActuatorProcess {
   private readonly bootJarPath = path.join(process.resourcesPath, 'tp2intervals.jar');
