@@ -31,8 +31,8 @@
   "dependencies": {
     "electron-log": "^5.1.1",
     "electron-squirrel-startup": "^1.0.0",
-    "typed-emitter": "^2.1.0",
-    "update-electron-app": "^3.0.0"
+    "electron-updater": "^6.1.7",
+    "typed-emitter": "^2.1.0"
   },
   "devDependencies": {
     "@electron-forge/cli": "^7.2.0",

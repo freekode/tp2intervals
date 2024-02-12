@@ -1,16 +1,25 @@
 import { app, BrowserWindow, shell } from 'electron';
 import path from 'path';
 import './boot'
-import { getBootController, initBootController } from "./boot/boot-controller";
-import { systemEvents } from "./boot/events";
-import log from "electron-log";
-import { updateElectronApp } from 'update-electron-app';
+import { getBootController, initBootController } from './boot/boot-controller';
+import { systemEvents } from './events';
+import log from 'electron-log';
+import { appUpdater, initializeAppUpdaterSubscriptions } from "./autoupdate/appUpdater";
 
-updateElectronApp()
+
+/*
+todo
+create test repo
+make release
+upload appimage, latest-linux.yml
+update app-update.yml
+ */
 
 if (require('electron-squirrel-startup')) {
   app.quit();
 }
+
+appUpdater.checkForUpdates()
 
 let splashWindow: BrowserWindow | null = null;
 let mainWindow: BrowserWindow | null = null;
@@ -104,7 +113,8 @@ const createMainWindow = async () => {
 
   getBootController()?.initializeSubscriptions(mainWindow);
 
-  log.transports.console.level = 'info';
+  // log.transports.console.level = 'info';
+  initializeAppUpdaterSubscriptions(mainWindow);
 };
 
 app.whenReady()

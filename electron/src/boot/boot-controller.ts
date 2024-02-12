@@ -2,7 +2,7 @@ import { app, BrowserWindow } from 'electron';
 import log from 'electron-log';
 import { Process } from './process/process';
 import { PackagedBootProcess } from './process/packaged-boot-process';
-import { systemEvents } from "./events";
+import { systemEvents } from "../events";
 import { RemoteProcess } from "./process/remote-boot-process";
 
 export class BootController {
