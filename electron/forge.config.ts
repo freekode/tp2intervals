@@ -20,6 +20,15 @@ const config: ForgeConfig = {
     new MakerZIP({}, ['darwin']),
     new MakerAppImage()
   ],
+  publishers: [
+    new PublisherGithub({
+      repository: {
+        owner: 'freekode',
+        name: 'tp2intervals'
+      },
+      draft: true
+    })
+  ],
   plugins: [
     new VitePlugin({
       build: [
