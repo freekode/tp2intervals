@@ -23,7 +23,7 @@ mac:
   target:
     target: default
     arch:
-      - arm64
+#      - arm64
       - x64
   entitlementsInherit: build/entitlements.mac.plist
   notarize: false
