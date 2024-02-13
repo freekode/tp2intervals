@@ -4,7 +4,7 @@ import './boot'
 import { getBootController, initBootController } from './boot/boot-controller';
 import { systemEvents } from './events';
 import log from 'electron-log';
-import { appUpdater, initializeAppUpdaterSubscriptions } from "./autoupdate/appUpdater";
+import { appUpdater, initializeAppUpdaterSubscriptions } from './autoupdate/appUpdater';
 
 
 /*

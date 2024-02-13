@@ -26,13 +26,15 @@
     "jdk:download:darwin:linux": "../devops/jdktool/jdkutil.py clean:jdks download unzip",
     "jdk:download:win32": "python ../devops/jdktool/jdkutil.py clean:jdks download unzip",
     "ui:start": "npm run start --prefix ../ui",
-    "ui:build": "npm run build --prefix ../ui -- --base-href=./"
+    "ui:build": "npm run build --prefix ../ui -- --base-href=./",
+    "b": "vite build"
   },
   "dependencies": {
     "electron-log": "^5.1.1",
     "electron-squirrel-startup": "^1.0.0",
     "electron-updater": "^6.1.7",
-    "typed-emitter": "^2.1.0"
+    "typed-emitter": "^2.1.0",
+    "update-electron-app": "^3.0.0"
   },
   "devDependencies": {
     "@electron-forge/cli": "^7.2.0",
@@ -54,6 +56,8 @@
     "ts-node": "^10.9.2",
     "typescript": "~4.5.4",
     "vite": "^5.0.12",
+    "vite-plugin-electron": "^0.28.2",
+    "vite-plugin-electron-renderer": "^0.14.5",
     "wait-on": "^7.2.0"
   }
 }
