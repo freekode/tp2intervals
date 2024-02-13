@@ -53,6 +53,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: tp2intervals-${{ matrix.environment.os }}
-          path: electron/dist/[tp2intervals*|latest*]
+          path: electron/dist/@(tp2intervals*|latest*)
           if-no-files-found: error
           compression-level: 0
