@@ -7,7 +7,7 @@ import org.freekode.tp2intervals.domain.plan.Plan
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutRepository
 import org.freekode.tp2intervals.infrastructure.intervalsicu.IntervalsApiClient
-import org.freekode.tp2intervals.infrastructure.intervalsicu.IntervalsException
+import org.freekode.tp2intervals.infrastructure.PlatformException
 import org.freekode.tp2intervals.infrastructure.intervalsicu.configuration.IntervalsConfigurationRepository
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Repository
@@ -22,13 +22,29 @@ class IntervalsWorkoutRepository(
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    override fun planWorkout(workout: Workout, plan: Plan) {
+    override fun planWorkout(workout: Workout) {
         val workoutString = workoutToIntervalsConverter.toIntervalsWorkout(workout)
 
         var description = workout.description.orEmpty()
         description += workoutString?.let { "\n\n- - - -\n$it" }.orEmpty()
 
-        val createWorkoutRequestDTO = CreateWorkoutRequestDTO(
+        val request = CreateEventRequestDTO(
+            workout.date.atStartOfDay().toString(),
+            workout.title,
+            workout.type.title,
+            "WORKOUT",
+            description
+        )
+        intervalsApiClient.createEvent(intervalsConfigurationRepository.getConfiguration().athleteId, request)
+    }
+
+    override fun copyWorkout(workout: Workout, plan: Plan) {
+        val workoutString = workoutToIntervalsConverter.toIntervalsWorkout(workout)
+
+        var description = workout.description.orEmpty()
+        description += workoutString?.let { "\n\n- - - -\n$it" }.orEmpty()
+
+        val request = CreateWorkoutRequestDTO(
             plan.id.value,
             getWorkoutDayNumber(plan.startDate, workout.date),
             IntervalsEventTypeMapper.getByTrainingType(workout.type),
@@ -38,10 +54,7 @@ class IntervalsWorkoutRepository(
             description,
             null,
         )
-        intervalsApiClient.createWorkout(
-            intervalsConfigurationRepository.getConfiguration().athleteId,
-            createWorkoutRequestDTO
-        )
+        intervalsApiClient.createWorkout(intervalsConfigurationRepository.getConfiguration().athleteId, request)
     }
 
     override fun platform() = Platform.INTERVALS
@@ -61,7 +74,7 @@ class IntervalsWorkoutRepository(
     private fun toWorkout(eventDTO: IntervalsEventDTO): Workout? {
         return try {
             IntervalsToWorkoutConverter(eventDTO).toWorkout()
-        } catch (e: IntervalsException) {
+        } catch (e: PlatformException) {
             log.warn("Can't convert a workout ${eventDTO.name} on ${eventDTO.start_date_local}, skipping...", e)
             return null
         }

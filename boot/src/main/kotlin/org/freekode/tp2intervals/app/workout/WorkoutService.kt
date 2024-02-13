@@ -13,31 +13,41 @@ class WorkoutService(
     private val schedulerService: SchedulerService,
     private val appConfigurationRepository: AppConfigurationRepository
 ) {
-    fun copyPlan(request: CopyPlanRequest) {
-        val sourceWorkoutRepository = workoutRepositoryStrategy.getRepository(request.sourcePlatform)
-        val targetWorkoutRepository = workoutRepositoryStrategy.getRepository(request.targetPlatform)
-        val targetPlanRepository = planRepositoryStrategy.getRepository(request.targetPlatform)
-
-        val workouts = sourceWorkoutRepository.getPlannedWorkouts(request.startDate, request.endDate)
-        val plan = targetPlanRepository.createPlan("My Plan - ${request.startDate}", request.startDate)
-        workouts.forEach { targetWorkoutRepository.planWorkout(it, plan) }
-    }
-
     fun planWorkouts(request: PlanWorkoutsRequest): PlanWorkoutsResponse {
         val sourceWorkoutRepository = workoutRepositoryStrategy.getRepository(request.sourcePlatform)
         val targetWorkoutRepository = workoutRepositoryStrategy.getRepository(request.targetPlatform)
 
-        val allWorkoutsToPlan = sourceWorkoutRepository.getPlannedWorkouts(request.startDate, request.endDate)
-        val filteredWorkoutsToPlan = allWorkoutsToPlan
+        val allWorkouts = sourceWorkoutRepository.getPlannedWorkouts(request.startDate, request.endDate)
+        val filteredWorkouts = allWorkouts
             .filter { request.types.contains(it.type) }
 
         val response = PlanWorkoutsResponse(
-            filteredWorkoutsToPlan.size,
-            allWorkoutsToPlan.size - filteredWorkoutsToPlan.size,
+            filteredWorkouts.size,
+            allWorkouts.size - filteredWorkouts.size,
             request.startDate,
             request.endDate
         )
-        filteredWorkoutsToPlan.forEach { targetWorkoutRepository.planWorkout(it, Plan.empty()) }
+        filteredWorkouts.forEach { targetWorkoutRepository.planWorkout(it) }
+        return response
+    }
+
+    fun copyWorkouts(request: CopyWorkoutsRequest): CopyWorkoutsResponse {
+        val sourceWorkoutRepository = workoutRepositoryStrategy.getRepository(request.sourcePlatform)
+        val targetWorkoutRepository = workoutRepositoryStrategy.getRepository(request.targetPlatform)
+        val targetPlanRepository = planRepositoryStrategy.getRepository(request.targetPlatform)
+
+        val allWorkouts = sourceWorkoutRepository.getPlannedWorkouts(request.startDate, request.endDate)
+        val filteredWorkouts = allWorkouts
+            .filter { request.types.contains(it.type) }
+
+        val response = CopyWorkoutsResponse(
+            filteredWorkouts.size,
+            allWorkouts.size - filteredWorkouts.size,
+            request.startDate,
+            request.endDate
+        )
+        val plan = targetPlanRepository.createPlan("My Plan - ${request.startDate}", request.startDate)
+        filteredWorkouts.forEach { targetWorkoutRepository.copyWorkout(it, plan) }
         return response
     }
 

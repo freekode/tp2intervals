@@ -16,9 +16,9 @@ export class WorkoutClient {
       .post(`/api/workout/plan/INTERVALS/TRAINING_PEAKS`, {startDate, endDate, types})
   }
 
-  copyPlan(startDate, endDate) {
+  copyWorkouts(startDate, endDate, types): Observable<any> {
     return this.httpClient
-      .post(`/api/workout/copy/TRAINING_PEAKS/INTERVALS`, {startDate, endDate})
+      .post(`/api/workout/copy/TRAINING_PEAKS/INTERVALS`, {startDate, endDate, types})
   }
 
   startJobPlanWorkout(): Observable<any> {
