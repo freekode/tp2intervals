@@ -29,13 +29,13 @@ jobs:
           cache: 'npm'
           cache-dependency-path: '**/package-lock.json'
 
-      - name: Build jar
+      - name: Build jar in unix
         if: ${{ matrix.environment.os != 'windows-latest' }}
         run: |
           cd ./boot
           ./gradlew build
 
-      - name: Build jar
+      - name: Build jar in windows
         if: ${{ matrix.environment.os == 'windows-latest' }}
         run: |
           cd ./boot
@@ -45,11 +45,14 @@ jobs:
         run: |
           npm ci --prefix electron
           npm ci --prefix ui
-          npm run make --prefix electron
+          npm run publish --prefix electron
+
+      - name: Show me what you got
+        run: ls electron/dist
 
       - uses: actions/upload-artifact@v4
         with:
           name: tp2intervals-${{ matrix.environment.os }}
-          path: electron/out/make/**/*
+          path: electron/dist/[tp2intervals*|latest*]
           if-no-files-found: error
           compression-level: 0

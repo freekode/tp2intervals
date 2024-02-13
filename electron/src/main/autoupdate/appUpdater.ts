@@ -2,7 +2,7 @@ import { autoUpdater, UpdateInfo } from 'electron-updater';
 import path from 'path';
 import log from 'electron-log';
 import { app, BrowserWindow } from 'electron';
-// import { scheduleJob } from 'node-schedule';
+import { scheduleJob } from 'node-schedule';
 import semverGt from 'semver/functions/gt';
 import { systemEvents } from "../events";
 import { isDev } from "../boot/environment";
@@ -42,9 +42,9 @@ export class AppUpdater {
       systemEvents.emit('update-download-progress', info);
     });
 
-    autoUpdater.on('update-downloaded', (info) => {
-      log.silly(`Update downloaded: ${JSON.stringify(info)}`);
-      systemEvents.emit('update-downloaded', info);
+    autoUpdater.on('update-downloaded', (event) => {
+      log.silly(`Update downloaded: ${JSON.stringify(event)}`);
+      systemEvents.emit('update-downloaded', event);
     });
 
     autoUpdater.on('update-cancelled', (info) => {
@@ -52,8 +52,8 @@ export class AppUpdater {
       systemEvents.emit('update-cancelled', info);
     });
 
-    // scheduleJob('0 */5 * * * *', this.checkForUpdatesJob.bind(this, false));
-    // this.checkForUpdatesJob(true);
+    scheduleJob('0 */5 * * * *', this.checkForUpdatesJob.bind(this, false));
+    this.checkForUpdatesJob(true);
   }
 
   updateAutoUpdate(autoUpdate: boolean) {
@@ -75,24 +75,24 @@ export class AppUpdater {
     await autoUpdater.downloadUpdate();
   }
 
-  // quitAndInstall() {
-  //   setImmediate(() => {
-  //     app.removeAllListeners('window-all-closed');
-  //     BrowserWindow.getAllWindows().forEach((window) => {
-  //       window.removeAllListeners('close');
-  //       window.close();
-  //     });
-  //     autoUpdater.quitAndInstall(false);
-  //   });
-  // }
+  quitAndInstall() {
+    setImmediate(() => {
+      app.removeAllListeners('window-all-closed');
+      BrowserWindow.getAllWindows().forEach((window) => {
+        window.removeAllListeners('close');
+        window.close();
+      });
+      autoUpdater.quitAndInstall(false);
+    });
+  }
 
-  // private async checkForUpdatesJob(runAnyways = false) {
-  //   const lastUpdateCheckTimeAfterOneHour = configurationStore.get('lastUpdateCheckTime') < Date.now() - 1000 * 60 * 60;
-  //   if (lastUpdateCheckTimeAfterOneHour || runAnyways) {
-  //     configurationStore.set('lastUpdateCheckTime', Date.now());
-  //     await this.checkForUpdates();
-  //   }
-  // }
+  private async checkForUpdatesJob(runAnyways = false) {
+    const lastUpdateCheckTimeAfterOneHour = configurationStore.get('lastUpdateCheckTime') < Date.now() - 1000 * 60 * 60;
+    if (lastUpdateCheckTimeAfterOneHour || runAnyways) {
+      configurationStore.set('lastUpdateCheckTime', Date.now());
+      await this.checkForUpdates();
+    }
+  }
 }
 
 export function initializeAppUpdaterSubscriptions(window: BrowserWindow) {

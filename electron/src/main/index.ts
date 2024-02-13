@@ -16,6 +16,14 @@ appUpdater.checkForUpdates()
 let splashWindow: BrowserWindow | null = null;
 let mainWindow: BrowserWindow | null = null;
 
+const RESOURCES_PATH = app.isPackaged
+  ? path.join(process.resourcesPath, 'assets')
+  : path.join(__dirname, '../../assets');
+
+const getAssetPath = (...paths: string[]): string => {
+  return path.join(RESOURCES_PATH, ...paths);
+};
+
 const getSplashWindowPageUrl = () => {
   if (app.isPackaged) {
     return 'file://' + path.join(__dirname, `../../../browser/assets/loading.html`);
@@ -39,6 +47,7 @@ const createSplashWindow = async () => {
     title: 'Loading',
     width: 500,
     height: 300,
+    icon: getAssetPath('icon.png'),
     resizable: false,
     frame: false,
     center: true,
@@ -70,6 +79,7 @@ const createMainWindow = async () => {
     height: 750,
     minWidth: 500,
     minHeight: 450,
+    icon: getAssetPath('icon.png'),
     // frame: isMac,
     // titleBarStyle: isMac ? 'hidden' : undefined,
     trafficLightPosition: {x: 12, y: 12},
