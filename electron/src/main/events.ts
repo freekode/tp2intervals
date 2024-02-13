@@ -1,6 +1,6 @@
-import EventEmitter from 'events';
 import TypedEmitter from 'typed-emitter/rxjs';
 import { ProgressInfo, UpdateInfo } from "electron-updater";
+import EventEmitter from 'events';
 
 export const systemEvents = new EventEmitter() as TypedEmitter<Events>;
 

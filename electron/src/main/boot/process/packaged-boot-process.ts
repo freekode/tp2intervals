@@ -7,7 +7,7 @@ import { isWindows } from "../environment";
 
 export class PackagedBootProcess extends ActuatorProcess {
   private readonly bootJarPath = path.join(process.resourcesPath, 'tp2intervals.jar');
-  private readonly jdkPath = path.join(process.resourcesPath, 'x64', 'jdk', 'bin', isWindows ? 'java.exe' : 'java');
+  private readonly jdkPath = path.join(process.resourcesPath, 'jdk', 'bin', isWindows ? 'java.exe' : 'java');
   private readonly bootDbPath = path.join(app.getPath('userData'), 'tp2intervals.sqlite');
   private readonly port: number;
   private readonly address: string;

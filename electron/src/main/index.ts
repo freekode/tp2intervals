@@ -7,14 +7,6 @@ import log from 'electron-log';
 import { appUpdater, initializeAppUpdaterSubscriptions } from './autoupdate/appUpdater';
 
 
-/*
-todo
-create test repo
-make release
-upload appimage, latest-linux.yml
-update app-update.yml
- */
-
 if (require('electron-squirrel-startup')) {
   app.quit();
 }
@@ -26,7 +18,7 @@ let mainWindow: BrowserWindow | null = null;
 
 const getSplashWindowPageUrl = () => {
   if (app.isPackaged) {
-    return 'file://' + path.join(__dirname, `../../../ui/browser/assets/loading.html`);
+    return 'file://' + path.join(__dirname, `../../../browser/assets/loading.html`);
   } else {
     return 'http://localhost:4200/assets/loading.html';
   }
@@ -34,7 +26,7 @@ const getSplashWindowPageUrl = () => {
 
 const getMainWindowPageUrl = () => {
   if (app.isPackaged) {
-    return 'file://' + path.join(__dirname, `../../../ui/browser/index.html`);
+    return 'file://' + path.join(__dirname, `../../../browser/index.html`);
   } else {
     return 'http://localhost:4200';
   }
@@ -52,7 +44,7 @@ const createSplashWindow = async () => {
     center: true,
     webPreferences: {
       devTools: false,
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, '../preload/index.js'),
     },
   });
 
@@ -75,15 +67,15 @@ const createMainWindow = async () => {
   mainWindow = new BrowserWindow({
     show: false,
     width: 650,
-    height: 700,
+    height: 750,
     minWidth: 500,
-    minHeight: 400,
+    minHeight: 450,
     // frame: isMac,
     // titleBarStyle: isMac ? 'hidden' : undefined,
     trafficLightPosition: {x: 12, y: 12},
     autoHideMenuBar: true,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, '../preload/index.js'),
     },
   });
 
