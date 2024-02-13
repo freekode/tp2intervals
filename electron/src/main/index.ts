@@ -4,14 +4,11 @@ import './boot'
 import { getBootController, initBootController } from './boot/boot-controller';
 import { systemEvents } from './events';
 import log from 'electron-log';
-import { appUpdater, initializeAppUpdaterSubscriptions } from './autoupdate/appUpdater';
 
 
 if (require('electron-squirrel-startup')) {
   app.quit();
 }
-
-appUpdater.checkForUpdates()
 
 let splashWindow: BrowserWindow | null = null;
 let mainWindow: BrowserWindow | null = null;
@@ -80,8 +77,6 @@ const createMainWindow = async () => {
     minWidth: 500,
     minHeight: 450,
     icon: getAssetPath('icon.png'),
-    // frame: isMac,
-    // titleBarStyle: isMac ? 'hidden' : undefined,
     trafficLightPosition: {x: 12, y: 12},
     autoHideMenuBar: true,
     webPreferences: {
@@ -115,8 +110,7 @@ const createMainWindow = async () => {
 
   getBootController()?.initializeSubscriptions(mainWindow);
 
-  // log.transports.console.level = 'info';
-  initializeAppUpdaterSubscriptions(mainWindow);
+  log.transports.console.level = 'info';
 };
 
 app.whenReady()

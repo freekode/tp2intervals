@@ -3,7 +3,7 @@ jdk,17,mac,x64,https://cdn.azul.com/zulu/bin/zulu17.40.19-ca-jdk17.0.6-macosx_x6
 jdk,17,mac,arm64,https://cdn.azul.com/zulu/bin/zulu17.40.19-ca-jdk17.0.6-macosx_aarch64.zip,fc8b81deee3f8eab1813191a059a9c24fd752db872d5bef6552076705a5d81ef
 jdk,17,win,x64,https://cdn.azul.com/zulu/bin/zulu17.40.19-ca-jdk17.0.6-win_x64.zip,1cef98ad1db3fe821e9703fe7d6f9cf6637285310442c4cd8bb7975b70c9a6ac
 jdk,17,linux,x64,https://cdn.azul.com/zulu/bin/zulu17.40.19-ca-jdk17.0.6-linux_x64.zip,54fe4ad012a25f4c86b69692ee3aa0650e8a944b71d55dfcfc85a8dddd3a9081
-jre,21,darwin,x64,https://cdn.azul.com/zulu/bin/zulu21.28.85-ca-jre21.0.0-macosx_x64.zip,7b23df764be97e84d48d9c7b7a9270b002bbfb45d52006f7c9d27cb15b20e650
-jre,21,darwin,arm64,https://cdn.azul.com/zulu/bin/zulu21.28.85-ca-jre21.0.0-macosx_aarch64.zip,c724e4770d5f14a54a63a9dd7e96b3511ee01b9bf84b6f41cd9893fb7c78afdc
-jre,21,win32,x64,https://cdn.azul.com/zulu/bin/zulu21.28.85-ca-jre21.0.0-win_x64.zip,6619dd889956a70e13cad927f83f0007386be855941985ed86b8b88f409bdac9
+jre,21,mac,x64,https://cdn.azul.com/zulu/bin/zulu21.28.85-ca-jre21.0.0-macosx_x64.zip,7b23df764be97e84d48d9c7b7a9270b002bbfb45d52006f7c9d27cb15b20e650
+jre,21,mac,arm64,https://cdn.azul.com/zulu/bin/zulu21.28.85-ca-jre21.0.0-macosx_aarch64.zip,c724e4770d5f14a54a63a9dd7e96b3511ee01b9bf84b6f41cd9893fb7c78afdc
+jre,21,win,x64,https://cdn.azul.com/zulu/bin/zulu21.28.85-ca-jre21.0.0-win_x64.zip,6619dd889956a70e13cad927f83f0007386be855941985ed86b8b88f409bdac9
 jre,21,linux,x64,https://cdn.azul.com/zulu/bin/zulu21.28.85-ca-jre21.0.0-linux_x64.zip,2835f03d1f55f3b7210e352b16088e575ead8278ce3ecc07c97373d4ff294d16
