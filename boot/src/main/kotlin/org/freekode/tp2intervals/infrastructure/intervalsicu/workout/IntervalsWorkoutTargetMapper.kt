@@ -1,7 +1,7 @@
 package org.freekode.tp2intervals.infrastructure.intervalsicu.workout
 
 import org.freekode.tp2intervals.domain.workout.WorkoutStepTarget
-import org.freekode.tp2intervals.infrastructure.intervalsicu.IntervalsException
+import org.freekode.tp2intervals.infrastructure.PlatformException
 
 class IntervalsWorkoutTargetMapper(
     private val ftp: Double?,
@@ -16,7 +16,7 @@ class IntervalsWorkoutTargetMapper(
         } else if (stepDTO._pace != null) {
             toWorkoutPaceTarget(stepDTO._pace)
         } else {
-            throw IntervalsException("Unknown target in step $stepDTO")
+            throw PlatformException("Unknown target in step $stepDTO")
         }
     }
 
@@ -39,7 +39,7 @@ class IntervalsWorkoutTargetMapper(
 
     private fun toWorkoutPaceTarget(pace: IntervalsWorkoutDocDTO.ResolvedStepValueDTO): WorkoutStepTarget {
 //        return mapSimpleUnit(WorkoutStepTarget.TargetUnit.PACE_PERCENTAGE, paceThreshold!!, pace)
-        throw IntervalsException("Can't handle steps with pace target yet")
+        throw PlatformException("Can't handle steps with pace target yet")
     }
 
     private fun mapSimpleUnit(

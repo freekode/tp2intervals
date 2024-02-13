@@ -6,7 +6,7 @@ class TPWorkoutTypeMapper {
     companion object {
         private val typeMap = mapOf(
             TrainingType.BIKE to 2,
-            TrainingType.BIKE to 8,
+            TrainingType.MTB to 8,
             TrainingType.VIRTUAL_BIKE to 2,
             TrainingType.RUN to 3,
             TrainingType.NOTE to 7,

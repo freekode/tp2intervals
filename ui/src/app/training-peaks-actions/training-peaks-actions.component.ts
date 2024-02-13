@@ -6,7 +6,7 @@ import { MatCardModule } from "@angular/material/card";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatProgressBarModule } from "@angular/material/progress-bar";
-import { NgIf } from "@angular/common";
+import { formatDate, NgIf } from "@angular/common";
 import { MatDatepickerModule } from "@angular/material/datepicker";
 import { MatNativeDateModule } from "@angular/material/core";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
@@ -16,6 +16,9 @@ import { finalize } from "rxjs";
 import { WorkoutClient } from "infrastructure/workout.client";
 import { MatSelectModule } from "@angular/material/select";
 import { ConfigurationClient } from "infrastructure/configuration.client";
+
+const DATE_FORMAT = 'yyyy-MM-dd'
+const LOCALE = 'en-US'
 
 @Component({
   selector: 'app-training-peaks-actions',
@@ -40,24 +43,31 @@ import { ConfigurationClient } from "infrastructure/configuration.client";
 })
 export class TrainingPeaksActionsComponent implements OnInit {
 
-  copyPlanFormGroup: FormGroup = this.formBuilder.group({
-    startDate: [null, Validators.required],
-    endDate: [null, Validators.required],
+  planWorkoutsFormGroup: FormGroup = this.formBuilder.group({
+    direction: [null, Validators.required],
+    trainingTypes: [null, Validators.required],
   });
 
-  planWorkoutFormGroup: FormGroup = this.formBuilder.group({
+  copyWorkoutsFormGroup: FormGroup = this.formBuilder.group({
     trainingTypes: [null, Validators.required],
+    startDate: [null, Validators.required],
+    endDate: [null, Validators.required],
   });
 
   jobStarted = true
   copyPlanInProgress = false
   planWorkoutInProgress = false
 
+  directions = [
+    {name: 'Intervals.icu -> Training Peaks', value: 'INTERVALS/TRAINING_PEAKS'},
+    {name: 'Training Peaks -> Intervals.icu', value: 'TRAINING_PEAKS/INTERVALS'},
+  ]
   trainingTypes: any[];
 
+  private readonly selectedPlanDirection = this.directions[0].value;
   private readonly selectedTrainingTypes = ['BIKE', 'VIRTUAL_BIKE'];
-  private readonly todayDate = new Date().toISOString().split('T')[0]
-  private readonly tomorrowDate = new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0]
+  private readonly todayDate = formatDate(new Date(), DATE_FORMAT, LOCALE)
+  private readonly tomorrowDate = formatDate(new Date(new Date().setDate(new Date().getDate() + 1)), DATE_FORMAT, LOCALE)
 
   constructor(
     private router: Router,
@@ -69,9 +79,16 @@ export class TrainingPeaksActionsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.planWorkoutsFormGroup.patchValue({
+      direction: this.selectedPlanDirection
+    })
+
     this.configurationClient.getTrainingTypes().subscribe(types => {
       this.trainingTypes = types
-      this.planWorkoutFormGroup.patchValue({
+      this.planWorkoutsFormGroup.patchValue({
+        trainingTypes: this.selectedTrainingTypes
+      })
+      this.copyWorkoutsFormGroup.patchValue({
         trainingTypes: this.selectedTrainingTypes
       })
     })
@@ -80,14 +97,16 @@ export class TrainingPeaksActionsComponent implements OnInit {
     // })
   }
 
-  copyPlanSubmit() {
+  copyWorkoutsSubmit() {
     this.copyPlanInProgress = true
-    let startDate = this.copyPlanFormGroup.value.startDate.toISOString().split('T')[0]
-    let endDate = this.copyPlanFormGroup.value.endDate.toISOString().split('T')[0]
-    this.workoutClient.copyPlan(startDate, endDate).pipe(
+    let startDate = formatDate(this.copyWorkoutsFormGroup.value.startDate, DATE_FORMAT, LOCALE)
+    let endDate = formatDate(this.copyWorkoutsFormGroup.value.endDate, DATE_FORMAT, LOCALE)
+    let trainingTypes = this.planWorkoutsFormGroup.value.trainingTypes
+    this.workoutClient.copyWorkouts(startDate, endDate, trainingTypes).pipe(
       finalize(() => this.copyPlanInProgress = false)
-    ).subscribe(() => {
-      this.notificationService.success('Plan copied')
+    ).subscribe((response) => {
+      this.notificationService.success(
+        `Copied ${response.copied} workout(s)\n Filtered out ${response.filteredOut} workout(s)\n From ${response.startDate} to ${response.endDate}`)
     })
   }
 
@@ -101,9 +120,9 @@ export class TrainingPeaksActionsComponent implements OnInit {
 
   private planWorkouts(date) {
     this.planWorkoutInProgress = true
-    let trainingTypes = this.planWorkoutFormGroup.value.trainingTypes
-
-    this.workoutClient.planWorkout(date, date, trainingTypes).pipe(
+    let direction = this.planWorkoutsFormGroup.value.direction
+    let trainingTypes = this.planWorkoutsFormGroup.value.trainingTypes
+    this.workoutClient.planWorkout(direction, date, date, trainingTypes).pipe(
       finalize(() => this.planWorkoutInProgress = false)
     ).subscribe((response) => {
       this.notificationService.success(

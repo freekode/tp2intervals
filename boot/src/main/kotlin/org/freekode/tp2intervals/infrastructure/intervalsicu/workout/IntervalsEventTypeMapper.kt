@@ -6,6 +6,7 @@ class IntervalsEventTypeMapper {
     companion object {
         private val typeMap = mapOf(
             TrainingType.BIKE to "Ride",
+            TrainingType.MTB to "MountainBikeRide",
             TrainingType.VIRTUAL_BIKE to "VirtualRide",
             TrainingType.RUN to "Run",
             TrainingType.WEIGHT to "WeightTraining",
