@@ -3,6 +3,7 @@ package org.freekode.tp2intervals.infrastructure.intervalsicu
 import org.freekode.tp2intervals.infrastructure.intervalsicu.activity.CreateActivityResponseDTO
 import org.freekode.tp2intervals.infrastructure.intervalsicu.folder.CreateFolderRequestDTO
 import org.freekode.tp2intervals.infrastructure.intervalsicu.folder.FolderDTO
+import org.freekode.tp2intervals.infrastructure.intervalsicu.workout.CreateEventRequestDTO
 import org.freekode.tp2intervals.infrastructure.intervalsicu.workout.CreateWorkoutRequestDTO
 import org.freekode.tp2intervals.infrastructure.intervalsicu.workout.IntervalsEventDTO
 import org.springframework.cloud.openfeign.FeignClient
@@ -36,6 +37,12 @@ interface IntervalsApiClient {
     fun createWorkout(
         @PathVariable("athleteId") athleteId: String,
         @RequestBody createWorkoutRequestDTO: CreateWorkoutRequestDTO
+    )
+
+    @PostMapping("/api/v1/athlete/{athleteId}/events")
+    fun createEvent(
+        @PathVariable athleteId: String,
+        @RequestBody createEventRequestDTO: CreateEventRequestDTO
     )
 
     @GetMapping("/api/v1/athlete/{athleteId}/events?oldest={startDate}&newest={endDate}&resolve=true")

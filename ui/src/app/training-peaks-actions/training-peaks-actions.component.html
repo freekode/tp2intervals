@@ -1,4 +1,4 @@
-<form [formGroup]="planWorkoutFormGroup" novalidate>
+<form [formGroup]="planWorkoutsFormGroup" novalidate>
   <mat-card>
     <mat-card-header>
       <mat-card-title>Plan Workout</mat-card-title>
@@ -8,7 +8,20 @@
     <mat-card-content>
       <div class="row">
         <div class="col">
-          <mat-form-field>
+          <mat-form-field class="form-field">
+            <mat-label>Direction</mat-label>
+            <mat-select formControlName="direction">
+              @for (type of directions; track type) {
+                <mat-option [value]="type.value">{{type.name}}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="form-field">
             <mat-label>Workout Types</mat-label>
             <mat-select formControlName="trainingTypes" multiple>
               @for (type of trainingTypes; track type) {
@@ -26,7 +39,7 @@
         class="action-button"
         color="primary"
         (click)="planTodayClick()"
-        [disabled]="planWorkoutFormGroup.invalid"
+        [disabled]="planWorkoutsFormGroup.invalid"
       >
         Plan for Today
       </button>
@@ -36,7 +49,7 @@
         class="action-button"
         color="primary"
         (click)="planTomorrowClick()"
-        [disabled]="planWorkoutFormGroup.invalid"
+        [disabled]="planWorkoutsFormGroup.invalid"
       >
         Plan for Tomorrow
       </button>
@@ -70,7 +83,7 @@
   </mat-card>
 </form>
 
-<form [formGroup]="copyPlanFormGroup" novalidate (ngSubmit)="copyPlanSubmit()">
+<form [formGroup]="copyWorkoutsFormGroup" novalidate (ngSubmit)="copyWorkoutsSubmit()">
   <mat-card>
     <mat-card-header>
       <mat-card-title>Copy Plan</mat-card-title>
@@ -81,7 +94,22 @@
     <mat-card-content>
       <div class="row">
         <div class="col">
-          <mat-form-field>
+          <mat-form-field class="form-field">
+            <mat-label>Workout Types</mat-label>
+            <mat-select formControlName="trainingTypes" multiple>
+              @for (type of trainingTypes; track type) {
+                <mat-option [value]="type.value">{{type.title}}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+    </mat-card-content>
+
+    <mat-card-content>
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="form-field">
             <mat-label>Date Range</mat-label>
             <mat-date-range-input
               [rangePicker]="copyPlanDatePicker">
@@ -100,7 +128,7 @@
         mat-raised-button
         color="primary"
         type="submit"
-        [disabled]="copyPlanFormGroup.invalid"
+        [disabled]="copyWorkoutsFormGroup.invalid"
       >
         Submit
       </button>

@@ -9,5 +9,7 @@ interface WorkoutRepository {
 
     fun getPlannedWorkouts(startDate: LocalDate, endDate: LocalDate): List<Workout>
 
-    fun planWorkout(workout: Workout, plan: Plan)
+    fun planWorkout(workout: Workout)
+
+    fun copyWorkout(workout: Workout, plan: Plan)
 }

@@ -7,6 +7,7 @@ import org.freekode.tp2intervals.domain.activity.ActivityRepository
 import org.freekode.tp2intervals.domain.plan.Plan
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutRepository
+import org.freekode.tp2intervals.infrastructure.PlatformException
 import org.freekode.tp2intervals.infrastructure.trainingpeaks.TrainingPeaksApiClient
 import org.freekode.tp2intervals.infrastructure.trainingpeaks.workout.structure.WorkoutStepToTPStructureConverter
 import org.springframework.stereotype.Repository
@@ -20,7 +21,7 @@ class TrainingPeaksWorkoutRepository(
 ) : WorkoutRepository, ActivityRepository {
     override fun platform() = Platform.TRAINING_PEAKS
 
-    override fun planWorkout(workout: Workout, plan: Plan) {
+    override fun planWorkout(workout: Workout) {
         val structureStr = workoutStepToTPStructureConverter.toWorkoutStructureStr(workout)
 
         val createRequest = CreateTPWorkoutDTO.planWorkout(
@@ -33,6 +34,10 @@ class TrainingPeaksWorkoutRepository(
             structureStr
         )
         trainingPeaksApiClient.createAndPlanWorkout(getUserId(), createRequest)
+    }
+
+    override fun copyWorkout(workout: Workout, plan: Plan) {
+        throw PlatformException("TP doesn't support workout copying")
     }
 
     override fun getPlannedWorkouts(startDate: LocalDate, endDate: LocalDate): List<Workout> {
