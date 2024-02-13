@@ -43,22 +43,28 @@ const LOCALE = 'en-US'
 })
 export class TrainingPeaksActionsComponent implements OnInit {
 
+  planWorkoutsFormGroup: FormGroup = this.formBuilder.group({
+    direction: [null, Validators.required],
+    trainingTypes: [null, Validators.required],
+  });
+
   copyWorkoutsFormGroup: FormGroup = this.formBuilder.group({
     trainingTypes: [null, Validators.required],
     startDate: [null, Validators.required],
     endDate: [null, Validators.required],
   });
 
-  planWorkoutsFormGroup: FormGroup = this.formBuilder.group({
-    trainingTypes: [null, Validators.required],
-  });
-
   jobStarted = true
   copyPlanInProgress = false
   planWorkoutInProgress = false
 
+  directions = [
+    {name: 'Intervals.icu -> Training Peaks', value: 'INTERVALS/TRAINING_PEAKS'},
+    {name: 'Training Peaks -> Intervals.icu', value: 'TRAINING_PEAKS/INTERVALS'},
+  ]
   trainingTypes: any[];
 
+  private readonly selectedPlanDirection = this.directions[0].value;
   private readonly selectedTrainingTypes = ['BIKE', 'VIRTUAL_BIKE'];
   private readonly todayDate = formatDate(new Date(), DATE_FORMAT, LOCALE)
   private readonly tomorrowDate = formatDate(new Date(new Date().setDate(new Date().getDate() + 1)), DATE_FORMAT, LOCALE)
@@ -73,6 +79,10 @@ export class TrainingPeaksActionsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.planWorkoutsFormGroup.patchValue({
+      direction: this.selectedPlanDirection
+    })
+
     this.configurationClient.getTrainingTypes().subscribe(types => {
       this.trainingTypes = types
       this.planWorkoutsFormGroup.patchValue({
@@ -110,9 +120,9 @@ export class TrainingPeaksActionsComponent implements OnInit {
 
   private planWorkouts(date) {
     this.planWorkoutInProgress = true
+    let direction = this.planWorkoutsFormGroup.value.direction
     let trainingTypes = this.planWorkoutsFormGroup.value.trainingTypes
-
-    this.workoutClient.planWorkout(date, date, trainingTypes).pipe(
+    this.workoutClient.planWorkout(direction, date, date, trainingTypes).pipe(
       finalize(() => this.planWorkoutInProgress = false)
     ).subscribe((response) => {
       this.notificationService.success(

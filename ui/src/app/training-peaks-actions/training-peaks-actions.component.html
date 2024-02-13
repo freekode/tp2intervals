@@ -8,7 +8,20 @@
     <mat-card-content>
       <div class="row">
         <div class="col">
-          <mat-form-field>
+          <mat-form-field class="form-field">
+            <mat-label>Direction</mat-label>
+            <mat-select formControlName="direction">
+              @for (type of directions; track type) {
+                <mat-option [value]="type.value">{{type.name}}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="form-field">
             <mat-label>Workout Types</mat-label>
             <mat-select formControlName="trainingTypes" multiple>
               @for (type of trainingTypes; track type) {
@@ -81,7 +94,7 @@
     <mat-card-content>
       <div class="row">
         <div class="col">
-          <mat-form-field>
+          <mat-form-field class="form-field">
             <mat-label>Workout Types</mat-label>
             <mat-select formControlName="trainingTypes" multiple>
               @for (type of trainingTypes; track type) {
@@ -96,7 +109,7 @@
     <mat-card-content>
       <div class="row">
         <div class="col">
-          <mat-form-field>
+          <mat-form-field class="form-field">
             <mat-label>Date Range</mat-label>
             <mat-date-range-input
               [rangePicker]="copyPlanDatePicker">
