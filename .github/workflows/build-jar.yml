@@ -44,6 +44,7 @@ jobs:
           compression-level: 0
 
       - uses: ncipollo/release-action@v1
+        if: ${{ inputs.dry-run == false }}
         with:
           draft: true
           generateReleaseNotes: true
