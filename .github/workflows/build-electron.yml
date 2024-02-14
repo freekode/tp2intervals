@@ -55,19 +55,24 @@ jobs:
         if: ${{ inputs.dry-run == true }}
         run: npm run build --prefix electron
 
-      - name: Write Mac certificate to file
+      - name: Write Mac certificate to a file
         if: ${{ inputs.dry-run == false && matrix.environment.os == 'macos-latest' }}
         env:
           CERTIFICATES_P12: ${{ secrets.CERTIFICATES_P12 }}
-        run: |
-          echo "$CERTIFICATES_P12" | base64 --decode > certificates.p12
+        run: echo "$CERTIFICATES_P12" | base64 --decode > certificates.p12
 
-      - name: Publish electron
-        if: ${{ inputs.dry-run == false }}
+      - name: Publish electron for Mac
+        if: ${{ inputs.dry-run == false && matrix.environment.os == 'macos-latest' }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CSC_LINK: certificates.p12
+          CSC_LINK: ../certificates.p12
           CSC_KEY_PASSWORD: ${{ secrets.CERTIFICATES_P12_PASSWORD }}
+        run: npm run publish --prefix electron
+
+      - name: Publish electron
+        if: ${{ inputs.dry-run == false && matrix.environment.os != 'macos-latest' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm run publish --prefix electron
 
       - name: Show me what you got
