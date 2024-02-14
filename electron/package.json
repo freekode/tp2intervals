@@ -1,15 +1,14 @@
 {
   "name": "tp2intervals",
   "productName": "tp2intervals",
-  "version": "0.3.0",
+  "version": "0.0.1",
   "description": "Third Party synchronization with Intervals.icu",
   "keywords": [
     "trainingpeaks",
     "trainerroad",
     "intervals.icu",
     "sport",
-    "cycling",
-    "running"
+    "cycling"
   ],
   "author": {
     "name": "freekode",
@@ -18,6 +17,10 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/freekode/tp2intervals.git"
+  },
+  "homepage": "https://github.com/freekode/tp2intervals",
+  "bugs": {
+    "url": "https://github.com/freekode/tp2intervals/issues"
   },
   "license": "GNU GPLv3",
   "main": "./out/main/index.js",

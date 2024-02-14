@@ -59,16 +59,16 @@ export class BootController {
     }
     log.info('Starting health check interval');
     this.healthCheckInterval = setInterval(async () => {
-      log.silly('Running process health check...');
+      log.debug('Running process health check...');
       const {healthy, message} = await this.process.doHealthCheck();
-      log.silly(`Process health check result: ${healthy} - ${message}`);
+      log.debug(`Process health check result: ${healthy} - ${message}`);
 
       if (healthy) {
         if (!this.started) {
           log.info('Process is ready!');
           systemEvents.emit('boot-ready');
         } else if (this.running && this.started) {
-          log.verbose('Process is healthy!');
+          log.debug('Process is healthy!');
           systemEvents.emit('boot-healthy');
         }
         this.running = true;

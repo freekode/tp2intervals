@@ -10,33 +10,33 @@ Plan workouts for today and tomorrow from Intervals to TrainingPeaks.
 
 ## How to start the app
 
-### JAR
+### Executable for Linux / Windows / MacOS
 Easiest way to run the app.
 
-1. You need JDK 21. The project has an executable jar.
-   To start it first of all you need to have Java 21. You can install any JDK, links to installation instructions:
-   [Amazon Corretto](https://docs.aws.amazon.com/corretto/latest/corretto-21-ug/downloads-list.html), 
-   [OpenJDK](https://jdk.java.net/21/),
-   [Oracle JDK](https://www.oracle.com/java/technologies/downloads/)
+Download executable for your system from [latest release](https://github.com/freekode/tp2intervals/releases/latest) and run it.
+The app will be automatically updated as soon as new version will be released.
+
+### JAR
+The project has executable jar with web UI. To run it perform these steps:
+
+1. Install JDK 21
 2. Download `tp2intervals.jar` from the [latest release](https://github.com/freekode/tp2intervals/releases/latest)
 3. Run the command
     ```shell
     java -jar tp2intervals.jar
     ```
    
-   If you want to have UI on different port
+   To change web port run
     ```shell
     java -Dserver.port=9090 -jar tp2intervals.jar
     ```
 
-4. UI will be available on `http://localhost:8080` or on another port which you choose
+4. By default UI is available on `http://localhost:8080`
 
 ### Docker
-If you already have a Docker, that'll suit you more.
+Docker image also built for every release
 
-You need to have installed the Docker engine. Instructions on how to install [you can find here.](https://docs.docker.com/engine/install/)
-
-Next, run the project with Docker command:
+To run docker execute:
 ```shell
 docker run -rm --name tp2intervals -p 8080:80 ghcr.io/freekode/tp2intervals/tp2intervals:latest
 ```
@@ -68,5 +68,14 @@ If everything is fine, you will be redirected to the home page, where you can pl
 If your configuration is wrong. You will see an error that there is no access to TrainingPeaks or to Intervals.icu.
 Check all your values and save configuration again.
 
-## Known Issues
-Only duration based intervals in workouts are supported
+## FAQ
+* Only duration based steps in workouts are supported, the app can't work with distance based steps 
+* **MacOS** app is not signed. Usually you need to open it twice. After it opened, be patient, it takes some minutes to start.
+* **Windows** The app will ask to access local network and Internet allow it. After all it makes HTTP requests.
+* Contact me in case of any problems, create an issue in [GitHub](https://github.com/freekode/tp2intervals/issues) 
+  or write directly to me <email:iam@freekode.org> and add logs from the app.
+
+### Log location
+* on Linux: ~/.config/tp2intervals/logs/main.log
+* on macOS: ~/Library/Logs/tp2intervals/main.log
+* on Windows: %USERPROFILE%\AppData\Roaming\tp2intervals\logs\main.log

@@ -23,7 +23,6 @@ mac:
   target:
     target: default
     arch:
-#      - arm64
       - x64
   entitlementsInherit: build/entitlements.mac.plist
   notarize: false
@@ -44,6 +43,7 @@ extraResources:
     filter: '**/*'
   - from: '../ui/dist/ui'
     filter: '**/*'
+  - 'dev-app-update.yml'
 publish:
   provider: github
   owner: freekode

@@ -4,22 +4,18 @@ import './boot'
 import { getBootController, initBootController } from './boot/boot-controller';
 import { systemEvents } from './events';
 import log from 'electron-log';
+import { appUpdater } from "./autoupdate/app-updater";
+import { isDev } from "./boot/environment";
 
 
 if (require('electron-squirrel-startup')) {
   app.quit();
 }
 
+log.info("isDev", isDev)
+
 let splashWindow: BrowserWindow | null = null;
 let mainWindow: BrowserWindow | null = null;
-
-const RESOURCES_PATH = app.isPackaged
-  ? path.join(process.resourcesPath, 'assets')
-  : path.join(__dirname, '../../assets');
-
-const getAssetPath = (...paths: string[]): string => {
-  return path.join(RESOURCES_PATH, ...paths);
-};
 
 const getSplashWindowPageUrl = () => {
   if (app.isPackaged) {
@@ -44,7 +40,6 @@ const createSplashWindow = async () => {
     title: 'Loading',
     width: 500,
     height: 300,
-    icon: getAssetPath('icon.png'),
     resizable: false,
     frame: false,
     center: true,
@@ -76,7 +71,6 @@ const createMainWindow = async () => {
     height: 750,
     minWidth: 500,
     minHeight: 450,
-    icon: getAssetPath('icon.png'),
     trafficLightPosition: {x: 12, y: 12},
     autoHideMenuBar: true,
     webPreferences: {
@@ -109,12 +103,13 @@ const createMainWindow = async () => {
   });
 
   getBootController()?.initializeSubscriptions(mainWindow);
-
-  log.transports.console.level = 'info';
+  log.transports.console.level = isDev ? 'debug' : 'info'
 };
 
 app.whenReady()
   .then(async () => {
+    await appUpdater.checkForUpdates()
+
     await createSplashWindow();
     systemEvents.on('boot-ready', () => {
       log.info('Creating main window (boot ready event)');
