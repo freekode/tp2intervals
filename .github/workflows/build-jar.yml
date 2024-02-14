@@ -9,6 +9,10 @@ on:
       jar-artifact-name:
         required: true
         type: string
+      dry-run:
+        required: false
+        type: boolean
+        default: true
 
 jobs:
   build-jar:
@@ -38,3 +42,10 @@ jobs:
           path: boot/build/libs/${{ inputs.jar-name }}.jar
           if-no-files-found: error
           compression-level: 0
+
+      - uses: ncipollo/release-action@v1
+        with:
+          draft: true
+          generateReleaseNotes: true
+          artifactErrorsFailBuild: true
+          artifacts: boot/build/libs/${{ inputs.jar-name }}.jar

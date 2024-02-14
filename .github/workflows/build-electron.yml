@@ -2,6 +2,11 @@ name: Build JAR
 
 on:
   workflow_call:
+    inputs:
+      dry-run:
+        required: false
+        type: boolean
+        default: true
 
 jobs:
   executable:
@@ -41,11 +46,18 @@ jobs:
           cd ./boot
           ./gradlew.bat build
 
-      - name: Build electron
+      - name: Install dependencies
         run: |
-          npm ci --prefix electron
           npm ci --prefix ui
-          npm run publish --prefix electron
+          npm ci --prefix electron
+
+      - name: Build electron
+        if: ${{ inputs.dry-run == true }}
+        run: npm run build --prefix electron
+
+      - name: Publish electron
+        if: ${{ inputs.dry-run == false }}
+        run: npm run publish --prefix electron
 
       - name: Show me what you got
         run: ls electron/dist

@@ -12,6 +12,10 @@ on:
       image-name:
         required: true
         type: string
+      dry-run:
+        required: false
+        type: boolean
+        default: true
 
 jobs:
   docker-image:
@@ -25,5 +29,20 @@ jobs:
           name: ${{ inputs.jar-artifact-name }}
           path: artifact
 
-      - name: Build project
+      - name: Build image
         run: docker build . --file Dockerfile --tag ${{ inputs.image-name }} --build-arg JAR_PATH=artifact/${{ inputs.jar-name }}.jar
+
+      - name: Log into registry
+        if: ${{ inputs.dry-run == false }}
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
+
+      - name: Push image
+        if: ${{ inputs.dry-run == false }}
+        run: |
+          IMAGE_ID=docker.pkg.github.com/${{ github.repository }}/$IMAGE_NAME
+          # Change all uppercase to lowercase
+          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+
+          echo IMAGE_ID=$IMAGE_ID
+          docker tag $IMAGE_NAME $IMAGE_ID:latest
+          docker push $IMAGE_ID:latest
