@@ -6,6 +6,7 @@ import { MatIconModule } from "@angular/material/icon";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { MatButtonModule } from "@angular/material/button";
 
+
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -13,7 +14,9 @@ import { MatButtonModule } from "@angular/material/button";
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent implements OnInit{
+export class AppComponent implements OnInit {
+  appVersion = window.appVersion || 'static'
+
   ngOnInit(): void {
   }
 }
