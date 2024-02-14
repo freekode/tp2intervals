@@ -60,13 +60,13 @@ jobs:
         env:
           CERTIFICATES_P12: ${{ secrets.CERTIFICATES_P12 }}
         run: |
-          echo "$CERTIFICATES_P12" | base64 --decode > ${HOME}/certificates.p12
+          echo "$CERTIFICATES_P12" | base64 --decode > certificates.p12
 
       - name: Publish electron
         if: ${{ inputs.dry-run == false }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CSC_LINK: ${HOME}/certificates.p12
+          CSC_LINK: certificates.p12
           CSC_KEY_PASSWORD: ${{ secrets.CERTIFICATES_P12_PASSWORD }}
         run: npm run publish --prefix electron
 
