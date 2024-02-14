@@ -18,6 +18,10 @@
     "type": "git",
     "url": "git+https://github.com/freekode/tp2intervals.git"
   },
+  "homepage": "https://github.com/freekode/tp2intervals",
+  "bugs": {
+    "url": "https://github.com/freekode/tp2intervals/issues"
+  },
   "license": "GNU GPLv3",
   "main": "./out/main/index.js",
   "scripts": {
