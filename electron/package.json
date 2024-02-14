@@ -23,7 +23,7 @@
   "main": "./out/main/index.js",
   "scripts": {
     "start": "concurrently \"npm run ui:start\" \"wait-on http://localhost:4200 && electron-vite dev --sourcemap\"",
-    "build": "npm run prepare-external-resoruces && electron-vite build && electron-builder",
+    "build": "npm run prepare-external-resoruces && electron-vite build && electron-builder --publish never",
     "build:unpack": "npm run prepare-external-resoruces && electron-vite build && electron-builder --dir",
     "publish": "npm run prepare-external-resoruces && electron-vite build && electron-builder --publish always",
     "prepare-external-resoruces": "npm run jdk:download && npm run ui:build",

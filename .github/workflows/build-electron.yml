@@ -53,7 +53,7 @@ jobs:
 
       - name: Build electron
         if: ${{ inputs.dry-run == true }}
-        run: export GH_TOKEN=${{ secrets.GITHUB_TOKEN }} && npm run build --prefix electron
+        run: npm run build --prefix electron
 
       - name: Publish electron
         if: ${{ inputs.dry-run == false }}
