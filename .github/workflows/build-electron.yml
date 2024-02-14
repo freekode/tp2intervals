@@ -41,13 +41,13 @@ jobs:
           key: ${{ runner.os }}-jdks
 
       - name: Build jar in unix
-        if: ${{ matrix.environment.os != 'windows-latest' }}
+        if: ${{ runner.os != 'Windows' }}
         run: |
           cd ./boot
           ./gradlew build
 
       - name: Build jar in windows
-        if: ${{ matrix.environment.os == 'windows-latest' }}
+        if: ${{ runner.os == 'Windows' }}
         run: |
           cd ./boot
           ./gradlew.bat build
@@ -61,22 +61,8 @@ jobs:
         if: ${{ inputs.dry-run == true }}
         run: npm run build --prefix electron
 
-      - name: Write Mac certificate to a file
-        if: ${{ inputs.dry-run == false && matrix.environment.os == 'macos-latest' }}
-        env:
-          CERTIFICATES_P12: ${{ secrets.CERTIFICATES_P12 }}
-        run: echo "$CERTIFICATES_P12" | base64 --decode > certificates.p12
-
-      - name: Publish electron for Mac
-        if: ${{ inputs.dry-run == false && matrix.environment.os == 'macos-latest' }}
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CSC_LINK: ../certificates.p12
-          CSC_KEY_PASSWORD: ${{ secrets.CERTIFICATES_P12_PASSWORD }}
-        run: npm run publish --prefix electron
-
       - name: Publish electron
-        if: ${{ inputs.dry-run == false && matrix.environment.os != 'macos-latest' }}
+        if: ${{ inputs.dry-run == false }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm run publish --prefix electron
@@ -86,6 +72,6 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: tp2intervals-${{ matrix.environment.os }}
+          name: tp2intervals-${{ runner.os }}
           path: electron/dist/tp2intervals*
           if-no-files-found: error

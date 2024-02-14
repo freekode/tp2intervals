@@ -2,13 +2,13 @@ name: release
 
 on:
   push:
-    branches: [ main ]
     tags: [v*]
   workflow_dispatch:
 
 jobs:
   jar:
     uses: ./.github/workflows/build-jar.yml
+    secrets: inherit
     with:
       jar-name: tp2intervals
       jar-artifact-name: tp2intervals-jar
@@ -18,6 +18,7 @@ jobs:
     needs:
       - jar
     uses: ./.github/workflows/build-docker-image.yml
+    secrets: inherit
     with:
       jar-name: tp2intervals
       jar-artifact-name: tp2intervals-jar
