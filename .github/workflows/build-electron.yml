@@ -66,7 +66,7 @@ jobs:
         if: ${{ inputs.dry-run == false }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CSC_LINK: ${{ HOME }}/certificates.p12
+          CSC_LINK: ${HOME}/certificates.p12
           CSC_KEY_PASSWORD: ${{ secrets.CERTIFICATES_P12_PASSWORD }}
         run: npm run publish --prefix electron
 
