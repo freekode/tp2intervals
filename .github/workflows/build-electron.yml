@@ -57,7 +57,9 @@ jobs:
 
       - name: Publish electron
         if: ${{ inputs.dry-run == false }}
-        run: export GH_TOKEN=${{ secrets.GITHUB_TOKEN }} && npm run publish --prefix electron
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run publish --prefix electron
 
       - name: Show me what you got
         run: ls electron/dist
