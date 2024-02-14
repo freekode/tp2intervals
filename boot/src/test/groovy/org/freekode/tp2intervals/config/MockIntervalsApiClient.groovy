@@ -7,6 +7,7 @@ import org.freekode.tp2intervals.infrastructure.intervalsicu.IntervalsApiClient
 import org.freekode.tp2intervals.infrastructure.intervalsicu.activity.CreateActivityResponseDTO
 import org.freekode.tp2intervals.infrastructure.intervalsicu.folder.CreateFolderRequestDTO
 import org.freekode.tp2intervals.infrastructure.intervalsicu.folder.FolderDTO
+import org.freekode.tp2intervals.infrastructure.intervalsicu.workout.CreateEventRequestDTO
 import org.freekode.tp2intervals.infrastructure.intervalsicu.workout.CreateWorkoutRequestDTO
 import org.freekode.tp2intervals.infrastructure.intervalsicu.workout.IntervalsEventDTO
 import org.jetbrains.annotations.NotNull
@@ -47,5 +48,10 @@ class MockIntervalsApiClient implements IntervalsApiClient {
     @Override
     CreateActivityResponseDTO createActivity(String athleteId, MultipartFile file) {
         return null
+    }
+
+    @Override
+    void createEvent(String athleteId, CreateEventRequestDTO createEventRequestDTO) {
+
     }
 }

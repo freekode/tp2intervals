@@ -50,9 +50,9 @@ jobs:
           version: ${{needs.get-version.outputs.version}}
         run: echo "current version is $version"
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-java@v3
+      - uses: actions/setup-java@v4
         with:
           java-version: 21
           distribution: 'corretto'
@@ -92,9 +92,9 @@ jobs:
       - build-jar
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-java@v3
+      - uses: actions/setup-java@v4
         with:
           java-version: 21
           distribution: 'corretto'

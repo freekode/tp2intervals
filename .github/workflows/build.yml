@@ -30,3 +30,6 @@ jobs:
       jar-name: tp2intervals
       jar-artifact-name: tp2intervals-jar
       image-name: tp2intervals
+
+  electron:
+    uses: ./.github/workflows/build-electron.yml

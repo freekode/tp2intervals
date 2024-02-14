@@ -1,0 +1,60 @@
+name: Build JAR
+
+on:
+  workflow_call:
+
+jobs:
+  executable:
+    strategy:
+      fail-fast: false
+      matrix:
+        environment:
+          - os: ubuntu-latest
+          - os: macos-latest
+          - os: windows-latest
+
+    runs-on: ${{ matrix.environment.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: 'corretto'
+          cache: 'gradle'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.10.0
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+
+      - name: Build jar in unix
+        if: ${{ matrix.environment.os != 'windows-latest' }}
+        run: |
+          cd ./boot
+          ./gradlew build
+
+      - name: Build jar in windows
+        if: ${{ matrix.environment.os == 'windows-latest' }}
+        run: |
+          cd ./boot
+          ./gradlew.bat build
+
+      - name: Build electron
+        run: |
+          npm ci --prefix electron
+          npm ci --prefix ui
+          npm run publish --prefix electron
+
+      - name: Show me what you got
+        run: ls electron/dist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tp2intervals-${{ matrix.environment.os }}
+          path: |
+            electron/dist/tp2intervals*
+            electron/dist/latest*
+          if-no-files-found: error
+          compression-level: 0

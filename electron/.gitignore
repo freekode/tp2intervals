@@ -33,7 +33,7 @@ coverage
 build/Release
 
 # Dependency directories
-electron-web-ts/node_modules/
+node_modules/
 jspm_packages/
 
 # TypeScript v1 declaration files
@@ -92,5 +92,3 @@ typings/
 out/
 
 dist
-
-node_modules

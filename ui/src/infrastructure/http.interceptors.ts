@@ -3,6 +3,8 @@ import { inject } from "@angular/core";
 import { catchError, throwError } from "rxjs";
 import { NotificationService } from "infrastructure/notification.service";
 
+let host = window.bootAddress || ''
+
 export const httpErrorInterceptor: HttpInterceptorFn = (
   req: HttpRequest<any>,
   next: HttpHandlerFn,
@@ -15,4 +17,12 @@ export const httpErrorInterceptor: HttpInterceptorFn = (
       return throwError(() => err)
     })
   );
+};
+
+export const httpHostInterceptor: HttpInterceptorFn = (
+  req: HttpRequest<any>,
+  next: HttpHandlerFn,
+) => {
+  const apiReq = req.clone({url: `${host}/${req.url.replace(/^\/|\/$/g, '')}`});
+  return next(apiReq);
 };

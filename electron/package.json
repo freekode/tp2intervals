@@ -1,0 +1,57 @@
+{
+  "name": "tp2intervals",
+  "productName": "tp2intervals",
+  "version": "0.3.0",
+  "description": "Third Party synchronization with Intervals.icu",
+  "keywords": [
+    "trainingpeaks",
+    "trainerroad",
+    "intervals.icu",
+    "sport",
+    "cycling",
+    "running"
+  ],
+  "author": {
+    "name": "freekode",
+    "email": "iam@freekode.org"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/freekode/tp2intervals.git"
+  },
+  "license": "GNU GPLv3",
+  "main": "./out/main/index.js",
+  "scripts": {
+    "start": "concurrently \"npm run ui:start\" \"wait-on http://localhost:4200 && electron-vite dev --sourcemap\"",
+    "build": "npm run prepare-external-resoruces && electron-vite build && electron-builder",
+    "build:unpack": "npm run prepare-external-resoruces && electron-vite build && electron-builder --dir",
+    "publish": "npm run prepare-external-resoruces && electron-vite build && electron-builder --publish always",
+    "prepare-external-resoruces": "npm run jdk:download && npm run ui:build",
+    "jdk:download": "run-script-os",
+    "jdk:download:darwin:linux": "../devops/jdktool/jdkutil.py clean:jdks download unzip",
+    "jdk:download:win32": "python ../devops/jdktool/jdkutil.py clean:jdks download unzip",
+    "ui:start": "npm run start --prefix ../ui",
+    "ui:build": "npm run build --prefix ../ui -- --base-href=./"
+  },
+  "dependencies": {
+    "electron-log": "^5.1.1",
+    "electron-squirrel-startup": "^1.0.0",
+    "electron-updater": "^6.1.7",
+    "node-schedule": "^2.1.1",
+    "semver": "^7.6.0",
+    "typed-emitter": "^2.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.17",
+    "@types/node-schedule": "^2.1.6",
+    "concurrently": "^8.2.2",
+    "electron": "^28.2.1",
+    "electron-builder": "^24.9.1",
+    "electron-vite": "^2.0.0",
+    "run-script-os": "^1.1.6",
+    "ts-node": "^10.9.2",
+    "typescript": "~4.5.4",
+    "vite": "^5.1.1",
+    "wait-on": "^7.2.0"
+  }
+}
