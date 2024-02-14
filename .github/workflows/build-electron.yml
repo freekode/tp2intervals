@@ -66,7 +66,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CSC_LINK: ../certificates.p12
-          CSC_KEY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+          CSC_KEY_PASSWORD: ${{ secrets.CERTIFICATES_P12_PASSWORD }}
         run: npm run publish --prefix electron
 
       - name: Publish electron
