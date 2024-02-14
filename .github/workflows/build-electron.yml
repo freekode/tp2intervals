@@ -56,11 +56,11 @@ jobs:
         run: npm run build --prefix electron
 
       - name: Write Mac certificate to file
-        if: ${{ matrix.environment.os == 'macos-latest' }}
+        if: ${{ matrix.environment.os == 'macos-latest' && inputs.dry-run == false }}
         env:
           CERTIFICATES_P12: ${{ secrets.CERTIFICATES_P12 }}
         run: |
-          echo "CERTIFICATES_P12" | base64 --decode > ${HOME}/certificates.p12
+          echo "$CERTIFICATES_P12" | base64 --decode > ${HOME}/certificates.p12
 
       - name: Publish electron
         if: ${{ inputs.dry-run == false }}
