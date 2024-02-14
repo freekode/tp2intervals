@@ -26,5 +26,6 @@ jobs:
 
   electron:
     uses: ./.github/workflows/build-electron.yml
+    secrets: inherit
     with:
       dry-run: false
