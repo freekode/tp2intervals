@@ -16,6 +16,10 @@ class IntervalsFolderRepository(
     private val intervalsApiClient: IntervalsApiClient,
     private val intervalsConfigurationRepository: IntervalsConfigurationRepository
 ) : PlanRepository {
+    private val planDescription = """
+        Created by tp2intervals (https://github.com/freekode/tp2intervals)
+    """.trimIndent()
+
 
     override fun createPlan(name: String, startDate: LocalDate, type: PlanType): Plan {
         val folderType = if (type == PlanType.PLAN) "PLAN" else "FOLDER"
@@ -27,7 +31,7 @@ class IntervalsFolderRepository(
 
     private fun createFolder(name: String, startDate: LocalDate?, type: String): FolderDTO {
         val createRequest = CreateFolderRequestDTO(
-            0, name, 0, startDate?.toString(), -1, -1, type
+            0, name, planDescription, 0, startDate?.toString(), -1, -1, type
         )
         return intervalsApiClient.createFolder(
             intervalsConfigurationRepository.getConfiguration().athleteId,
