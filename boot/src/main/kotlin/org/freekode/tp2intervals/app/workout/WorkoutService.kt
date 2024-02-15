@@ -3,7 +3,6 @@ package org.freekode.tp2intervals.app.workout
 import org.freekode.tp2intervals.app.schedule.SchedulerService
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.config.AppConfigurationRepository
-import org.freekode.tp2intervals.domain.plan.Plan
 import org.springframework.stereotype.Service
 
 @Service
@@ -46,7 +45,8 @@ class WorkoutService(
             request.startDate,
             request.endDate
         )
-        val plan = targetPlanRepository.createPlan("My Plan - ${request.startDate}", request.startDate)
+        val plan =
+            targetPlanRepository.createPlan(request.name, request.startDate, request.planType)
         filteredWorkouts.forEach { targetWorkoutRepository.copyWorkout(it, plan) }
         return response
     }

@@ -5,7 +5,7 @@ import org.freekode.tp2intervals.app.workout.CopyWorkoutsRequest
 import org.freekode.tp2intervals.app.workout.PlanWorkoutsRequest
 import org.freekode.tp2intervals.app.workout.WorkoutService
 import org.freekode.tp2intervals.domain.Platform
-import org.freekode.tp2intervals.infrastructure.intervalsicu.folder.FolderDTO
+import org.freekode.tp2intervals.domain.plan.PlanType
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -31,7 +31,12 @@ class WorkoutController(
                 targetPlatform
             )
         )
-        return PlanWorkoutsResponseDTO(response.planned, response.filteredOut, response.startDate, response.endDate)
+        return PlanWorkoutsResponseDTO(
+            response.planned,
+            response.filteredOut,
+            response.startDate.toString(),
+            response.endDate.toString()
+        )
     }
 
     @PostMapping("/api/workout/copy/{sourcePlatform}/{targetPlatform}")
@@ -42,14 +47,20 @@ class WorkoutController(
     ): CopyWorkoutsResponseDTO {
         val response = workoutService.copyWorkouts(
             CopyWorkoutsRequest(
-                FolderDTO.FolderType.PLAN,
+                "My Plan - ${requestDTO.startDate}",
+                PlanType.PLAN,
                 LocalDate.parse(requestDTO.startDate),
                 LocalDate.parse(requestDTO.endDate),
                 requestDTO.types,
                 sourcePlatform, targetPlatform
             )
         )
-        return CopyWorkoutsResponseDTO(response.copied, response.filteredOut, response.startDate, response.endDate)
+        return CopyWorkoutsResponseDTO(
+            response.copied,
+            response.filteredOut,
+            response.startDate.toString(),
+            response.endDate.toString()
+        )
     }
 
 }

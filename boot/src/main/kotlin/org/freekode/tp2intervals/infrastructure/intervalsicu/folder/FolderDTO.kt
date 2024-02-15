@@ -5,13 +5,8 @@ import java.time.LocalDate
 
 class FolderDTO(
     val id: String,
-    val type: FolderType,
+    val type: String,
     val name: String,
     @JsonProperty("start_date_local")
     val startDateLocal: LocalDate?,
-) {
-    enum class FolderType {
-        PLAN,
-        FOLDER
-    }
-}
+)

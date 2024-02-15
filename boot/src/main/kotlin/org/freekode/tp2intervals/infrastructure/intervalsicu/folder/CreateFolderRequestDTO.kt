@@ -7,5 +7,5 @@ class CreateFolderRequestDTO(
     val start_date_local: String?,
     val starting_atl: Int,
     val starting_ctl: Int,
-    val type: FolderDTO.FolderType,
+    val type: String,
 )

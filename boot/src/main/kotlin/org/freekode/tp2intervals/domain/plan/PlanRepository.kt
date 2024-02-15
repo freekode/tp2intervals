@@ -6,5 +6,5 @@ import java.time.LocalDate
 interface PlanRepository {
     fun platform(): Platform
 
-    fun createPlan(name: String, startDate: LocalDate): Plan
+    fun createPlan(name: String, startDate: LocalDate, type: PlanType): Plan
 }

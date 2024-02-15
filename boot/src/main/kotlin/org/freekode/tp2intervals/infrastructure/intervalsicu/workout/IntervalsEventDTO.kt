@@ -9,7 +9,7 @@ class IntervalsEventDTO(
     val name: String,
     val description: String?,
     val start_date_local: LocalDateTime,
-    val category: EventCategory,
+    val category: String,
     val type: String?,
     val moving_time: Long?,
     val icu_training_load: Int?,
@@ -20,8 +20,5 @@ class IntervalsEventDTO(
 
     fun mapDuration(): Duration? = moving_time?.let { Duration.ofSeconds(it) }
 
-    enum class EventCategory {
-        NOTE,
-        WORKOUT
-    }
+    fun isWorkout() = category == "WORKOUT"
 }
