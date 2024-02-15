@@ -68,7 +68,7 @@ const createMainWindow = async () => {
   mainWindow = new BrowserWindow({
     show: false,
     width: 650,
-    height: 750,
+    height: 800,
     minWidth: 500,
     minHeight: 450,
     trafficLightPosition: {x: 12, y: 12},

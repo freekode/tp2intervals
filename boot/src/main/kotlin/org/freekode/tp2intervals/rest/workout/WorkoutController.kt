@@ -47,7 +47,7 @@ class WorkoutController(
     ): CopyWorkoutsResponseDTO {
         val response = workoutService.copyWorkouts(
             CopyWorkoutsRequest(
-                "My Plan - ${requestDTO.startDate}",
+                requestDTO.name,
                 PlanType.PLAN,
                 LocalDate.parse(requestDTO.startDate),
                 LocalDate.parse(requestDTO.endDate),

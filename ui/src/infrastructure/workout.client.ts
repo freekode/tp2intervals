@@ -16,23 +16,8 @@ export class WorkoutClient {
       .post(`/api/workout/plan/${direction}`, {startDate, endDate, types})
   }
 
-  copyWorkouts(startDate, endDate, types): Observable<any> {
+  copyWorkouts(name, startDate, endDate, types): Observable<any> {
     return this.httpClient
-      .post(`/api/workout/copy/TRAINING_PEAKS/INTERVALS`, {startDate, endDate, types})
-  }
-
-  startJobPlanWorkout(): Observable<any> {
-    return this.httpClient
-      .post(`/api/workout/plan/INTERVALS/TRAINING_PEAKS/job`, {})
-  }
-
-  getJobPlanWorkout(): Observable<any> {
-    return this.httpClient
-      .get(`/api/workout/plan/INTERVALS/TRAINING_PEAKS/job`)
-  }
-
-  stopJobPlanWorkout(): Observable<any> {
-    return this.httpClient
-      .delete(`/api/workout/plan/INTERVALS/TRAINING_PEAKS/job`)
+      .post(`/api/workout/copy/TRAINING_PEAKS/INTERVALS`, {name, startDate, endDate, types})
   }
 }
