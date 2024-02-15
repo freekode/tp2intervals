@@ -13,8 +13,6 @@ export class AppUpdater {
     autoUpdater.logger = log;
     autoUpdater.logger.transports.file.level = isDev ? 'debug' : 'info';
 
-    // todo notify when update available (only mac)
-    // todo notify when update is downloaded (for all)
     autoUpdater.on('error', (err) => {
       log.error(`Error in auto-updater. ${err}`);
     });
