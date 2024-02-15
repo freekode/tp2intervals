@@ -21,7 +21,7 @@ export class UpdateService {
 
     window.subscriptions.appUpdateDownloaded(updateInfo => {
       console.log('Update downloaded', updateInfo)
-      this.notificationService.success(`New version ${updateInfo.version} downloaded and will be installed after the app is closed.`)
+      this.notificationService.success(`New version ${updateInfo.version} will be automatically installed.`)
     })
   }
 }
