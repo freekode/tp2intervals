@@ -1,14 +1,18 @@
 import { app, ipcMain } from 'electron';
-import { getBootController } from './boot-controller';
+import { bootController, getBootController } from './boot-controller';
 
 ipcMain.on('boot:address', (event) => {
-  event.returnValue = getBootController()?.getProcessAddress();
+  event.returnValue = bootController?.getProcessAddress();
 });
 
 ipcMain.on('boot:healthy', (event) => {
-  event.returnValue = getBootController()?.isHealthy() ?? false;
+  event.returnValue = bootController?.isHealthy() ?? false;
 });
 
 ipcMain.on('app:version', (event) => {
   event.returnValue = app.getVersion();
+});
+
+ipcMain.on('app:platform', (event) => {
+  event.returnValue = process.platform;
 });

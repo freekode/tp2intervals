@@ -5,6 +5,7 @@ import { MatCardModule } from "@angular/material/card";
 import { MatIconModule } from "@angular/material/icon";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { MatButtonModule } from "@angular/material/button";
+import { UpdateService } from "app/update.service";
 
 
 @Component({
@@ -17,6 +18,12 @@ import { MatButtonModule } from "@angular/material/button";
 export class AppComponent implements OnInit {
   appVersion = window.appVersion || 'static'
 
+  constructor(
+    private updateService: UpdateService
+  ) {
+  }
+
   ngOnInit(): void {
+    this.updateService.init()
   }
 }

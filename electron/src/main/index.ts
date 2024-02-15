@@ -1,11 +1,11 @@
 import { app, BrowserWindow, shell } from 'electron';
 import path from 'path';
 import './boot'
-import { getBootController, initBootController } from './boot/boot-controller';
+import { bootController, getBootController, initBootController } from './boot/boot-controller';
 import { systemEvents } from './events';
 import log from 'electron-log';
 import { appUpdater } from "./autoupdate/app-updater";
-import { isDev } from "./boot/environment";
+import { isDev } from "./environment";
 
 
 if (require('electron-squirrel-startup')) {
@@ -102,7 +102,12 @@ const createMainWindow = async () => {
     return {action: 'deny'};
   });
 
-  getBootController()?.initializeSubscriptions(mainWindow);
+  if (isDev) {
+    mainWindow.webContents.openDevTools()
+  }
+
+  bootController?.initializeSubscriptions(mainWindow);
+  appUpdater?.initializeSubscriptions(mainWindow);
   log.transports.console.level = isDev ? 'debug' : 'info'
 };
 

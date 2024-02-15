@@ -59,16 +59,16 @@ export class BootController {
     }
     log.info('Starting health check interval');
     this.healthCheckInterval = setInterval(async () => {
-      log.debug('Running process health check...');
+      log.silly('Running process health check...');
       const {healthy, message} = await this.process.doHealthCheck();
-      log.debug(`Process health check result: ${healthy} - ${message}`);
+      log.silly(`Process health check result: ${healthy} - ${message}`);
 
       if (healthy) {
         if (!this.started) {
           log.info('Process is ready!');
           systemEvents.emit('boot-ready');
         } else if (this.running && this.started) {
-          log.debug('Process is healthy!');
+          log.silly('Process is healthy!');
           systemEvents.emit('boot-healthy');
         }
         this.running = true;
@@ -92,7 +92,7 @@ export class BootController {
   }
 }
 
-let bootController: BootController | undefined;
+export let bootController: BootController | undefined;
 
 export function getBootController(): BootController | undefined {
   return bootController;
