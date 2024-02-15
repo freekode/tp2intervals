@@ -67,7 +67,7 @@ class IntervalsWorkoutRepository(
                 endDate.toString()
             )
         return events
-            .filter { it.category == IntervalsEventDTO.EventCategory.WORKOUT }
+            .filter { it.isWorkout() }
             .mapNotNull { toWorkout(it) }
     }
 

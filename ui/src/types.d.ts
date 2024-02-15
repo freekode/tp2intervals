@@ -3,6 +3,11 @@ declare global {
     bootAddress: string;
     bootHealthy: () => boolean;
     appVersion: string;
+    appPlatform: string;
+    subscriptions: {
+      'appUpdateAvailable',
+      'appUpdateDownloaded'
+    };
   }
 }
 

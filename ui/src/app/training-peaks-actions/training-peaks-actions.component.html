@@ -53,28 +53,6 @@
       >
         Plan for Tomorrow
       </button>
-
-      <!--    <button-->
-      <!--      mat-raised-button-->
-      <!--      color="primary"-->
-      <!--      class="action-button"-->
-      <!--      type="button"-->
-      <!--      [disabled]="jobStarted"-->
-      <!--      (click)="startJob()"-->
-      <!--    >-->
-      <!--      Start Job-->
-      <!--    </button>-->
-
-      <!--    <button-->
-      <!--      mat-raised-button-->
-      <!--      color="accent"-->
-      <!--      class="action-button"-->
-      <!--      type="button"-->
-      <!--      [disabled]="!jobStarted"-->
-      <!--      (click)="stopJob()"-->
-      <!--    >-->
-      <!--      Stop Job-->
-      <!--    </button>-->
     </mat-card-actions>
 
     <mat-card-footer>
@@ -95,6 +73,15 @@
       <div class="row">
         <div class="col">
           <mat-form-field class="form-field">
+            <mat-label>Name</mat-label>
+            <input matInput placeholder="My New Plan" formControlName="name">
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="form-field">
             <mat-label>Workout Types</mat-label>
             <mat-select formControlName="trainingTypes" multiple>
               @for (type of trainingTypes; track type) {
@@ -104,9 +91,7 @@
           </mat-form-field>
         </div>
       </div>
-    </mat-card-content>
 
-    <mat-card-content>
       <div class="row">
         <div class="col">
           <mat-form-field class="form-field">
