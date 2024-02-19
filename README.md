@@ -6,17 +6,13 @@ Sync workouts and activities between TrainingPeaks and Intervals.icu.
 
 Plan workouts for today and tomorrow from Intervals to TrainingPeaks.
 
+Executables for MacOS (DMG), Windows (EXE installer), Linux (AppImage) are available on [latest release](https://github.com/freekode/tp2intervals/releases/latest) page
+
 **Only for educational purposes**
 
-## How to start the app
+## Other ways to run the app
 
-### Executable for Linux / Windows / MacOS
-Easiest way to run the app.
-
-Download executable for your system from [latest release](https://github.com/freekode/tp2intervals/releases/latest) and run it.
-The app will be automatically updated as soon as new version will be released.
-
-### JAR
+### Executable JAR
 The project has executable jar with web UI. To run it perform these steps:
 
 1. Install JDK 21
