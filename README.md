@@ -74,7 +74,7 @@ Check all your values and save configuration again.
 * **MacOS** also because app is not signed it can automatically update. You have to manually update the app.
 * **Windows** The app will ask to access local network and Internet allow it. After all it makes HTTP requests.
 * Contact me in case of any problems. You can create an issue in [GitHub](https://github.com/freekode/tp2intervals/issues) 
-  or write directly to me [email:iam@freekode.org]. Add logs from your app, it can help a lot to resolve the issue.
+  or write directly to me iam@freekode.org. Add logs from your app, it can help a lot to resolve the issue.
 
 ### Log location
 * on Linux: ~/.config/tp2intervals/logs/main.log
