@@ -17,6 +17,14 @@ log.info("isDev", isDev)
 let splashWindow: BrowserWindow | null = null;
 let mainWindow: BrowserWindow | null = null;
 
+const RESOURCES_PATH = app.isPackaged
+  ? path.join(process.resourcesPath, 'resources')
+  : path.join(__dirname, '../../resources');
+
+const getAssetPath = (...paths: string[]): string => {
+  return path.join(RESOURCES_PATH, ...paths);
+};
+
 const getSplashWindowPageUrl = () => {
   if (app.isPackaged) {
     return 'file://' + path.join(__dirname, `../../../browser/assets/loading.html`);
@@ -34,12 +42,14 @@ const getMainWindowPageUrl = () => {
 }
 
 const createSplashWindow = async () => {
+  log.warn('icon', getAssetPath('icon.png'))
   // todo add icon
   splashWindow = new BrowserWindow({
     show: true,
     title: 'Loading',
     width: 500,
     height: 300,
+    icon: getAssetPath('icon.png'),
     resizable: false,
     frame: false,
     center: true,

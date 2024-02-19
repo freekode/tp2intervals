@@ -29,6 +29,7 @@ mac:
 dmg:
   artifactName: ${name}-${version}-${arch}.${ext}
 linux:
+  icon: resources/icon.png
   target:
     - AppImage
   maintainer: Evgeny <iam@freekode.org>
