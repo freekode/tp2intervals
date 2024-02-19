@@ -8,7 +8,7 @@ class IntervalsEventTypeMapper {
             TrainingType.BIKE to "Ride",
             TrainingType.MTB to "MountainBikeRide",
             TrainingType.VIRTUAL_BIKE to "VirtualRide",
-            TrainingType.RUN to "Run",
+//            TrainingType.RUN to "Run",
             TrainingType.WEIGHT to "WeightTraining",
             TrainingType.WALK to "Walk",
             TrainingType.NOTE to "NOTE",
