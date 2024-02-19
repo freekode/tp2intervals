@@ -4,7 +4,7 @@ enum class TrainingType(val title: String) {
     BIKE("Ride"),
     MTB("MTB"),
     VIRTUAL_BIKE("Virtual Ride"),
-    RUN("Run"),
+//    RUN("Run"),
     WEIGHT("Weight"),
     WALK("Walk"),
     NOTE("Note"),
