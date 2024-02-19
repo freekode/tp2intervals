@@ -19,7 +19,6 @@ nsis:
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
 mac:
-  icon: resources/icon.png
   target:
     target: default
     arch:
@@ -29,7 +28,6 @@ mac:
 dmg:
   artifactName: ${name}-${version}-${arch}.${ext}
 linux:
-  icon: resources/icon.png
   target:
     - AppImage
   maintainer: Evgeny <iam@freekode.org>
