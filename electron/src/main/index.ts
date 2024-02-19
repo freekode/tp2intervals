@@ -1,7 +1,7 @@
 import { app, BrowserWindow, shell } from 'electron';
 import path from 'path';
 import './boot'
-import { bootController, getBootController, initBootController } from './boot/boot-controller';
+import { bootController, initBootController } from './boot/boot-controller';
 import { systemEvents } from './events';
 import log from 'electron-log';
 import { appUpdater } from "./autoupdate/app-updater";
@@ -16,14 +16,6 @@ log.info("isDev", isDev)
 
 let splashWindow: BrowserWindow | null = null;
 let mainWindow: BrowserWindow | null = null;
-
-const RESOURCES_PATH = app.isPackaged
-  ? path.join(process.resourcesPath, 'resources')
-  : path.join(__dirname, '../../resources');
-
-const getAssetPath = (...paths: string[]): string => {
-  return path.join(RESOURCES_PATH, ...paths);
-};
 
 const getSplashWindowPageUrl = () => {
   if (app.isPackaged) {
@@ -42,13 +34,11 @@ const getMainWindowPageUrl = () => {
 }
 
 const createSplashWindow = async () => {
-  // todo add icon
   splashWindow = new BrowserWindow({
     show: true,
     title: 'Loading',
     width: 500,
     height: 300,
-    icon: getAssetPath('icon.png'),
     resizable: false,
     frame: false,
     center: true,
@@ -73,7 +63,6 @@ const createSplashWindow = async () => {
 };
 
 const createMainWindow = async () => {
-  // todo add icon
   mainWindow = new BrowserWindow({
     show: false,
     width: 650,
