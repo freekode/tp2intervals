@@ -42,7 +42,6 @@ const getMainWindowPageUrl = () => {
 }
 
 const createSplashWindow = async () => {
-  log.warn('icon', getAssetPath('icon.png'))
   // todo add icon
   splashWindow = new BrowserWindow({
     show: true,
