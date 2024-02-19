@@ -1,7 +1,7 @@
 import { app, BrowserWindow, shell } from 'electron';
 import path from 'path';
 import './boot'
-import { bootController, getBootController, initBootController } from './boot/boot-controller';
+import { bootController, initBootController } from './boot/boot-controller';
 import { systemEvents } from './events';
 import log from 'electron-log';
 import { appUpdater } from "./autoupdate/app-updater";
@@ -16,6 +16,12 @@ log.info("isDev", isDev)
 
 let splashWindow: BrowserWindow | null = null;
 let mainWindow: BrowserWindow | null = null;
+
+const getIconPath = () => {
+  return app.isPackaged
+    ? path.join(process.resourcesPath, 'icon.png')
+    : path.join(__dirname, '../../build/icon.png');
+}
 
 const getSplashWindowPageUrl = () => {
   if (app.isPackaged) {
@@ -34,12 +40,12 @@ const getMainWindowPageUrl = () => {
 }
 
 const createSplashWindow = async () => {
-  // todo add icon
   splashWindow = new BrowserWindow({
     show: true,
     title: 'Loading',
     width: 500,
     height: 300,
+    icon: getIconPath(),
     resizable: false,
     frame: false,
     center: true,
@@ -64,13 +70,13 @@ const createSplashWindow = async () => {
 };
 
 const createMainWindow = async () => {
-  // todo add icon
   mainWindow = new BrowserWindow({
     show: false,
     width: 650,
-    height: 800,
+    height: 850,
     minWidth: 500,
     minHeight: 450,
+    icon: getIconPath(),
     trafficLightPosition: {x: 12, y: 12},
     autoHideMenuBar: true,
     webPreferences: {

@@ -65,7 +65,7 @@ export class TrainingPeaksActionsComponent implements OnInit {
   trainingTypes: any[];
 
   private readonly selectedPlanDirection = this.directions[0].value;
-  private readonly selectedTrainingTypes = ['BIKE', 'VIRTUAL_BIKE'];
+  private readonly selectedTrainingTypes = ['BIKE', 'VIRTUAL_BIKE', 'MTB'];
   private readonly todayDate = formatDate(new Date(), DATE_FORMAT, LOCALE)
   private readonly tomorrowDate = formatDate(new Date(new Date().setDate(new Date().getDate() + 1)), DATE_FORMAT, LOCALE)
 

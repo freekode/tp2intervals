@@ -19,7 +19,6 @@ nsis:
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
 mac:
-  icon: resources/icon.png
   target:
     target: default
     arch:
@@ -44,6 +43,8 @@ extraResources:
   - from: '../ui/dist/ui'
     filter: '**/*'
   - 'dev-app-update.yml'
+  - from: 'build/icon.png'
+    to: 'icon.png'
 publish:
   provider: github
   owner: freekode
