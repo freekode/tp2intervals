@@ -17,6 +17,12 @@ log.info("isDev", isDev)
 let splashWindow: BrowserWindow | null = null;
 let mainWindow: BrowserWindow | null = null;
 
+const getIconPath = () => {
+  return app.isPackaged
+    ? path.join(process.resourcesPath, 'icon.png')
+    : path.join(__dirname, 'icon.png');
+}
+
 const getSplashWindowPageUrl = () => {
   if (app.isPackaged) {
     return 'file://' + path.join(__dirname, `../../../browser/assets/loading.html`);
@@ -39,6 +45,7 @@ const createSplashWindow = async () => {
     title: 'Loading',
     width: 500,
     height: 300,
+    icon: getIconPath(),
     resizable: false,
     frame: false,
     center: true,
@@ -69,6 +76,7 @@ const createMainWindow = async () => {
     height: 800,
     minWidth: 500,
     minHeight: 450,
+    icon: getIconPath(),
     trafficLightPosition: {x: 12, y: 12},
     autoHideMenuBar: true,
     webPreferences: {
