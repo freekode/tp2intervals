@@ -20,7 +20,7 @@ let mainWindow: BrowserWindow | null = null;
 const getIconPath = () => {
   return app.isPackaged
     ? path.join(process.resourcesPath, 'icon.png')
-    : path.join(__dirname, 'icon.png');
+    : path.join(__dirname, '../../build/icon.png');
 }
 
 const getSplashWindowPageUrl = () => {
@@ -73,7 +73,7 @@ const createMainWindow = async () => {
   mainWindow = new BrowserWindow({
     show: false,
     width: 650,
-    height: 800,
+    height: 850,
     minWidth: 500,
     minHeight: 450,
     icon: getIconPath(),
