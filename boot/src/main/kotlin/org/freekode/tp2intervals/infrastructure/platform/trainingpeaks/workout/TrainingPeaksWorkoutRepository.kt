@@ -36,7 +36,11 @@ class TrainingPeaksWorkoutRepository(
         trainingPeaksApiClient.createAndPlanWorkout(getUserId(), createRequest)
     }
 
-    override fun copyWorkout(workout: Workout, plan: Plan) {
+    override fun getWorkout(id: String): Workout {
+        throw PlatformException("TP doesn't support not planned workout view")
+    }
+
+    override fun saveWorkout(workout: Workout, plan: Plan) {
         throw PlatformException("TP doesn't support workout copying")
     }
 

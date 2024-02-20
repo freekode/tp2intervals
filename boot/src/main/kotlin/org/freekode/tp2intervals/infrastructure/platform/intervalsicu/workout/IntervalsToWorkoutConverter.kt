@@ -20,7 +20,7 @@ class IntervalsToWorkoutConverter(
             eventDTO.name,
             eventDTO.description,
             eventDTO.mapDuration(),
-            eventDTO.icu_training_load?.toDouble(),
+            eventDTO.icu_training_load,
             eventDTO.workout_doc?.let { mapToWorkoutSteps(it) } ?: listOf(),
             WorkoutExternalData.intervals(eventDTO.id.toString())
         )

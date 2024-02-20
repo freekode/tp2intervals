@@ -11,23 +11,8 @@ export class ActivityClient {
   constructor(private httpClient: HttpClient) {
   }
 
-  syncActivities(startDate, endDate): Observable<any> {
+  syncActivities(startDate, endDate, types): Observable<any> {
     return this.httpClient
-      .post(`/api/activity/sync/TRAINER_ROAD/INTERVALS`, {startDate, endDate})
-  }
-
-  startJobSyncActivities(): Observable<any> {
-    return this.httpClient
-      .post(`/api/activity/sync/TRAINER_ROAD/INTERVALS/job`, {})
-  }
-
-  getJobSyncActivities(): Observable<any> {
-    return this.httpClient
-      .get(`/api/activity/sync/TRAINER_ROAD/INTERVALS/job`)
-  }
-
-  stopJobSyncActivities(): Observable<any> {
-    return this.httpClient
-      .delete(`/api/activity/sync/TRAINER_ROAD/INTERVALS/job`)
+      .post(`/api/activity/sync/TRAINER_ROAD/INTERVALS`, {startDate, endDate, types})
   }
 }

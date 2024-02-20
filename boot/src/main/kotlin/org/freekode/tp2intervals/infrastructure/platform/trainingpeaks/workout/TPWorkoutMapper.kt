@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component
 class TPWorkoutMapper(
     private val trainingPeaksApiClient: TrainingPeaksApiClient,
 ) {
-    fun mapToWorkout(tpWorkout: TPWorkoutDTO): Workout {
+    fun mapToWorkout(tpWorkout: TPWorkoutResponseDTO): Workout {
         val steps = tpWorkout.structure
             ?.let { TPStructureToWorkoutStepMapper(it).mapToWorkoutSteps() }
             ?: listOf()
@@ -28,13 +28,13 @@ class TPWorkoutMapper(
             tpWorkout.title.ifBlank { "Workout" },
             description,
             tpWorkout.totalTimePlanned?.let { Duration.ofMinutes((it * 60).toLong()) },
-            tpWorkout.tssPlanned,
+            tpWorkout.tssPlanned?.toInt(),
             steps,
             WorkoutExternalData.trainingPeaks(tpWorkout.workoutId, workoutContent)
         )
     }
 
-    fun mapToWorkout(tpNote: TPNoteDTO): Workout {
+    fun mapToWorkout(tpNote: TPNoteResponseDTO): Workout {
         return Workout.note(
             tpNote.noteDate.toLocalDate(),
             tpNote.title,
@@ -43,7 +43,7 @@ class TPWorkoutMapper(
         )
     }
 
-    private fun getWorkoutContent(tpWorkout: TPWorkoutDTO): String? {
+    private fun getWorkoutContent(tpWorkout: TPWorkoutResponseDTO): String? {
         if (tpWorkout.structure == null) {
             return null
         }

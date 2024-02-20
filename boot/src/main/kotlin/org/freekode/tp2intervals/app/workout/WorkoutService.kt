@@ -1,7 +1,6 @@
 package org.freekode.tp2intervals.app.workout
 
 import org.freekode.tp2intervals.app.schedule.SchedulerService
-import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.config.AppConfigurationRepository
 import org.springframework.stereotype.Service
 
@@ -45,27 +44,8 @@ class WorkoutService(
             request.startDate,
             request.endDate
         )
-        val plan =
-            targetPlanRepository.createPlan(request.name, request.startDate, request.planType)
-        filteredWorkouts.forEach { targetWorkoutRepository.copyWorkout(it, plan) }
+        val plan = targetPlanRepository.createPlan(request.name, request.startDate, request.planType)
+        filteredWorkouts.forEach { targetWorkoutRepository.saveWorkout(it, plan) }
         return response
-    }
-
-    fun schedulePlanWorkoutsJob(request: PlanWorkoutsRequest) {
-        val planWorkoutsCron = appConfigurationRepository.getConfiguration("generic.plan-workouts-cron")!!
-        val jobId = getJobId(request.sourcePlatform, request.targetPlatform)
-        schedulerService.startJob(jobId, planWorkoutsCron) { planWorkouts(request) }
-    }
-
-    fun stopJob(sourcePlatform: Platform, targetPlatform: Platform) {
-        schedulerService.stopJob(getJobId(sourcePlatform, targetPlatform))
-    }
-
-    fun getJob(sourcePlatform: Platform, targetPlatform: Platform): String? {
-        return schedulerService.getJob(getJobId(sourcePlatform, targetPlatform))
-    }
-
-    private fun getJobId(sourcePlatform: Platform, targetPlatform: Platform): String {
-        return "plan-workouts-${sourcePlatform}-${targetPlatform}-job"
     }
 }

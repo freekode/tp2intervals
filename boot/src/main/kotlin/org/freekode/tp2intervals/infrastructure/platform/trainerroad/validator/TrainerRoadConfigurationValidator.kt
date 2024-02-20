@@ -3,7 +3,7 @@ package org.freekode.tp2intervals.infrastructure.platform.trainerroad.validator
 import org.freekode.tp2intervals.app.confguration.ConfigurationValidator
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.config.AppConfiguration
-import org.freekode.tp2intervals.infrastructure.platform.trainerroad.configuraiton.TrainerRoadConfiguration
+import org.freekode.tp2intervals.infrastructure.platform.trainerroad.configuration.TrainerRoadConfiguration
 import org.springframework.stereotype.Component
 
 @Component

@@ -10,7 +10,7 @@ data class Workout(
     val title: String,
     val description: String?,
     val duration: Duration?,
-    val load: Double?,
+    val load: Int?,
     val steps: List<WorkoutStep>,
     val externalData: WorkoutExternalData,
 ) {
