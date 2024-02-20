@@ -8,13 +8,14 @@ import org.freekode.tp2intervals.domain.plan.Plan
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutRepository
 import org.freekode.tp2intervals.infrastructure.PlatformException
+import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.TrainingPeaksApiClient
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.WorkoutStepToTPStructureConverter
 import org.springframework.stereotype.Repository
 
 
 @Repository
 class TrainingPeaksWorkoutRepository(
-    private val trainingPeaksApiClient: org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.TrainingPeaksApiClient,
+    private val trainingPeaksApiClient: TrainingPeaksApiClient,
     private val tpWorkoutMapper: TPWorkoutMapper,
     private val workoutStepToTPStructureConverter: WorkoutStepToTPStructureConverter
 ) : WorkoutRepository, ActivityRepository {

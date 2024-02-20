@@ -3,13 +3,14 @@ package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout
 import java.time.Duration
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutExternalData
+import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.TrainingPeaksApiClient
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.TPStructureToWorkoutStepMapper
 import org.freekode.tp2intervals.infrastructure.utils.Base64
 import org.springframework.stereotype.Component
 
 @Component
 class TPWorkoutMapper(
-    private val trainingPeaksApiClient: org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.TrainingPeaksApiClient,
+    private val trainingPeaksApiClient: TrainingPeaksApiClient,
 ) {
     fun mapToWorkout(tpWorkout: TPWorkoutDTO): Workout {
         val steps = tpWorkout.structure

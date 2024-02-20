@@ -6,8 +6,7 @@ data class TrainingPeaksConfiguration(
     val authCookie: String,
 ) {
     companion object {
-        private const val authCookieKey =
-            "${TrainingPeaksConfigurationRepository.CONFIG_PREFIX}.auth-cookie"
+        private const val authCookieKey = "${TrainingPeaksConfigurationRepository.CONFIG_PREFIX}.auth-cookie"
 
         fun tryToCreate(appConfiguration: AppConfiguration): TrainingPeaksConfiguration? {
             return if (appConfiguration.configMap.containsKey(authCookieKey)) {

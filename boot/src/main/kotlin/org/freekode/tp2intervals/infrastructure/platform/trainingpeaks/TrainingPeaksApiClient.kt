@@ -1,5 +1,6 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks
 
+import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.user.TrainingPeaksUserDTO
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.CreateTPWorkoutDTO
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.TPNoteDTO
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.TPWorkoutDTO
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody
 )
 interface TrainingPeaksApiClient {
     @GetMapping("/users/v3/user")
-    fun getUser(): org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.user.TrainingPeaksUserDTO
+    fun getUser(): TrainingPeaksUserDTO
 
     @GetMapping("/fitness/v6/athletes/{userId}/workouts/{startDate}/{endDate}")
     fun getWorkouts(
