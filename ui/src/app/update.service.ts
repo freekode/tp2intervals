@@ -12,14 +12,19 @@ export class UpdateService {
   }
 
   init() {
-    window.subscriptions.appUpdateAvailable(updateInfo => {
+    if (!window.electron) {
+      console.log("Non-electron environment")
+      return
+    }
+
+    window.electron.subscriptions.appUpdateAvailable(updateInfo => {
       console.log('Update available', updateInfo)
-      if (window.appPlatform === 'darwin') {
+      if (window.electron.appPlatform === 'darwin') {
         this.notificationService.success(`New version ${updateInfo.version} available for download.\nCheck GitHub page`)
       }
     })
 
-    window.subscriptions.appUpdateDownloaded(updateInfo => {
+    window.electron.subscriptions.appUpdateDownloaded(updateInfo => {
       console.log('Update downloaded', updateInfo)
       this.notificationService.success(`New version ${updateInfo.version} will be automatically installed.`)
     })
