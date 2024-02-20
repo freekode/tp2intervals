@@ -3,12 +3,16 @@ package org.freekode.tp2intervals.domain.workout
 data class WorkoutExternalData(
     val tpId: String?,
     val intervalsId: String?,
+    val trainerRoadId: String?,
     val externalContent: String?
 ) {
     companion object {
-        fun trainingPeaks(tpId: String, externalContent: String?) = WorkoutExternalData(tpId, null, externalContent)
+        fun trainingPeaks(tpId: String, externalContent: String?) =
+            WorkoutExternalData(tpId, null, null, externalContent)
 
-        fun intervals(intervalsId: String) = WorkoutExternalData(null, intervalsId, null)
+        fun intervals(intervalsId: String) = WorkoutExternalData(null, intervalsId, null, null)
+
+        fun trainerRoad(trainerRoadId: String) = WorkoutExternalData(null, null, trainerRoadId, null)
     }
 
     override fun equals(other: Any?): Boolean {

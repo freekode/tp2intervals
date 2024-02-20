@@ -26,11 +26,13 @@ class ITestConfiguration {
     TrainerRoadApiClient trainerRoadApiClient(
             ObjectMapper objectMapper,
             @Value("classpath:trainer-road-activities-response.json") Resource activitiesResponse,
+            @Value("classpath:trainer-road-workout-details.json") Resource workoutDetailsResponse,
             @Value("classpath:workout.zwo") Resource workoutFile) {
         new MockTrainerRoadApiClient(
                 objectMapper,
                 activitiesResponse.getContentAsString(Charset.defaultCharset()),
-                workoutFile
+                workoutFile,
+                workoutDetailsResponse.getContentAsString(Charset.defaultCharset()),
         )
     }
 

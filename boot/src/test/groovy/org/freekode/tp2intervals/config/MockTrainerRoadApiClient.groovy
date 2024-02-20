@@ -5,16 +5,24 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.TrainerRoadApiClient
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.TrainerRoadMemberDTO
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.activity.TrainerRoadActivityDTO
+import org.freekode.tp2intervals.infrastructure.platform.trainerroad.workout.TRWorkoutResponseDTO
+import org.jetbrains.annotations.NotNull
 import org.springframework.core.io.Resource
 
 class MockTrainerRoadApiClient implements TrainerRoadApiClient {
     private final List<TrainerRoadActivityDTO> activities
     private final Resource file
+    private final TRWorkoutResponseDTO trWorkoutResponseDTO
 
-    MockTrainerRoadApiClient(ObjectMapper objectMapper, String eventsResponse, Resource file) {
+    MockTrainerRoadApiClient(
+            ObjectMapper objectMapper,
+            String eventsResponse,
+            Resource file,
+            String workoutDetailsResponse) {
         this.file = file
         activities = objectMapper.readValue(eventsResponse, new TypeReference<List<TrainerRoadActivityDTO>>() {
         }) as List<TrainerRoadActivityDTO>
+        trWorkoutResponseDTO = objectMapper.readValue(workoutDetailsResponse, TRWorkoutResponseDTO.class)
     }
 
     @Override
@@ -30,5 +38,10 @@ class MockTrainerRoadApiClient implements TrainerRoadApiClient {
     @Override
     Resource exportFit(String activityId) {
         return file
+    }
+
+    @Override
+    TRWorkoutResponseDTO getWorkoutDetails(String workoutId) {
+        return trWorkoutResponseDTO
     }
 }

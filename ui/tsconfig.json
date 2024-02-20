@@ -28,6 +28,7 @@
     "paths": {
       "app/*": ["./app/*"],
       "infrastructure/*": ["./infrastructure/*"],
+      "utils/*": ["./utils/*"],
     }
 
   },

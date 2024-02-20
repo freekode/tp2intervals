@@ -2,8 +2,8 @@ package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks
 
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.user.TrainingPeaksUserDTO
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.CreateTPWorkoutDTO
-import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.TPNoteDTO
-import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.TPWorkoutDTO
+import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.TPNoteResponseDTO
+import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.TPWorkoutResponseDTO
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.core.io.Resource
 import org.springframework.web.bind.annotation.GetMapping
@@ -27,14 +27,14 @@ interface TrainingPeaksApiClient {
         @PathVariable("userId") userId: String,
         @PathVariable("startDate") startDate: String,
         @PathVariable("endDate") endDate: String
-    ): List<TPWorkoutDTO>
+    ): List<TPWorkoutResponseDTO>
 
     @GetMapping("/fitness/v1/athletes/{userId}/calendarNote/{startDate}/{endDate}")
     fun getNotes(
         @PathVariable("userId") userId: String,
         @PathVariable("startDate") startDate: String,
         @PathVariable("endDate") endDate: String
-    ): List<TPNoteDTO>
+    ): List<TPNoteResponseDTO>
 
     @GetMapping("/fitness/v6/athletes/{userId}/workouts/{workoutId}/fordevice/fit")
     fun downloadWorkoutFit(

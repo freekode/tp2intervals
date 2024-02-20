@@ -21,6 +21,8 @@ class IntervalsWorkoutRepository(
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
+    override fun platform() = Platform.INTERVALS
+
     override fun planWorkout(workout: Workout) {
         val workoutString = getWorkoutString(workout)
 
@@ -37,7 +39,7 @@ class IntervalsWorkoutRepository(
         intervalsApiClient.createEvent(intervalsConfigurationRepository.getConfiguration().athleteId, request)
     }
 
-    override fun copyWorkout(workout: Workout, plan: Plan) {
+    override fun saveWorkout(workout: Workout, plan: Plan) {
         val workoutString = getWorkoutString(workout)
 
         var description = workout.description.orEmpty()
@@ -74,6 +76,10 @@ class IntervalsWorkoutRepository(
         return events
             .filter { it.isWorkout() }
             .mapNotNull { toWorkout(it) }
+    }
+
+    override fun getWorkout(id: String): Workout {
+        TODO("Not yet implemented")
     }
 
     private fun toWorkout(eventDTO: IntervalsEventDTO): Workout? {

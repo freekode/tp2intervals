@@ -6,7 +6,7 @@ import { MatCardModule } from "@angular/material/card";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatProgressBarModule } from "@angular/material/progress-bar";
-import { formatDate, NgIf } from "@angular/common";
+import { NgIf } from "@angular/common";
 import { MatDatepickerModule } from "@angular/material/datepicker";
 import { MatNativeDateModule } from "@angular/material/core";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
@@ -16,9 +16,7 @@ import { finalize } from "rxjs";
 import { WorkoutClient } from "infrastructure/workout.client";
 import { MatSelectModule } from "@angular/material/select";
 import { ConfigurationClient } from "infrastructure/configuration.client";
-
-const DATE_FORMAT = 'yyyy-MM-dd'
-const LOCALE = 'en-US'
+import { formatDate } from "utils/date-formatter";
 
 @Component({
   selector: 'app-training-peaks-actions',
@@ -66,8 +64,8 @@ export class TrainingPeaksActionsComponent implements OnInit {
 
   private readonly selectedPlanDirection = this.directions[0].value;
   private readonly selectedTrainingTypes = ['BIKE', 'VIRTUAL_BIKE', 'MTB', 'RUN'];
-  private readonly todayDate = formatDate(new Date(), DATE_FORMAT, LOCALE)
-  private readonly tomorrowDate = formatDate(new Date(new Date().setDate(new Date().getDate() + 1)), DATE_FORMAT, LOCALE)
+  private readonly todayDate = formatDate(new Date())
+  private readonly tomorrowDate = formatDate(new Date(new Date().setDate(new Date().getDate() + 1)))
 
   constructor(
     private router: Router,
@@ -96,8 +94,8 @@ export class TrainingPeaksActionsComponent implements OnInit {
   copyWorkoutsSubmit() {
     this.copyPlanInProgress = true
     let name = this.copyWorkoutsFormGroup.value.name
-    let startDate = formatDate(this.copyWorkoutsFormGroup.value.startDate, DATE_FORMAT, LOCALE)
-    let endDate = formatDate(this.copyWorkoutsFormGroup.value.endDate, DATE_FORMAT, LOCALE)
+    let startDate = formatDate(this.copyWorkoutsFormGroup.value.startDate)
+    let endDate = formatDate(this.copyWorkoutsFormGroup.value.endDate)
     let trainingTypes = this.planWorkoutsFormGroup.value.trainingTypes
     this.workoutClient.copyWorkouts(name, startDate, endDate, trainingTypes).pipe(
       finalize(() => this.copyPlanInProgress = false)

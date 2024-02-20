@@ -64,7 +64,7 @@ class StructureToTPConverter(
             workoutStep.title,
             TPLengthDTO.seconds(workoutStep.duration.seconds),
             targetList,
-            TPStepDTO.IntensityClass.findByIntensityType(workoutStep.intensity),
+            TPStepDTO.IntensityClass.active,
             null
         )
     }

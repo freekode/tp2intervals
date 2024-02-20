@@ -1,6 +1,7 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainerroad
 
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.activity.TrainerRoadActivityDTO
+import org.freekode.tp2intervals.infrastructure.platform.trainerroad.workout.TRWorkoutResponseDTO
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.core.io.Resource
 import org.springframework.web.bind.annotation.GetMapping
@@ -24,6 +25,11 @@ interface TrainerRoadApiClient {
         @PathVariable("startDate") startDate: String,
         @PathVariable("endDate") endDate: String,
     ): List<TrainerRoadActivityDTO>
+
+    @GetMapping("app/api/workoutdetails/{workoutId}")
+    fun getWorkoutDetails(
+        @PathVariable workoutId: String,
+    ): TRWorkoutResponseDTO
 
     @PostMapping("/app/api/activities/{activityId}/exports/fit")
     fun exportFit(@PathVariable activityId: String): Resource

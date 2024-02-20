@@ -7,7 +7,6 @@ class WorkoutSingleStep(
     val duration: Duration,
     val target: WorkoutStepTarget,
     val cadence: WorkoutStepTarget?,
-    val intensity: StepIntensityType,
     val ramp: Boolean
 ) : WorkoutStep {
     override fun isSingleStep() = true
@@ -34,7 +33,6 @@ class WorkoutSingleStep(
                     Duration.ofSeconds(stepDuration.toLong()),
                     getTargetForRampStep(i, stepsAmount),
                     cadence,
-                    intensity,
                     false
                 )
             )
