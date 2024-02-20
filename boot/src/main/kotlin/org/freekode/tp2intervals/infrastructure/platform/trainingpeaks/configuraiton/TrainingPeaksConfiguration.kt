@@ -10,15 +10,12 @@ data class TrainingPeaksConfiguration(
 
         fun tryToCreate(appConfiguration: AppConfiguration): TrainingPeaksConfiguration? {
             return if (appConfiguration.configMap.containsKey(authCookieKey)) {
-                TrainingPeaksConfiguration(
-                    appConfiguration.configMap[authCookieKey]!!
-                )
+                TrainingPeaksConfiguration(appConfiguration.configMap[authCookieKey]!!)
             } else {
                 null
             }
         }
     }
 
-    constructor(appConfiguration: AppConfiguration) :
-            this(appConfiguration.get(authCookieKey))
+    constructor(appConfiguration: AppConfiguration) : this(appConfiguration.get(authCookieKey))
 }

@@ -12,8 +12,7 @@ class TrainingPeaksConfigurationRepository(
     }
 
     fun getConfiguration(): TrainingPeaksConfiguration {
-        val configurationByKeyPrefix =
-            appConfigurationRepository.getConfigurationByPrefix(CONFIG_PREFIX)
+        val configurationByKeyPrefix = appConfigurationRepository.getConfigurationByPrefix(CONFIG_PREFIX)
         return TrainingPeaksConfiguration(
             configurationByKeyPrefix
         )
