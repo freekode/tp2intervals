@@ -2,14 +2,14 @@ package org.freekode.tp2intervals.config
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.freekode.tp2intervals.infrastructure.intervalsicu.IntervalsActivityDTO
-import org.freekode.tp2intervals.infrastructure.intervalsicu.IntervalsApiClient
-import org.freekode.tp2intervals.infrastructure.intervalsicu.activity.CreateActivityResponseDTO
-import org.freekode.tp2intervals.infrastructure.intervalsicu.folder.CreateFolderRequestDTO
-import org.freekode.tp2intervals.infrastructure.intervalsicu.folder.FolderDTO
-import org.freekode.tp2intervals.infrastructure.intervalsicu.workout.CreateEventRequestDTO
-import org.freekode.tp2intervals.infrastructure.intervalsicu.workout.CreateWorkoutRequestDTO
-import org.freekode.tp2intervals.infrastructure.intervalsicu.workout.IntervalsEventDTO
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsActivityDTO
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsApiClient
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.activity.CreateActivityResponseDTO
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.folder.CreateFolderRequestDTO
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.folder.FolderDTO
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.CreateEventRequestDTO
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.CreateWorkoutRequestDTO
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsEventDTO
 import org.jetbrains.annotations.NotNull
 import org.springframework.web.multipart.MultipartFile
 

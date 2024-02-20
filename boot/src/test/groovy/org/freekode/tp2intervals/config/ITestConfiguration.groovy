@@ -1,8 +1,8 @@
 package org.freekode.tp2intervals.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.freekode.tp2intervals.infrastructure.intervalsicu.IntervalsApiClient
-import org.freekode.tp2intervals.infrastructure.trainerroad.TrainerRoadApiClient
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsApiClient
+import org.freekode.tp2intervals.infrastructure.platform.trainerroad.TrainerRoadApiClient
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
