@@ -16,7 +16,7 @@ import { UpdateService } from "app/update.service";
   styleUrl: './app.component.scss'
 })
 export class AppComponent implements OnInit {
-  appVersion = window.electron.appVersion || 'static'
+  appVersion = window.electron?.appVersion || 'static'
 
   constructor(
     private updateService: UpdateService

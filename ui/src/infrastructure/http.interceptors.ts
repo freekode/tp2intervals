@@ -3,7 +3,7 @@ import { inject } from "@angular/core";
 import { catchError, throwError } from "rxjs";
 import { NotificationService } from "infrastructure/notification.service";
 
-let host = window.electron.bootAddress || ''
+let host = window.electron?.bootAddress || ''
 
 export const httpErrorInterceptor: HttpInterceptorFn = (
   req: HttpRequest<any>,
