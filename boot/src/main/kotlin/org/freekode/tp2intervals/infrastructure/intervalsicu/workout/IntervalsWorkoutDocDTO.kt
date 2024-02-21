@@ -1,5 +1,8 @@
 package org.freekode.tp2intervals.infrastructure.intervalsicu.workout
 
+import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
+import org.freekode.tp2intervals.infrastructure.PlatformException
+
 class IntervalsWorkoutDocDTO(
     val duration: Long?,
     val ftp: Int?,
@@ -7,8 +10,18 @@ class IntervalsWorkoutDocDTO(
     val threshold_pace: Float?,
     val pace_units: String?,
     val steps: List<WorkoutStepDTO>,
-    val zoneTimes: List<IntervalsWorkoutZoneDTO>?
+    val target: String
 ) {
+    private val targetMap = mapOf(
+        "POWER" to WorkoutStructure.TargetUnit.FTP_PERCENTAGE,
+        "HR" to WorkoutStructure.TargetUnit.LTHR_PERCENTAGE,
+        "PACE" to WorkoutStructure.TargetUnit.PACE_PERCENTAGE,
+    )
+
+    fun mapTarget(): WorkoutStructure.TargetUnit {
+        return targetMap[target] ?: throw PlatformException("Cant convert target - $target")
+    }
+
     class WorkoutStepDTO(
         val text: String?,
         val reps: Int?,
@@ -34,22 +47,8 @@ class IntervalsWorkoutDocDTO(
     )
 
     class ResolvedStepValueDTO(
-        val value: Int?,
-        val start: Int,
-        val end: Int,
+        val value: Double?,
+        val start: Double,
+        val end: Double,
     )
-
-    class IntervalsWorkoutZoneDTO(
-        val id: String,
-        val max: Int?,
-        val name: String?,
-        val zone: Int?,
-        val percentRange: String?,
-    ) {
-        fun getRange(): List<Int> {
-            val range = percentRange!!.split(" - ")
-                .map { it.dropLast(1).toInt() }
-            return listOf(range[0], range[1])
-        }
-    }
 }

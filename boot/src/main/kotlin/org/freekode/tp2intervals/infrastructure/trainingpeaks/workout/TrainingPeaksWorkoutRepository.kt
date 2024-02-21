@@ -1,5 +1,6 @@
 package org.freekode.tp2intervals.infrastructure.trainingpeaks.workout
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import java.time.LocalDate
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.activity.Activity
@@ -9,20 +10,20 @@ import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutRepository
 import org.freekode.tp2intervals.infrastructure.PlatformException
 import org.freekode.tp2intervals.infrastructure.trainingpeaks.TrainingPeaksApiClient
-import org.freekode.tp2intervals.infrastructure.trainingpeaks.workout.structure.WorkoutStepToTPStructureConverter
+import org.freekode.tp2intervals.infrastructure.trainingpeaks.workout.structure.StructureToTPConverter
 import org.springframework.stereotype.Repository
 
 
 @Repository
 class TrainingPeaksWorkoutRepository(
     private val trainingPeaksApiClient: TrainingPeaksApiClient,
-    private val tpWorkoutMapper: TPWorkoutMapper,
-    private val workoutStepToTPStructureConverter: WorkoutStepToTPStructureConverter
+    private val tpToWorkoutConverter: TPToWorkoutConverter,
+    private val objectMapper: ObjectMapper,
 ) : WorkoutRepository, ActivityRepository {
     override fun platform() = Platform.TRAINING_PEAKS
 
     override fun planWorkout(workout: Workout) {
-        val structureStr = workoutStepToTPStructureConverter.toWorkoutStructureStr(workout)
+        val structureStr = toStructureString(workout)
 
         val createRequest = CreateTPWorkoutDTO.planWorkout(
             getUserId(),
@@ -44,10 +45,10 @@ class TrainingPeaksWorkoutRepository(
         val userId = getUserId()
         val tpWorkouts = trainingPeaksApiClient.getWorkouts(userId, startDate.toString(), endDate.toString())
 
-        val noteEndDate = getNoteEndDate(startDate, endDate)
+        val noteEndDate = getNoteEndDateForFilter(startDate, endDate)
         val tpNotes = trainingPeaksApiClient.getNotes(userId, startDate.toString(), noteEndDate.toString())
-        val workouts = tpWorkouts.map { tpWorkoutMapper.mapToWorkout(it) }
-        val notes = tpNotes.map { tpWorkoutMapper.mapToWorkout(it) }
+        val workouts = tpWorkouts.map { tpToWorkoutConverter.toWorkout(it) }
+        val notes = tpNotes.map { tpToWorkoutConverter.toWorkout(it) }
         return workouts + notes
     }
 
@@ -67,7 +68,14 @@ class TrainingPeaksWorkoutRepository(
         trainingPeaksApiClient.createAndPlanWorkout(getUserId(), createRequest)
     }
 
-    private fun getNoteEndDate(startDate: LocalDate, endDate: LocalDate): LocalDate? =
+    private fun toStructureString(workout: Workout) =
+        if (workout.structure != null) {
+            StructureToTPConverter(objectMapper, workout.structure).toTPStructureStr()
+        } else {
+            null
+        }
+
+    private fun getNoteEndDateForFilter(startDate: LocalDate, endDate: LocalDate): LocalDate? =
         if (startDate == endDate) {
             endDate.plusDays(1)
         } else {

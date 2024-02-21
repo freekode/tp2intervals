@@ -6,8 +6,8 @@ import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.plan.Plan
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutRepository
-import org.freekode.tp2intervals.infrastructure.intervalsicu.IntervalsApiClient
 import org.freekode.tp2intervals.infrastructure.PlatformException
+import org.freekode.tp2intervals.infrastructure.intervalsicu.IntervalsApiClient
 import org.freekode.tp2intervals.infrastructure.intervalsicu.configuration.IntervalsConfigurationRepository
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Repository
@@ -17,13 +17,12 @@ import kotlin.math.absoluteValue
 class IntervalsWorkoutRepository(
     private val intervalsApiClient: IntervalsApiClient,
     private val intervalsConfigurationRepository: IntervalsConfigurationRepository,
-    private val workoutToIntervalsConverter: WorkoutToIntervalsConverter
 ) : WorkoutRepository {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     override fun planWorkout(workout: Workout) {
-        val workoutString = workoutToIntervalsConverter.toIntervalsWorkout(workout)
+        val workoutString = getWorkoutString(workout)
 
         var description = workout.description.orEmpty()
         description += workoutString?.let { "\n\n- - - -\n$it" }.orEmpty()
@@ -39,7 +38,7 @@ class IntervalsWorkoutRepository(
     }
 
     override fun copyWorkout(workout: Workout, plan: Plan) {
-        val workoutString = workoutToIntervalsConverter.toIntervalsWorkout(workout)
+        val workoutString = getWorkoutString(workout)
 
         var description = workout.description.orEmpty()
         description += workoutString?.let { "\n\n- - - -\n$it" }.orEmpty()
@@ -57,15 +56,21 @@ class IntervalsWorkoutRepository(
         intervalsApiClient.createWorkout(intervalsConfigurationRepository.getConfiguration().athleteId, request)
     }
 
+    private fun getWorkoutString(workout: Workout) =
+        if (workout.structure != null) {
+            StructureToIntervalsConverter(workout.structure).toIntervalsStructureStr()
+        } else {
+            null
+        }
+
     override fun platform() = Platform.INTERVALS
 
     override fun getPlannedWorkouts(startDate: LocalDate, endDate: LocalDate): List<Workout> {
-        val events =
-            intervalsApiClient.getEvents(
-                intervalsConfigurationRepository.getConfiguration().athleteId,
-                startDate.toString(),
-                endDate.toString()
-            )
+        val events = intervalsApiClient.getEvents(
+            intervalsConfigurationRepository.getConfiguration().athleteId,
+            startDate.toString(),
+            endDate.toString()
+        )
         return events
             .filter { it.isWorkout() }
             .mapNotNull { toWorkout(it) }

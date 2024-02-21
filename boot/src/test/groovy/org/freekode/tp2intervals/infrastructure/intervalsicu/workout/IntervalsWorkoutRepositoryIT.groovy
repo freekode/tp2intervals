@@ -29,6 +29,6 @@ class IntervalsWorkoutRepositoryIT extends ISpringConfiguration {
         def workouts = intervalsWorkoutRepository.getPlannedWorkouts(LocalDate.now(), LocalDate.now())
 
         then:
-        workouts.size() == 4
+        workouts.size() == 5
     }
 }

@@ -1,12 +1,12 @@
 package org.freekode.tp2intervals.infrastructure.trainingpeaks.workout.structure
 
-import org.freekode.tp2intervals.domain.workout.StepIntensityType
-import org.freekode.tp2intervals.domain.workout.WorkoutMultiStep
-import org.freekode.tp2intervals.domain.workout.WorkoutSingleStep
-import org.freekode.tp2intervals.domain.workout.WorkoutStep
-import org.freekode.tp2intervals.domain.workout.WorkoutStepTarget
+import org.freekode.tp2intervals.domain.workout.structure.StepIntensityType
+import org.freekode.tp2intervals.domain.workout.structure.WorkoutMultiStep
+import org.freekode.tp2intervals.domain.workout.structure.WorkoutSingleStep
+import org.freekode.tp2intervals.domain.workout.structure.WorkoutStep
+import org.freekode.tp2intervals.domain.workout.structure.WorkoutStepTarget
 
-class TPStructureToWorkoutStepMapper(
+class TPStructureToStepMapper(
     private val tPWorkoutStructureDTO: TPWorkoutStructureDTO
 ) {
 
@@ -43,7 +43,6 @@ class TPStructureToWorkoutStepMapper(
     private fun getMainTarget(targets: List<TPTargetDTO>): WorkoutStepTarget {
         val target = targets.first { it.unit == null }
         return WorkoutStepTarget(
-            tPWorkoutStructureDTO.primaryIntensityMetric.targetUnit,
             target.minValue,
             target.maxValue
         )
@@ -52,7 +51,7 @@ class TPStructureToWorkoutStepMapper(
     private fun getSecondaryTarget(targets: List<TPTargetDTO>): WorkoutStepTarget? {
         return targets
             .firstOrNull { it.unit != null }
-            ?.let { WorkoutStepTarget(it.unit!!.targetUnit, it.minValue, it.maxValue) }
+            ?.let { WorkoutStepTarget(it.minValue, it.maxValue) }
     }
 
 }
