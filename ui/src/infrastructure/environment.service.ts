@@ -12,7 +12,7 @@ export class EnvironmentService {
   }
 
   getBootAddress() {
-    return window.electron?.bootAddress || 'http://localhost:8080'
+    return window.electron?.bootAddress || ''
   }
 
   getVersion(): Observable<string> {

@@ -1,10 +1,8 @@
 #!/bin/bash
 
-cd ./ui
-npm ci
-npm run build
+npm ci --prefix ui
+npm run build  --prefix ui
 
-cd ../
 cp -r ui/dist/ui/browser boot/src/main/resources/static
 
 cd ./boot
