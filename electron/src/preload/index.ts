@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer } from 'electron';
+import { contextBridge } from 'electron';
 import {
   appVersionSupplier,
   bootAddressSupplier,
@@ -7,8 +7,10 @@ import {
   subscriptions
 } from "./renderer";
 
-contextBridge.exposeInMainWorld('bootAddress', bootAddressSupplier())
-contextBridge.exposeInMainWorld('bootHealthy', bootHealthySupplier());
-contextBridge.exposeInMainWorld('appVersion', appVersionSupplier());
-contextBridge.exposeInMainWorld('appPlatform', platformSupplier());
-contextBridge.exposeInMainWorld('subscriptions', subscriptions);
+contextBridge.exposeInMainWorld('electron', {
+  bootAddress: bootAddressSupplier(),
+  bootHealthy: bootHealthySupplier(),
+  appVersion: appVersionSupplier(),
+  appPlatform: platformSupplier(),
+  subscriptions: subscriptions,
+})
