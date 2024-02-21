@@ -2,8 +2,7 @@ import { HttpHandlerFn, HttpInterceptorFn, HttpRequest } from "@angular/common/h
 import { inject } from "@angular/core";
 import { catchError, throwError } from "rxjs";
 import { NotificationService } from "infrastructure/notification.service";
-
-let host = window.electron?.bootAddress || ''
+import { EnvironmentService } from "infrastructure/environment.service";
 
 export const httpErrorInterceptor: HttpInterceptorFn = (
   req: HttpRequest<any>,
@@ -13,7 +12,8 @@ export const httpErrorInterceptor: HttpInterceptorFn = (
 
   return next(req).pipe(
     catchError((err) => {
-      notificationService.error(err.error.error)
+      let errorMessage = err.error.error ? err.error.error : err.message
+      notificationService.error(errorMessage)
       return throwError(() => err)
     })
   );
@@ -23,6 +23,9 @@ export const httpHostInterceptor: HttpInterceptorFn = (
   req: HttpRequest<any>,
   next: HttpHandlerFn,
 ) => {
+  let environmentService = inject(EnvironmentService)
+  let host = environmentService.getBootAddress()
+
   const apiReq = req.clone({url: `${host}/${req.url.replace(/^\/|\/$/g, '')}`});
   return next(apiReq);
 };
