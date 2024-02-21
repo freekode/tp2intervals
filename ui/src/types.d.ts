@@ -1,13 +1,15 @@
 declare global {
   interface Window {
-    bootAddress: string;
-    bootHealthy: () => boolean;
-    appVersion: string;
-    appPlatform: string;
-    subscriptions: {
-      'appUpdateAvailable',
-      'appUpdateDownloaded'
-    };
+    electron: {
+      bootAddress: string;
+      bootHealthy: () => boolean;
+      appVersion: string;
+      appPlatform: string;
+      subscriptions: {
+        'appUpdateAvailable',
+        'appUpdateDownloaded'
+      };
+    }
   }
 }
 

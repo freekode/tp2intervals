@@ -10,6 +10,7 @@ plugins {
 }
 
 group = "org.freekode"
+version = "0.3.3"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_21
@@ -63,4 +64,8 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.bootJar {
+    archiveFileName.set("${project.name}.jar")
 }

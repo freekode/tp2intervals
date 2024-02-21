@@ -2,11 +2,12 @@
 [![release](https://img.shields.io/github/release/freekode/tp2intervals)](https://github.com/freekode/tp2intervals/releases/latest)
 
 # Third Party to Intervals.icu
-Sync workouts and activities between TrainingPeaks and Intervals.icu.
+App to sync workouts and activities between TrainingPeaks and Intervals.icu.
 
-Plan workouts for today and tomorrow from Intervals to TrainingPeaks.
+* Sync planned workouts between Intervals.icu and TrainingPeaks for today and tomorrow (free TP account)
+* Copy planned workouts for date range from TrainingPeaks to Intervals.icu Training Plan
 
-Executables for MacOS (DMG), Windows (EXE installer), Linux (AppImage) are available on [latest release](https://github.com/freekode/tp2intervals/releases/latest) page
+Executables for MacOS (DMG), Windows (EXE installer), Linux (AppImage) are available for download [here](https://github.com/freekode/tp2intervals/releases/latest)
 
 **Only for educational purposes**
 

@@ -5,7 +5,8 @@ import { MatCardModule } from "@angular/material/card";
 import { MatIconModule } from "@angular/material/icon";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { MatButtonModule } from "@angular/material/button";
-import { UpdateService } from "app/update.service";
+import { UpdateService } from "infrastructure/update.service";
+import { EnvironmentService } from "infrastructure/environment.service";
 
 
 @Component({
@@ -16,14 +17,18 @@ import { UpdateService } from "app/update.service";
   styleUrl: './app.component.scss'
 })
 export class AppComponent implements OnInit {
-  appVersion = window.appVersion || 'static'
+  appVersion: string
 
   constructor(
-    private updateService: UpdateService
+    private updateService: UpdateService,
+    private environmentService: EnvironmentService
   ) {
   }
 
   ngOnInit(): void {
     this.updateService.init()
+    this.environmentService.getVersion().subscribe(version => {
+      this.appVersion = version
+    })
   }
 }
