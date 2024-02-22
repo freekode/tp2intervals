@@ -15,17 +15,24 @@ class WorkoutService(
         val sourceWorkoutRepository = workoutRepositoryStrategy.getRepository(request.sourcePlatform)
         val targetWorkoutRepository = workoutRepositoryStrategy.getRepository(request.targetPlatform)
 
-        val allWorkouts = sourceWorkoutRepository.getPlannedWorkouts(request.startDate, request.endDate)
-        val filteredWorkouts = allWorkouts
+        val plannedWorkouts = targetWorkoutRepository.getPlannedWorkouts(request.startDate, request.endDate)
             .filter { request.types.contains(it.type) }
 
+        val allWorkoutsToPlan = sourceWorkoutRepository.getPlannedWorkouts(request.startDate, request.endDate)
+        var filteredWorkoutsToPlan = allWorkoutsToPlan
+            .filter { request.types.contains(it.type) }
+        if (request.skipSynced) {
+            filteredWorkoutsToPlan = filteredWorkoutsToPlan
+                .filter { !plannedWorkouts.contains(it) }
+        }
+
         val response = PlanWorkoutsResponse(
-            filteredWorkouts.size,
-            allWorkouts.size - filteredWorkouts.size,
+            filteredWorkoutsToPlan.size,
+            allWorkoutsToPlan.size - filteredWorkoutsToPlan.size,
             request.startDate,
             request.endDate
         )
-        filteredWorkouts.forEach { targetWorkoutRepository.planWorkout(it) }
+        filteredWorkoutsToPlan.forEach { targetWorkoutRepository.planWorkout(it) }
         return response
     }
 
@@ -35,14 +42,10 @@ class WorkoutService(
         val targetPlanRepository = planRepositoryStrategy.getRepository(request.targetPlatform)
 
         val allWorkouts = sourceWorkoutRepository.getPlannedWorkouts(request.startDate, request.endDate)
-        val filteredWorkouts = allWorkouts
-            .filter { request.types.contains(it.type) }
+        val filteredWorkouts = allWorkouts.filter { request.types.contains(it.type) }
 
         val response = CopyWorkoutsResponse(
-            filteredWorkouts.size,
-            allWorkouts.size - filteredWorkouts.size,
-            request.startDate,
-            request.endDate
+            filteredWorkouts.size, allWorkouts.size - filteredWorkouts.size, request.startDate, request.endDate
         )
         val plan = targetPlanRepository.createPlan(request.name, request.startDate, request.planType)
         filteredWorkouts.forEach { targetWorkoutRepository.saveWorkout(it, plan) }

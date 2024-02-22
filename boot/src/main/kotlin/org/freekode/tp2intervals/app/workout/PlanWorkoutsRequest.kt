@@ -8,7 +8,7 @@ data class PlanWorkoutsRequest(
     val startDate: LocalDate,
     val endDate: LocalDate,
     val types: List<TrainingType>,
+    val skipSynced: Boolean,
     val sourcePlatform: Platform,
     val targetPlatform: Platform
-) {
-}
+)

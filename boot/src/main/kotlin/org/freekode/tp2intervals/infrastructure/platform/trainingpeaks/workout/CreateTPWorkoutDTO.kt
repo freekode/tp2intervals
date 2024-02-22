@@ -3,7 +3,6 @@ package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout
 import java.time.LocalDateTime
 import org.freekode.tp2intervals.domain.activity.Activity
 import org.freekode.tp2intervals.domain.workout.Workout
-import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.ExternalDataConverter
 
 class CreateTPWorkoutDTO(
     var athleteId: String,
@@ -28,7 +27,7 @@ class CreateTPWorkoutDTO(
                 workout.date.atStartOfDay(),
                 TPWorkoutTypeMapper.getByType(workout.type),
                 workout.name,
-                workoutDescriptionBuilder(workout),
+                workout.externalData.toSimpleString(),
                 null,
                 workout.duration?.toMinutes()?.toDouble()?.div(60),
                 null,
@@ -52,8 +51,5 @@ class CreateTPWorkoutDTO(
             )
         }
 
-        private fun workoutDescriptionBuilder(workout: Workout): String {
-            return ExternalDataConverter().toSimpleString(workout.externalData)
-        }
     }
 }

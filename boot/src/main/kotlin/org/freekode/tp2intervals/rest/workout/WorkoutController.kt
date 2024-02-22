@@ -27,6 +27,7 @@ class WorkoutController(
                 LocalDate.parse(requestDTO.startDate),
                 LocalDate.parse(requestDTO.endDate),
                 requestDTO.types,
+                requestDTO.skipSynced,
                 sourcePlatform,
                 targetPlatform
             )
