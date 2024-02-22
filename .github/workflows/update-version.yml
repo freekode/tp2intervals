@@ -33,12 +33,12 @@ jobs:
       - name: Commit version
         run: |
           git commit -am 'version ${{ inputs.new-version }}'
-#          git push
+          git push
 
       - name: Create tag
         run: |
           git tag v${{ inputs.new-version }}
-#          git push --tags
+          git push --tags
 
       - name: check all stuff
         run: |
