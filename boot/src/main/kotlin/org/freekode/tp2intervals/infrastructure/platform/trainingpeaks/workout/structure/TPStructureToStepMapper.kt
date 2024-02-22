@@ -1,6 +1,5 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure
 
-import org.freekode.tp2intervals.domain.workout.structure.StepIntensityType
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutMultiStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutSingleStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStep
@@ -27,7 +26,6 @@ class TPStructureToStepMapper(
             TPStepDTO.length.mapDuration(),
             getMainTarget(TPStepDTO.targets),
             getSecondaryTarget(TPStepDTO.targets),
-            TPStepDTO.intensityClass?.type ?: StepIntensityType.ACTIVE,
             false
         )
     }

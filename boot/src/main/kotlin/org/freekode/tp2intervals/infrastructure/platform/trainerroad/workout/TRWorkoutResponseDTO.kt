@@ -1,28 +1,44 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainerroad.workout
 
+import com.fasterxml.jackson.annotation.JsonProperty
+
 class TRWorkoutResponseDTO(
-    val Workout: TRWorkout,
+    @JsonProperty("Workout")
+    val workout: TRWorkout,
 ) {
     class TRWorkout(
-        val Details: DetailsDTO,
+        @JsonProperty("Details")
+        val details: DetailsDTO,
         val intervalData: List<IntervalsDataDTO>,
     )
 
     class DetailsDTO(
-        val Id: Double,
-        val WorkoutName: String,
-        val WorkoutDescription: String,
-        val IsOutside: Boolean,
-        val TSS: Int,
-        val Duration: Int,
+        @JsonProperty("Id")
+        val id: Double,
+        @JsonProperty("WorkoutName")
+        val workoutName: String,
+        @JsonProperty("WorkoutDescription")
+        val workoutDescription: String,
+        @JsonProperty("IsOutside")
+        val isOutside: Boolean,
+        @JsonProperty("TSS")
+        val tss: Int,
+        @JsonProperty("Duration")
+        val duration: Int,
     )
 
     class IntervalsDataDTO(
-        val Start: Double,
-        val End: Double,
-        val Name: String,
-        val IsFake: Boolean,
-        val TestInterval: Boolean,
-        val StartTargetPowerPercent: Int
+        @JsonProperty("Start")
+        val start: Double,
+        @JsonProperty("End")
+        val end: Double,
+        @JsonProperty("Name")
+        val name: String,
+        @JsonProperty("IsFake")
+        val isFake: Boolean,
+        @JsonProperty("TestInterval")
+        val testInterval: Boolean,
+        @JsonProperty("StartTargetPowerPercent")
+        val startTargetPowerPercent: Int,
     )
 }

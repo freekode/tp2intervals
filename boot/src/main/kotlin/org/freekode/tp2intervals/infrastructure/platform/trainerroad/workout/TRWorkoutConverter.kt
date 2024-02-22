@@ -5,27 +5,28 @@ import java.time.LocalDate
 import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutExternalData
-import org.freekode.tp2intervals.domain.workout.WorkoutSingleStep
-import org.freekode.tp2intervals.domain.workout.WorkoutStep
-import org.freekode.tp2intervals.domain.workout.WorkoutStepTarget
+import org.freekode.tp2intervals.domain.workout.structure.WorkoutSingleStep
+import org.freekode.tp2intervals.domain.workout.structure.WorkoutStep
+import org.freekode.tp2intervals.domain.workout.structure.WorkoutStepTarget
+import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
 
 class TRWorkoutConverter(
     trWorkoutResponseDTO: TRWorkoutResponseDTO
 ) {
-    private val trWorkout: TRWorkoutResponseDTO.TRWorkout = trWorkoutResponseDTO.Workout
+    private val trWorkout: TRWorkoutResponseDTO.TRWorkout = trWorkoutResponseDTO.workout
 
     fun toWorkout(): Workout {
         val steps = convertSteps(trWorkout.intervalData)
 
         return Workout(
             LocalDate.now(),
-            if (trWorkout.Details.IsOutside) TrainingType.BIKE else TrainingType.VIRTUAL_BIKE,
-            trWorkout.Details.WorkoutName,
-            trWorkout.Details.WorkoutDescription,
-            Duration.ofMinutes(trWorkout.Details.Duration.toLong()),
-            trWorkout.Details.TSS,
-            steps,
-            WorkoutExternalData.trainerRoad(trWorkout.Details.Id.toString())
+            if (trWorkout.details.isOutside) TrainingType.BIKE else TrainingType.VIRTUAL_BIKE,
+            trWorkout.details.workoutName,
+            trWorkout.details.workoutDescription,
+            Duration.ofMinutes(trWorkout.details.duration.toLong()),
+            trWorkout.details.tss,
+            WorkoutStructure(WorkoutStructure.TargetUnit.FTP_PERCENTAGE, steps),
+            WorkoutExternalData.trainerRoad(trWorkout.details.id.toString())
         )
     }
 
@@ -33,18 +34,17 @@ class TRWorkoutConverter(
         val steps = mutableListOf<WorkoutStep>()
 
         for (interval in intervals) {
-            if (interval.Name == "Workout") {
+            if (interval.name == "Workout") {
                 continue
             }
-            val duration = Duration.ofSeconds((interval.End - interval.Start).toLong())
-            val ftpPercent = interval.StartTargetPowerPercent
+            val duration = Duration.ofSeconds((interval.end - interval.start).toLong())
+            val ftpPercent = interval.startTargetPowerPercent
 
-            val workoutSingleStep = WorkoutSingleStep(interval.Name, duration, getStepTarget(ftpPercent), null, false)
+            val workoutSingleStep =
+                WorkoutSingleStep(interval.name, duration, WorkoutStepTarget(ftpPercent, ftpPercent), null, false)
             steps.add(workoutSingleStep)
         }
         return steps
     }
 
-    private fun getStepTarget(ftpPercent: Int) =
-        WorkoutStepTarget(WorkoutStepTarget.TargetUnit.FTP_PERCENTAGE, ftpPercent, ftpPercent)
 }

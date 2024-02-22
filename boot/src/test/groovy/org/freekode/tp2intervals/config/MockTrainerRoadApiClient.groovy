@@ -6,23 +6,25 @@ import org.freekode.tp2intervals.infrastructure.platform.trainerroad.TrainerRoad
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.TrainerRoadMemberDTO
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.activity.TrainerRoadActivityDTO
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.workout.TRWorkoutResponseDTO
-import org.jetbrains.annotations.NotNull
 import org.springframework.core.io.Resource
 
 class MockTrainerRoadApiClient implements TrainerRoadApiClient {
-    private final List<TrainerRoadActivityDTO> activities
     private final Resource file
-    private final TRWorkoutResponseDTO trWorkoutResponseDTO
+    private final List<TrainerRoadActivityDTO> activities
+    private final TRWorkoutResponseDTO trWorkoutResponseDTOAbney
+    private final TRWorkoutResponseDTO trWorkoutResponseDTOObelisk
 
     MockTrainerRoadApiClient(
             ObjectMapper objectMapper,
-            String eventsResponse,
             Resource file,
-            String workoutDetailsResponse) {
+            String eventsResponse,
+            String workoutDetailsResponseAbney,
+            String workoutDetailsResponseObelisk) {
         this.file = file
-        activities = objectMapper.readValue(eventsResponse, new TypeReference<List<TrainerRoadActivityDTO>>() {
+        this.activities = objectMapper.readValue(eventsResponse, new TypeReference<List<TrainerRoadActivityDTO>>() {
         }) as List<TrainerRoadActivityDTO>
-        trWorkoutResponseDTO = objectMapper.readValue(workoutDetailsResponse, TRWorkoutResponseDTO.class)
+        this.trWorkoutResponseDTOAbney = objectMapper.readValue(workoutDetailsResponseAbney, TRWorkoutResponseDTO.class)
+        this.trWorkoutResponseDTOObelisk = objectMapper.readValue(workoutDetailsResponseObelisk, TRWorkoutResponseDTO.class)
     }
 
     @Override
@@ -42,6 +44,10 @@ class MockTrainerRoadApiClient implements TrainerRoadApiClient {
 
     @Override
     TRWorkoutResponseDTO getWorkoutDetails(String workoutId) {
-        return trWorkoutResponseDTO
+        switch (workoutId) {
+            case "abney": return trWorkoutResponseDTOAbney
+            case "obelisk": return trWorkoutResponseDTOObelisk
+        }
+        return null
     }
 }

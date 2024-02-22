@@ -58,15 +58,6 @@ class IntervalsWorkoutRepository(
         intervalsApiClient.createWorkout(intervalsConfigurationRepository.getConfiguration().athleteId, request)
     }
 
-    private fun getWorkoutString(workout: Workout) =
-        if (workout.structure != null) {
-            StructureToIntervalsConverter(workout.structure).toIntervalsStructureStr()
-        } else {
-            null
-        }
-
-    override fun platform() = Platform.INTERVALS
-
     override fun getPlannedWorkouts(startDate: LocalDate, endDate: LocalDate): List<Workout> {
         val events = intervalsApiClient.getEvents(
             intervalsConfigurationRepository.getConfiguration().athleteId,
@@ -81,6 +72,13 @@ class IntervalsWorkoutRepository(
     override fun getWorkout(id: String): Workout {
         TODO("Not yet implemented")
     }
+
+    private fun getWorkoutString(workout: Workout) =
+        if (workout.structure != null) {
+            StructureToIntervalsConverter(workout.structure).toIntervalsStructureStr()
+        } else {
+            null
+        }
 
     private fun toWorkout(eventDTO: IntervalsEventDTO): Workout? {
         return try {
