@@ -24,16 +24,7 @@ class TrainingPeaksWorkoutRepository(
 
     override fun planWorkout(workout: Workout) {
         val structureStr = toStructureString(workout)
-
-        val createRequest = CreateTPWorkoutDTO.planWorkout(
-            getUserId(),
-            workout.date,
-            TPWorkoutTypeMapper.getByType(workout.type),
-            workout.name,
-            workout.duration?.toMinutes()?.toDouble()?.div(60),
-            workout.load,
-            structureStr
-        )
+        val createRequest = CreateTPWorkoutDTO.planWorkout(getUserId(), workout, structureStr)
         trainingPeaksApiClient.createAndPlanWorkout(getUserId(), createRequest)
     }
 
@@ -61,14 +52,7 @@ class TrainingPeaksWorkoutRepository(
     }
 
     override fun createActivity(activity: Activity) {
-        val createRequest = CreateTPWorkoutDTO.createWorkout(
-            getUserId(),
-            activity.startedAt,
-            TPWorkoutTypeMapper.getByType(activity.type),
-            activity.title,
-            activity.duration.toMinutes().toDouble().div(60),
-            activity.load,
-        )
+        val createRequest = CreateTPWorkoutDTO.createActivity(getUserId(), activity)
         trainingPeaksApiClient.createAndPlanWorkout(getUserId(), createRequest)
     }
 
