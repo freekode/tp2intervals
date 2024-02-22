@@ -1,6 +1,7 @@
 package org.freekode.tp2intervals.infrastructure.trainingpeaks.workout.structure
 
 import java.time.Duration
+import org.freekode.tp2intervals.infrastructure.PlatformException
 
 class TPLengthDTO(
     var value: Long,
@@ -14,7 +15,7 @@ class TPLengthDTO(
 
     fun reps(): Long {
         if (unit != LengthUnit.repetition) {
-            throw RuntimeException("not a repetition length")
+            throw PlatformException("not a repetition length")
         }
         return value
     }
@@ -22,7 +23,7 @@ class TPLengthDTO(
     fun mapDuration(): Duration {
         return when (unit) {
             LengthUnit.second -> Duration.ofSeconds(value)
-            else -> throw RuntimeException("i can't do that yet with $unit")
+            else -> throw PlatformException("i can't do that yet with $unit")
         }
     }
 
