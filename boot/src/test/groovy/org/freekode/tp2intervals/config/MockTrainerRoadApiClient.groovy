@@ -2,9 +2,9 @@ package org.freekode.tp2intervals.config
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.freekode.tp2intervals.infrastructure.trainerroad.TrainerRoadApiClient
-import org.freekode.tp2intervals.infrastructure.trainerroad.TrainerRoadMemberDTO
-import org.freekode.tp2intervals.infrastructure.trainerroad.activity.TrainerRoadActivityDTO
+import org.freekode.tp2intervals.infrastructure.platform.trainerroad.TrainerRoadApiClient
+import org.freekode.tp2intervals.infrastructure.platform.trainerroad.TrainerRoadMemberDTO
+import org.freekode.tp2intervals.infrastructure.platform.trainerroad.activity.TrainerRoadActivityDTO
 import org.springframework.core.io.Resource
 
 class MockTrainerRoadApiClient implements TrainerRoadApiClient {
