@@ -25,9 +25,20 @@ jobs:
       - name: Update executable version
         run: npm version ${{ inputs.new-version }} --prefix electron
 
+      - name: Set git user
+        run: |
+          git config --global user.email "iam@freekode.org"
+          git config --global user.name "Evgeny"
+
       - name: Commit version
         run: |
           git commit -am 'version ${{ inputs.new-version }}'
+#          git push
+
+      - name: Create tag
+        run: |
+          git tag v${{ inputs.new-version }}
+#          git push --tags
 
       - name: check all stuff
         run: |
