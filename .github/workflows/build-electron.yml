@@ -1,4 +1,4 @@
-name: Build JAR
+name: Build Electron
 
 on:
   workflow_call:

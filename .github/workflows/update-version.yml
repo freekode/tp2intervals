@@ -1,0 +1,37 @@
+name: Update Version
+
+on:
+  workflow_dispatch:
+    inputs:
+      new-version:
+        description: 'New version'
+        required: true
+        type: string
+
+jobs:
+  build-jar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.10.0
+          cache: 'npm'
+
+      - name: Update boot version
+        run: echo ${{ inputs.new-version }} > boot/version
+
+      - name: Update executable version
+        run: npm version ${{ inputs.new-version }} --prefix electron
+
+      - name: Commit version
+        run: |
+          git commit -am 'version ${{ inputs.new-version }}'
+
+      - name: check all stuff
+        run: |
+          cat boot/version
+          cat electron/package.json
+          git log
