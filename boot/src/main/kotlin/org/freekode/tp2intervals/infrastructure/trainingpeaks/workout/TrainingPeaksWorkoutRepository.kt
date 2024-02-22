@@ -63,7 +63,7 @@ class TrainingPeaksWorkoutRepository(
             TPWorkoutTypeMapper.getByType(activity.type),
             activity.title,
             activity.duration.toMinutes().toDouble().div(60),
-            activity.load?.toDouble(),
+            activity.load,
         )
         trainingPeaksApiClient.createAndPlanWorkout(getUserId(), createRequest)
     }
