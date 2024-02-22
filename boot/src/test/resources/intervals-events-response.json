@@ -3,8 +3,8 @@
     "id": 32240912,
     "start_date_local": "2024-02-22T00:00:00",
     "icu_training_load": 31,
-    "icu_atl": 48.74077,
-    "icu_ctl": 24.635035,
+    "icu_atl": 52.201942,
+    "icu_ctl": 25.24677,
     "type": "Ride",
     "calendar_id": 1,
     "uid": "0cee8918-4ef1-49d0-b04f-ee108615198d",
@@ -148,8 +148,8 @@
     "id": 32254568,
     "start_date_local": "2024-02-22T00:00:00",
     "icu_training_load": 35,
-    "icu_atl": 48.74077,
-    "icu_ctl": 24.635035,
+    "icu_atl": 52.201942,
+    "icu_ctl": 25.24677,
     "type": "Ride",
     "calendar_id": 1,
     "uid": "9d3f76f7-2871-4e8c-b908-c163dc6eeae3",
@@ -371,9 +371,9 @@
   {
     "id": 32254640,
     "start_date_local": "2024-02-22T00:00:00",
-    "icu_training_load": 23,
-    "icu_atl": 48.74077,
-    "icu_ctl": 24.635035,
+    "icu_training_load": 49,
+    "icu_atl": 52.201942,
+    "icu_ctl": 25.24677,
     "type": "Run",
     "calendar_id": 1,
     "uid": "06345554-836f-495d-b521-f7ae69254d9b",
@@ -381,14 +381,14 @@
     "category": "WORKOUT",
     "end_date_local": "2024-02-23T00:00:00",
     "name": "pace test",
-    "description": "\n- 10m 70% Pace\n- 10m 80-110% Pace",
+    "description": "\n- 10m 70% Pace\n- 10m 80-110% Pace\n- 10m Z2 Pace\n- 10m Z3-Z5 Pace",
     "indoor": false,
     "color": null,
-    "moving_time": 1200,
+    "moving_time": 2400,
     "icu_ftp": null,
     "atl_days": null,
     "ctl_days": null,
-    "updated": "2024-02-21T17:11:01.718+00:00",
+    "updated": "2024-02-22T09:18:46.420+00:00",
     "not_on_fitness_chart": false,
     "show_as_note": false,
     "show_on_ctl_line": false,
@@ -396,8 +396,8 @@
     "joules": 0,
     "joules_above_ftp": 0,
     "workout_doc": {
-      "duration": 1200,
-      "distance": 2605.2632,
+      "duration": 2400,
+      "distance": 5433.9473,
       "lthr": 175,
       "threshold_pace": 2.631579,
       "pace_units": "MINS_KM",
@@ -429,6 +429,31 @@
             "end": 2.8947367668151855
           },
           "_distance": 1500.0
+        },
+        {
+          "duration": 600,
+          "pace": {
+            "value": 2.0,
+            "units": "pace_zone"
+          },
+          "_pace": {
+            "start": 2.0657894611358643,
+            "end": 2.307894706726074
+          },
+          "_distance": 1312.1052
+        },
+        {
+          "duration": 600,
+          "pace": {
+            "start": 3.0,
+            "end": 5.0,
+            "units": "pace_zone"
+          },
+          "_pace": {
+            "start": 2.3342103958129883,
+            "end": 2.721052646636963
+          },
+          "_distance": 1516.5789
         }
       ],
       "zoneTimes": [
@@ -438,7 +463,7 @@
         },
         {
           "id": "Z2",
-          "secs": 0
+          "secs": 600
         },
         {
           "id": "Z3",
@@ -446,7 +471,7 @@
         },
         {
           "id": "Z4",
-          "secs": 600
+          "secs": 1200
         },
         {
           "id": "Z5",
@@ -482,8 +507,8 @@
     "plan_folder_id": null,
     "plan_workout_id": null,
     "plan_applied": null,
-    "distance": 2605.2632,
-    "icu_intensity": 83.06624,
+    "distance": 5433.9473,
+    "icu_intensity": 85.73214,
     "plan_name": null,
     "paired_activity_id": null
   },
@@ -491,8 +516,8 @@
     "id": 32254933,
     "start_date_local": "2024-02-22T00:00:00",
     "icu_training_load": 35,
-    "icu_atl": 48.74077,
-    "icu_ctl": 24.635035,
+    "icu_atl": 52.201942,
+    "icu_ctl": 25.24677,
     "type": "VirtualRide",
     "calendar_id": 1,
     "uid": "b5f7f4f3-c15b-4522-841c-2541ed4e7848",
@@ -706,8 +731,8 @@
     "id": 32254953,
     "start_date_local": "2024-02-22T00:00:00",
     "icu_training_load": 32,
-    "icu_atl": 48.74077,
-    "icu_ctl": 24.635035,
+    "icu_atl": 52.201942,
+    "icu_ctl": 25.24677,
     "type": "Other",
     "calendar_id": 1,
     "uid": "1fae9069-41d1-46d4-9da6-833b1c779cac",

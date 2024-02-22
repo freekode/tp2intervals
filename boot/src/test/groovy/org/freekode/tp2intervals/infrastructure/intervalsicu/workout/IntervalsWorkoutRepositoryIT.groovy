@@ -36,27 +36,27 @@ class IntervalsWorkoutRepositoryIT extends ISpringConfiguration {
         then:
         workouts.size() == 5
 
-        def hrWorkout = findWorkoutWithName("hr test", workouts)
-        hrWorkout.type == TrainingType.BIKE
-        hrWorkout.structure.target == WorkoutStructure.TargetUnit.LTHR_PERCENTAGE
-        hrWorkout.structure.steps.size() == 5
+        def workout = findWorkoutWithName("hr test", workouts)
+        workout.type == TrainingType.BIKE
+        workout.structure.target == WorkoutStructure.TargetUnit.LTHR_PERCENTAGE
+        workout.structure.steps.size() == 5
         // 10m 50-70% LTHR
-        (hrWorkout.structure.steps[0] as WorkoutSingleStep).duration == Duration.ofMinutes(10)
-        (hrWorkout.structure.steps[0] as WorkoutSingleStep).target.start == 50
-        (hrWorkout.structure.steps[0] as WorkoutSingleStep).target.end == 70
+        (workout.structure.steps[0] as WorkoutSingleStep).duration == Duration.ofMinutes(10)
+        (workout.structure.steps[0] as WorkoutSingleStep).target.start == 50
+        (workout.structure.steps[0] as WorkoutSingleStep).target.end == 70
         // 10m 80% LTHR
-        (hrWorkout.structure.steps[1] as WorkoutSingleStep).target.start == 78
-        (hrWorkout.structure.steps[1] as WorkoutSingleStep).target.end == 82
+        (workout.structure.steps[1] as WorkoutSingleStep).target.start == 78
+        (workout.structure.steps[1] as WorkoutSingleStep).target.end == 82
         // 10m ramp 45-60% LTHR
-        (hrWorkout.structure.steps[2] as WorkoutSingleStep).target.start == 45
-        (hrWorkout.structure.steps[2] as WorkoutSingleStep).target.end == 60
-        (hrWorkout.structure.steps[2] as WorkoutSingleStep).ramp
+        (workout.structure.steps[2] as WorkoutSingleStep).target.start == 45
+        (workout.structure.steps[2] as WorkoutSingleStep).target.end == 60
+        (workout.structure.steps[2] as WorkoutSingleStep).ramp
         // 10m Z2 HR
-        (hrWorkout.structure.steps[3] as WorkoutSingleStep).target.start == 68
-        (hrWorkout.structure.steps[3] as WorkoutSingleStep).target.end == 82
+        (workout.structure.steps[3] as WorkoutSingleStep).target.start == 68
+        (workout.structure.steps[3] as WorkoutSingleStep).target.end == 82
         // 10m Z3-Z4 HR
-        (hrWorkout.structure.steps[4] as WorkoutSingleStep).target.start == 83
-        (hrWorkout.structure.steps[4] as WorkoutSingleStep).target.end == 105
+        (workout.structure.steps[4] as WorkoutSingleStep).target.start == 83
+        (workout.structure.steps[4] as WorkoutSingleStep).target.end == 105
     }
 
     def "should parse power workout"() {
@@ -66,33 +66,85 @@ class IntervalsWorkoutRepositoryIT extends ISpringConfiguration {
         then:
         workouts.size() == 5
 
-        def powerWorkout = findWorkoutWithName("power test", workouts)
-        powerWorkout.type == TrainingType.BIKE
-        powerWorkout.structure.target == WorkoutStructure.TargetUnit.FTP_PERCENTAGE
-        powerWorkout.structure.steps.size() == 5
+        def workout = findWorkoutWithName("power test", workouts)
+        workout.type == TrainingType.BIKE
+        workout.structure.target == WorkoutStructure.TargetUnit.FTP_PERCENTAGE
+        workout.structure.steps.size() == 5
         // 10m 10-30%
-        (powerWorkout.structure.steps[0] as WorkoutSingleStep).duration == Duration.ofMinutes(10)
-        (powerWorkout.structure.steps[0] as WorkoutSingleStep).target.start == 10
-        (powerWorkout.structure.steps[0] as WorkoutSingleStep).target.end == 30
+        (workout.structure.steps[0] as WorkoutSingleStep).duration == Duration.ofMinutes(10)
+        (workout.structure.steps[0] as WorkoutSingleStep).target.start == 10
+        (workout.structure.steps[0] as WorkoutSingleStep).target.end == 30
         // 10m 40% 30-90rpm
-        (powerWorkout.structure.steps[1] as WorkoutSingleStep).target.start == 39
-        (powerWorkout.structure.steps[1] as WorkoutSingleStep).target.end == 41
-        (powerWorkout.structure.steps[1] as WorkoutSingleStep).cadence.start == 30
-        (powerWorkout.structure.steps[1] as WorkoutSingleStep).cadence.end == 90
+        (workout.structure.steps[1] as WorkoutSingleStep).target.start == 39
+        (workout.structure.steps[1] as WorkoutSingleStep).target.end == 41
+        (workout.structure.steps[1] as WorkoutSingleStep).cadence.start == 30
+        (workout.structure.steps[1] as WorkoutSingleStep).cadence.end == 90
         // 10m ramp 10-60%
-        (powerWorkout.structure.steps[2] as WorkoutSingleStep).target.start == 10
-        (powerWorkout.structure.steps[2] as WorkoutSingleStep).target.end == 60
-        (powerWorkout.structure.steps[2] as WorkoutSingleStep).ramp
+        (workout.structure.steps[2] as WorkoutSingleStep).target.start == 10
+        (workout.structure.steps[2] as WorkoutSingleStep).target.end == 60
+        (workout.structure.steps[2] as WorkoutSingleStep).ramp
         // 10m Z2 85rpm
-        (powerWorkout.structure.steps[3] as WorkoutSingleStep).target.start == 56
-        (powerWorkout.structure.steps[3] as WorkoutSingleStep).target.end == 75
-        (powerWorkout.structure.steps[3] as WorkoutSingleStep).cadence.start == 85
-        (powerWorkout.structure.steps[3] as WorkoutSingleStep).cadence.end == 85
+        (workout.structure.steps[3] as WorkoutSingleStep).target.start == 56
+        (workout.structure.steps[3] as WorkoutSingleStep).target.end == 75
+        (workout.structure.steps[3] as WorkoutSingleStep).cadence.start == 85
+        (workout.structure.steps[3] as WorkoutSingleStep).cadence.end == 85
         // 10m Z3-Z4
-        (powerWorkout.structure.steps[4] as WorkoutSingleStep).target.start == 76
-        (powerWorkout.structure.steps[4] as WorkoutSingleStep).target.end == 105
+        (workout.structure.steps[4] as WorkoutSingleStep).target.start == 76
+        (workout.structure.steps[4] as WorkoutSingleStep).target.end == 105
     }
 
+    def "should parse pace workout"() {
+        when:
+        def workouts = intervalsWorkoutRepository.getPlannedWorkouts(LocalDate.now(), LocalDate.now())
+
+        then:
+        workouts.size() == 5
+
+        def workout = findWorkoutWithName("pace test", workouts)
+        workout.type == TrainingType.RUN
+        workout.structure.target == WorkoutStructure.TargetUnit.PACE_PERCENTAGE
+        workout.structure.steps.size() == 4
+        // 10m 70% Pace
+        (workout.structure.steps[0] as WorkoutSingleStep).duration == Duration.ofMinutes(10)
+        (workout.structure.steps[0] as WorkoutSingleStep).target.start == 68
+        (workout.structure.steps[0] as WorkoutSingleStep).target.end == 72
+        // 10m 80-110% Pace
+        (workout.structure.steps[1] as WorkoutSingleStep).target.start == 80
+        (workout.structure.steps[1] as WorkoutSingleStep).target.end == 110
+        // 10m Z2 Pace
+        (workout.structure.steps[2] as WorkoutSingleStep).target.start == 79
+        (workout.structure.steps[2] as WorkoutSingleStep).target.end == 88
+        // 10m Z3-Z5 Pace
+        (workout.structure.steps[3] as WorkoutSingleStep).target.start == 89
+        (workout.structure.steps[3] as WorkoutSingleStep).target.end == 103
+    }
+
+    def "should parse virtual ride workout"() {
+        when:
+        def workouts = intervalsWorkoutRepository.getPlannedWorkouts(LocalDate.now(), LocalDate.now())
+
+        then:
+        workouts.size() == 5
+
+        def workout = findWorkoutWithName("virtual ride test", workouts)
+        workout.type == TrainingType.VIRTUAL_BIKE
+        workout.structure.target == WorkoutStructure.TargetUnit.FTP_PERCENTAGE
+        workout.structure.steps.size() == 5
+    }
+
+    def "should parse other workout"() {
+        when:
+        def workouts = intervalsWorkoutRepository.getPlannedWorkouts(LocalDate.now(), LocalDate.now())
+
+        then:
+        workouts.size() == 5
+
+        def workout = findWorkoutWithName("other test", workouts)
+        workout.type == TrainingType.UNKNOWN
+        workout.duration == Duration.ofMinutes(45)
+        workout.load == 32
+        workout.structure == null
+    }
 
     def findWorkoutWithName(name, List<Workout> workouts) {
         workouts.stream().filter { it.getTitle() == name }.findFirst().orElseThrow()
