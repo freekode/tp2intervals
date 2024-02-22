@@ -3,8 +3,8 @@ package org.freekode.tp2intervals.infrastructure.platform.intervalsicu.validator
 import org.freekode.tp2intervals.app.confguration.ConfigurationValidator
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.config.AppConfiguration
-import org.freekode.tp2intervals.infrastructure.intervalsicu.IntervalsApiClientConfig
-import org.freekode.tp2intervals.infrastructure.intervalsicu.configuration.IntervalsConfiguration
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsApiClientConfig
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfiguration
 import org.springframework.stereotype.Component
 
 @Component

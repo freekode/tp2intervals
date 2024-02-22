@@ -3,8 +3,8 @@ package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.validato
 import org.freekode.tp2intervals.app.confguration.ConfigurationValidator
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.config.AppConfiguration
-import org.freekode.tp2intervals.infrastructure.trainingpeaks.configuraiton.TrainingPeaksConfiguration
-import org.freekode.tp2intervals.infrastructure.trainingpeaks.token.TrainingPeaksApiTokenRepository
+import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.configuraiton.TrainingPeaksConfiguration
+import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.token.TrainingPeaksApiTokenRepository
 import org.springframework.stereotype.Component
 
 @Component

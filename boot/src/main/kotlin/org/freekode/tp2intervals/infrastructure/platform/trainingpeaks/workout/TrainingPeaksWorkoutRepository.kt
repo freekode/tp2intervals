@@ -9,8 +9,8 @@ import org.freekode.tp2intervals.domain.plan.Plan
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutRepository
 import org.freekode.tp2intervals.infrastructure.PlatformException
-import org.freekode.tp2intervals.infrastructure.trainingpeaks.TrainingPeaksApiClient
-import org.freekode.tp2intervals.infrastructure.trainingpeaks.workout.structure.StructureToTPConverter
+import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.TrainingPeaksApiClient
+import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.StructureToTPConverter
 import org.springframework.stereotype.Repository
 
 

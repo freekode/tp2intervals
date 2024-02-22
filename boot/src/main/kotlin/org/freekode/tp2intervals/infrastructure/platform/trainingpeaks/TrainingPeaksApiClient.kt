@@ -1,9 +1,9 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks
 
-import org.freekode.tp2intervals.infrastructure.trainingpeaks.user.TrainingPeaksUserDTO
-import org.freekode.tp2intervals.infrastructure.trainingpeaks.workout.CreateTPWorkoutDTO
-import org.freekode.tp2intervals.infrastructure.trainingpeaks.workout.TPNoteDTO
-import org.freekode.tp2intervals.infrastructure.trainingpeaks.workout.TPWorkoutDTO
+import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.user.TrainingPeaksUserDTO
+import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.CreateTPWorkoutDTO
+import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.TPNoteDTO
+import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.TPWorkoutDTO
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.core.io.Resource
 import org.springframework.web.bind.annotation.GetMapping
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody
     url = "\${training-peaks.api-url}",
     dismiss404 = true,
     primary = false,
-    configuration = [org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.TrainingPeaksApiClientConfig::class]
+    configuration = [TrainingPeaksApiClientConfig::class]
 )
 interface TrainingPeaksApiClient {
     @GetMapping("/users/v3/user")

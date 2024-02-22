@@ -4,7 +4,7 @@ import org.freekode.tp2intervals.domain.workout.structure.StepIntensityType
 
 class TPStepDTO(
     var name: String,
-    var length: org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.TPLengthDTO,
+    var length: TPLengthDTO,
     var targets: List<TPTargetDTO>,
     var intensityClass: IntensityClass?,
     var openDuration: Boolean?

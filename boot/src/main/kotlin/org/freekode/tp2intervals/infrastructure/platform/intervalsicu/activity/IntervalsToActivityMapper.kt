@@ -2,7 +2,7 @@ package org.freekode.tp2intervals.infrastructure.platform.intervalsicu.activity
 
 import java.time.Duration
 import org.freekode.tp2intervals.domain.activity.Activity
-import org.freekode.tp2intervals.infrastructure.intervalsicu.IntervalsActivityDTO
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsActivityDTO
 
 class IntervalsToActivityMapper(
     private val eventDTO: IntervalsActivityDTO

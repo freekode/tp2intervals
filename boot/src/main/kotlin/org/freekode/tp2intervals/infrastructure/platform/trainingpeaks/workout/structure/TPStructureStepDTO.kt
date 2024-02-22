@@ -2,7 +2,7 @@ package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.
 
 class TPStructureStepDTO(
     var type: StructureType,
-    var length: org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.TPLengthDTO,
+    var length: TPLengthDTO,
     var steps: List<TPStepDTO>,
     val begin: Long? = null,
     val end: Long? = null
@@ -11,28 +11,28 @@ class TPStructureStepDTO(
         fun singleStep(stepDTO: TPStepDTO): TPStructureStepDTO =
             TPStructureStepDTO(
                 StructureType.step,
-                org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.TPLengthDTO.single(),
+                TPLengthDTO.single(),
                 listOf(stepDTO),
             )
 
         fun multiStep(repetitions: Int, stepDTOs: List<TPStepDTO>): TPStructureStepDTO =
             TPStructureStepDTO(
                 StructureType.repetition,
-                org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.TPLengthDTO.repetitions(repetitions.toLong()),
+                TPLengthDTO.repetitions(repetitions.toLong()),
                 stepDTOs,
             )
 
         fun rampUp(stepDTOs: List<TPStepDTO>): TPStructureStepDTO =
             TPStructureStepDTO(
                 StructureType.rampUp,
-                org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.TPLengthDTO.single(),
+                TPLengthDTO.single(),
                 stepDTOs,
             )
 
         fun rampDown(stepDTOs: List<TPStepDTO>): TPStructureStepDTO =
             TPStructureStepDTO(
                 StructureType.rampDown,
-                org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.TPLengthDTO.single(),
+                TPLengthDTO.single(),
                 stepDTOs,
             )
 

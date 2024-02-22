@@ -5,27 +5,27 @@ import org.freekode.tp2intervals.infrastructure.PlatformException
 
 class TPLengthDTO(
     var value: Long,
-    var unit: org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.TPLengthDTO.LengthUnit,
+    var unit: LengthUnit,
 ) {
     companion object {
         fun seconds(value: Long) =
-            org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.TPLengthDTO(
+            TPLengthDTO(
                 value,
-                org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.TPLengthDTO.LengthUnit.second
+                LengthUnit.second
             )
         fun repetitions(value: Long) =
-            org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.TPLengthDTO(
+            TPLengthDTO(
                 value,
-                org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.TPLengthDTO.LengthUnit.repetition
+                LengthUnit.repetition
             )
         fun single() =
-            org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.TPLengthDTO.Companion.repetitions(
+            repetitions(
                 1
             )
     }
 
     fun reps(): Long {
-        if (unit != org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.TPLengthDTO.LengthUnit.repetition) {
+        if (unit != LengthUnit.repetition) {
             throw PlatformException("not a repetition length")
         }
         return value
@@ -33,7 +33,7 @@ class TPLengthDTO(
 
     fun mapDuration(): Duration {
         return when (unit) {
-            org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.TPLengthDTO.LengthUnit.second -> Duration.ofSeconds(value)
+            LengthUnit.second -> Duration.ofSeconds(value)
             else -> throw PlatformException("i can't do that yet with $unit")
         }
     }

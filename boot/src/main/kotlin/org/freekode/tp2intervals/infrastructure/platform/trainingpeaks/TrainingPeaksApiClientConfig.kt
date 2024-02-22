@@ -1,7 +1,7 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks
 
 import feign.RequestInterceptor
-import org.freekode.tp2intervals.infrastructure.trainingpeaks.token.TrainingPeaksApiTokenRepository
+import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.token.TrainingPeaksApiTokenRepository
 import org.springframework.context.annotation.Bean
 import org.springframework.http.HttpHeaders
 

@@ -1,11 +1,11 @@
 package org.freekode.tp2intervals.infrastructure.platform.intervalsicu
 
-import org.freekode.tp2intervals.infrastructure.intervalsicu.activity.CreateActivityResponseDTO
-import org.freekode.tp2intervals.infrastructure.intervalsicu.folder.CreateFolderRequestDTO
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.activity.CreateActivityResponseDTO
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.folder.CreateFolderRequestDTO
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.folder.FolderDTO
-import org.freekode.tp2intervals.infrastructure.intervalsicu.workout.CreateEventRequestDTO
-import org.freekode.tp2intervals.infrastructure.intervalsicu.workout.CreateWorkoutRequestDTO
-import org.freekode.tp2intervals.infrastructure.intervalsicu.workout.IntervalsEventDTO
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.CreateEventRequestDTO
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.CreateWorkoutRequestDTO
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsEventDTO
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
@@ -31,7 +31,7 @@ interface IntervalsApiClient {
     fun createFolder(
         @PathVariable("athleteId") athleteId: String,
         @RequestBody createFolderRequestDTO: CreateFolderRequestDTO
-    ): _root_ide_package_.org.freekode.tp2intervals.infrastructure.platform.intervalsicu.folder.FolderDTO
+    ): FolderDTO
 
     @PostMapping("/api/v1/athlete/{athleteId}/workouts")
     fun createWorkout(

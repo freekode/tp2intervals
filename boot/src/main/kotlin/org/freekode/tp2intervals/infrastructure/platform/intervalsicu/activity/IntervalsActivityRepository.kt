@@ -4,8 +4,8 @@ import java.time.LocalDate
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.activity.Activity
 import org.freekode.tp2intervals.domain.activity.ActivityRepository
-import org.freekode.tp2intervals.infrastructure.intervalsicu.IntervalsApiClient
-import org.freekode.tp2intervals.infrastructure.intervalsicu.configuration.IntervalsConfigurationRepository
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsApiClient
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfigurationRepository
 import org.freekode.tp2intervals.infrastructure.utils.MyMultipartFile
 import org.springframework.stereotype.Repository
 
