@@ -23,7 +23,7 @@ class TPToWorkoutConverter {
             tpWorkout.totalTimePlanned?.let { Duration.ofMinutes((it * 60).toLong()) },
             tpWorkout.tssPlanned?.toInt(),
             workoutsStructure,
-            WorkoutExternalData.trainingPeaks(tpWorkout.workoutId, null)
+            WorkoutExternalData.trainingPeaks(tpWorkout.workoutId)
         )
     }
 
@@ -32,7 +32,7 @@ class TPToWorkoutConverter {
             tpNote.noteDate.toLocalDate(),
             tpNote.title,
             tpNote.description,
-            WorkoutExternalData.trainingPeaks(tpNote.id.toString(), null)
+            WorkoutExternalData.trainingPeaks(tpNote.id.toString())
         )
     }
 

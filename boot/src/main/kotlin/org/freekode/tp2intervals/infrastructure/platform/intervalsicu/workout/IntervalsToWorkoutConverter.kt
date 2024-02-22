@@ -3,7 +3,6 @@ package org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout
 import java.time.Duration
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutExternalData
-import org.freekode.tp2intervals.domain.workout.structure.StepIntensityType
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutMultiStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutSingleStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStep
