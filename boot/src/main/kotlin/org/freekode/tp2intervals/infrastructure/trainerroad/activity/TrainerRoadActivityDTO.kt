@@ -11,7 +11,7 @@ class TrainerRoadActivityDTO(
         val Name: String,
         val Date: LocalDateTime,
         val IsOutside: Boolean,
-        val Tss: Long,
+        val Tss: Int,
         val EstimatedDuration: Long,
         val Duration: Long,
         val Distance: Double,

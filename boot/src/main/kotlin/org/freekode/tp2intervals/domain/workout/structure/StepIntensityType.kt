@@ -1,4 +1,4 @@
-package org.freekode.tp2intervals.domain.workout
+package org.freekode.tp2intervals.domain.workout.structure
 
 enum class StepIntensityType {
     WARM_UP,

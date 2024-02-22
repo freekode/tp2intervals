@@ -1,6 +1,6 @@
 package org.freekode.tp2intervals.infrastructure.trainingpeaks.workout.structure
 
-import org.freekode.tp2intervals.domain.workout.StepIntensityType
+import org.freekode.tp2intervals.domain.workout.structure.StepIntensityType
 
 class TPStepDTO(
     var name: String,

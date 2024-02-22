@@ -10,14 +10,14 @@ class CreateTPWorkoutDTO(
     var title: String,
     var totalTime: Double?,
     var totalTimePlanned: Double?,
-    var tssActual: Double?,
-    var tssPlanned: Double?,
+    var tssActual: Int?,
+    var tssPlanned: Int?,
     var structure: String?
 ) {
     companion object {
         fun planWorkout(
             athleteId: String, workoutDay: LocalDate, workoutTypeValueId: Int, title: String,
-            totalTimePlanned: Double?, tssPlanned: Double?, structure: String?
+            totalTimePlanned: Double?, tssPlanned: Int?, structure: String?
         ): CreateTPWorkoutDTO {
             return CreateTPWorkoutDTO(
                 athleteId,
@@ -34,7 +34,7 @@ class CreateTPWorkoutDTO(
 
         fun createWorkout(
             athleteId: String, workoutDay: LocalDateTime, workoutTypeValueId: Int, title: String,
-            totalTime: Double?, tssActual: Double?
+            totalTime: Double?, tssActual: Int?
         ): CreateTPWorkoutDTO {
             return CreateTPWorkoutDTO(
                 athleteId,

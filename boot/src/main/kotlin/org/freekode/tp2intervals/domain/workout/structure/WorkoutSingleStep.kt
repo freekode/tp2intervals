@@ -1,4 +1,4 @@
-package org.freekode.tp2intervals.domain.workout
+package org.freekode.tp2intervals.domain.workout.structure
 
 import java.time.Duration
 
@@ -58,7 +58,7 @@ class WorkoutSingleStep(
 
         val stepStart = target.start + stepTargetDiff * stepNum
         val stepEnd = stepStart + stepTargetDiff
-        return WorkoutStepTarget(target.unit, stepStart, stepEnd)
+        return WorkoutStepTarget(stepStart, stepEnd)
     }
 
     private fun getRampStepDuration(): Int {

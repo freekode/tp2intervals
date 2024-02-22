@@ -2,23 +2,18 @@ package org.freekode.tp2intervals.infrastructure.trainingpeaks.workout.structure
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.freekode.tp2intervals.domain.workout.Workout
-import org.freekode.tp2intervals.domain.workout.WorkoutMultiStep
-import org.freekode.tp2intervals.domain.workout.WorkoutSingleStep
-import org.freekode.tp2intervals.domain.workout.WorkoutStep
-import org.freekode.tp2intervals.domain.workout.WorkoutStepTarget
-import org.springframework.stereotype.Component
+import org.freekode.tp2intervals.domain.workout.structure.WorkoutMultiStep
+import org.freekode.tp2intervals.domain.workout.structure.WorkoutSingleStep
+import org.freekode.tp2intervals.domain.workout.structure.WorkoutStep
+import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
 
-@Component
-class WorkoutStepToTPStructureConverter(
+class StructureToTPConverter(
     private val objectMapper: ObjectMapper,
+    private val structure: WorkoutStructure,
 ) {
 
-    fun toWorkoutStructureStr(workout: Workout): String? {
-        if (workout.steps.isEmpty()) {
-            return null
-        }
-        val structure = mapToWorkoutStructure(workout.steps)
+    fun toTPStructureStr(): String {
+        val structure = mapToWorkoutStructure(structure.steps)
         return objectMapper.copy()
             .setSerializationInclusion(JsonInclude.Include.NON_NULL)
             .writeValueAsString(structure)
@@ -30,7 +25,7 @@ class WorkoutStepToTPStructureConverter(
         return TPWorkoutStructureDTO(
             stepDTOs,
             TPWorkoutStructureDTO.LengthMetric.duration,
-            TPWorkoutStructureDTO.IntensityMetric.percentOfFtp,
+            TPTargetMapper.getByTargetUnit(structure.target),
             TPWorkoutStructureDTO.IntensityTargetOrRange.range,
             null
         )
@@ -59,26 +54,18 @@ class WorkoutStepToTPStructureConverter(
         return TPStructureStepDTO.multiStep(workoutStep.repetitions, stepDTOs)
     }
 
-    private fun mapToStepDTO(workoutStep: WorkoutSingleStep) =
-        TPStepDTO(
+    private fun mapToStepDTO(workoutStep: WorkoutSingleStep): TPStepDTO {
+        val targetList = mutableListOf(TPTargetDTO.mainTarget(workoutStep.target.start, workoutStep.target.end))
+        workoutStep.cadence
+            ?.let { TPTargetDTO.cadenceTarget(it.start, workoutStep.cadence.end) }
+            ?.also { targetList.add(it) }
+
+        return TPStepDTO(
             workoutStep.title,
             TPLengthDTO.seconds(workoutStep.duration.seconds),
-            listOf(mapToTargetDTO(workoutStep.target)),
+            targetList,
             TPStepDTO.IntensityClass.findByIntensityType(workoutStep.intensity),
             null
         )
-
-    private fun mapToTargetDTO(workoutStepTarget: WorkoutStepTarget) =
-        when (workoutStepTarget.unit) {
-            WorkoutStepTarget.TargetUnit.FTP_PERCENTAGE -> TPTargetDTO.powerTarget(
-                workoutStepTarget.start, workoutStepTarget.end,
-            )
-
-            WorkoutStepTarget.TargetUnit.RPM -> TPTargetDTO.cadenceTarget(
-                workoutStepTarget.start, workoutStepTarget.end,
-            )
-
-            else -> throw RuntimeException("i cant do it yet")
-        }
-
+    }
 }

@@ -10,7 +10,7 @@ data class Activity(
     val type: TrainingType,
     val title: String,
     val duration: Duration,
-    val load: Long?,
+    val load: Int?,
     val resource: String?
 ) {
     private fun compareDuration(otherDuration: Duration): Boolean {

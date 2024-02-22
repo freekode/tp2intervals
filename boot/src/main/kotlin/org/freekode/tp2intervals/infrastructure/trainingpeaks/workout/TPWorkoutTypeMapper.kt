@@ -8,7 +8,7 @@ class TPWorkoutTypeMapper {
             TrainingType.BIKE to 2,
             TrainingType.MTB to 8,
             TrainingType.VIRTUAL_BIKE to 2,
-//            TrainingType.RUN to 3,
+            TrainingType.RUN to 3,
             TrainingType.NOTE to 7,
             TrainingType.WEIGHT to 9,
             TrainingType.WALK to 13,
