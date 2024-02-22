@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class IntervalsConfigurationValidator(
-    private val intervalsValidationApiClient: org.freekode.tp2intervals.infrastructure.platform.intervalsicu.validator.IntervalsValidationApiClient,
+    private val intervalsValidationApiClient: IntervalsValidationApiClient,
 ) : ConfigurationValidator {
     override fun platform() = Platform.INTERVALS
 

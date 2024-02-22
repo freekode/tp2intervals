@@ -8,20 +8,9 @@ class TPLengthDTO(
     var unit: LengthUnit,
 ) {
     companion object {
-        fun seconds(value: Long) =
-            TPLengthDTO(
-                value,
-                LengthUnit.second
-            )
-        fun repetitions(value: Long) =
-            TPLengthDTO(
-                value,
-                LengthUnit.repetition
-            )
-        fun single() =
-            repetitions(
-                1
-            )
+        fun seconds(value: Long) = TPLengthDTO(value, LengthUnit.second)
+        fun repetitions(value: Long) = TPLengthDTO(value, LengthUnit.repetition)
+        fun single() = repetitions(1)
     }
 
     fun reps(): Long {

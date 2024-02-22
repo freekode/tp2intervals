@@ -62,7 +62,7 @@ class StructureToTPConverter(
 
         return TPStepDTO(
             workoutStep.title,
-            org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.TPLengthDTO.seconds(workoutStep.duration.seconds),
+            TPLengthDTO.seconds(workoutStep.duration.seconds),
             targetList,
             TPStepDTO.IntensityClass.findByIntensityType(workoutStep.intensity),
             null
