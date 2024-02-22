@@ -1,52 +1,55 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout
 
-import java.time.LocalDate
 import java.time.LocalDateTime
+import org.freekode.tp2intervals.domain.activity.Activity
+import org.freekode.tp2intervals.domain.workout.Workout
 
 class CreateTPWorkoutDTO(
     var athleteId: String,
     var workoutDay: LocalDateTime,
     var workoutTypeValueId: Int,
     var title: String,
+    var description: String?,
     var totalTime: Double?,
     var totalTimePlanned: Double?,
     var tssActual: Int?,
     var tssPlanned: Int?,
     var structure: String?
 ) {
+
     companion object {
+
         fun planWorkout(
-            athleteId: String, workoutDay: LocalDate, workoutTypeValueId: Int, title: String,
-            totalTimePlanned: Double?, tssPlanned: Int?, structure: String?
+            athleteId: String, workout: Workout, structureStr: String?
         ): CreateTPWorkoutDTO {
             return CreateTPWorkoutDTO(
                 athleteId,
-                workoutDay.atStartOfDay(),
-                workoutTypeValueId,
-                title,
+                workout.date.atStartOfDay(),
+                TPWorkoutTypeMapper.getByType(workout.type),
+                workout.name,
+                workout.externalData.toSimpleString(),
                 null,
-                totalTimePlanned,
+                workout.duration?.toMinutes()?.toDouble()?.div(60),
                 null,
-                tssPlanned,
-                structure
+                workout.load,
+                structureStr
             )
         }
 
-        fun createWorkout(
-            athleteId: String, workoutDay: LocalDateTime, workoutTypeValueId: Int, title: String,
-            totalTime: Double?, tssActual: Int?
-        ): CreateTPWorkoutDTO {
+        fun createActivity(athleteId: String, activity: Activity): CreateTPWorkoutDTO {
             return CreateTPWorkoutDTO(
                 athleteId,
-                workoutDay,
-                workoutTypeValueId,
-                title,
-                totalTime,
+                activity.startedAt,
+                TPWorkoutTypeMapper.getByType(activity.type),
+                activity.title,
                 null,
-                tssActual,
+                activity.duration.toMinutes().toDouble().div(60),
+                null,
+                activity.load,
                 null,
                 null
             )
         }
+
     }
 }

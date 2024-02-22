@@ -17,6 +17,7 @@ import { WorkoutClient } from "infrastructure/workout.client";
 import { MatSelectModule } from "@angular/material/select";
 import { ConfigurationClient } from "infrastructure/configuration.client";
 import { formatDate } from "utils/date-formatter";
+import { MatCheckboxModule } from "@angular/material/checkbox";
 
 @Component({
   selector: 'app-training-peaks-actions',
@@ -34,7 +35,8 @@ import { formatDate } from "utils/date-formatter";
     MatDatepickerModule,
     MatNativeDateModule,
     MatSnackBarModule,
-    MatSelectModule
+    MatSelectModule,
+    MatCheckboxModule
   ],
   templateUrl: './training-peaks-actions.component.html',
   styleUrl: './training-peaks-actions.component.scss'
@@ -44,6 +46,7 @@ export class TrainingPeaksActionsComponent implements OnInit {
   planWorkoutsFormGroup: FormGroup = this.formBuilder.group({
     direction: [null, Validators.required],
     trainingTypes: [null, Validators.required],
+    skipSynced: [null, Validators.required],
   });
 
   copyWorkoutsFormGroup: FormGroup = this.formBuilder.group({
@@ -101,7 +104,7 @@ export class TrainingPeaksActionsComponent implements OnInit {
       finalize(() => this.copyPlanInProgress = false)
     ).subscribe((response) => {
       this.notificationService.success(
-        `Copied ${response.copied} workout(s)\n Filtered out ${response.filteredOut} workout(s)\n From ${response.startDate} to ${response.endDate}`)
+        `Copied: ${response.copied}\n Filtered out: ${response.filteredOut}\n From ${response.startDate} to ${response.endDate}`)
     })
   }
 
@@ -109,11 +112,12 @@ export class TrainingPeaksActionsComponent implements OnInit {
     this.planWorkoutInProgress = true
     let direction = this.planWorkoutsFormGroup.value.direction
     let trainingTypes = this.planWorkoutsFormGroup.value.trainingTypes
-    this.workoutClient.planWorkout(direction, date, date, trainingTypes).pipe(
+    let skipSynced = this.planWorkoutsFormGroup.value.skipSynced
+    this.workoutClient.planWorkout(direction, date, date, trainingTypes, skipSynced).pipe(
       finalize(() => this.planWorkoutInProgress = false)
     ).subscribe((response) => {
       this.notificationService.success(
-        `Planned ${response.planned} workout(s)\n Filtered out ${response.filteredOut} workout(s)\n From ${response.startDate} to ${response.endDate}`)
+        `Planned: ${response.planned}\n Filtered out: ${response.filteredOut}\n From ${response.startDate} to ${response.endDate}`)
     })
   }
 
@@ -121,6 +125,7 @@ export class TrainingPeaksActionsComponent implements OnInit {
     this.planWorkoutsFormGroup.patchValue({
       direction: this.selectedPlanDirection,
       trainingTypes: this.selectedTrainingTypes,
+      skipSynced: true
     })
     this.copyWorkoutsFormGroup.patchValue({
       name: 'My New Plan',

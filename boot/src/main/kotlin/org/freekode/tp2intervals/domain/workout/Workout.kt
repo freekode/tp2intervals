@@ -30,6 +30,7 @@ data class Workout(
         if (type != other.type) return false
         if (name != other.name) return false
         if (load != other.load) return false
+        if (externalData != other.externalData) return false
 
         return true
     }
@@ -37,7 +38,10 @@ data class Workout(
     override fun hashCode(): Int {
         var result = type.hashCode()
         result = 31 * result + name.hashCode()
-        result = 31 * result + (load?.hashCode() ?: 0)
+        result = 31 * result + (load ?: 0)
+        result = 31 * result + externalData.hashCode()
         return result
     }
+
+
 }

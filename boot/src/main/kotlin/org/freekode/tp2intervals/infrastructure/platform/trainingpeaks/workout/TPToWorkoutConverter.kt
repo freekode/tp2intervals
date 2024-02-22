@@ -15,16 +15,24 @@ class TPToWorkoutConverter {
         var description = tpWorkout.description.orEmpty()
         description += tpWorkout.coachComments?.let { "\n- - - -\n$it" }.orEmpty()
 
+
         return Workout(
             tpWorkout.workoutDay.toLocalDate(),
             tpWorkout.getWorkoutType()!!,
             tpWorkout.title.ifBlank { "Workout" },
             description,
             tpWorkout.totalTimePlanned?.let { Duration.ofMinutes((it * 60).toLong()) },
-            tpWorkout.tssPlanned?.toInt(),
+            tpWorkout.tssPlanned,
             workoutsStructure,
-            WorkoutExternalData.trainingPeaks(tpWorkout.workoutId)
+            getWorkoutExternalData(tpWorkout)
         )
+    }
+
+    private fun getWorkoutExternalData(tpWorkout: TPWorkoutResponseDTO): WorkoutExternalData {
+        return WorkoutExternalData
+            .empty()
+            .withTrainingPeaks(tpWorkout.workoutId)
+            .withSimpleString(tpWorkout.description ?: "")
     }
 
     fun toWorkout(tpNote: TPNoteResponseDTO): Workout {
@@ -32,7 +40,9 @@ class TPToWorkoutConverter {
             tpNote.noteDate.toLocalDate(),
             tpNote.title,
             tpNote.description,
-            WorkoutExternalData.trainingPeaks(tpNote.id.toString())
+            WorkoutExternalData
+                .empty()
+                .withTrainingPeaks(tpNote.id.toString())
         )
     }
 

@@ -26,7 +26,7 @@ class TRWorkoutConverter(
             Duration.ofMinutes(trWorkout.details.duration.toLong()),
             trWorkout.details.tss,
             WorkoutStructure(WorkoutStructure.TargetUnit.FTP_PERCENTAGE, steps),
-            WorkoutExternalData.trainerRoad(trWorkout.details.id.toString())
+            WorkoutExternalData.empty().withTrainerRoad(trWorkout.details.id.toString())
         )
     }
 
@@ -46,5 +46,4 @@ class TRWorkoutConverter(
         }
         return steps
     }
-
 }

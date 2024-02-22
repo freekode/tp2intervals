@@ -6,4 +6,5 @@ open class WorkoutsBaseRequestDTO(
     val types: List<TrainingType>,
     val startDate: String,
     val endDate: String,
+    val skipSynced: Boolean = false
 )
