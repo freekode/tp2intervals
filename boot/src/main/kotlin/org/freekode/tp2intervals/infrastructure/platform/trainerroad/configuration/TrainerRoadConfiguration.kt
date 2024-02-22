@@ -1,4 +1,4 @@
-package org.freekode.tp2intervals.infrastructure.platform.trainerroad.configuraiton
+package org.freekode.tp2intervals.infrastructure.platform.trainerroad.configuration
 
 import org.freekode.tp2intervals.domain.config.AppConfiguration
 

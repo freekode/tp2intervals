@@ -2,7 +2,7 @@ package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout
 
 import java.time.LocalDateTime
 
-class TPNoteDTO(
+class TPNoteResponseDTO(
     var id: Long,
     var noteDate: LocalDateTime,
     var title: String,

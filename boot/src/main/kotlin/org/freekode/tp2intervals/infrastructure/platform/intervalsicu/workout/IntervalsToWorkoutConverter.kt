@@ -3,7 +3,6 @@ package org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout
 import java.time.Duration
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutExternalData
-import org.freekode.tp2intervals.domain.workout.structure.StepIntensityType
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutMultiStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutSingleStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStep
@@ -68,25 +67,13 @@ class IntervalsToWorkoutConverter(
         )
         val mainTarget = targetMapper.toMainTarget(stepDTO)
         val cadenceTarget = stepDTO.cadence?.let { targetMapper.toCadenceTarget(it) }
-        val intensity = mapIntensityType(stepDTO)
 
         return WorkoutSingleStep(
             stepDTO.text ?: "Step",
             stepDTO.duration?.let { Duration.ofSeconds(it) } ?: Duration.ofMinutes(10),
             mainTarget,
             cadenceTarget,
-            intensity,
             stepDTO.ramp == true
         )
-    }
-
-    private fun mapIntensityType(stepDTO: IntervalsWorkoutDocDTO.WorkoutStepDTO): StepIntensityType {
-        return if (true == stepDTO.warmup) {
-            StepIntensityType.WARM_UP
-        } else if (true == stepDTO.cooldown) {
-            StepIntensityType.COOL_DOWN
-        } else {
-            StepIntensityType.default()
-        }
     }
 }

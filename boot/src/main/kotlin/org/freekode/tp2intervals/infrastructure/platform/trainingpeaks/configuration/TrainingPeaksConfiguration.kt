@@ -1,4 +1,4 @@
-package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.configuraiton
+package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.configuration
 
 import org.freekode.tp2intervals.domain.config.AppConfiguration
 

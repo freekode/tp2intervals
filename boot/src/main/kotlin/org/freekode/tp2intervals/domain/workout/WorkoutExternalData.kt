@@ -1,14 +1,16 @@
 package org.freekode.tp2intervals.domain.workout
 
 data class WorkoutExternalData(
-    val tpId: String?,
+    val trainingPeaksId: String?,
     val intervalsId: String?,
-    val externalContent: String?
+    val trainerRoadId: String?,
 ) {
     companion object {
-        fun trainingPeaks(tpId: String, externalContent: String?) = WorkoutExternalData(tpId, null, externalContent)
+        fun trainingPeaks(tpId: String) = WorkoutExternalData(tpId, null, null)
 
         fun intervals(intervalsId: String) = WorkoutExternalData(null, intervalsId, null)
+
+        fun trainerRoad(trainerRoadId: String) = WorkoutExternalData(null, null, trainerRoadId)
     }
 
     override fun equals(other: Any?): Boolean {
@@ -17,14 +19,14 @@ data class WorkoutExternalData(
 
         other as WorkoutExternalData
 
-        if (tpId != other.tpId) return false
+        if (trainingPeaksId != other.trainingPeaksId) return false
         if (intervalsId != other.intervalsId) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        var result = tpId?.hashCode() ?: 0
+        var result = trainingPeaksId?.hashCode() ?: 0
         result = 31 * result + (intervalsId?.hashCode() ?: 0)
         return result
     }

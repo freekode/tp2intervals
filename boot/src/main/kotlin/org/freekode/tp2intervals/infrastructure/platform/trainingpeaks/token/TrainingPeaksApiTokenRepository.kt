@@ -1,6 +1,6 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.token
 
-import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.configuraiton.TrainingPeaksConfigurationRepository
+import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.configuration.TrainingPeaksConfigurationRepository
 import org.springframework.cache.annotation.CacheConfig
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Repository

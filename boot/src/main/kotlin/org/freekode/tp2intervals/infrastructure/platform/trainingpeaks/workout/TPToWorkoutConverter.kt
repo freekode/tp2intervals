@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class TPToWorkoutConverter {
-    fun toWorkout(tpWorkout: TPWorkoutDTO): Workout {
+    fun toWorkout(tpWorkout: TPWorkoutResponseDTO): Workout {
         val workoutsStructure = if (tpWorkout.structure != null) toWorkoutStructure(tpWorkout.structure) else null
         var description = tpWorkout.description.orEmpty()
         description += tpWorkout.coachComments?.let { "\n- - - -\n$it" }.orEmpty()
@@ -21,18 +21,18 @@ class TPToWorkoutConverter {
             tpWorkout.title.ifBlank { "Workout" },
             description,
             tpWorkout.totalTimePlanned?.let { Duration.ofMinutes((it * 60).toLong()) },
-            tpWorkout.tssPlanned,
+            tpWorkout.tssPlanned?.toInt(),
             workoutsStructure,
-            WorkoutExternalData.trainingPeaks(tpWorkout.workoutId, null)
+            WorkoutExternalData.trainingPeaks(tpWorkout.workoutId)
         )
     }
 
-    fun toWorkout(tpNote: TPNoteDTO): Workout {
+    fun toWorkout(tpNote: TPNoteResponseDTO): Workout {
         return Workout.note(
             tpNote.noteDate.toLocalDate(),
             tpNote.title,
             tpNote.description,
-            WorkoutExternalData.trainingPeaks(tpNote.id.toString(), null)
+            WorkoutExternalData.trainingPeaks(tpNote.id.toString())
         )
     }
 

@@ -1,7 +1,7 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainerroad
 
 import feign.RequestInterceptor
-import org.freekode.tp2intervals.infrastructure.platform.trainerroad.configuraiton.TrainerRoadConfigurationRepository
+import org.freekode.tp2intervals.infrastructure.platform.trainerroad.configuration.TrainerRoadConfigurationRepository
 import org.springframework.context.annotation.Bean
 import org.springframework.http.HttpHeaders
 

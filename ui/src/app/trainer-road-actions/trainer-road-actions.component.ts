@@ -8,12 +8,14 @@ import { MatInputModule } from "@angular/material/input";
 import { MatProgressBarModule } from "@angular/material/progress-bar";
 import { NgIf } from "@angular/common";
 import { MatDatepickerModule } from "@angular/material/datepicker";
-import { MatNativeDateModule } from "@angular/material/core";
+import { MatNativeDateModule, MatOptionModule } from "@angular/material/core";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { Router } from "@angular/router";
 import { NotificationService } from "infrastructure/notification.service";
 import { finalize } from "rxjs";
 import { ActivityClient } from "infrastructure/activity.client";
+import { MatSelectModule } from "@angular/material/select";
+import { formatDate } from "utils/date-formatter";
 
 @Component({
   selector: 'app-trainer-road-actions',
@@ -30,19 +32,28 @@ import { ActivityClient } from "infrastructure/activity.client";
     NgIf,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatOptionModule,
+    MatSelectModule
   ],
   templateUrl: './trainer-road-actions.component.html',
   styleUrl: './trainer-road-actions.component.scss'
 })
 export class TrainerRoadActionsComponent implements OnInit {
   syncActivitiesFormGroup: FormGroup = this.formBuilder.group({
+    trainingTypes: [null, Validators.required],
     startDate: [null, Validators.required],
     endDate: [null, Validators.required],
   });
 
-  jobStarted = true
   syncActivitiesInProgress = false
+
+  trainingTypes = [
+    {title: "Ride", value: "BIKE"},
+    {title: "Virtual Ride", value: "VIRTUAL_BIKE"}
+  ];
+
+  private readonly selectedTrainingTypes = ['VIRTUAL_BIKE'];
 
   constructor(
     private router: Router,
@@ -53,9 +64,7 @@ export class TrainerRoadActionsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // this.activityClient.getJobSyncActivities().subscribe(response => {
-    //   this.jobStarted = !!response?.id
-    // })
+    this.initFormValues()
   }
 
   syncActivitiesSubmit() {
@@ -71,24 +80,21 @@ export class TrainerRoadActionsComponent implements OnInit {
 
   private syncActivities(startDate, endDate) {
     this.syncActivitiesInProgress = true
-    let startDateStr = startDate.toISOString().split('T')[0]
-    let endDateStr = endDate.toISOString().split('T')[0]
-    this.activityClient.syncActivities(startDateStr, endDateStr).pipe(
+    let startDateStr = formatDate(startDate)
+    let endDateStr = formatDate(endDate)
+    let trainingTypes = this.syncActivitiesFormGroup.value.trainingTypes
+    this.activityClient.syncActivities(startDateStr, endDateStr, trainingTypes).pipe(
       finalize(() => this.syncActivitiesInProgress = false)
-    ).subscribe(() => {
-      this.notificationService.success('Activities are synced')
+    ).subscribe((response) => {
+      this.notificationService.success(
+        `Synced ${response.synced} activity(ies)\n Filtered out ${response.filteredOut} workout(s)\n From ${response.startDate} to ${response.endDate}`)
     })
   }
 
-  startJob() {
-    this.activityClient.startJobSyncActivities().subscribe(() => {
-      this.jobStarted = true
+  private initFormValues() {
+    this.syncActivitiesFormGroup.patchValue({
+      trainingTypes: this.selectedTrainingTypes,
     })
   }
 
-  stopJob() {
-    this.activityClient.stopJobSyncActivities().subscribe(() => {
-      this.jobStarted = false
-    })
-  }
 }

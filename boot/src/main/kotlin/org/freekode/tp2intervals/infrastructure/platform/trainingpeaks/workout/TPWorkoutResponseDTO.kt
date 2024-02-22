@@ -4,7 +4,7 @@ import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.s
 import java.time.LocalDateTime
 import org.freekode.tp2intervals.domain.TrainingType
 
-class TPWorkoutDTO(
+class TPWorkoutResponseDTO(
     val workoutId: String,
     val workoutDay: LocalDateTime,
     val workoutTypeValueId: Int?,
