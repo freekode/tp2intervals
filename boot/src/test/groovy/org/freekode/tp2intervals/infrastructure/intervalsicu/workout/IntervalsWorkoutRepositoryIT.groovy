@@ -147,6 +147,6 @@ class IntervalsWorkoutRepositoryIT extends ISpringConfiguration {
     }
 
     def findWorkoutWithName(name, List<Workout> workouts) {
-        workouts.stream().filter { it.getTitle() == name }.findFirst().orElseThrow()
+        workouts.stream().filter { it.getName() == name }.findFirst().orElseThrow()
     }
 }

@@ -29,7 +29,7 @@ class IntervalsWorkoutRepository(
 
         val request = CreateEventRequestDTO(
             workout.date.atStartOfDay().toString(),
-            workout.title,
+            workout.name,
             workout.type.title,
             "WORKOUT",
             description
@@ -47,7 +47,7 @@ class IntervalsWorkoutRepository(
             plan.id.value,
             getWorkoutDayNumber(plan.startDate, workout.date),
             IntervalsEventTypeMapper.getByTrainingType(workout.type),
-            workout.title,
+            workout.name,
             workout.duration?.seconds,
             workout.load?.toInt(),
             description,

@@ -29,7 +29,7 @@ class TrainingPeaksWorkoutRepository(
             getUserId(),
             workout.date,
             TPWorkoutTypeMapper.getByType(workout.type),
-            workout.title,
+            workout.name,
             workout.duration?.toMinutes()?.toDouble()?.div(60),
             workout.load,
             structureStr

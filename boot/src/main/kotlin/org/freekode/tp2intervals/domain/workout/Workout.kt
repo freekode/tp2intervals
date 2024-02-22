@@ -8,10 +8,10 @@ import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
 data class Workout(
     val date: LocalDate,
     val type: TrainingType,
-    val title: String,
+    val name: String,
     val description: String?,
     val duration: Duration?,
-    val load: Double?,
+    val load: Int?,
     val structure: WorkoutStructure?,
     val externalData: WorkoutExternalData,
 ) {
@@ -28,7 +28,7 @@ data class Workout(
         other as Workout
 
         if (type != other.type) return false
-        if (title != other.title) return false
+        if (name != other.name) return false
         if (load != other.load) return false
 
         return true
@@ -36,7 +36,7 @@ data class Workout(
 
     override fun hashCode(): Int {
         var result = type.hashCode()
-        result = 31 * result + title.hashCode()
+        result = 31 * result + name.hashCode()
         result = 31 * result + (load?.hashCode() ?: 0)
         return result
     }

@@ -23,7 +23,7 @@ class IntervalsToWorkoutConverter(
             eventDTO.name,
             eventDTO.description,
             eventDTO.mapDuration(),
-            eventDTO.icu_training_load?.toDouble(),
+            eventDTO.icu_training_load,
             workoutsStructure,
             WorkoutExternalData.intervals(eventDTO.id.toString())
         )

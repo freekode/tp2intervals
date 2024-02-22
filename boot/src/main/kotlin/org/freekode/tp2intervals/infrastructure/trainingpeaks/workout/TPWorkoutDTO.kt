@@ -10,7 +10,7 @@ class TPWorkoutDTO(
     val workoutTypeValueId: Int?,
     val title: String,
     val totalTimePlanned: Double?,
-    val tssPlanned: Double?,
+    val tssPlanned: Int?,
     val description: String?,
     val coachComments: String?,
     val structure: TPWorkoutStructureDTO?
