@@ -1,0 +1,12 @@
+{
+  "name": "cypress",
+  "scripts": {
+    "start": "cypress open --config baseUrl=http://localhost:4200",
+    "test": "wait-on http://localhost:8080 && cypress run --config baseUrl=http://localhost:8080"
+  },
+  "devDependencies": {
+    "cypress": "^13.6.6",
+    "typescript": "^5.3.3",
+    "wait-on": "^7.2.0"
+  }
+}
