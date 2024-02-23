@@ -74,6 +74,6 @@ Check all your values and save configuration again.
   or write directly to me iam@freekode.org. Add logs from your app, it can help a lot to resolve the issue.
 
 ### Log location
-* on Linux: ~/.config/tp2intervals/logs/main.log
-* on macOS: ~/Library/Logs/tp2intervals/main.log
-* on Windows: %USERPROFILE%\AppData\Roaming\tp2intervals\logs\main.log
+* Linux: ~/.config/tp2intervals/logs/main.log
+* MacOS: ~/Library/Logs/tp2intervals/main.log
+* Windows: %USERPROFILE%\AppData\Roaming\tp2intervals\logs\main.log
