@@ -1,8 +1,10 @@
 <form [formGroup]="planWorkoutsFormGroup" novalidate>
   <mat-card>
     <mat-card-header>
-      <mat-card-title>Plan Workout</mat-card-title>
-      <mat-card-subtitle>Copy planned structured workout from Intervals to TrainingPeaks</mat-card-subtitle>
+      <mat-card-title>Plan Workouts</mat-card-title>
+      <mat-card-subtitle>
+        Sync planned workouts between Intervals and TrainingPeaks
+      </mat-card-subtitle>
     </mat-card-header>
 
     <mat-card-content>
@@ -70,8 +72,9 @@
 <form [formGroup]="copyWorkoutsFormGroup" novalidate (ngSubmit)="copyWorkoutsSubmit()">
   <mat-card>
     <mat-card-header>
-      <mat-card-title>Copy Plan</mat-card-title>
-      <mat-card-subtitle>Create a training plan based on workouts from TrainingPeak in selected date range
+      <mat-card-title>Copy Workouts</mat-card-title>
+      <mat-card-subtitle>
+        Create a training plan in Intervals based on planned workouts from TrainingPeaks
       </mat-card-subtitle>
     </mat-card-header>
 
