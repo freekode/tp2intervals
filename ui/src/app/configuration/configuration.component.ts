@@ -12,11 +12,12 @@ import { MatProgressBarModule } from "@angular/material/progress-bar";
 import { NgIf } from "@angular/common";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { NotificationService } from "infrastructure/notification.service";
+import { MatCheckboxChange, MatCheckboxModule } from "@angular/material/checkbox";
 
 @Component({
   selector: 'app-configuration',
   standalone: true,
-  imports: [ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatProgressBarModule, MatSnackBarModule, NgIf],
+  imports: [ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatProgressBarModule, MatSnackBarModule, NgIf, MatCheckboxModule],
   templateUrl: './configuration.component.html',
   styleUrl: './configuration.component.scss'
 })
@@ -27,9 +28,13 @@ export class ConfigurationComponent implements OnInit {
     'trainer-road.auth-cookie': [null, [Validators.pattern('^TrainerRoadAuth=.*$')]],
     'intervals.api-key': [null, Validators.required],
     'intervals.athlete-id': [null, Validators.required],
+    'intervals.power-range': [null, [Validators.required, Validators.min(0), Validators.max(100)]],
+    'intervals.hr-range': [null, [Validators.required, Validators.min(0), Validators.max(100)]],
+    'intervals.pace-range': [null, [Validators.required, Validators.min(0), Validators.max(100)]],
   });
 
   inProgress = false;
+  showAdvanced = false;
 
   constructor(
     private router: Router,
@@ -57,5 +62,9 @@ export class ConfigurationComponent implements OnInit {
       this.notificationService.success('Configuration successfully saved')
       this.router.navigate(['/home']);
     });
+  }
+
+  showAdvancedChange($event: MatCheckboxChange) {
+    this.showAdvanced = $event.checked
   }
 }

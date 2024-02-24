@@ -7,6 +7,8 @@ import { BrowserWindow } from "electron";
 
 export class AppUpdater {
   constructor() {
+    autoUpdater.autoDownload = false
+
     if (isDev) {
       autoUpdater.updateConfigPath = path.join(process.resourcesPath, 'dev-app-update.yml');
     }

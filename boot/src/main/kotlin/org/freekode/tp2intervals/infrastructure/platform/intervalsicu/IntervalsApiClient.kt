@@ -45,11 +45,22 @@ interface IntervalsApiClient {
         @RequestBody createEventRequestDTO: CreateEventRequestDTO
     )
 
-    @GetMapping("/api/v1/athlete/{athleteId}/events?oldest={startDate}&newest={endDate}&resolve=true")
+    @GetMapping(
+        "/api/v1/athlete/{athleteId}/events?" +
+                "oldest={startDate}&" +
+                "newest={endDate}&" +
+                "resolve=true&" +
+                "powerRange={powerRange}&" +
+                "hrRange={hrRange}&" +
+                "paceRange={paceRange}"
+    )
     fun getEvents(
-        @PathVariable("athleteId") athleteId: String,
-        @PathVariable("startDate") startDate: String,
-        @PathVariable("endDate") endDate: String,
+        @PathVariable athleteId: String,
+        @PathVariable startDate: String,
+        @PathVariable endDate: String,
+        @PathVariable powerRange: Float,
+        @PathVariable hrRange: Float,
+        @PathVariable paceRange: Float,
     ): List<IntervalsEventDTO>
 
     @GetMapping("/api/v1/athlete/{athleteId}/activities?oldest={startDate}&newest={endDate}")

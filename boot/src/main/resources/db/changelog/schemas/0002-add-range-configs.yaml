@@ -1,0 +1,37 @@
+databaseChangeLog:
+  - changeSet:
+      id: _
+      author: _
+      changes:
+        - insert:
+            tableName: config
+            columns:
+              - column:
+                  name: key
+                  value: 'intervals.power-range'
+
+              - column:
+                  name: value
+                  value: '0.0'
+
+        - insert:
+            tableName: config
+            columns:
+              - column:
+                  name: key
+                  value: 'intervals.hr-range'
+
+              - column:
+                  name: value
+                  value: '0.0'
+
+        - insert:
+            tableName: config
+            columns:
+              - column:
+                  name: key
+                  value: 'intervals.pace-range'
+
+              - column:
+                  name: value
+                  value: '0.0'
