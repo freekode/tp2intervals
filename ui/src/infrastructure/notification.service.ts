@@ -6,26 +6,34 @@ import { MatSnackBar } from "@angular/material/snack-bar";
   providedIn: 'root'
 })
 export class NotificationService {
+  private readonly duration = 5000
+
   constructor(
     private snackBar: MatSnackBar
   ) {
   }
 
-  error(message) {
-    this.snackBar.open(message, '', {
-      duration: 4000,
-      horizontalPosition: 'end',
-      verticalPosition: 'top',
-      panelClass: 'app-notification-error'
-    });
-  }
-
   success(message) {
-    this.snackBar.open(message, '', {
-      duration: 4000,
-      horizontalPosition: 'end',
+    let snackBarRef = this.snackBar.open(message, 'X', {
+      duration: this.duration,
       verticalPosition: 'top',
+      horizontalPosition: 'right',
       panelClass: 'app-notification-success'
     });
+    snackBarRef.onAction().subscribe(() => {
+      snackBarRef.dismiss()
+    })
+  }
+
+  error(message) {
+    let snackBarRef = this.snackBar.open(message, 'X', {
+      duration: this.duration,
+      verticalPosition: 'top',
+      horizontalPosition: 'right',
+      panelClass: 'app-notification-error'
+    });
+    snackBarRef.onAction().subscribe(() => {
+      snackBarRef.dismiss()
+    })
   }
 }

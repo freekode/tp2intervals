@@ -72,7 +72,7 @@ const createSplashWindow = async () => {
 const createMainWindow = async () => {
   mainWindow = new BrowserWindow({
     show: false,
-    width: 650,
+    width: 700,
     height: 850,
     minWidth: 500,
     minHeight: 450,
@@ -119,12 +119,11 @@ const createMainWindow = async () => {
 
 app.whenReady()
   .then(async () => {
-    await appUpdater.checkForUpdates()
-
     await createSplashWindow();
     systemEvents.on('boot-ready', () => {
       log.info('Creating main window (boot ready event)');
       createMainWindow();
+      appUpdater.checkForUpdates()
     });
     await initBootController()
   })

@@ -31,7 +31,9 @@ export class AppUpdater {
   }
 
   async checkForUpdates() {
-    await autoUpdater.checkForUpdatesAndNotify();
+    setTimeout(() => {
+      autoUpdater.checkForUpdatesAndNotify();
+    }, 500)
   }
 
   initializeSubscriptions(window: BrowserWindow) {
