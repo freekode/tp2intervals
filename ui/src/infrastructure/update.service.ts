@@ -19,9 +19,7 @@ export class UpdateService {
 
     window.electron.subscriptions.appUpdateAvailable(updateInfo => {
       console.log('Update available', updateInfo)
-      if (window.electron.appPlatform === 'darwin') {
-        this.notificationService.success(`New version ${updateInfo.version} available for download.\nCheck GitHub page`)
-      }
+      this.notificationService.success(`New version ${updateInfo.version} available for download.\nCheck GitHub page`)
     })
 
     window.electron.subscriptions.appUpdateDownloaded(updateInfo => {
