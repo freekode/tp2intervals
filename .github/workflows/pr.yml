@@ -1,8 +1,6 @@
-name: Build all
+name: Build PR
 
 on:
-  push:
-    branches: [ main ]
   pull_request:
   workflow_dispatch:
 
@@ -27,4 +25,11 @@ jobs:
       image-name: tp2intervals
 
   electron:
+    strategy:
+      matrix:
+        environment:
+          - os: ubuntu-latest
+
     uses: ./.github/workflows/build-electron.yml
+    with:
+      os: ${{ matrix.environment.os }}
