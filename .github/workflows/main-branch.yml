@@ -1,0 +1,29 @@
+name: Build all
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  jar:
+    uses: ./.github/workflows/build-jar.yml
+    with:
+      jar-name: tp2intervals
+      jar-artifact-name: tp2intervals-jar
+
+  docker-image:
+    needs:
+      - jar
+    uses: ./.github/workflows/build-docker-image.yml
+    with:
+      jar-name: tp2intervals
+      jar-artifact-name: tp2intervals-jar
+      image-name: tp2intervals
+
+  electron:
+    uses: ./.github/workflows/build-electron.yml

@@ -7,18 +7,13 @@ on:
         required: false
         type: boolean
         default: true
+      os:
+        required: true
+        type: string
 
 jobs:
   executable:
-    strategy:
-      fail-fast: false
-      matrix:
-        environment:
-          - os: ubuntu-latest
-          - os: macos-latest
-          - os: windows-latest
-
-    runs-on: ${{ matrix.environment.os }}
+    runs-on: ${{ inputs.os }}
     steps:
       - uses: actions/checkout@v4
 
