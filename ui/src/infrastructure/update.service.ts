@@ -19,7 +19,7 @@ export class UpdateService {
 
     window.electron.subscriptions.appUpdateAvailable(updateInfo => {
       console.log('Update available', updateInfo)
-      this.notificationService.success(`New version ${updateInfo.version} available for download.\nCheck GitHub page`)
+      this.notificationService.success(`New version ${updateInfo.version} is available for download.\nCheck GitHub page`)
     })
 
     window.electron.subscriptions.appUpdateDownloaded(updateInfo => {
