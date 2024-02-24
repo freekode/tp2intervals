@@ -1,87 +1,59 @@
+<mat-progress-bar *ngIf="inProgress" mode="query"></mat-progress-bar>
+
 <form [formGroup]="formGroup" novalidate (ngSubmit)="onSubmit()">
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>Configuration</mat-card-title>
-    </mat-card-header>
+  <mat-form-field class="full-width">
+    <mat-label>Intervals API Key</mat-label>
+    <input matInput placeholder="123456qwerty123456qwerty1" formControlName="intervals.api-key">
+  </mat-form-field>
 
-    <mat-card-content>
+  <mat-form-field class="full-width">
+    <mat-label>Intervals Athlete Id</mat-label>
+    <input matInput placeholder="i00000" formControlName="intervals.athlete-id">
+  </mat-form-field>
 
-      <div class="row">
-        <div class="col">
-          <mat-form-field class="full-width">
-            <mat-label>Intervals API Key</mat-label>
-            <input matInput placeholder="123456qwerty123456qwerty1" formControlName="intervals.api-key">
-          </mat-form-field>
-        </div>
-      </div>
+  <mat-form-field class="full-width">
+    <mat-label>TrainingPeaks Auth Cookie</mat-label>
+    <input matInput placeholder="Production_tpAuth=very_long_string" formControlName="training-peaks.auth-cookie">
+    @if (formGroup.controls['training-peaks.auth-cookie'].errors?.['pattern']) {
+      <mat-error>Must be in format Production_tpAuth=...</mat-error>
+    }
+  </mat-form-field>
 
-      <div class="row">
-        <div class="col">
-          <mat-form-field class="full-width">
-            <mat-label>Intervals Athlete Id</mat-label>
-            <input matInput placeholder="i00000" formControlName="intervals.athlete-id">
-          </mat-form-field>
-        </div>
-      </div>
+  <mat-checkbox class="advanced-checkbox" (change)="showAdvancedChange($event)">
+    Show advanced configuration
+  </mat-checkbox>
 
-<!--      <div class="row">-->
-<!--        <div class="col">-->
-<!--          <mat-form-field class="full-width">-->
-<!--            <mat-label>Cron for Plan Workouts job</mat-label>-->
-<!--            <input matInput placeholder="* * * * *" formControlName="generic.plan-workouts-cron">-->
-<!--          </mat-form-field>-->
-<!--        </div>-->
-<!--      </div>-->
+  @if (showAdvanced) {
+    <mat-form-field class="full-width">
+      <mat-label>Intervals Power range percentage</mat-label>
+      <input matInput type="number" placeholder="5.0" formControlName="intervals.power-range">
+    </mat-form-field>
+    <mat-form-field class="full-width">
+      <mat-label>Intervals HR range percentage</mat-label>
+      <input matInput type="number" placeholder="5.0" formControlName="intervals.hr-range">
+    </mat-form-field>
+    <mat-form-field class="full-width">
+      <mat-label>Intervals Pace range percentage</mat-label>
+      <input matInput type="number" placeholder="5.0" formControlName="intervals.pace-range">
+    </mat-form-field>
+  }
+  <!--          <mat-form-field class="full-width">-->
+  <!--            <mat-label>TrainerRoad Auth Cookie</mat-label>-->
+  <!--            <input matInput placeholder="TrainerRoadAuth=very_long_string" formControlName="trainer-road.auth-cookie">-->
+  <!--            @if (formGroup.controls['trainer-road.auth-cookie'].errors?.['pattern']) {-->
+  <!--              <mat-error>Must be in format TrainerRoadAuth=...</mat-error>-->
+  <!--            }-->
+  <!--          </mat-form-field>-->
 
-<!--      <div class="row">-->
-<!--        <div class="col">-->
-<!--          <mat-form-field class="full-width">-->
-<!--            <mat-label>Cron for Sync Activities job</mat-label>-->
-<!--            <input matInput placeholder="* * * * *" formControlName="generic.sync-activities-cron">-->
-<!--          </mat-form-field>-->
-<!--        </div>-->
-<!--      </div>-->
 
-      <div class="row">
-        <div class="col">
-          <mat-form-field class="full-width">
-            <mat-label>TrainingPeaks Auth Cookie</mat-label>
-            <input matInput placeholder="Production_tpAuth=very_long_string" formControlName="training-peaks.auth-cookie">
-            @if (formGroup.controls['training-peaks.auth-cookie'].errors?.['pattern']) {
-              <mat-error>Must be in format Production_tpAuth=...</mat-error>
-            }
-          </mat-form-field>
-        </div>
-      </div>
-
-<!--      <div class="row">-->
-<!--        <div class="col">-->
-<!--          <mat-form-field class="full-width">-->
-<!--            <mat-label>TrainerRoad Auth Cookie</mat-label>-->
-<!--            <input matInput placeholder="TrainerRoadAuth=very_long_string" formControlName="trainer-road.auth-cookie">-->
-<!--            @if (formGroup.controls['trainer-road.auth-cookie'].errors?.['pattern']) {-->
-<!--              <mat-error>Must be in format TrainerRoadAuth=...</mat-error>-->
-<!--            }-->
-<!--          </mat-form-field>-->
-<!--        </div>-->
-<!--      </div>-->
-
-    </mat-card-content>
-
-    <mat-card-actions>
-      <button
-        mat-raised-button
-        color="primary"
-        type="submit"
-        [disabled]="formGroup.invalid"
-      >
-        Submit
-      </button>
-    </mat-card-actions>
-
-    <mat-card-footer>
-      <mat-progress-bar *ngIf="inProgress" mode="query"></mat-progress-bar>
-    </mat-card-footer>
-
-  </mat-card>
+  <div class="row">
+    <button
+      mat-raised-button
+      color="primary"
+      type="submit"
+      [disabled]="formGroup.invalid"
+    >
+      Save
+    </button>
+  </div>
 </form>

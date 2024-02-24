@@ -51,7 +51,7 @@ class IntervalsWorkoutRepository(
             IntervalsEventTypeMapper.getByTrainingType(workout.type),
             workout.name,
             workout.duration?.seconds,
-            workout.load?.toInt(),
+            workout.load,
             description,
             null,
         )
@@ -59,10 +59,14 @@ class IntervalsWorkoutRepository(
     }
 
     override fun getPlannedWorkouts(startDate: LocalDate, endDate: LocalDate): List<Workout> {
+        val configuration = intervalsConfigurationRepository.getConfiguration()
         val events = intervalsApiClient.getEvents(
-            intervalsConfigurationRepository.getConfiguration().athleteId,
+            configuration.athleteId,
             startDate.toString(),
-            endDate.toString()
+            endDate.toString(),
+            configuration.powerRange,
+            configuration.hrRange,
+            configuration.paceRange,
         )
         return events
             .filter { it.isWorkout() }

@@ -7,12 +7,9 @@ import org.springframework.stereotype.Service
 class IntervalsConfigurationRepository(
     private val appConfigurationRepository: AppConfigurationRepository
 ) {
-    companion object {
-        const val CONFIG_PREFIX = "intervals"
-    }
 
     fun getConfiguration(): IntervalsConfiguration {
-        val configurationByKeyPrefix = appConfigurationRepository.getConfigurationByPrefix(CONFIG_PREFIX)
+        val configurationByKeyPrefix = appConfigurationRepository.getConfigurationByPrefix(IntervalsConfiguration.CONFIG_PREFIX)
         return IntervalsConfiguration(configurationByKeyPrefix)
     }
 }
