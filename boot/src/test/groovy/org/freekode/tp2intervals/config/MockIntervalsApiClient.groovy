@@ -16,7 +16,8 @@ class MockIntervalsApiClient implements IntervalsApiClient {
     List<IntervalsEventDTO> events
 
     MockIntervalsApiClient(ObjectMapper objectMapper, String eventsResponse) {
-        events = objectMapper.readValue(eventsResponse, new TypeReference<List<IntervalsEventDTO>>(){}) as List<IntervalsEventDTO>
+        events = objectMapper.readValue(eventsResponse, new TypeReference<List<IntervalsEventDTO>>() {
+        }) as List<IntervalsEventDTO>
     }
 
     @Override
@@ -35,7 +36,7 @@ class MockIntervalsApiClient implements IntervalsApiClient {
     }
 
     @Override
-    List<IntervalsEventDTO> getEvents(String athleteId, String startDate, String endDate) {
+    List<IntervalsEventDTO> getEvents(String athleteId, String startDate, String endDate, float powerRange, float hrRange, float paceRange) {
         return events
     }
 
