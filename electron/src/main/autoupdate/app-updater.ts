@@ -10,6 +10,8 @@ export class AppUpdater {
     if (isDev) {
       autoUpdater.updateConfigPath = path.join(process.resourcesPath, 'dev-app-update.yml');
     }
+    autoUpdater.autoDownload = false
+    autoUpdater.autoInstallOnAppQuit = false
     autoUpdater.logger = log;
     autoUpdater.logger.transports.file.level = isDev ? 'debug' : 'info';
 
