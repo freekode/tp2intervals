@@ -68,7 +68,6 @@ Check all your values and save configuration again.
 ## FAQ
 * Only duration based steps in workouts are supported, the app can't work with distance based steps 
 * **MacOS** app is not signed. Usually you need to open it twice. After opening it, be patient, it takes some time to start.
-* **MacOS** also because app is not signed it can automatically update. You have to manually update the app.
 * **Windows** The app will ask to access local network and Internet allow it. After all it makes HTTP requests.
 * Contact me in case of any problems. You can create an issue in [GitHub](https://github.com/freekode/tp2intervals/issues) 
   or write directly to me iam@freekode.org. Add logs from your app, it can help a lot to resolve the issue.
