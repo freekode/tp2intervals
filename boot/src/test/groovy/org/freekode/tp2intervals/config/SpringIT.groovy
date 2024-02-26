@@ -8,5 +8,5 @@ import spock.lang.Specification
 @SpringBootTest
 @ActiveProfiles("dev")
 @Import(ITestConfiguration.class)
-abstract class ISpringConfiguration extends Specification {
+abstract class SpringIT extends Specification {
 }

@@ -19,6 +19,7 @@ data class IntervalsConfiguration(
         private const val paceRangeConfigKey = "${CONFIG_PREFIX}.pace-range"
     }
 
+    // TODO will fail if send only partial configuration
     constructor(appConfiguration: AppConfiguration) :
             this(
                 appConfiguration.get(apiKeyConfigKey),
