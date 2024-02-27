@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestHeader
     value = "IntervalsAthleteApiClient",
     url = "\${intervals.api-url}",
     dismiss404 = true,
+    primary = false,
 )
 interface IntervalsAthleteApiClient {
 

@@ -4,6 +4,7 @@ import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.config.AppConfigurationRepository
 import org.freekode.tp2intervals.domain.config.PlatformConfigurationRepository
 import org.freekode.tp2intervals.domain.config.UpdateConfigurationRequest
+import org.freekode.tp2intervals.infrastructure.CatchFeignException
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.token.TrainingPeaksTokenApiClient
 import org.springframework.stereotype.Service
 
@@ -14,13 +15,17 @@ class TrainingPeaksConfigurationRepository(
 ) : PlatformConfigurationRepository {
     override fun platform() = Platform.TRAINING_PEAKS
 
+    @CatchFeignException(platform = Platform.TRAINING_PEAKS)
     override fun updateConfig(request: UpdateConfigurationRequest) {
-        val currentConfig = getConfiguration()
-        val newConfig = currentConfig.merge(request.configMap)
-        if (newConfig.canValidate()) {
-            validateConfiguration(newConfig)
+        val updatedConfig = request.getByPrefix(TrainingPeaksConfiguration.CONFIG_PREFIX)
+        if (updatedConfig.isEmpty()) {
+            return
         }
-        appConfigurationRepository.updateConfig(newConfig.getUpdateRequest())
+        val currentConfig =
+            appConfigurationRepository.getConfigurationByPrefix(TrainingPeaksConfiguration.CONFIG_PREFIX)
+        val newConfig = currentConfig.configMap + updatedConfig
+        validateConfiguration(newConfig)
+        appConfigurationRepository.updateConfig(UpdateConfigurationRequest(newConfig))
     }
 
     fun getConfiguration(): TrainingPeaksConfiguration {
@@ -28,7 +33,10 @@ class TrainingPeaksConfigurationRepository(
         return TrainingPeaksConfiguration(config)
     }
 
-    private fun validateConfiguration(newConfig: TrainingPeaksConfiguration) {
-        trainingPeaksTokenApiClient.getToken(newConfig.authCookie!!)
+    private fun validateConfiguration(newConfig: Map<String, String>) {
+        val tpConfig = TrainingPeaksConfiguration(newConfig)
+        if (tpConfig.canValidate()) {
+            trainingPeaksTokenApiClient.getToken(tpConfig.authCookie!!)
+        }
     }
 }

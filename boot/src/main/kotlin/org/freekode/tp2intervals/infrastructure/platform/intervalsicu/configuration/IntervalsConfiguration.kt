@@ -1,7 +1,8 @@
 package org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration
 
+import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.config.AppConfiguration
-import org.freekode.tp2intervals.domain.config.UpdateConfigurationRequest
+import org.freekode.tp2intervals.infrastructure.PlatformException
 
 data class IntervalsConfiguration(
     val apiKey: String,
@@ -20,33 +21,19 @@ data class IntervalsConfiguration(
         private const val paceRangeConfigKey = "${CONFIG_PREFIX}.pace-range"
     }
 
-    constructor(appConfiguration: AppConfiguration) : this(
-        appConfiguration.get(apiKeyConfigKey),
-        appConfiguration.get(athleteIdConfigKey),
-        appConfiguration.get(powerRangeConfigKey).toFloat(),
-        appConfiguration.get(hrRangeConfigKey).toFloat(),
-        appConfiguration.get(paceRangeConfigKey).toFloat(),
-    )
+    constructor(appConfiguration: AppConfiguration) : this(appConfiguration.configMap)
 
-    fun merge(newConfig: Map<String, String>): IntervalsConfiguration {
-        return IntervalsConfiguration(
-            newConfig[apiKeyConfigKey] ?: apiKey,
-            newConfig[athleteIdConfigKey] ?: athleteId,
-            newConfig[powerRangeConfigKey]?.toFloat() ?: powerRange,
-            newConfig[hrRangeConfigKey]?.toFloat() ?: hrRange,
-            newConfig[paceRangeConfigKey]?.toFloat() ?: paceRange,
-        )
-    }
-
-    fun getUpdateRequest(): UpdateConfigurationRequest {
-        return UpdateConfigurationRequest(
-            mapOf(
-                apiKeyConfigKey to apiKey,
-                athleteIdConfigKey to athleteId,
-                powerRangeConfigKey to powerRange.toString(),
-                hrRangeConfigKey to hrRange.toString(),
-                paceRangeConfigKey to paceRange.toString(),
-            )
-        )
+    constructor(map: Map<String, String>) : this(
+        map[apiKeyConfigKey]!!,
+        map[athleteIdConfigKey]!!,
+        map[powerRangeConfigKey]!!.toFloat(),
+        map[hrRangeConfigKey]!!.toFloat(),
+        map[paceRangeConfigKey]!!.toFloat(),
+    ) {
+        val wrongValues = map.entries.filter { it.value == "-1" }
+        if (wrongValues.isNotEmpty()) {
+            val entriesString = wrongValues.joinToString(separator = ", ") { it.toString() }
+            throw PlatformException(Platform.INTERVALS, "Wrong values: $entriesString")
+        }
     }
 }

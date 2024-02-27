@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestHeader
     value = "TrainingPeaksTokenApiClient",
     url = "\${training-peaks.api-url}",
     dismiss404 = true,
+    primary = false,
 )
 interface TrainingPeaksTokenApiClient {
     @GetMapping("/users/v3/token")

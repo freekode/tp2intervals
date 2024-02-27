@@ -1,7 +1,6 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.configuration
 
 import org.freekode.tp2intervals.domain.config.AppConfiguration
-import org.freekode.tp2intervals.domain.config.UpdateConfigurationRequest
 
 data class TrainingPeaksConfiguration(
     val authCookie: String?,
@@ -11,22 +10,11 @@ data class TrainingPeaksConfiguration(
         private const val authCookieKey = "${CONFIG_PREFIX}.auth-cookie"
     }
 
-    constructor(appConfiguration: AppConfiguration) : this(appConfiguration.find(authCookieKey))
+    constructor(appConfiguration: AppConfiguration) : this(appConfiguration.configMap)
 
-    fun merge(newConfig: Map<String, String>): TrainingPeaksConfiguration {
-        return TrainingPeaksConfiguration(newConfig[authCookieKey])
-    }
+    constructor(map: Map<String, String>) : this(map[authCookieKey])
 
     fun canValidate(): Boolean {
         return !authCookie.isNullOrBlank() && authCookie != "-1"
     }
-
-    fun getUpdateRequest(): UpdateConfigurationRequest {
-        val configMap = mutableMapOf<String, String>()
-        if (authCookie != null) {
-            configMap[authCookieKey] = authCookie
-        }
-        return UpdateConfigurationRequest(configMap)
-    }
-
 }
