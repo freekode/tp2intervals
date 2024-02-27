@@ -1,4 +1,4 @@
-package org.freekode.tp2intervals.infrastructure.platform.trainerroad.validator
+package org.freekode.tp2intervals.infrastructure.platform.trainerroad
 
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.TrainerRoadMemberDTO
 import org.springframework.cloud.openfeign.FeignClient

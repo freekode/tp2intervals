@@ -1,0 +1,17 @@
+logging:
+  level:
+    org.freekode.tp2intervals.infrastructure: debug
+
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  cloud:
+    openfeign:
+      client:
+        config:
+          default:
+            loggerLevel: full
+  jpa:
+    show-sql: true
+  datasource:
+    url: 'jdbc:sqlite::memory:'
