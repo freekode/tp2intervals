@@ -30,7 +30,8 @@ data class IntervalsConfiguration(
         map[hrRangeConfigKey]!!.toFloat(),
         map[paceRangeConfigKey]!!.toFloat(),
     ) {
-        val wrongValues = map.entries.filter { it.value == "-1" }
+        val wrongValues = map.entries
+            .filter { it.value == "-1" || it.value.isBlank() }
         if (wrongValues.isNotEmpty()) {
             val entriesString = wrongValues.joinToString(separator = ", ") { it.toString() }
             throw PlatformException(Platform.INTERVALS, "Wrong values: $entriesString")

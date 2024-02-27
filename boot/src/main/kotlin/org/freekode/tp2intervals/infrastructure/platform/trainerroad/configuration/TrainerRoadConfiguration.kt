@@ -15,6 +15,6 @@ data class TrainerRoadConfiguration(
     constructor(map: Map<String, String>) : this(map[authCookieKey])
 
     fun canValidate(): Boolean {
-        return !authCookie.isNullOrBlank() && authCookie != "-1"
+        return authCookie != null && authCookie != "-1"
     }
 }

@@ -51,7 +51,7 @@ class ConfigurationServiceTest extends ISpringConfiguration {
 
         then:
         !errors.isEmpty()
-        errors2.isEmpty()
+        !errors2.isEmpty()
         updatedConfig2.get("intervals.athlete-id") != ""
     }
 
@@ -74,7 +74,7 @@ class ConfigurationServiceTest extends ISpringConfiguration {
 
         then:
         errors.isEmpty()
-        errors2.isEmpty()
+        !errors2.isEmpty()
         errors3.isEmpty()
         updatedConfig.get("training-peaks.auth-cookie") == authCookie
         updatedConfig2.get("training-peaks.auth-cookie") == authCookie
