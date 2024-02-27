@@ -42,15 +42,17 @@ class ConfigurationServiceTest extends ISpringConfiguration {
         given:
         def athleteId = "-1"
         def request = new UpdateConfigurationRequest(["intervals.athlete-id": athleteId])
-        def request2 = new UpdateConfigurationRequest(["intervals.athlete-id": null])
+        def request2 = new UpdateConfigurationRequest(["intervals.athlete-id": ""])
 
         when:
         def errors = configurationService.updateConfiguration(request)
         def errors2 = configurationService.updateConfiguration(request2)
+        def updatedConfig2 = configurationService.getConfigurations()
 
         then:
         !errors.isEmpty()
-        !errors2.isEmpty()
+        errors2.isEmpty()
+        updatedConfig2.get("intervals.athlete-id") != ""
     }
 
     def "should set and remove optional configuration"() {
