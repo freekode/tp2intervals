@@ -1,5 +1,6 @@
 package org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout
 
+import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStepTarget
 import org.freekode.tp2intervals.infrastructure.PlatformException
 
@@ -16,7 +17,7 @@ class IntervalsToTargetConverter(
         } else if (stepDTO._pace != null) {
             mapSimpleUnit(paceThreshold!!, stepDTO._pace)
         } else {
-            throw PlatformException("Unknown target in step $stepDTO")
+            throw PlatformException(Platform.INTERVALS, "Unknown target in step $stepDTO")
         }
     }
 

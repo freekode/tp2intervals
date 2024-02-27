@@ -1,4 +1,9 @@
 package org.freekode.tp2intervals.infrastructure
 
-class PlatformException(message: String) : RuntimeException(message) {
-}
+import org.freekode.tp2intervals.domain.Platform
+
+
+class PlatformException(
+    val platform: Platform,
+    message: String
+) : RuntimeException(message)

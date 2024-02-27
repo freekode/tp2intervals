@@ -1,5 +1,6 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure
 
+import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
 import org.freekode.tp2intervals.infrastructure.PlatformException
 
@@ -13,9 +14,9 @@ class TPTargetMapper {
 
         fun getByIntensity(intensity: String): WorkoutStructure.TargetUnit =
             targetMap.filterValues { it == intensity }.keys.firstOrNull()
-                ?: throw PlatformException("Cant convert intensity $intensity")
+                ?: throw PlatformException(Platform.TRAINING_PEAKS, "Cant convert intensity $intensity")
 
         fun getByTargetUnit(targetUnit: WorkoutStructure.TargetUnit): String =
-            targetMap[targetUnit] ?: throw PlatformException("Cant convert target $targetUnit")
+            targetMap[targetUnit] ?: throw PlatformException(Platform.TRAINING_PEAKS, "Cant convert target $targetUnit")
     }
 }

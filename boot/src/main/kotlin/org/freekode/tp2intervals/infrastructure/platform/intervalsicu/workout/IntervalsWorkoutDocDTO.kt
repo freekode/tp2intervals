@@ -1,5 +1,6 @@
 package org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout
 
+import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
 import org.freekode.tp2intervals.infrastructure.PlatformException
 
@@ -19,7 +20,7 @@ class IntervalsWorkoutDocDTO(
     )
 
     fun mapTarget(): WorkoutStructure.TargetUnit {
-        return targetMap[target] ?: throw PlatformException("Cant convert target - $target")
+        return targetMap[target] ?: throw PlatformException(Platform.INTERVALS, "Cant convert target - $target")
     }
 
     class WorkoutStepDTO(

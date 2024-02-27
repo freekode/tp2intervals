@@ -9,6 +9,8 @@ export class ConfigData {
     Object.keys(config).forEach(key => {
       if (!!config[key]) {
         this.config[key] = config[key]
+      } else {
+        this.config[key] = "-1"
       }
     })
   }
