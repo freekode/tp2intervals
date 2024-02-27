@@ -12,7 +12,15 @@ export const httpErrorInterceptor: HttpInterceptorFn = (
 
   return next(req).pipe(
     catchError((err) => {
-      let errorMessage = err.error.error ? err.error.error : err.message
+      let message = err.error?.message ? err.error.message : err.message
+      let platform = err.error?.platform
+
+      let errorMessage
+      if (!!platform) {
+        errorMessage = `${platform}: ${message}`
+      } else {
+        errorMessage = message
+      }
       notificationService.error(errorMessage)
       return throwError(() => err)
     })

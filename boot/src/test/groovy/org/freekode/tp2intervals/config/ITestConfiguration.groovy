@@ -2,7 +2,9 @@ package org.freekode.tp2intervals.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsApiClient
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsAthleteApiClient
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.TrainerRoadApiClient
+import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.token.TrainingPeaksTokenApiClient
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
@@ -19,6 +21,19 @@ class ITestConfiguration {
             ObjectMapper objectMapper,
             @Value("classpath:intervals-events-response.json") Resource eventsResponse) {
         new MockIntervalsApiClient(objectMapper, eventsResponse.getContentAsString(Charset.defaultCharset()))
+    }
+
+    @Bean
+    @Primary
+    IntervalsAthleteApiClient intervalsAthleteApiClient() {
+        new MockIntervalsAthleteApiClient()
+    }
+
+
+    @Bean
+    @Primary
+    TrainingPeaksTokenApiClient trainingPeaksTokenApiClient() {
+        new MockTrainingPeaksTokenApiClient()
     }
 
     @Bean

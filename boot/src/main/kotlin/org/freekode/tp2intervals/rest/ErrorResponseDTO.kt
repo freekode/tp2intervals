@@ -1,5 +1,8 @@
 package org.freekode.tp2intervals.rest
 
 data class ErrorResponseDTO(
-    val error: String
-)
+    val platform: String?,
+    val message: String,
+) {
+    constructor(message: String) : this(null, message)
+}

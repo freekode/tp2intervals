@@ -19,6 +19,10 @@ spring:
     open-in-view: false
     database-platform: org.hibernate.community.dialect.SQLiteDialect
 
+server:
+  error:
+    include-message: always
+
 management:
   info:
     git:

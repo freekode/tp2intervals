@@ -1,6 +1,8 @@
 package org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration
 
+import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.config.AppConfiguration
+import org.freekode.tp2intervals.infrastructure.PlatformException
 
 data class IntervalsConfiguration(
     val apiKey: String,
@@ -19,12 +21,20 @@ data class IntervalsConfiguration(
         private const val paceRangeConfigKey = "${CONFIG_PREFIX}.pace-range"
     }
 
-    constructor(appConfiguration: AppConfiguration) :
-            this(
-                appConfiguration.get(apiKeyConfigKey),
-                appConfiguration.get(athleteIdConfigKey),
-                appConfiguration.get(powerRangeConfigKey).toFloat(),
-                appConfiguration.get(hrRangeConfigKey).toFloat(),
-                appConfiguration.get(paceRangeConfigKey).toFloat(),
-            )
+    constructor(appConfiguration: AppConfiguration) : this(appConfiguration.configMap)
+
+    constructor(map: Map<String, String>) : this(
+        map[apiKeyConfigKey]!!,
+        map[athleteIdConfigKey]!!,
+        map[powerRangeConfigKey]!!.toFloat(),
+        map[hrRangeConfigKey]!!.toFloat(),
+        map[paceRangeConfigKey]!!.toFloat(),
+    ) {
+        val wrongValues = map.entries
+            .filter { it.value == "-1" || it.value.isBlank() }
+        if (wrongValues.isNotEmpty()) {
+            val entriesString = wrongValues.joinToString(separator = ", ") { it.toString() }
+            throw PlatformException(Platform.INTERVALS, "Wrong values: $entriesString")
+        }
+    }
 }

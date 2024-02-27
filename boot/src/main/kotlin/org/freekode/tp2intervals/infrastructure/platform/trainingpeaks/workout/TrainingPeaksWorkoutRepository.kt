@@ -29,11 +29,11 @@ class TrainingPeaksWorkoutRepository(
     }
 
     override fun getWorkout(id: String): Workout {
-        throw PlatformException("TP doesn't support not planned workout view")
+        throw PlatformException(Platform.TRAINING_PEAKS, "TP doesn't support not planned workout view")
     }
 
     override fun saveWorkout(workout: Workout, plan: Plan) {
-        throw PlatformException("TP doesn't support workout copying")
+        throw PlatformException(Platform.TRAINING_PEAKS, "TP doesn't support workout copying")
     }
 
     override fun getPlannedWorkouts(startDate: LocalDate, endDate: LocalDate): List<Workout> {

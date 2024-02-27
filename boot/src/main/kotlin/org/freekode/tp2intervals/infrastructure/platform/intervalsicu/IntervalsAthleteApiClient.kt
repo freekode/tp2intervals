@@ -1,4 +1,4 @@
-package org.freekode.tp2intervals.infrastructure.platform.intervalsicu.validator
+package org.freekode.tp2intervals.infrastructure.platform.intervalsicu
 
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.http.HttpHeaders
@@ -7,11 +7,12 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestHeader
 
 @FeignClient(
-    value = "IntervalsValidationApiClient",
+    value = "IntervalsAthleteApiClient",
     url = "\${intervals.api-url}",
     dismiss404 = true,
+    primary = false,
 )
-interface IntervalsValidationApiClient {
+interface IntervalsAthleteApiClient {
 
     @GetMapping("/api/v1/athlete/{athleteId}")
     fun getAthlete(

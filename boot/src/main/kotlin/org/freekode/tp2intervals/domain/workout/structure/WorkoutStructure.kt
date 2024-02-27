@@ -5,7 +5,7 @@ data class WorkoutStructure(
     val steps: List<WorkoutStep>,
 ) {
     init {
-        if (steps.isEmpty()) throw RuntimeException("There must be at least one step in workout structure")
+        if (steps.isEmpty()) throw IllegalStateException("There must be at least one step in workout structure")
     }
 
     enum class TargetUnit {

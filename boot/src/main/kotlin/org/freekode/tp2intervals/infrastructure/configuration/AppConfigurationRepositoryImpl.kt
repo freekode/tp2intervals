@@ -29,7 +29,11 @@ class AppConfigurationRepositoryImpl(
 
     override fun updateConfig(request: UpdateConfigurationRequest) {
         request.configMap.forEach { (key, value) ->
-            configurationCrudRepository.save(AppConfigurationEntryEntity(key, value))
+            if (value == "-1") {
+                configurationCrudRepository.deleteById(key)
+            } else {
+                configurationCrudRepository.save(AppConfigurationEntryEntity(key, value))
+            }
         }
     }
 

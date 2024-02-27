@@ -1,5 +1,7 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.token
 
+import org.freekode.tp2intervals.domain.Platform
+import org.freekode.tp2intervals.infrastructure.PlatformException
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.configuration.TrainingPeaksConfigurationRepository
 import org.springframework.cache.annotation.CacheConfig
 import org.springframework.cache.annotation.Cacheable
@@ -13,11 +15,10 @@ class TrainingPeaksApiTokenRepository(
 ) {
     @Cacheable(key = "'singleton'")
     fun getToken(): String {
-        return getToken(trainingPeaksConfigurationRepository.getConfiguration().authCookie)
-    }
-
-    fun getToken(authCookie: String): String {
+        val authCookie = trainingPeaksConfigurationRepository.getConfiguration().authCookie
+            ?: throw PlatformException(Platform.TRAINING_PEAKS, "Wrong configuration")
         val token = trainingPeaksTokenApiClient.getToken(authCookie)
         return token.accessToken!!
     }
+
 }

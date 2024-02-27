@@ -3,20 +3,18 @@ package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.configur
 import org.freekode.tp2intervals.domain.config.AppConfiguration
 
 data class TrainingPeaksConfiguration(
-    val authCookie: String,
+    val authCookie: String?,
 ) {
     companion object {
-        private const val authCookieKey = "${TrainingPeaksConfigurationRepository.CONFIG_PREFIX}.auth-cookie"
-
-        fun tryToCreate(appConfiguration: AppConfiguration): TrainingPeaksConfiguration? {
-            return if (appConfiguration.configMap.containsKey(authCookieKey)) {
-                TrainingPeaksConfiguration(appConfiguration.configMap[authCookieKey]!!)
-            } else {
-                null
-            }
-        }
+        const val CONFIG_PREFIX = "training-peaks"
+        private const val authCookieKey = "${CONFIG_PREFIX}.auth-cookie"
     }
 
-    constructor(appConfiguration: AppConfiguration) :
-            this(appConfiguration.get(authCookieKey))
+    constructor(appConfiguration: AppConfiguration) : this(appConfiguration.configMap)
+
+    constructor(map: Map<String, String>) : this(map[authCookieKey])
+
+    fun canValidate(): Boolean {
+        return authCookie != null && authCookie != "-1"
+    }
 }
