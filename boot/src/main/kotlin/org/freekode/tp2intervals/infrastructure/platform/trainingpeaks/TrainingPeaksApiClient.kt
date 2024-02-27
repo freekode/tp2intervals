@@ -47,4 +47,7 @@ interface TrainingPeaksApiClient {
         @PathVariable("userId") userId: String,
         @RequestBody createTPWorkoutDTO: CreateTPWorkoutDTO
     )
+
+    @GetMapping("/plans/v1/plans")
+    fun getPlans(): Map<String, Any>
 }
