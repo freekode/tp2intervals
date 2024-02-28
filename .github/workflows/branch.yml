@@ -3,6 +3,9 @@ name: Build branches
 on:
   push:
     branches: [ main, dev ]
+    paths-ignore:
+      - 'README.md'
+      - 'LICENSE'
   workflow_dispatch:
 
 concurrency:
