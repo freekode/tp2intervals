@@ -1,14 +1,15 @@
 package org.freekode.tp2intervals.domain.workout
 
+import org.freekode.tp2intervals.domain.ExternalData
 import spock.lang.Specification
 
-class WorkoutExternalDataTest extends Specification {
+class ExternalDataTest extends Specification {
     def "should parse external data"() {
         given:
         def string = "//////////\nintervalsId=111\ntrainingPeaksId=222\ntrainerRoadId=333"
 
         when:
-        def data = new WorkoutExternalData(null, null, null)
+        def data = new ExternalData(null, null, null)
         data = data.withSimpleString(string)
 
         then:
@@ -24,9 +25,9 @@ class WorkoutExternalDataTest extends Specification {
         def string1 = "//////\nmyFavVar=111"
 
         when:
-        def data = new WorkoutExternalData(null, null, null)
+        def data = new ExternalData(null, null, null)
         data = data.withSimpleString(string)
-        def data1 = new WorkoutExternalData(null, null, null)
+        def data1 = new ExternalData(null, null, null)
         data1 = data1.withSimpleString(string1)
 
         then:

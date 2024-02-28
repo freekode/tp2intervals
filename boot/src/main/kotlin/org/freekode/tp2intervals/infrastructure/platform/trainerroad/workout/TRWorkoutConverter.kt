@@ -4,7 +4,7 @@ import java.time.Duration
 import java.time.LocalDate
 import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.workout.Workout
-import org.freekode.tp2intervals.domain.workout.WorkoutExternalData
+import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutSingleStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStepTarget
@@ -26,7 +26,7 @@ class TRWorkoutConverter(
             Duration.ofMinutes(trWorkout.details.duration.toLong()),
             trWorkout.details.tss,
             WorkoutStructure(WorkoutStructure.TargetUnit.FTP_PERCENTAGE, steps),
-            WorkoutExternalData.empty().withTrainerRoad(trWorkout.details.id.toString())
+            ExternalData.empty().withTrainerRoad(trWorkout.details.id.toString())
         )
     }
 

@@ -7,4 +7,6 @@ interface PlanRepository {
     fun platform(): Platform
 
     fun createPlan(name: String, startDate: LocalDate, type: PlanType): Plan
+
+    fun getPlans(): List<Plan>
 }

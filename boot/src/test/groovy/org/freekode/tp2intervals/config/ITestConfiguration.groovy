@@ -6,6 +6,7 @@ import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsA
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.TrainerRoadApiClient
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.token.TrainingPeaksTokenApiClient
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Primary
@@ -15,6 +16,7 @@ import java.nio.charset.Charset
 
 @TestConfiguration
 class ITestConfiguration {
+    @ConditionalOnProperty(name = "dev.mock", havingValue = "true")
     @Bean
     @Primary
     IntervalsApiClient intervalsApiClient(
@@ -23,6 +25,7 @@ class ITestConfiguration {
         new MockIntervalsApiClient(objectMapper, eventsResponse.getContentAsString(Charset.defaultCharset()))
     }
 
+    @ConditionalOnProperty(name = "dev.mock", havingValue = "true")
     @Bean
     @Primary
     IntervalsAthleteApiClient intervalsAthleteApiClient() {
@@ -30,12 +33,14 @@ class ITestConfiguration {
     }
 
 
+    @ConditionalOnProperty(name = "dev.mock", havingValue = "true")
     @Bean
     @Primary
     TrainingPeaksTokenApiClient trainingPeaksTokenApiClient() {
         new MockTrainingPeaksTokenApiClient()
     }
 
+    @ConditionalOnProperty(name = "dev.mock", havingValue = "true")
     @Bean
     @Primary
     TrainerRoadApiClient trainerRoadApiClient(

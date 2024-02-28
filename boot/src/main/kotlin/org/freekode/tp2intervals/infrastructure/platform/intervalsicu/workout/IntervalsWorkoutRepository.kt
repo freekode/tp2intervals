@@ -46,7 +46,7 @@ class IntervalsWorkoutRepository(
         description += workoutString?.let { "\n\n- - - -\n$it" }.orEmpty()
 
         val request = CreateWorkoutRequestDTO(
-            plan.id.value,
+            plan.externalData.intervalsId.toString(),
             getWorkoutDayNumber(plan.startDate, workout.date),
             IntervalsEventTypeMapper.getByTrainingType(workout.type),
             workout.name,

@@ -1,5 +1,6 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks
 
+import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.plan.TPPlanDto
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.user.TrainingPeaksUserDTO
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.CreateTPWorkoutDTO
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.TPNoteResponseDTO
@@ -47,7 +48,4 @@ interface TrainingPeaksApiClient {
         @PathVariable("userId") userId: String,
         @RequestBody createTPWorkoutDTO: CreateTPWorkoutDTO
     )
-
-    @GetMapping("/plans/v1/plans")
-    fun getPlans(): Map<String, Any>
 }

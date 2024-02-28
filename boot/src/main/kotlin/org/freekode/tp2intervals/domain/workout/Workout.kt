@@ -2,6 +2,7 @@ package org.freekode.tp2intervals.domain.workout
 
 import java.time.Duration
 import java.time.LocalDate
+import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
 
@@ -13,10 +14,10 @@ data class Workout(
     val duration: Duration?,
     val load: Int?,
     val structure: WorkoutStructure?,
-    val externalData: WorkoutExternalData,
+    val externalData: ExternalData,
 ) {
     companion object {
-        fun note(date: LocalDate, title: String, description: String?, externalData: WorkoutExternalData): Workout {
+        fun note(date: LocalDate, title: String, description: String?, externalData: ExternalData): Workout {
             return Workout(date, TrainingType.NOTE, title, description, null, null, null, externalData)
         }
     }

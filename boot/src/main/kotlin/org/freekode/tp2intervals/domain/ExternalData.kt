@@ -1,6 +1,6 @@
-package org.freekode.tp2intervals.domain.workout
+package org.freekode.tp2intervals.domain
 
-data class WorkoutExternalData(
+data class ExternalData(
     val trainingPeaksId: String?,
     val intervalsId: String?,
     val trainerRoadId: String?,
@@ -9,16 +9,16 @@ data class WorkoutExternalData(
 
 
     companion object {
-        fun empty() = WorkoutExternalData(null, null, null)
+        fun empty() = ExternalData(null, null, null)
     }
 
-    fun withTrainingPeaks(trainingPeaksId: String) = WorkoutExternalData(trainingPeaksId, intervalsId, trainerRoadId)
+    fun withTrainingPeaks(trainingPeaksId: String) = ExternalData(trainingPeaksId, intervalsId, trainerRoadId)
 
-    fun withIntervals(intervalsId: String) = WorkoutExternalData(trainingPeaksId, intervalsId, trainerRoadId)
+    fun withIntervals(intervalsId: String) = ExternalData(trainingPeaksId, intervalsId, trainerRoadId)
 
-    fun withTrainerRoad(trainerRoadId: String) = WorkoutExternalData(trainingPeaksId, intervalsId, trainerRoadId)
+    fun withTrainerRoad(trainerRoadId: String) = ExternalData(trainingPeaksId, intervalsId, trainerRoadId)
 
-    fun withSimpleString(string: String): WorkoutExternalData {
+    fun withSimpleString(string: String): ExternalData {
         val split = string.split(externalDataDescriptionSeparator)
         if (split.size != 2) {
             return this
@@ -55,7 +55,7 @@ data class WorkoutExternalData(
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
 
-        other as WorkoutExternalData
+        other as ExternalData
 
         if (trainingPeaksId != null && trainingPeaksId == other.trainingPeaksId) return true
         if (intervalsId != null && intervalsId == other.intervalsId) return true

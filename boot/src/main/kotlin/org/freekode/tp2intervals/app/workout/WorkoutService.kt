@@ -1,7 +1,7 @@
 package org.freekode.tp2intervals.app.workout
 
 import org.freekode.tp2intervals.app.schedule.ScheduleService
-import org.freekode.tp2intervals.domain.workout.PlanRepositoryStrategy
+import org.freekode.tp2intervals.domain.plan.PlanRepositoryStrategy
 import org.freekode.tp2intervals.domain.workout.WorkoutRepositoryStrategy
 import org.springframework.stereotype.Service
 

@@ -2,7 +2,7 @@ package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout
 
 import java.time.Duration
 import org.freekode.tp2intervals.domain.workout.Workout
-import org.freekode.tp2intervals.domain.workout.WorkoutExternalData
+import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.TPStructureToStepMapper
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.TPWorkoutStructureDTO
@@ -28,8 +28,8 @@ class TPToWorkoutConverter {
         )
     }
 
-    private fun getWorkoutExternalData(tpWorkout: TPWorkoutResponseDTO): WorkoutExternalData {
-        return WorkoutExternalData
+    private fun getWorkoutExternalData(tpWorkout: TPWorkoutResponseDTO): ExternalData {
+        return ExternalData
             .empty()
             .withTrainingPeaks(tpWorkout.workoutId)
             .withSimpleString(tpWorkout.description ?: "")
@@ -40,7 +40,7 @@ class TPToWorkoutConverter {
             tpNote.noteDate.toLocalDate(),
             tpNote.title,
             tpNote.description,
-            WorkoutExternalData
+            ExternalData
                 .empty()
                 .withTrainingPeaks(tpNote.id.toString())
         )

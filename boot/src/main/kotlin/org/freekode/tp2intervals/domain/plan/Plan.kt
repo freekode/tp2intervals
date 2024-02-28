@@ -1,12 +1,10 @@
 package org.freekode.tp2intervals.domain.plan
 
 import java.time.LocalDate
+import org.freekode.tp2intervals.domain.ExternalData
 
 data class Plan(
-    val id: PlanId,
-    val startDate: LocalDate
-) {
-    companion object {
-        fun empty() = Plan(PlanId("empty"), LocalDate.now())
-    }
-}
+    val name: String,
+    val startDate: LocalDate,
+    val externalData: ExternalData,
+)

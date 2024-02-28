@@ -1,9 +1,9 @@
 package org.freekode.tp2intervals.infrastructure.platform.intervalsicu.folder
 
 import java.time.LocalDate
+import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.plan.Plan
-import org.freekode.tp2intervals.domain.plan.PlanId
 import org.freekode.tp2intervals.domain.plan.PlanRepository
 import org.freekode.tp2intervals.domain.plan.PlanType
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsApiClient
@@ -20,14 +20,17 @@ class IntervalsFolderRepository(
         Created by tp2intervals (https://github.com/freekode/tp2intervals)
     """.trimIndent()
 
+    override fun platform() = Platform.INTERVALS
 
     override fun createPlan(name: String, startDate: LocalDate, type: PlanType): Plan {
         val folderType = if (type == PlanType.PLAN) "PLAN" else "FOLDER"
         val newFolder = createFolder(name, startDate, folderType)
-        return Plan(PlanId(newFolder.id), newFolder.startDateLocal!!)
+        return Plan(newFolder.name, newFolder.startDateLocal!!, ExternalData.empty().withIntervals(newFolder.id))
     }
 
-    override fun platform() = Platform.INTERVALS
+    override fun getPlans(): List<Plan> {
+        TODO("Not yet implemented")
+    }
 
     private fun createFolder(name: String, startDate: LocalDate?, type: String): FolderDTO {
         val createRequest = CreateFolderRequestDTO(
