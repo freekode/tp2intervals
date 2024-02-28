@@ -21,9 +21,9 @@ class ScheduleServiceTest extends SpringIT {
 
         when:
         scheduleService.addScheduledRequest(request)
-        def requestS = scheduleService.getScheduledRequest(PlanWorkoutsRequest.class)
+        def newReq = scheduleService.getScheduledRequest(PlanWorkoutsRequest.class)
 
         then:
-        requestS != null
+        newReq != null
     }
 }

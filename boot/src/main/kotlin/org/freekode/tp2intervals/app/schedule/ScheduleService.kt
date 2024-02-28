@@ -12,7 +12,7 @@ class ScheduleService(
 ) {
     fun addScheduledRequest(request: Any) {
         val className = request.javaClass.name
-        if (scheduleCrudRepository.findByClassName(className).isEmpty()) {
+        if (scheduleCrudRepository.findByClassName(className).isNotEmpty()) {
             throw IllegalArgumentException("Can't add another request of the same type")
         }
 
