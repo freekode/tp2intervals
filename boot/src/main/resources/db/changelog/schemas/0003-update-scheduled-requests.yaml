@@ -1,0 +1,31 @@
+databaseChangeLog:
+  - changeSet:
+      id: _
+      author: _
+      changes:
+        - dropTable:
+            tableName: schedule_requests
+
+        - createTable:
+            tableName: schedule_requests
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  incrementBy: 1
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    unique: true
+
+              - column:
+                  name: class_name
+                  type: varchar
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: json
+                  type: varchar(5000)
+                  constraints:
+                    nullable: false

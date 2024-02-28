@@ -11,13 +11,13 @@ export class WorkoutClient {
   constructor(private httpClient: HttpClient) {
   }
 
-  planWorkout(direction, startDate, endDate, types, skipSynced): Observable<any> {
+  planWorkout(startDate, endDate, types, skipSynced, platformDirection): Observable<any> {
     return this.httpClient
-      .post(`/api/workout/plan/${direction}`, {startDate, endDate, types, skipSynced})
+      .post(`/api/workout/plan`, {startDate, endDate, types, skipSynced, ...platformDirection})
   }
 
-  copyWorkouts(name, startDate, endDate, types): Observable<any> {
+  copyWorkouts(name, startDate, endDate, types, platformDirection): Observable<any> {
     return this.httpClient
-      .post(`/api/workout/copy/TRAINING_PEAKS/INTERVALS`, {name, startDate, endDate, types})
+      .post(`/api/workout/copy`, {name, startDate, endDate, types, ...platformDirection})
   }
 }

@@ -12,7 +12,7 @@ class ScheduleConfiguration(
 ) {
 
     @Bean
-    fun syncActivitiesJobCron(): String {
-        return appConfigurationRepository.getConfiguration("generic.sync-activities-cron")!!
+    fun planWorkoutsCron(): String {
+        return appConfigurationRepository.getConfiguration("generic.plan-workouts-cron")!!
     }
 }

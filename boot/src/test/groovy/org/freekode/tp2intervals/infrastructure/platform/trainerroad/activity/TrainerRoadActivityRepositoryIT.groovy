@@ -1,14 +1,13 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainerroad.activity
 
-import org.freekode.tp2intervals.config.ISpringConfiguration
+import org.freekode.tp2intervals.config.SpringIT
 import org.freekode.tp2intervals.domain.config.AppConfigurationRepository
 import org.freekode.tp2intervals.domain.config.UpdateConfigurationRequest
-import org.freekode.tp2intervals.infrastructure.platform.trainerroad.activity.TrainerRoadActivityRepository
 import org.springframework.beans.factory.annotation.Autowired
 
 import java.time.LocalDate
 
-class TrainerRoadActivityRepositoryIT extends ISpringConfiguration {
+class TrainerRoadActivityRepositoryIT extends SpringIT {
     @Autowired
     TrainerRoadActivityRepository trainerRoadActivityRepository
 

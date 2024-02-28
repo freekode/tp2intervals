@@ -60,8 +60,8 @@ export class TrainingPeaksActionsComponent implements OnInit {
   planWorkoutInProgress = false
 
   directions = [
-    {name: 'Intervals.icu -> Training Peaks', value: 'INTERVALS/TRAINING_PEAKS'},
-    {name: 'Training Peaks -> Intervals.icu', value: 'TRAINING_PEAKS/INTERVALS'},
+    {name: 'Intervals.icu -> Training Peaks', value: {sourcePlatform: 'INTERVALS', targetPlatform: 'TRAINING_PEAKS'}},
+    {name: 'Training Peaks -> Intervals.icu', value: {sourcePlatform: 'TRAINING_PEAKS', targetPlatform: 'INTERVALS'}},
   ]
   trainingTypes: any[];
 
@@ -87,20 +87,21 @@ export class TrainingPeaksActionsComponent implements OnInit {
   }
 
   planTodayClick() {
-    this.planWorkouts(this.todayDate)
+    this.planWorkouts(this.todayDate, this.todayDate)
   }
 
   planTomorrowClick() {
-    this.planWorkouts(this.tomorrowDate)
+    this.planWorkouts(this.tomorrowDate, this.tomorrowDate)
   }
 
   copyWorkoutsSubmit() {
     this.copyPlanInProgress = true
     let name = this.copyWorkoutsFormGroup.value.name
+    let trainingTypes = this.planWorkoutsFormGroup.value.trainingTypes
     let startDate = formatDate(this.copyWorkoutsFormGroup.value.startDate)
     let endDate = formatDate(this.copyWorkoutsFormGroup.value.endDate)
-    let trainingTypes = this.planWorkoutsFormGroup.value.trainingTypes
-    this.workoutClient.copyWorkouts(name, startDate, endDate, trainingTypes).pipe(
+    let direction = {sourcePlatform: 'TRAINING_PEAKS', targetPlatform: 'INTERVALS'}
+    this.workoutClient.copyWorkouts(name, startDate, endDate, trainingTypes, direction).pipe(
       finalize(() => this.copyPlanInProgress = false)
     ).subscribe((response) => {
       this.notificationService.success(
@@ -108,12 +109,12 @@ export class TrainingPeaksActionsComponent implements OnInit {
     })
   }
 
-  private planWorkouts(date) {
+  private planWorkouts(startDate, endDate) {
     this.planWorkoutInProgress = true
+    let skipSynced = this.planWorkoutsFormGroup.value.skipSynced
     let direction = this.planWorkoutsFormGroup.value.direction
     let trainingTypes = this.planWorkoutsFormGroup.value.trainingTypes
-    let skipSynced = this.planWorkoutsFormGroup.value.skipSynced
-    this.workoutClient.planWorkout(direction, date, date, trainingTypes, skipSynced).pipe(
+    this.workoutClient.planWorkout(startDate, endDate, trainingTypes, skipSynced, direction).pipe(
       finalize(() => this.planWorkoutInProgress = false)
     ).subscribe((response) => {
       this.notificationService.success(

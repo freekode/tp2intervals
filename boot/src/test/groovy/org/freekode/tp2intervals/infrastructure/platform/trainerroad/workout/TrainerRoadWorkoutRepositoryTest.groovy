@@ -1,6 +1,6 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainerroad.workout
 
-import org.freekode.tp2intervals.config.ISpringConfiguration
+import org.freekode.tp2intervals.config.SpringIT
 import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.config.AppConfigurationRepository
 import org.freekode.tp2intervals.domain.config.UpdateConfigurationRequest
@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired
 
 import java.time.Duration
 
-class TrainerRoadWorkoutRepositoryTest extends ISpringConfiguration {
+class TrainerRoadWorkoutRepositoryTest extends SpringIT {
     @Autowired
     TrainerRoadWorkoutRepository trainerRoadWorkoutRepository
 
