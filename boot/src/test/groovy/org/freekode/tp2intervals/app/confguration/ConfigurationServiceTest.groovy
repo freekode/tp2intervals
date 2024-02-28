@@ -1,10 +1,11 @@
 package org.freekode.tp2intervals.app.confguration
 
-import org.freekode.tp2intervals.config.ISpringConfiguration
+
+import org.freekode.tp2intervals.config.SpringIT
 import org.freekode.tp2intervals.domain.config.UpdateConfigurationRequest
 import org.springframework.beans.factory.annotation.Autowired
 
-class ConfigurationServiceTest extends ISpringConfiguration {
+class ConfigurationServiceTest extends SpringIT {
     @Autowired
     ConfigurationService configurationService
 
@@ -15,7 +16,7 @@ class ConfigurationServiceTest extends ISpringConfiguration {
         def request = new UpdateConfigurationRequest([
                 "intervals.api-key"   : apiKey,
                 "intervals.athlete-id": athleteId,
-                "my-test"      : "test"
+                "my-test"             : "test"
         ])
 
         def apiKey2 = "my-api2"
