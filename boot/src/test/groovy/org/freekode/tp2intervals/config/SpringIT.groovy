@@ -6,7 +6,7 @@ import org.springframework.test.context.ActiveProfiles
 import spock.lang.Specification
 
 @SpringBootTest
-@ActiveProfiles("dev")
+@ActiveProfiles("it")
 @Import(ITestConfiguration.class)
-abstract class ISpringConfiguration extends Specification {
+abstract class SpringIT extends Specification {
 }

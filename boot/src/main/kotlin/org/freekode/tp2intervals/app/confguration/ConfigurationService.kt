@@ -29,6 +29,8 @@ class ConfigurationService(
             return null
         } catch (e: PlatformException) {
             return "${e.platform.title}: ${e.message}"
+        } catch (e: Exception) {
+            return e.message
         }
     }
 }

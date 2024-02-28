@@ -1,8 +1,11 @@
-name: Build main branch
+name: Build branches
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, dev ]
+    paths-ignore:
+      - 'README.md'
+      - 'LICENSE'
   workflow_dispatch:
 
 concurrency:

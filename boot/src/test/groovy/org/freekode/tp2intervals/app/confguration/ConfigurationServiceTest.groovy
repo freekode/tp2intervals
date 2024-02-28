@@ -1,10 +1,11 @@
 package org.freekode.tp2intervals.app.confguration
 
-import org.freekode.tp2intervals.config.ISpringConfiguration
+
+import org.freekode.tp2intervals.config.SpringIT
 import org.freekode.tp2intervals.domain.config.UpdateConfigurationRequest
 import org.springframework.beans.factory.annotation.Autowired
 
-class ConfigurationServiceTest extends ISpringConfiguration {
+class ConfigurationServiceTest extends SpringIT {
     @Autowired
     ConfigurationService configurationService
 
@@ -15,7 +16,7 @@ class ConfigurationServiceTest extends ISpringConfiguration {
         def request = new UpdateConfigurationRequest([
                 "intervals.api-key"   : apiKey,
                 "intervals.athlete-id": athleteId,
-                "my-test"      : "test"
+                "my-test"             : "test"
         ])
 
         def apiKey2 = "my-api2"
@@ -42,15 +43,17 @@ class ConfigurationServiceTest extends ISpringConfiguration {
         given:
         def athleteId = "-1"
         def request = new UpdateConfigurationRequest(["intervals.athlete-id": athleteId])
-        def request2 = new UpdateConfigurationRequest(["intervals.athlete-id": null])
+        def request2 = new UpdateConfigurationRequest(["intervals.athlete-id": ""])
 
         when:
         def errors = configurationService.updateConfiguration(request)
         def errors2 = configurationService.updateConfiguration(request2)
+        def updatedConfig2 = configurationService.getConfigurations()
 
         then:
         !errors.isEmpty()
         !errors2.isEmpty()
+        updatedConfig2.get("intervals.athlete-id") != ""
     }
 
     def "should set and remove optional configuration"() {
@@ -72,7 +75,7 @@ class ConfigurationServiceTest extends ISpringConfiguration {
 
         then:
         errors.isEmpty()
-        errors2.isEmpty()
+        !errors2.isEmpty()
         errors3.isEmpty()
         updatedConfig.get("training-peaks.auth-cookie") == authCookie
         updatedConfig2.get("training-peaks.auth-cookie") == authCookie

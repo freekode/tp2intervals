@@ -1,4 +1,4 @@
-package org.freekode.tp2intervals.app.workout
+package org.freekode.tp2intervals.domain.workout
 
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.plan.PlanRepository

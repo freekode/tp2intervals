@@ -8,6 +8,9 @@ class MockTrainingPeaksTokenApiClient implements TrainingPeaksTokenApiClient {
 
     @Override
     TrainingPeaksUserTokenDTO getToken(String cookie) {
+        if (cookie.isBlank()) {
+            throw new IllegalArgumentException("Nah-ah")
+        }
         return new TrainingPeaksUserTokenDTO("my-access-token")
     }
 }
