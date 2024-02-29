@@ -9,10 +9,11 @@ import org.springframework.stereotype.Repository
 
 @CacheConfig(cacheNames = ["tpAccessToken"])
 @Repository
-class TrainingPeaksApiTokenRepository(
+class TrainingPeaksTokenRepository(
     private val trainingPeaksTokenApiClient: TrainingPeaksTokenApiClient,
     private val trainingPeaksConfigurationRepository: TrainingPeaksConfigurationRepository,
 ) {
+    // TODO token valid only 1h, fix the cache
     @Cacheable(key = "'singleton'")
     fun getToken(): String {
         val authCookie = trainingPeaksConfigurationRepository.getConfiguration().authCookie

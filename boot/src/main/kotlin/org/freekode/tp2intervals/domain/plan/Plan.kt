@@ -7,4 +7,6 @@ data class Plan(
     val name: String,
     val startDate: LocalDate,
     val externalData: ExternalData,
-)
+) {
+
+}

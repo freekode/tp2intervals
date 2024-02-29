@@ -77,6 +77,10 @@ class IntervalsWorkoutRepository(
         TODO("Not yet implemented")
     }
 
+    override fun getWorkouts(plan: Plan): List<Workout> {
+        TODO("Not yet implemented")
+    }
+
     private fun getWorkoutString(workout: Workout) =
         if (workout.structure != null) {
             StructureToIntervalsConverter(workout.structure).toIntervalsStructureStr()

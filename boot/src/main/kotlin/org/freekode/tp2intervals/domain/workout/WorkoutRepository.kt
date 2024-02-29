@@ -11,6 +11,8 @@ interface WorkoutRepository {
 
     fun getWorkout(id: String): Workout
 
+    fun getWorkouts(plan: Plan): List<Workout>
+
     fun planWorkout(workout: Workout)
 
     fun saveWorkout(workout: Workout, plan: Plan)
