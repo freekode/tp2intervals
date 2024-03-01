@@ -15,5 +15,5 @@ class TPWorkoutResponseDTO(
     val coachComments: String?,
     val structure: TPWorkoutStructureDTO?
 ) {
-    fun getWorkoutType(): TrainingType? = workoutTypeValueId?.let { TPWorkoutTypeMapper.getByValue(it) }
+    fun getWorkoutType(): TrainingType? = workoutTypeValueId?.let { TPTrainingTypeMapper.getByValue(it) }
 }

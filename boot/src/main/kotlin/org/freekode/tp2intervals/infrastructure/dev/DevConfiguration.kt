@@ -4,5 +4,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 
 @ConfigurationProperties("dev")
 class DevConfiguration(
-    val config: Map<String, String>,
+    val config: Map<String, String>?,
 )

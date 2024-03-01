@@ -6,7 +6,6 @@ import org.freekode.tp2intervals.app.workout.CopyWorkoutsResponse
 import org.freekode.tp2intervals.app.workout.PlanWorkoutsRequest
 import org.freekode.tp2intervals.app.workout.PlanWorkoutsResponse
 import org.freekode.tp2intervals.app.workout.WorkoutService
-import org.freekode.tp2intervals.domain.plan.PlanType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -55,7 +54,7 @@ class WorkoutController(
         return workoutService.copyWorkouts(
             CopyWorkoutsRequest(
                 requestDTO.name,
-                PlanType.PLAN,
+                requestDTO.isPlan,
                 LocalDate.parse(requestDTO.startDate),
                 LocalDate.parse(requestDTO.endDate),
                 requestDTO.types,

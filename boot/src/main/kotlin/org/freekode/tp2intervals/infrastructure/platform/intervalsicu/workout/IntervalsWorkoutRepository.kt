@@ -1,7 +1,6 @@
 package org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout
 
 import java.time.LocalDate
-import java.time.temporal.ChronoUnit
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.plan.Plan
 import org.freekode.tp2intervals.domain.workout.Workout
@@ -9,9 +8,9 @@ import org.freekode.tp2intervals.domain.workout.WorkoutRepository
 import org.freekode.tp2intervals.infrastructure.PlatformException
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsApiClient
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfigurationRepository
+import org.freekode.tp2intervals.infrastructure.utils.Date
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Repository
-import kotlin.math.absoluteValue
 
 @Repository
 class IntervalsWorkoutRepository(
@@ -47,9 +46,9 @@ class IntervalsWorkoutRepository(
 
         val request = CreateWorkoutRequestDTO(
             plan.externalData.intervalsId.toString(),
-            getWorkoutDayNumber(plan.startDate, workout.date),
-            IntervalsEventTypeMapper.getByTrainingType(workout.type),
-            workout.name,
+            Date.daysDiff(plan.startDate, workout.date),
+            IntervalsTrainingTypeMapper.getByTrainingType(workout.type),
+            workout.name, // "Name is too long"
             workout.duration?.seconds,
             workout.load,
             description,
@@ -57,7 +56,6 @@ class IntervalsWorkoutRepository(
         )
         intervalsApiClient.createWorkout(intervalsConfigurationRepository.getConfiguration().athleteId, request)
     }
-
     override fun getPlannedWorkouts(startDate: LocalDate, endDate: LocalDate): List<Workout> {
         val configuration = intervalsConfigurationRepository.getConfiguration()
         val events = intervalsApiClient.getEvents(
@@ -96,9 +94,4 @@ class IntervalsWorkoutRepository(
             return null
         }
     }
-
-    private fun getWorkoutDayNumber(startDate: LocalDate, currentDate: LocalDate): Int {
-        return ChronoUnit.DAYS.between(startDate, currentDate).toInt().absoluteValue
-    }
-
 }

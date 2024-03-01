@@ -4,8 +4,8 @@ import java.time.LocalDate
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.plan.Plan
 import org.freekode.tp2intervals.domain.plan.PlanRepositoryStrategy
-import org.freekode.tp2intervals.domain.plan.PlanType
 import org.freekode.tp2intervals.domain.workout.WorkoutRepositoryStrategy
+import org.freekode.tp2intervals.infrastructure.utils.Date
 import org.springframework.stereotype.Service
 
 @Service
@@ -24,8 +24,8 @@ class PlanService(
         val targetWorkoutRepository = workoutRepositoryStrategy.getRepository(request.targetPlatform)
 
         val workouts = sourceWorkoutRepository.getWorkouts(request.plan)
-        val newPlan = targetPlanRepository.createPlan(request.plan.name, LocalDate.now(), PlanType.PLAN)
+        val newPlan = targetPlanRepository.createPlan(request.plan.name, Date.thisMonday(), true)
         workouts.forEach { targetWorkoutRepository.saveWorkout(it, newPlan) }
-        return CopyPlanResponse(workouts.size, newPlan.startDate)
+        return CopyPlanResponse(newPlan.name, workouts.size)
     }
 }

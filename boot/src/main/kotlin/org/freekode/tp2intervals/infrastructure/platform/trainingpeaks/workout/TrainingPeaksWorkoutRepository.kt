@@ -1,8 +1,10 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.temporal.TemporalAdjusters
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.activity.Activity
 import org.freekode.tp2intervals.domain.activity.ActivityRepository
@@ -15,6 +17,7 @@ import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.configura
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.plan.TPPlanRepository
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.user.TrainingPeaksUserRepository
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.StructureToTPConverter
+import org.freekode.tp2intervals.infrastructure.utils.Date
 import org.springframework.stereotype.Repository
 
 
@@ -31,8 +34,13 @@ class TrainingPeaksWorkoutRepository(
 
     override fun planWorkout(workout: Workout) {
         val structureStr = toStructureString(workout)
-        val createRequest = CreateTPWorkoutDTO.planWorkout(getUserId(), workout, structureStr)
-        trainingPeaksApiClient.createAndPlanWorkout(getUserId(), createRequest)
+        val athleteId = trainingPeaksUserRepository.getUserId()
+        val createRequest = CreateTPWorkoutDTO.planWorkout(
+            athleteId,
+            workout,
+            structureStr
+        )
+        trainingPeaksApiClient.createAndPlanWorkout(athleteId, createRequest)
     }
 
     override fun getWorkout(id: String): Workout {
@@ -41,14 +49,16 @@ class TrainingPeaksWorkoutRepository(
 
     override fun getWorkouts(plan: Plan): List<Workout> {
         val planId = plan.externalData.trainingPeaksId!!
-        val tpPlan = tpPlanRepository.getPlan(planId)
-        val daysShift = trainingPeaksConfigurationRepository.getConfiguration().planDaysShift
-        val response = tpPlanRepository.applyPlan(planId, LocalDate.now().plusDays(daysShift))
+        val planApplyDate = getPlanApplyDate()
+        val response = tpPlanRepository.applyPlan(planId, planApplyDate)
 
         try {
-            val planStartDate = LocalDateTime.parse(response.startDate).toLocalDate()
             val planEndDate = LocalDateTime.parse(response.endDate).toLocalDate()
-            val workouts = getPlannedWorkouts(planStartDate, planEndDate)
+
+            val daysDiff = Date.daysDiff(plan.startDate, planApplyDate)
+            val workouts = getPlannedWorkouts(planApplyDate, planEndDate)
+                .map { it.withDate(it.date.minusDays(daysDiff.toLong())) }
+            val tpPlan = tpPlanRepository.getPlan(planId)
             assert(tpPlan.workoutCount == workouts.size)
             return workouts
         } catch (e: Exception) {
@@ -63,7 +73,7 @@ class TrainingPeaksWorkoutRepository(
     }
 
     override fun getPlannedWorkouts(startDate: LocalDate, endDate: LocalDate): List<Workout> {
-        val userId = getUserId()
+        val userId = trainingPeaksUserRepository.getUserId()
         val tpWorkouts = trainingPeaksApiClient.getWorkouts(userId, startDate.toString(), endDate.toString())
 
         val noteEndDate = getNoteEndDateForFilter(startDate, endDate)
@@ -78,9 +88,14 @@ class TrainingPeaksWorkoutRepository(
     }
 
     override fun createActivity(activity: Activity) {
-        val createRequest = CreateTPWorkoutDTO.createActivity(getUserId(), activity)
-        trainingPeaksApiClient.createAndPlanWorkout(getUserId(), createRequest)
+        val athleteId = trainingPeaksUserRepository.getUserId()
+        val createRequest = CreateTPWorkoutDTO.createActivity(athleteId, activity)
+        trainingPeaksApiClient.createAndPlanWorkout(athleteId, createRequest)
     }
+
+    private fun getPlanApplyDate(): LocalDate = LocalDate.now()
+        .plusDays(trainingPeaksConfigurationRepository.getConfiguration().planDaysShift)
+        .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
 
     private fun toStructureString(workout: Workout) =
         if (workout.structure != null) {
@@ -89,12 +104,7 @@ class TrainingPeaksWorkoutRepository(
             null
         }
 
-    private fun getNoteEndDateForFilter(startDate: LocalDate, endDate: LocalDate): LocalDate? =
-        if (startDate == endDate) {
-            endDate.plusDays(1)
-        } else {
-            endDate
-        }
+    private fun getNoteEndDateForFilter(startDate: LocalDate, endDate: LocalDate): LocalDate =
+        if (startDate == endDate) endDate.plusDays(1) else endDate
 
-    private fun getUserId() = trainingPeaksUserRepository.getUserId()
 }

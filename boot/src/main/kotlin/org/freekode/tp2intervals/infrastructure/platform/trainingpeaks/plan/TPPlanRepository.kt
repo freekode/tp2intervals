@@ -4,7 +4,6 @@ import java.time.LocalDate
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.plan.Plan
 import org.freekode.tp2intervals.domain.plan.PlanRepository
-import org.freekode.tp2intervals.domain.plan.PlanType
 import org.freekode.tp2intervals.infrastructure.PlatformException
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.user.TrainingPeaksUserRepository
 import org.springframework.stereotype.Repository
@@ -16,7 +15,7 @@ class TPPlanRepository(
 ) : PlanRepository {
     override fun platform() = Platform.TRAINING_PEAKS
 
-    override fun createPlan(name: String, startDate: LocalDate, type: PlanType): Plan {
+    override fun createPlan(name: String, startDate: LocalDate, isPlan: Boolean): Plan {
         throw PlatformException(platform(), "Doesn't support plan creation")
     }
 

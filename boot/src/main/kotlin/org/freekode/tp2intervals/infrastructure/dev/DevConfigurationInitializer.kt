@@ -15,6 +15,9 @@ class DevConfigurationInitializer(
 ) {
     @PostConstruct
     fun initDevProperties() {
+        if (devConfiguration.config == null) {
+            return
+        }
         val request = UpdateConfigurationRequest(devConfiguration.config)
         appConfigurationRepository.updateConfig(request)
     }

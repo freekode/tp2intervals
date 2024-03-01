@@ -52,11 +52,10 @@ class WorkoutService(
         val allWorkouts = sourceWorkoutRepository.getPlannedWorkouts(request.startDate, request.endDate)
         val filteredWorkouts = allWorkouts.filter { request.types.contains(it.type) }
 
-        val response = CopyWorkoutsResponse(
+        val plan = targetPlanRepository.createPlan(request.name, request.startDate, request.isPlan)
+        filteredWorkouts.forEach { targetWorkoutRepository.saveWorkout(it, plan) }
+        return CopyWorkoutsResponse(
             filteredWorkouts.size, allWorkouts.size - filteredWorkouts.size, request.startDate, request.endDate
         )
-        val plan = targetPlanRepository.createPlan(request.name, request.startDate, request.planType)
-        filteredWorkouts.forEach { targetWorkoutRepository.saveWorkout(it, plan) }
-        return response
     }
 }

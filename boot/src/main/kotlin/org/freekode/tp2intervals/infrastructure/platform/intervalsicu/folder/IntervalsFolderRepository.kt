@@ -5,7 +5,6 @@ import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.plan.Plan
 import org.freekode.tp2intervals.domain.plan.PlanRepository
-import org.freekode.tp2intervals.domain.plan.PlanType
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsApiClient
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfigurationRepository
 import org.springframework.stereotype.Repository
@@ -22,8 +21,8 @@ class IntervalsFolderRepository(
 
     override fun platform() = Platform.INTERVALS
 
-    override fun createPlan(name: String, startDate: LocalDate, type: PlanType): Plan {
-        val folderType = if (type == PlanType.PLAN) "PLAN" else "FOLDER"
+    override fun createPlan(name: String, startDate: LocalDate, isPlan: Boolean): Plan {
+        val folderType = if (isPlan) "PLAN" else "FOLDER"
         val newFolder = createFolder(name, startDate, folderType)
         return Plan(newFolder.name, newFolder.startDateLocal!!, ExternalData.empty().withIntervals(newFolder.id))
     }

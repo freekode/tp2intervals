@@ -2,17 +2,23 @@ package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout
 
 import org.freekode.tp2intervals.domain.TrainingType
 
-class TPWorkoutTypeMapper {
+class TPTrainingTypeMapper {
     companion object {
         private val typeMap = mapOf(
             TrainingType.BIKE to 2,
-            TrainingType.MTB to 8,
             TrainingType.VIRTUAL_BIKE to 2,
             TrainingType.RUN to 3,
-            TrainingType.NOTE to 7,
+            TrainingType.MTB to 8,
             TrainingType.WEIGHT to 9,
             TrainingType.WALK to 13,
-            TrainingType.UNKNOWN to 100
+            TrainingType.NOTE to 7, // day off
+            TrainingType.UNKNOWN to 1, // swim
+            TrainingType.UNKNOWN to 4, // brick
+            TrainingType.UNKNOWN to 5, // crosstrain
+            TrainingType.UNKNOWN to 9, // custom
+            TrainingType.UNKNOWN to 11, // xc-ski
+            TrainingType.UNKNOWN to 12, // rowing
+            TrainingType.UNKNOWN to 100 // other
         )
 
         fun getByValue(value: Int): TrainingType =

@@ -22,6 +22,10 @@ data class Workout(
         }
     }
 
+    fun withDate(date: LocalDate): Workout {
+        return Workout(date, type, name, description, duration, load, structure, externalData)
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
