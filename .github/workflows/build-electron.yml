@@ -44,8 +44,6 @@ jobs:
       - name: Build jar in windows
         if: ${{ runner.os == 'Windows' }}
         run: |
-          ./jdktool/jdks/win/x64/jdk/bin/keytool.exe -import -noprompt -alias intervals.icu -keystore jdktool/jdks/win/x64/jdk/lib/security/cacerts -file jdktool/certs/intervals.icu.cert
-          
           cd ./boot
           ./gradlew.bat build
 
