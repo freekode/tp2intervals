@@ -33,16 +33,8 @@ jobs:
           cache: 'npm'
           cache-dependency-path: 'ui/package-lock.json'
 
-      - name: Build UI
-        run: |
-          npm ci --prefix ui
-          npm run build  --prefix ui
-
-      - name: Copy UI
-        run: cp -r ui/dist/ui/browser boot/src/main/resources/static
-
-      - name: Build boot
-        run: cd ./boot && ./gradlew build
+      - name: Build project
+        run: ./devops/build-jar.sh
 
       - name: Cypress tests
         run: |
