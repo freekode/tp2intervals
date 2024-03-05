@@ -3,18 +3,14 @@ package org.freekode.tp2intervals.infrastructure.configuration
 import org.freekode.tp2intervals.domain.config.AppConfiguration
 import org.freekode.tp2intervals.domain.config.AppConfigurationRepository
 import org.freekode.tp2intervals.domain.config.UpdateConfigurationRequest
-import org.springframework.cache.annotation.CacheConfig
-import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Repository
 
-@CacheConfig(cacheNames = ["appConfiguration"])
 @Repository
 class AppConfigurationRepositoryImpl(
     private val configurationCrudRepository: ConfigurationCrudRepository,
 ) : AppConfigurationRepository {
 
-    @Cacheable(key = "#key")
     override fun getConfiguration(key: String): String? {
         return configurationCrudRepository.findByIdOrNull(key)?.value
     }
