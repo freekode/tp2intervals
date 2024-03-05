@@ -18,9 +18,9 @@ spring:
   jpa:
     open-in-view: false
     database-platform: org.hibernate.community.dialect.SQLiteDialect
-#  cache:
-#    jcache:
-#      config: classpath:ehcache.xml
+  cache:
+    jcache:
+      config: classpath:ehcache.xml
 
 server:
   error:
