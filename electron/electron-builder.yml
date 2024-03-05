@@ -38,7 +38,7 @@ npmRebuild: false
 extraResources:
   - from: '../boot/build/libs/tp2intervals.jar'
     to: 'tp2intervals.jar'
-  - from: '../devops/jdktool/jdks/${os}/${arch}'
+  - from: '../jdktool/jdks/${os}/${arch}'
     filter: '**/*'
   - from: '../ui/dist/ui'
     filter: '**/*'
