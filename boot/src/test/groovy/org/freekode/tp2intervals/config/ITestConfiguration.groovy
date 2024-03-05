@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsApiClient
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsAthleteApiClient
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.TrainerRoadApiClient
+import org.freekode.tp2intervals.infrastructure.platform.trainerroad.member.TrainerRoadMemberApiClient
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.token.TrainingPeaksTokenApiClient
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
@@ -58,5 +59,10 @@ class ITestConfiguration {
         )
     }
 
-
+    @ConditionalOnProperty(name = "dev.mock", havingValue = "true")
+    @Bean
+    @Primary
+    TrainerRoadMemberApiClient trainerRoadMemberApiClient() {
+        new MockTrainerRoadMemberApiClient()
+    }
 }
