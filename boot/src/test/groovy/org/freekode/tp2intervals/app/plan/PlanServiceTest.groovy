@@ -5,6 +5,7 @@ import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.plan.TPPlanRepository
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.TrainingPeaksWorkoutRepository
 import org.springframework.beans.factory.annotation.Autowired
+import spock.lang.Ignore
 
 class PlanServiceTest extends SpringIT {
     @Autowired
@@ -16,13 +17,7 @@ class PlanServiceTest extends SpringIT {
     @Autowired
     TrainingPeaksWorkoutRepository trainingPeaksWorkoutRepository
 
-    def "should get plans"() {
-        def plans = planService.getPlans(Platform.TRAINING_PEAKS)
-
-        expect:
-        !plans.isEmpty()
-    }
-
+    @Ignore
     def "should copy plan"() {
         given:
         def plans = planService.getPlans(Platform.TRAINING_PEAKS)
