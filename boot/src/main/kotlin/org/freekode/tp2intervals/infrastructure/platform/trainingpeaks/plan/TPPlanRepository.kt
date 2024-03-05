@@ -6,8 +6,11 @@ import org.freekode.tp2intervals.domain.plan.Plan
 import org.freekode.tp2intervals.domain.plan.PlanRepository
 import org.freekode.tp2intervals.infrastructure.PlatformException
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.user.TrainingPeaksUserRepository
+import org.springframework.cache.annotation.CacheConfig
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Repository
 
+@CacheConfig(cacheNames = ["tpPlanCache"])
 @Repository
 class TPPlanRepository(
     private val trainingPeaksUserRepository: TrainingPeaksUserRepository,
@@ -19,10 +22,13 @@ class TPPlanRepository(
         throw PlatformException(platform(), "Doesn't support plan creation")
     }
 
+    @Cacheable(key = "'TRAINING_PEAKS'")
     override fun getPlans(): List<Plan> {
         val converter = TPPlanConverter()
         return trainingPeaksPlanApiClient.getPlans()
             .map { converter.toPlan(it) }
+            .sortedBy { it.name }
+            .toList()
     }
 
     fun getPlan(planId: String): TPPlanDto {

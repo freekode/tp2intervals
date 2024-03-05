@@ -55,9 +55,9 @@ class TrainingPeaksWorkoutRepository(
         try {
             val planEndDate = LocalDateTime.parse(response.endDate).toLocalDate()
 
-            val daysDiff = Date.daysDiff(plan.startDate, planApplyDate)
+            val workoutDateShiftDays = Date.daysDiff(plan.startDate, planApplyDate)
             val workouts = getPlannedWorkouts(planApplyDate, planEndDate)
-                .map { it.withDate(it.date.minusDays(daysDiff.toLong())) }
+                .map { it.withDate(it.date.minusDays(workoutDateShiftDays.toLong())) }
             val tpPlan = tpPlanRepository.getPlan(planId)
             assert(tpPlan.workoutCount == workouts.size)
             return workouts

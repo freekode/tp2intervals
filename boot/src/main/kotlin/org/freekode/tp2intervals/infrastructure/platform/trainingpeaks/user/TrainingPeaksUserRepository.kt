@@ -4,7 +4,7 @@ import org.springframework.cache.annotation.CacheConfig
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Repository
 
-@CacheConfig(cacheNames = ["tpUserId"])
+@CacheConfig(cacheNames = ["tpUserIdCache"])
 @Repository
 class TrainingPeaksUserRepository(
     private val trainingPeaksUserApiClient: TrainingPeaksUserApiClient,

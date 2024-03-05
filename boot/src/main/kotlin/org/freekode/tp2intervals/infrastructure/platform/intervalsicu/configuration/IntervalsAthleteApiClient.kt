@@ -1,4 +1,4 @@
-package org.freekode.tp2intervals.infrastructure.platform.intervalsicu
+package org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration
 
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.http.HttpHeaders

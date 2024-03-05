@@ -12,7 +12,7 @@
         <div class="col">
           <mat-form-field class="form-field">
             <mat-label>TP Plans</mat-label>
-            <mat-select formControlName="plan">
+            <mat-select formControlName="plan" panelWidth="null">
               @for (item of plans; track item) {
                 <mat-option [value]="item.value">{{ item.name }}</mat-option>
               }
@@ -27,7 +27,7 @@
         mat-raised-button
         color="primary"
         type="submit"
-        [disabled]="formGroup.invalid"
+        [disabled]="formGroup.invalid || formGroup.disabled"
       >
         Copy
       </button>

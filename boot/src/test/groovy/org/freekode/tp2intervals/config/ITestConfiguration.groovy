@@ -2,7 +2,7 @@ package org.freekode.tp2intervals.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsApiClient
-import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsAthleteApiClient
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsAthleteApiClient
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.TrainerRoadApiClient
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.token.TrainingPeaksTokenApiClient
 import org.springframework.beans.factory.annotation.Value

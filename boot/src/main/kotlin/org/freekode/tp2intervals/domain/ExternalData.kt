@@ -1,12 +1,13 @@
 package org.freekode.tp2intervals.domain
 
+import java.io.Serializable
+
 data class ExternalData(
     val trainingPeaksId: String?,
     val intervalsId: String?,
     val trainerRoadId: String?,
-) {
+) : Serializable {
     private val externalDataDescriptionSeparator = "//////////"
-
 
     companion object {
         fun empty() = ExternalData(null, null, null)

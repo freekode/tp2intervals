@@ -6,8 +6,6 @@ import org.freekode.tp2intervals.domain.config.PlatformConfigurationRepository
 import org.freekode.tp2intervals.domain.config.UpdateConfigurationRequest
 import org.freekode.tp2intervals.infrastructure.CatchFeignException
 import org.freekode.tp2intervals.infrastructure.PlatformException
-import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsAthleteApiClient
-import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.configuration.TrainingPeaksConfiguration
 import org.freekode.tp2intervals.infrastructure.utils.Auth
 import org.springframework.stereotype.Service
 

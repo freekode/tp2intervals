@@ -60,11 +60,13 @@ export class TpCopyPlanComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.formGroup.disable()
     this.planClient.getPlans('TRAINING_PEAKS').subscribe(plans => {
       this.plans = plans.map(plan => {
         return {name: plan.name, value: plan}
       })
       this.initFormValues();
+      this.formGroup.enable()
     })
   }
 

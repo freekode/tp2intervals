@@ -6,13 +6,12 @@ import org.freekode.tp2intervals.domain.config.PlatformConfigurationRepository
 import org.freekode.tp2intervals.domain.config.UpdateConfigurationRequest
 import org.freekode.tp2intervals.infrastructure.CatchFeignException
 import org.freekode.tp2intervals.infrastructure.PlatformException
-import org.freekode.tp2intervals.infrastructure.platform.trainerroad.TrainerRoadMemberApiClient
 import org.springframework.stereotype.Service
 
 @Service
 class TrainerRoadConfigurationRepository(
     private val appConfigurationRepository: AppConfigurationRepository,
-    private val trainerRoadMemberApiClient: TrainerRoadMemberApiClient,
+    private val trainerRoadValidationApiClient: TrainerRoadValidationApiClient,
 ) : PlatformConfigurationRepository {
     override fun platform() = Platform.TRAINER_ROAD
 
@@ -39,7 +38,7 @@ class TrainerRoadConfigurationRepository(
         if (!config.canValidate()) {
             return
         }
-        if (trainerRoadMemberApiClient.getMember(config.authCookie!!).MemberId == -1L) {
+        if (trainerRoadValidationApiClient.getMember(config.authCookie!!).MemberId == -1L) {
             throw PlatformException(Platform.TRAINER_ROAD, "Access Denied")
         }
     }
