@@ -19,14 +19,13 @@ class IntervalsWorkoutRepository(
 ) : WorkoutRepository {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
+    private val unwantedStepRegex = "^-".toRegex(RegexOption.MULTILINE)
 
     override fun platform() = Platform.INTERVALS
 
     override fun planWorkout(workout: Workout) {
         val workoutString = getWorkoutString(workout)
-
-        var description = workout.description.orEmpty()
-        description += workoutString?.let { "\n\n- - - -\n$it" }.orEmpty()
+        val description = getDescription(workout, workoutString)
 
         val request = CreateEventRequestDTO(
             workout.date.atStartOfDay().toString(),
@@ -40,9 +39,7 @@ class IntervalsWorkoutRepository(
 
     override fun saveWorkout(workout: Workout, plan: Plan) {
         val workoutString = getWorkoutString(workout)
-
-        var description = workout.description.orEmpty()
-        description += workoutString?.let { "\n\n- - - -\n$it" }.orEmpty()
+        val description = getDescription(workout, workoutString)
 
         val request = CreateWorkoutRequestDTO(
             plan.externalData.intervalsId.toString(),
@@ -56,6 +53,7 @@ class IntervalsWorkoutRepository(
         )
         intervalsApiClient.createWorkout(intervalsConfigurationRepository.getConfiguration().athleteId, request)
     }
+
     override fun getPlannedWorkouts(startDate: LocalDate, endDate: LocalDate): List<Workout> {
         val configuration = intervalsConfigurationRepository.getConfiguration()
         val events = intervalsApiClient.getEvents(
@@ -77,6 +75,16 @@ class IntervalsWorkoutRepository(
 
     override fun getWorkouts(plan: Plan): List<Workout> {
         TODO("Not yet implemented")
+    }
+
+    private fun getDescription(workout: Workout, workoutString: String?): String {
+        var description = workout.description
+            .orEmpty()
+            .replace(unwantedStepRegex, "--")
+        description += workoutString
+            ?.let { "\n\n- - - -\n$it" }
+            .orEmpty()
+        return description
     }
 
     private fun getWorkoutString(workout: Workout) =
