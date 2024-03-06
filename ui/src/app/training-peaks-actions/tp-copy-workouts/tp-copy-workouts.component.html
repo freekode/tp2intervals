@@ -1,0 +1,77 @@
+<form [formGroup]="formGroup" novalidate (ngSubmit)="copyWorkoutsSubmit()">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Copy Workouts</mat-card-title>
+      <mat-card-subtitle>
+        Create a training plan in Intervals based on planned workouts from TrainingPeaks
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="form-field">
+            <mat-label>Name</mat-label>
+            <input matInput placeholder="My New Plan" formControlName="name">
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="form-field">
+            <mat-label>Workout Types</mat-label>
+            <mat-select formControlName="trainingTypes" multiple>
+              @for (type of trainingTypes; track type) {
+                <mat-option [value]="type.value">{{ type.title }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="form-field">
+            <mat-label>Date Range</mat-label>
+            <mat-date-range-input
+              [rangePicker]="copyPlanDatePicker">
+              <input matStartDate placeholder="Start Date" formControlName="startDate">
+              <input matEndDate placeholder="End Date" formControlName="endDate">
+            </mat-date-range-input>
+            <mat-datepicker-toggle matIconSuffix [for]="copyPlanDatePicker"></mat-datepicker-toggle>
+            <mat-date-range-picker #copyPlanDatePicker></mat-date-range-picker>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="form-field">
+            <mat-label>Save as</mat-label>
+            <mat-select formControlName="isPlan">
+              @for (item of planType; track item) {
+                <mat-option [value]="item.value">{{ item.name }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        [disabled]="formGroup.invalid"
+      >
+        Submit
+      </button>
+    </mat-card-actions>
+
+    <mat-card-footer>
+      <mat-progress-bar *ngIf="inProgress" mode="query"></mat-progress-bar>
+    </mat-card-footer>
+  </mat-card>
+</form>
