@@ -31,8 +31,8 @@
     "publish": "npm run prepare-external-resoruces && electron-vite build && electron-builder --publish always",
     "prepare-external-resoruces": "npm run jdk:download && npm run ui:build",
     "jdk:download": "run-script-os",
-    "jdk:download:darwin:linux": "../devops/jdktool/jdkutil.py clean:jdks download unzip",
-    "jdk:download:win32": "python ../devops/jdktool/jdkutil.py clean:jdks download unzip",
+    "jdk:download:darwin:linux": "../jdktool/jdkutil.py clean:jdks download unzip",
+    "jdk:download:win32": "python ../jdktool/jdkutil.py clean:jdks download unzip",
     "ui:start": "npm run start --prefix ../ui",
     "ui:build": "npm run build --prefix ../ui -- --base-href=./"
   },
