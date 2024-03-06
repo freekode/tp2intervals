@@ -10,7 +10,6 @@ class TPTrainingTypeMapper {
             TrainingType.RUN to 3,
             TrainingType.MTB to 8,
             TrainingType.WEIGHT to 9,
-            TrainingType.WALK to 13,
             TrainingType.NOTE to 7, // day off
             TrainingType.UNKNOWN to 1, // swim
             TrainingType.UNKNOWN to 4, // brick
@@ -18,6 +17,7 @@ class TPTrainingTypeMapper {
             TrainingType.UNKNOWN to 9, // custom
             TrainingType.UNKNOWN to 11, // xc-ski
             TrainingType.UNKNOWN to 12, // rowing
+            TrainingType.UNKNOWN to 13, // walk
             TrainingType.UNKNOWN to 100 // other
         )
 
