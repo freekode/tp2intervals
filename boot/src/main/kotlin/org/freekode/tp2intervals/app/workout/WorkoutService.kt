@@ -1,19 +1,22 @@
 package org.freekode.tp2intervals.app.workout
 
 import org.freekode.tp2intervals.app.schedule.ScheduleService
-import org.freekode.tp2intervals.domain.workout.PlanRepositoryStrategy
-import org.freekode.tp2intervals.domain.workout.WorkoutRepositoryStrategy
+import org.freekode.tp2intervals.domain.plan.PlanRepository
+import org.freekode.tp2intervals.domain.workout.WorkoutRepository
 import org.springframework.stereotype.Service
 
 @Service
 class WorkoutService(
-    private val workoutRepositoryStrategy: WorkoutRepositoryStrategy,
-    private val planRepositoryStrategy: PlanRepositoryStrategy,
+    workoutRepositories: List<WorkoutRepository>,
+    planRepositories: List<PlanRepository>,
     private val scheduleService: ScheduleService
 ) {
+    private val workoutRepositoryMap = workoutRepositories.associateBy { it.platform() }
+    private val planRepositoryMap = planRepositories.associateBy { it.platform() }
+
     fun planWorkouts(request: PlanWorkoutsRequest): PlanWorkoutsResponse {
-        val sourceWorkoutRepository = workoutRepositoryStrategy.getRepository(request.sourcePlatform)
-        val targetWorkoutRepository = workoutRepositoryStrategy.getRepository(request.targetPlatform)
+        val sourceWorkoutRepository = workoutRepositoryMap[request.sourcePlatform]!!
+        val targetWorkoutRepository = workoutRepositoryMap[request.targetPlatform]!!
 
         val allWorkoutsToPlan = sourceWorkoutRepository.getPlannedWorkouts(request.startDate, request.endDate)
         var filteredWorkoutsToPlan = allWorkoutsToPlan
@@ -45,18 +48,17 @@ class WorkoutService(
     }
 
     fun copyWorkouts(request: CopyWorkoutsRequest): CopyWorkoutsResponse {
-        val sourceWorkoutRepository = workoutRepositoryStrategy.getRepository(request.sourcePlatform)
-        val targetWorkoutRepository = workoutRepositoryStrategy.getRepository(request.targetPlatform)
-        val targetPlanRepository = planRepositoryStrategy.getRepository(request.targetPlatform)
+        val sourceWorkoutRepository = workoutRepositoryMap[request.sourcePlatform]!!
+        val targetWorkoutRepository = workoutRepositoryMap[request.targetPlatform]!!
+        val targetPlanRepository = planRepositoryMap[request.targetPlatform]!!
 
         val allWorkouts = sourceWorkoutRepository.getPlannedWorkouts(request.startDate, request.endDate)
         val filteredWorkouts = allWorkouts.filter { request.types.contains(it.type) }
 
-        val response = CopyWorkoutsResponse(
+        val plan = targetPlanRepository.createPlan(request.name, request.startDate, request.isPlan)
+        filteredWorkouts.forEach { targetWorkoutRepository.saveWorkout(it, plan) }
+        return CopyWorkoutsResponse(
             filteredWorkouts.size, allWorkouts.size - filteredWorkouts.size, request.startDate, request.endDate
         )
-        val plan = targetPlanRepository.createPlan(request.name, request.startDate, request.planType)
-        filteredWorkouts.forEach { targetWorkoutRepository.saveWorkout(it, plan) }
-        return response
     }
 }

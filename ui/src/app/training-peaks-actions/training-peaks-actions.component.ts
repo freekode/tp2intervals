@@ -18,6 +18,7 @@ import { MatSelectModule } from "@angular/material/select";
 import { ConfigurationClient } from "infrastructure/configuration.client";
 import { formatDate } from "utils/date-formatter";
 import { MatCheckboxModule } from "@angular/material/checkbox";
+import { TpCopyPlanComponent } from "app/training-peaks-actions/tp-copy-plan/tp-copy-plan.component";
 
 @Component({
   selector: 'app-training-peaks-actions',
@@ -36,7 +37,8 @@ import { MatCheckboxModule } from "@angular/material/checkbox";
     MatNativeDateModule,
     MatSnackBarModule,
     MatSelectModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    TpCopyPlanComponent
   ],
   templateUrl: './training-peaks-actions.component.html',
   styleUrl: './training-peaks-actions.component.scss'
@@ -54,16 +56,21 @@ export class TrainingPeaksActionsComponent implements OnInit {
     trainingTypes: [null, Validators.required],
     startDate: [null, Validators.required],
     endDate: [null, Validators.required],
+    isPlan: [null, Validators.required],
   });
 
-  copyPlanInProgress = false
   planWorkoutInProgress = false
+  copyWorkoutsInProgress = false
 
   directions = [
     {name: 'Intervals.icu -> Training Peaks', value: {sourcePlatform: 'INTERVALS', targetPlatform: 'TRAINING_PEAKS'}},
     {name: 'Training Peaks -> Intervals.icu', value: {sourcePlatform: 'TRAINING_PEAKS', targetPlatform: 'INTERVALS'}},
   ]
   trainingTypes: any[];
+  planType = [
+    {name: 'Plan', value: true},
+    {name: 'Folder', value: false}
+  ]
 
   private readonly selectedPlanDirection = this.directions[0].value;
   private readonly selectedTrainingTypes = ['BIKE', 'VIRTUAL_BIKE', 'MTB', 'RUN'];
@@ -71,7 +78,6 @@ export class TrainingPeaksActionsComponent implements OnInit {
   private readonly tomorrowDate = formatDate(new Date(new Date().setDate(new Date().getDate() + 1)))
 
   constructor(
-    private router: Router,
     private formBuilder: FormBuilder,
     private workoutClient: WorkoutClient,
     private configurationClient: ConfigurationClient,
@@ -95,14 +101,15 @@ export class TrainingPeaksActionsComponent implements OnInit {
   }
 
   copyWorkoutsSubmit() {
-    this.copyPlanInProgress = true
+    this.copyWorkoutsInProgress = true
     let name = this.copyWorkoutsFormGroup.value.name
-    let trainingTypes = this.planWorkoutsFormGroup.value.trainingTypes
+    let trainingTypes = this.copyWorkoutsFormGroup.value.trainingTypes
     let startDate = formatDate(this.copyWorkoutsFormGroup.value.startDate)
     let endDate = formatDate(this.copyWorkoutsFormGroup.value.endDate)
     let direction = {sourcePlatform: 'TRAINING_PEAKS', targetPlatform: 'INTERVALS'}
-    this.workoutClient.copyWorkouts(name, startDate, endDate, trainingTypes, direction).pipe(
-      finalize(() => this.copyPlanInProgress = false)
+    let isPlan = {sourcePlatform: 'TRAINING_PEAKS', targetPlatform: 'INTERVALS'}
+    this.workoutClient.copyWorkouts(name, startDate, endDate, trainingTypes, direction, isPlan).pipe(
+      finalize(() => this.copyWorkoutsInProgress = false)
     ).subscribe((response) => {
       this.notificationService.success(
         `Copied: ${response.copied}\n Filtered out: ${response.filteredOut}\n From ${response.startDate} to ${response.endDate}`)
@@ -130,7 +137,8 @@ export class TrainingPeaksActionsComponent implements OnInit {
     })
     this.copyWorkoutsFormGroup.patchValue({
       name: 'My New Plan',
-      trainingTypes: this.selectedTrainingTypes
+      trainingTypes: this.selectedTrainingTypes,
+      isPlan: true
     })
   }
 }

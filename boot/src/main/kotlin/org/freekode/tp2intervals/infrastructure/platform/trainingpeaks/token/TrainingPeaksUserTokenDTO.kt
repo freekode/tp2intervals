@@ -1,4 +1,4 @@
-package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.user
+package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.token
 
 import com.fasterxml.jackson.annotation.JsonProperty
 

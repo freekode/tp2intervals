@@ -28,11 +28,6 @@ class MockTrainerRoadApiClient implements TrainerRoadApiClient {
     }
 
     @Override
-    TrainerRoadMemberDTO getMember() {
-        return new TrainerRoadMemberDTO(123L, "my-user")
-    }
-
-    @Override
     List<TrainerRoadActivityDTO> getActivities(String memberId, String startDate, String endDate) {
         return activities
     }

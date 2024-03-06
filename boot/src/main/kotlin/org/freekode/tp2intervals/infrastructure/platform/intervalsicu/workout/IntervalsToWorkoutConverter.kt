@@ -2,7 +2,7 @@ package org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout
 
 import java.time.Duration
 import org.freekode.tp2intervals.domain.workout.Workout
-import org.freekode.tp2intervals.domain.workout.WorkoutExternalData
+import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutMultiStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutSingleStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStep
@@ -24,7 +24,7 @@ class IntervalsToWorkoutConverter(
             eventDTO.mapDuration(),
             eventDTO.icu_training_load,
             workoutsStructure,
-            WorkoutExternalData.empty().withIntervals(eventDTO.id.toString())
+            ExternalData.empty().withIntervals(eventDTO.id.toString())
         )
     }
 

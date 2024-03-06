@@ -32,4 +32,8 @@ class TrainerRoadWorkoutRepository(
         val workoutDetails = trainerRoadApiClient.getWorkoutDetails(id)
         return TRWorkoutConverter(workoutDetails).toWorkout()
     }
+
+    override fun getWorkouts(plan: Plan): List<Workout> {
+        TODO("Not yet implemented")
+    }
 }

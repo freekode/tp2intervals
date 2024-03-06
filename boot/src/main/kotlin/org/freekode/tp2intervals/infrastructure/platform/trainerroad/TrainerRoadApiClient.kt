@@ -16,9 +16,6 @@ import org.springframework.web.bind.annotation.PostMapping
     configuration = [TrainerRoadApiClientConfig::class]
 )
 interface TrainerRoadApiClient {
-    @GetMapping("/app/api/member-info")
-    fun getMember(): TrainerRoadMemberDTO
-
     @GetMapping("/app/api/calendar/activities/{memberId}?startDate={startDate}&endDate={endDate}")
     fun getActivities(
         @PathVariable("memberId") memberId: String,

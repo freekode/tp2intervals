@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: _
+      author: _
+      changes:
+        - insert:
+            tableName: config
+            columns:
+              - column:
+                  name: key
+                  value: 'training-peaks.copy-plan-days-shift'
+
+              - column:
+                  name: value
+                  value: '365'

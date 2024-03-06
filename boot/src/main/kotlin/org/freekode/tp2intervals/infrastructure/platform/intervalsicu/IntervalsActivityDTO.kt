@@ -2,7 +2,7 @@ package org.freekode.tp2intervals.infrastructure.platform.intervalsicu
 
 import java.time.LocalDateTime
 import org.freekode.tp2intervals.domain.TrainingType
-import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsEventTypeMapper
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsTrainingTypeMapper
 
 class IntervalsActivityDTO(
     val id: String,
@@ -13,5 +13,5 @@ class IntervalsActivityDTO(
     val moving_time: Long,
     val icu_training_load: Int?,
 ) {
-    fun mapType(): TrainingType = type?.let { IntervalsEventTypeMapper.getByIntervalsType(it) } ?: TrainingType.UNKNOWN
+    fun mapType(): TrainingType = type?.let { IntervalsTrainingTypeMapper.getByIntervalsType(it) } ?: TrainingType.UNKNOWN
 }

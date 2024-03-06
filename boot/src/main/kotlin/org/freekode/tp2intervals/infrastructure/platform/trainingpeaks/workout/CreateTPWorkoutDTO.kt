@@ -25,7 +25,7 @@ class CreateTPWorkoutDTO(
             return CreateTPWorkoutDTO(
                 athleteId,
                 workout.date.atStartOfDay(),
-                TPWorkoutTypeMapper.getByType(workout.type),
+                TPTrainingTypeMapper.getByType(workout.type),
                 workout.name,
                 workout.externalData.toSimpleString(),
                 null,
@@ -40,7 +40,7 @@ class CreateTPWorkoutDTO(
             return CreateTPWorkoutDTO(
                 athleteId,
                 activity.startedAt,
-                TPWorkoutTypeMapper.getByType(activity.type),
+                TPTrainingTypeMapper.getByType(activity.type),
                 activity.title,
                 null,
                 activity.duration.toMinutes().toDouble().div(60),

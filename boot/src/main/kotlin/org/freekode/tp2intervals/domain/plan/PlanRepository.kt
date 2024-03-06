@@ -6,5 +6,7 @@ import java.time.LocalDate
 interface PlanRepository {
     fun platform(): Platform
 
-    fun createPlan(name: String, startDate: LocalDate, type: PlanType): Plan
+    fun createPlan(name: String, startDate: LocalDate, isPlan: Boolean): Plan
+
+    fun getPlans(): List<Plan>
 }

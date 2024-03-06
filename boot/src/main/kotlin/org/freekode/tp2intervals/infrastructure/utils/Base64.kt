@@ -13,6 +13,5 @@ class Base64 {
         fun toByteArray(base64: String): ByteArray {
             return Base64.getDecoder().decode(base64)
         }
-
     }
 }

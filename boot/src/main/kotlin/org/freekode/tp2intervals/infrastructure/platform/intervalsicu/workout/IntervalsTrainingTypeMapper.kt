@@ -2,7 +2,7 @@ package org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout
 
 import org.freekode.tp2intervals.domain.TrainingType
 
-class IntervalsEventTypeMapper {
+class IntervalsTrainingTypeMapper {
     companion object {
         private val typeMap = mapOf(
             TrainingType.BIKE to "Ride",

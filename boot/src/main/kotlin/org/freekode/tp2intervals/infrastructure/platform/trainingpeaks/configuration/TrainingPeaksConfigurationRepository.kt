@@ -5,6 +5,8 @@ import org.freekode.tp2intervals.domain.config.AppConfigurationRepository
 import org.freekode.tp2intervals.domain.config.PlatformConfigurationRepository
 import org.freekode.tp2intervals.domain.config.UpdateConfigurationRequest
 import org.freekode.tp2intervals.infrastructure.CatchFeignException
+import org.freekode.tp2intervals.infrastructure.PlatformException
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfiguration
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.token.TrainingPeaksTokenApiClient
 import org.springframework.stereotype.Service
 
@@ -26,6 +28,17 @@ class TrainingPeaksConfigurationRepository(
         val newConfig = currentConfig.configMap + updatedConfig
         validateConfiguration(newConfig)
         appConfigurationRepository.updateConfig(UpdateConfigurationRequest(newConfig))
+    }
+
+    override fun isValid(): Boolean {
+        try {
+            val currentConfig =
+                appConfigurationRepository.getConfigurationByPrefix(IntervalsConfiguration.CONFIG_PREFIX)
+            validateConfiguration(currentConfig.configMap)
+            return true
+        } catch (e: PlatformException) {
+            return false
+        }
     }
 
     fun getConfiguration(): TrainingPeaksConfiguration {

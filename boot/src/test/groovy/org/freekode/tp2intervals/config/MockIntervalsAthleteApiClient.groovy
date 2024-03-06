@@ -1,6 +1,6 @@
 package org.freekode.tp2intervals.config
 
-import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsAthleteApiClient
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsAthleteApiClient
 
 class MockIntervalsAthleteApiClient implements IntervalsAthleteApiClient {
     @Override

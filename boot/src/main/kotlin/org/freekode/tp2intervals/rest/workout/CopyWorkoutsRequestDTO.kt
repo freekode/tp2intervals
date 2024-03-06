@@ -5,6 +5,7 @@ import org.freekode.tp2intervals.domain.TrainingType
 
 class CopyWorkoutsRequestDTO(
     val name: String,
+    val isPlan: Boolean,
     val types: List<TrainingType>,
     val startDate: String,
     val endDate: String,

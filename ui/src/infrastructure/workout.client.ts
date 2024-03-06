@@ -16,8 +16,8 @@ export class WorkoutClient {
       .post(`/api/workout/plan`, {startDate, endDate, types, skipSynced, ...platformDirection})
   }
 
-  copyWorkouts(name, startDate, endDate, types, platformDirection): Observable<any> {
+  copyWorkouts(name, startDate, endDate, types, platformDirection, isPlan): Observable<any> {
     return this.httpClient
-      .post(`/api/workout/copy`, {name, startDate, endDate, types, ...platformDirection})
+      .post(`/api/workout/copy`, {name, startDate, endDate, types, ...platformDirection, isPlan})
   }
 }

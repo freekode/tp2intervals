@@ -6,8 +6,6 @@ import org.freekode.tp2intervals.domain.config.PlatformConfigurationRepository
 import org.freekode.tp2intervals.domain.config.UpdateConfigurationRequest
 import org.freekode.tp2intervals.infrastructure.CatchFeignException
 import org.freekode.tp2intervals.infrastructure.PlatformException
-import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsAthleteApiClient
-import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.configuration.TrainingPeaksConfiguration
 import org.freekode.tp2intervals.infrastructure.utils.Auth
 import org.springframework.stereotype.Service
 
@@ -25,6 +23,17 @@ class IntervalsConfigurationRepository(
         appConfigurationRepository.updateConfig(UpdateConfigurationRequest(newConfig))
     }
 
+    override fun isValid(): Boolean {
+        try {
+            val currentConfig =
+                appConfigurationRepository.getConfigurationByPrefix(IntervalsConfiguration.CONFIG_PREFIX)
+            validateConfiguration(currentConfig.configMap)
+            return true
+        } catch (e: PlatformException) {
+            return false
+        }
+    }
+
     fun getConfiguration(): IntervalsConfiguration {
         val config = appConfigurationRepository.getConfigurationByPrefix(IntervalsConfiguration.CONFIG_PREFIX)
         return IntervalsConfiguration(config)
@@ -35,7 +44,6 @@ class IntervalsConfigurationRepository(
             appConfigurationRepository.getConfigurationByPrefix(IntervalsConfiguration.CONFIG_PREFIX)
         return currentConfig.configMap + request.getByPrefix(IntervalsConfiguration.CONFIG_PREFIX)
     }
-
 
     private fun validateConfiguration(newConfig: Map<String, String>) {
         val intervalsConfig: IntervalsConfiguration
