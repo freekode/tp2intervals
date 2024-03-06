@@ -17,6 +17,7 @@ import { ConfigurationClient } from "infrastructure/configuration.client";
 import { NotificationService } from "infrastructure/notification.service";
 import { finalize } from "rxjs";
 import { PlanClient } from "infrastructure/plan.client";
+import { Platform } from "infrastructure/platform";
 
 @Component({
   selector: 'app-tp-copy-plan',
@@ -61,7 +62,7 @@ export class TpCopyPlanComponent implements OnInit {
 
   ngOnInit(): void {
     this.formGroup.disable()
-    this.planClient.getPlans('TRAINING_PEAKS').subscribe(plans => {
+    this.planClient.getPlans(Platform.TRAINING_PEAKS.key).subscribe(plans => {
       this.plans = plans.map(plan => {
         return {name: plan.name, value: plan}
       })

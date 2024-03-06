@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { ConfigData } from "./config-data";
 
 
@@ -12,9 +12,11 @@ export class ConfigurationClient {
   constructor(private httpClient: HttpClient) {
   }
 
-  getConfig(): Observable<any> {
-    return this.httpClient
-      .get(`/api/configuration`)
+  getConfig(): Observable<ConfigData> {
+    return this.httpClient.get(`/api/configuration`).pipe(
+      map((response: any) =>
+        new ConfigData(response?.config))
+    )
   }
 
   updateConfig(configData: ConfigData): Observable<any> {
@@ -25,5 +27,11 @@ export class ConfigurationClient {
   getTrainingTypes(): Observable<any> {
     return this.httpClient
       .get('/api/configuration/training-types')
+  }
+
+  isValid(platform): Observable<boolean> {
+    return this.httpClient.get(`/api/configuration/valid`, {params: {platform}}).pipe(
+      map(response => (<boolean>response))
+    )
   }
 }

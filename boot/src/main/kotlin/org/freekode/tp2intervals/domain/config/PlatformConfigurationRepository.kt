@@ -6,4 +6,6 @@ interface PlatformConfigurationRepository {
     fun platform(): Platform
 
     fun updateConfig(request: UpdateConfigurationRequest)
+
+    fun isValid(): Boolean
 }
