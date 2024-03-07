@@ -1,0 +1,70 @@
+<form [formGroup]="formGroup" novalidate>
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Plan Workouts</mat-card-title>
+      <mat-card-subtitle>
+        Sync planned workouts between Intervals and TrainingPeaks
+      </mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="form-field">
+            <mat-label>Direction</mat-label>
+            <mat-select formControlName="direction">
+              @for (type of directions; track type) {
+                <mat-option [value]="type.value">{{ type.name }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="form-field">
+            <mat-label>Workout Types</mat-label>
+            <mat-select formControlName="trainingTypes" multiple>
+              @for (type of trainingTypes; track type) {
+                <mat-option [value]="type.value">{{ type.title }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <mat-checkbox formControlName="skipSynced">Skip already synced workouts</mat-checkbox>
+        </div>
+      </div>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <button
+        mat-raised-button
+        class="action-button"
+        color="primary"
+        (click)="planTodayClick()"
+        [disabled]="formGroup.invalid"
+      >
+        Plan for Today
+      </button>
+
+      <button
+        mat-raised-button
+        class="action-button"
+        color="primary"
+        (click)="planTomorrowClick()"
+        [disabled]="formGroup.invalid"
+      >
+        Plan for Tomorrow
+      </button>
+    </mat-card-actions>
+
+    <mat-card-footer>
+      <mat-progress-bar *ngIf="inProgress" mode="query"></mat-progress-bar>
+    </mat-card-footer>
+  </mat-card>
+</form>

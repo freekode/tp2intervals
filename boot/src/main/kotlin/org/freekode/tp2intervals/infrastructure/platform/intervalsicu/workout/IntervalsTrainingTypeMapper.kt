@@ -10,7 +10,7 @@ class IntervalsTrainingTypeMapper {
             TrainingType.VIRTUAL_BIKE to "VirtualRide",
             TrainingType.RUN to "Run",
             TrainingType.WEIGHT to "WeightTraining",
-            TrainingType.WALK to "Walk",
+//            TrainingType.WALK to "Walk",
             TrainingType.NOTE to "NOTE",
             TrainingType.UNKNOWN to "Other",
         )
