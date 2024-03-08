@@ -1,5 +1,6 @@
 package org.freekode.tp2intervals.domain.workout
 
+import java.io.Serializable
 import java.time.Duration
 import java.time.LocalDate
 import org.freekode.tp2intervals.domain.ExternalData
@@ -15,7 +16,7 @@ data class Workout(
     val load: Int?,
     val structure: WorkoutStructure?,
     val externalData: ExternalData,
-) {
+) : Serializable {
     companion object {
         fun note(date: LocalDate, title: String, description: String?, externalData: ExternalData): Workout {
             return Workout(date, TrainingType.NOTE, title, description, null, null, null, externalData)

@@ -1,23 +1,36 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout
 
 import java.time.Duration
-import org.freekode.tp2intervals.domain.workout.Workout
+import java.time.LocalDate
 import org.freekode.tp2intervals.domain.ExternalData
+import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
+import org.freekode.tp2intervals.infrastructure.PlatformException
+import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.library.TPWorkoutLibraryItemDTO
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.TPStructureToStepMapper
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.TPWorkoutStructureDTO
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
 @Component
 class TPToWorkoutConverter {
+    private val log = LoggerFactory.getLogger(this.javaClass)
+
     fun toWorkout(tpWorkout: TPWorkoutResponseDTO): Workout {
-        val workoutsStructure = if (tpWorkout.structure != null) toWorkoutStructure(tpWorkout.structure) else null
+        return toWorkout(tpWorkout, tpWorkout.workoutDay.toLocalDate())
+    }
+
+    fun toWorkout(tpWorkout: TPWorkoutLibraryItemDTO): Workout {
+        return toWorkout(tpWorkout, LocalDate.now())
+    }
+
+    fun toWorkout(tpWorkout: TPBaseWorkoutResponseDTO, workoutDate: LocalDate): Workout {
+        val workoutsStructure = toWorkoutStructure(tpWorkout)
         var description = tpWorkout.description.orEmpty()
         description += tpWorkout.coachComments?.let { "\n- - - -\n$it" }.orEmpty()
 
-
         return Workout(
-            tpWorkout.workoutDay.toLocalDate(),
+            workoutDate,
             tpWorkout.getWorkoutType()!!,
             tpWorkout.title.ifBlank { "Workout" },
             description,
@@ -28,10 +41,10 @@ class TPToWorkoutConverter {
         )
     }
 
-    private fun getWorkoutExternalData(tpWorkout: TPWorkoutResponseDTO): ExternalData {
+    private fun getWorkoutExternalData(tpWorkout: TPBaseWorkoutResponseDTO): ExternalData {
         return ExternalData
             .empty()
-            .withTrainingPeaks(tpWorkout.workoutId)
+            .withTrainingPeaks(tpWorkout.id)
             .withSimpleString(tpWorkout.description ?: "")
     }
 
@@ -46,11 +59,20 @@ class TPToWorkoutConverter {
         )
     }
 
-    private fun toWorkoutStructure(structure: TPWorkoutStructureDTO): WorkoutStructure {
-        val steps = TPStructureToStepMapper(structure).mapToWorkoutSteps()
-        return WorkoutStructure(
-            structure.toTargetUnit(),
-            steps
-        )
+    private fun toWorkoutStructure(tpWorkout: TPBaseWorkoutResponseDTO): WorkoutStructure? {
+        if (tpWorkout.structure == null || tpWorkout.structure.structure.isEmpty()) {
+            return null
+        }
+
+        try {
+            val steps = TPStructureToStepMapper(tpWorkout.structure).mapToWorkoutSteps()
+            return WorkoutStructure(
+                tpWorkout.structure.toTargetUnit(),
+                steps
+            )
+        } catch (e: PlatformException) {
+            log.warn("Can't convert workout - ${tpWorkout.title}, error - ${e.message}")
+            return null
+        }
     }
 }

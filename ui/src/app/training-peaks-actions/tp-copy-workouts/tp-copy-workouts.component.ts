@@ -86,7 +86,7 @@ export class TpCopyWorkoutsComponent implements OnInit {
     let startDate = formatDate(this.formGroup.value.startDate)
     let endDate = formatDate(this.formGroup.value.endDate)
     let direction = {sourcePlatform: 'TRAINING_PEAKS', targetPlatform: 'INTERVALS'}
-    let isPlan = {sourcePlatform: 'TRAINING_PEAKS', targetPlatform: 'INTERVALS'}
+    let isPlan = this.formGroup.value.isPlan
     this.workoutClient.copyWorkouts(name, startDate, endDate, trainingTypes, direction, isPlan).pipe(
       finalize(() => this.inProgress = false)
     ).subscribe((response) => {
