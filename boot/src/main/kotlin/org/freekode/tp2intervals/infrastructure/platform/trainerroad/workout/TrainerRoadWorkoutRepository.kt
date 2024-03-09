@@ -24,7 +24,7 @@ class TrainerRoadWorkoutRepository(
         throw PlatformException(Platform.TRAINER_ROAD, "TR doesn't support workout copying")
     }
 
-    override fun getWorkoutsByName(name: String): List<Workout> {
+    override fun findWorkoutsByName(name: String): List<Workout> {
         TODO("Not yet implemented")
     }
 

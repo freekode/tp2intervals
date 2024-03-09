@@ -1,7 +1,9 @@
 package org.freekode.tp2intervals.app.workout
 
 import org.freekode.tp2intervals.app.schedule.ScheduleService
+import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.plan.PlanRepository
+import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutRepository
 import org.springframework.stereotype.Service
 
@@ -60,5 +62,10 @@ class WorkoutService(
         return CopyWorkoutsResponse(
             filteredWorkouts.size, allWorkouts.size - filteredWorkouts.size, request.startDate, request.endDate
         )
+    }
+
+    fun findWorkoutsByName(platform: Platform, name: String): List<Workout> {
+        val workoutRepository = workoutRepositoryMap[platform]!!
+        return workoutRepository.findWorkoutsByName(name)
     }
 }

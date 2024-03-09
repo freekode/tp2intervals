@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { TpPlanWorkoutsComponent } from "app/training-peaks-actions/tp-plan-workouts/tp-plan-workouts.component";
 import { TpCopyPlanComponent } from "app/training-peaks-actions/tp-copy-plan/tp-copy-plan.component";
+import { TpCopyPlannedWorkoutsComponent } from "app/training-peaks-actions/tp-copy-planned-workouts/tp-copy-planned-workouts.component";
 import { TpCopyWorkoutsComponent } from "app/training-peaks-actions/tp-copy-workouts/tp-copy-workouts.component";
 
 @Component({
@@ -9,6 +10,7 @@ import { TpCopyWorkoutsComponent } from "app/training-peaks-actions/tp-copy-work
   imports: [
     TpPlanWorkoutsComponent,
     TpCopyPlanComponent,
+    TpCopyPlannedWorkoutsComponent,
     TpCopyWorkoutsComponent
   ],
   templateUrl: './training-peaks-actions.component.html',

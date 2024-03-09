@@ -65,7 +65,7 @@ class TrainingPeaksWorkoutRepository(
         }
     }
 
-    override fun getWorkoutsByName(name: String): List<Workout> {
+    override fun findWorkoutsByName(name: String): List<Workout> {
         return tpWorkoutLibraryRepository.getAllWorkoutsFromLibraries()
             .filter { it.name.lowercase(Locale.getDefault()).contains(name) }
     }

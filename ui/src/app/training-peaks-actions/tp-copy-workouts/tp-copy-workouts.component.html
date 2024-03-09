@@ -1,9 +1,9 @@
-<form [formGroup]="formGroup" novalidate (ngSubmit)="copyWorkoutsSubmit()">
+<form [formGroup]="formGroup" novalidate (ngSubmit)="submit()">
   <mat-card>
     <mat-card-header>
-      <mat-card-title>Copy Workouts</mat-card-title>
+      <mat-card-title>Copy workout</mat-card-title>
       <mat-card-subtitle>
-        Copy planned workouts from TrainingPeaks to Intervals training plan or workouts folder
+        Copy a workout from TrainingPeaks workout library to Intervals
       </mat-card-subtitle>
     </mat-card-header>
 
@@ -11,49 +11,19 @@
       <div class="row">
         <div class="col">
           <mat-form-field class="form-field">
-            <mat-label>Name</mat-label>
-            <input matInput placeholder="My New Plan" formControlName="name">
-          </mat-form-field>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col">
-          <mat-form-field class="form-field">
-            <mat-label>Workout Types</mat-label>
-            <mat-select formControlName="trainingTypes" multiple>
-              @for (type of trainingTypes; track type) {
-                <mat-option [value]="type.value">{{ type.title }}</mat-option>
+            <mat-label>TP Workout name from library</mat-label>
+            <input type="text" matInput formControlName="workout" [matAutocomplete]="workoutAutocomplete">
+            <mat-autocomplete #workoutAutocomplete="matAutocomplete" [displayWith]="displayFn">
+              @for (option of workouts | async; track option) {
+                <mat-option [value]="option">{{option.name}}</mat-option>
               }
-            </mat-select>
-          </mat-form-field>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col">
-          <mat-form-field class="form-field">
-            <mat-label>Date Range</mat-label>
-            <mat-date-range-input
-              [rangePicker]="copyPlanDatePicker">
-              <input matStartDate placeholder="Start Date" formControlName="startDate">
-              <input matEndDate placeholder="End Date" formControlName="endDate">
-            </mat-date-range-input>
-            <mat-datepicker-toggle matIconSuffix [for]="copyPlanDatePicker"></mat-datepicker-toggle>
-            <mat-date-range-picker #copyPlanDatePicker></mat-date-range-picker>
-          </mat-form-field>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col">
-          <mat-form-field class="form-field">
-            <mat-label>Save as</mat-label>
-            <mat-select formControlName="isPlan">
-              @for (item of planType; track item) {
-                <mat-option [value]="item.value">{{ item.name }}</mat-option>
-              }
-            </mat-select>
+              <mat-option disabled *ngIf="searchInProgress">
+                <mat-spinner diameter="35"></mat-spinner>
+              </mat-option>
+              <mat-option disabled *ngIf="(workouts | async)?.length === 0 && !searchInProgress">
+                Not found
+              </mat-option>
+            </mat-autocomplete>
           </mat-form-field>
         </div>
       </div>
@@ -64,9 +34,9 @@
         mat-raised-button
         color="primary"
         type="submit"
-        [disabled]="formGroup.invalid"
+        [disabled]="formGroup.invalid || formGroup.disabled"
       >
-        Submit
+        Copy
       </button>
     </mat-card-actions>
 

@@ -73,7 +73,7 @@ class IntervalsWorkoutRepository(
         TODO("Not yet implemented")
     }
 
-    override fun getWorkoutsByName(name: String): List<Workout> {
+    override fun findWorkoutsByName(name: String): List<Workout> {
         TODO("Not yet implemented")
     }
 

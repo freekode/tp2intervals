@@ -8,7 +8,7 @@ class TrainingPeaksWorkoutRepositoryTest extends SpringIT {
     TrainingPeaksWorkoutRepository trainingPeaksWorkoutRepository
 
     def "should"() {
-        def workouts = trainingPeaksWorkoutRepository.getWorkoutsByName("absa")
+        def workouts = trainingPeaksWorkoutRepository.findWorkoutsByName("absa")
 
         expect:
         workouts.size() > 0

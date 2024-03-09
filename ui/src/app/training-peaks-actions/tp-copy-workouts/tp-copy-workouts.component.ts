@@ -1,45 +1,38 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
-import { formatDate } from "utils/date-formatter";
-import { WorkoutClient } from "infrastructure/workout.client";
-import { ConfigurationClient } from "infrastructure/configuration.client";
-import { NotificationService } from "infrastructure/notification.service";
-import { finalize } from "rxjs";
-import { MatGridListModule } from "@angular/material/grid-list";
 import { MatButtonModule } from "@angular/material/button";
 import { MatCardModule } from "@angular/material/card";
 import { MatFormFieldModule } from "@angular/material/form-field";
-import { MatInputModule } from "@angular/material/input";
+import { MatOptionModule } from "@angular/material/core";
 import { MatProgressBarModule } from "@angular/material/progress-bar";
-import { NgIf } from "@angular/common";
-import { MatDatepickerModule } from "@angular/material/datepicker";
-import { MatNativeDateModule } from "@angular/material/core";
-import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { MatSelectModule } from "@angular/material/select";
-import { MatCheckboxModule } from "@angular/material/checkbox";
-import { TpCopyPlanComponent } from "app/training-peaks-actions/tp-copy-plan/tp-copy-plan.component";
-import { TpPlanWorkoutsComponent } from "app/training-peaks-actions/tp-plan-workouts/tp-plan-workouts.component";
+import { AsyncPipe, NgIf } from "@angular/common";
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
+import { WorkoutClient } from "infrastructure/workout.client";
+import { PlanClient } from "infrastructure/plan.client";
+import { ConfigurationClient } from "infrastructure/configuration.client";
+import { NotificationService } from "infrastructure/notification.service";
+import { Platform } from "infrastructure/platform";
+import { debounceTime, filter, finalize, Observable, switchMap, tap } from "rxjs";
+import { MatInputModule } from "@angular/material/input";
+import { MatAutocompleteModule } from "@angular/material/autocomplete";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
 @Component({
   selector: 'app-tp-copy-workouts',
   standalone: true,
   imports: [
-    MatGridListModule,
-    FormsModule,
     MatButtonModule,
     MatCardModule,
     MatFormFieldModule,
-    MatInputModule,
-    ReactiveFormsModule,
+    MatOptionModule,
     MatProgressBarModule,
-    NgIf,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatSnackBarModule,
     MatSelectModule,
-    MatCheckboxModule,
-    TpCopyPlanComponent,
-    TpPlanWorkoutsComponent
+    NgIf,
+    ReactiveFormsModule,
+    MatInputModule,
+    MatAutocompleteModule,
+    AsyncPipe,
+    MatProgressSpinnerModule
   ],
   templateUrl: './tp-copy-workouts.component.html',
   styleUrl: './tp-copy-workouts.component.scss'
@@ -47,59 +40,51 @@ import { TpPlanWorkoutsComponent } from "app/training-peaks-actions/tp-plan-work
 export class TpCopyWorkoutsComponent implements OnInit {
 
   formGroup: FormGroup = this.formBuilder.group({
-    name: [null, Validators.required],
-    trainingTypes: [null, Validators.required],
-    startDate: [null, Validators.required],
-    endDate: [null, Validators.required],
-    isPlan: [null, Validators.required],
+    workout: [null, Validators.required],
   });
 
+  searchInProgress = false
   inProgress = false
 
-  trainingTypes: any[];
-  planType = [
-    {name: 'Plan', value: true},
-    {name: 'Folder', value: false}
-  ]
-
-  private readonly selectedTrainingTypes = ['BIKE', 'VIRTUAL_BIKE', 'MTB', 'RUN'];
+  workouts: Observable<any[]>;
 
   constructor(
     private formBuilder: FormBuilder,
     private workoutClient: WorkoutClient,
+    private planClient: PlanClient,
     private configurationClient: ConfigurationClient,
     private notificationService: NotificationService
   ) {
   }
 
   ngOnInit(): void {
-    this.configurationClient.getTrainingTypes().subscribe(types => {
-      this.trainingTypes = types
-      this.initFormValues();
-    })
+    this.workouts = this.formGroup.controls['workout'].valueChanges.pipe(
+      debounceTime(300),
+      filter(value => value.length > 2),
+      tap(() => {
+        this.searchInProgress = true
+      }),
+      switchMap(value => this.workoutClient.findWorkoutsByName(Platform.TRAINING_PEAKS.key, value).pipe(
+        finalize(() => {
+          this.searchInProgress = false
+        })
+      ))
+    )
   }
 
-  copyWorkoutsSubmit() {
+  submit() {
     this.inProgress = true
-    let name = this.formGroup.value.name
-    let trainingTypes = this.formGroup.value.trainingTypes
-    let startDate = formatDate(this.formGroup.value.startDate)
-    let endDate = formatDate(this.formGroup.value.endDate)
+    let plan = this.formGroup.value.plan
     let direction = {sourcePlatform: 'TRAINING_PEAKS', targetPlatform: 'INTERVALS'}
-    let isPlan = this.formGroup.value.isPlan
-    this.workoutClient.copyWorkouts(name, startDate, endDate, trainingTypes, direction, isPlan).pipe(
+    this.planClient.copyPlan(plan, direction).pipe(
       finalize(() => this.inProgress = false)
     ).subscribe((response) => {
       this.notificationService.success(
-        `Copied: ${response.copied}\n Filtered out: ${response.filteredOut}\n From ${response.startDate} to ${response.endDate}`)
+        `Plan name: ${response.planName}\nCopied workouts: ${response.workouts}`)
     })
   }
 
-  private initFormValues() {
-    this.formGroup.patchValue({
-      name: 'My New Plan',
-      trainingTypes: this.selectedTrainingTypes,
-      isPlan: true
-    })
+  displayFn(workout): string {
+    return workout ? workout.name : '';
   }
 }
