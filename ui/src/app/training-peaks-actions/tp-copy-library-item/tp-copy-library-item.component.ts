@@ -6,7 +6,7 @@ import { MatCardModule } from "@angular/material/card";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatProgressBarModule } from "@angular/material/progress-bar";
-import { NgIf } from "@angular/common";
+import { AsyncPipe, NgIf } from "@angular/common";
 import { MatDatepickerModule } from "@angular/material/datepicker";
 import { MatNativeDateModule } from "@angular/material/core";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
@@ -15,7 +15,7 @@ import { MatCheckboxModule } from "@angular/material/checkbox";
 import { WorkoutClient } from "infrastructure/workout.client";
 import { ConfigurationClient } from "infrastructure/configuration.client";
 import { NotificationService } from "infrastructure/notification.service";
-import { finalize } from "rxjs";
+import { finalize, map, Observable, tap } from "rxjs";
 import { LibraryClient } from "infrastructure/library-client.service";
 import { Platform } from "infrastructure/platform";
 
@@ -36,7 +36,8 @@ import { Platform } from "infrastructure/platform";
     MatNativeDateModule,
     MatSnackBarModule,
     MatSelectModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    AsyncPipe
   ],
   templateUrl: './tp-copy-library-item.component.html',
   styleUrl: './tp-copy-library-item.component.scss'
@@ -48,9 +49,10 @@ export class TpCopyLibraryItemComponent implements OnInit {
     newName: [null, Validators.required],
   });
 
-  inProgress = false
+  submitInProgress = false
+  loadingInProgress = false
 
-  plans: any[];
+  plans: Observable<any[]>;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -63,12 +65,17 @@ export class TpCopyLibraryItemComponent implements OnInit {
 
   ngOnInit(): void {
     this.formGroup.disable()
-    this.planClient.getLibraries(Platform.TRAINING_PEAKS.key).subscribe(plans => {
-      this.plans = plans.map(plan => {
-        return {name: plan.name + (plan.isPlan ? ' (plan)' : ''), value: plan}
+    this.loadingInProgress = true
+    this.plans = this.planClient.getLibraries(Platform.TRAINING_PEAKS.key).pipe(
+      map(plans => plans.map(plan => {
+          return {name: plan.name + (plan.isPlan ? ' (plan)' : ''), value: plan}
+        })
+      ),
+      finalize( () => {
+        this.loadingInProgress = false
+        this.formGroup.enable()
       })
-      this.formGroup.enable()
-    })
+    )
     this.formGroup.controls['plan'].valueChanges.subscribe(value => {
       this.formGroup.patchValue({
         newName: value.name
@@ -77,12 +84,12 @@ export class TpCopyLibraryItemComponent implements OnInit {
   }
 
   copyPlanSubmit() {
-    this.inProgress = true
+    this.submitInProgress = true
     let plan = this.formGroup.value.plan
     let newName = this.formGroup.value.newName
     let direction = {sourcePlatform: 'TRAINING_PEAKS', targetPlatform: 'INTERVALS'}
     this.planClient.copyLibrary(plan, newName, direction).pipe(
-      finalize(() => this.inProgress = false)
+      finalize(() => this.submitInProgress = false)
     ).subscribe((response) => {
       this.notificationService.success(
         `Library name: ${response.planName}\nCopied workouts: ${response.workouts}`)

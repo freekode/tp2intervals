@@ -11,12 +11,13 @@
       <div class="row">
         <div class="col">
           <mat-form-field class="form-field">
-            <mat-label>TrainingPeaks Plans</mat-label>
+            <mat-label>TrainingPeaks plan</mat-label>
             <mat-select formControlName="plan" panelWidth="null">
-              @for (item of plans; track item) {
+              @for (item of plans | async; track item) {
                 <mat-option [value]="item.value">{{ item.name }}</mat-option>
               }
             </mat-select>
+            <mat-progress-bar *ngIf="loadingInProgress" mode="query"></mat-progress-bar>
           </mat-form-field>
         </div>
       </div>
@@ -24,7 +25,7 @@
       <div class="row">
         <div class="col">
           <mat-form-field class="form-field">
-            <mat-label>Name</mat-label>
+            <mat-label>Intervals name</mat-label>
             <input matInput placeholder="My New Library" formControlName="newName">
           </mat-form-field>
         </div>
@@ -43,7 +44,7 @@
     </mat-card-actions>
 
     <mat-card-footer>
-      <mat-progress-bar *ngIf="inProgress" mode="query"></mat-progress-bar>
+      <mat-progress-bar *ngIf="submitInProgress" mode="query"></mat-progress-bar>
     </mat-card-footer>
   </mat-card>
 </form>

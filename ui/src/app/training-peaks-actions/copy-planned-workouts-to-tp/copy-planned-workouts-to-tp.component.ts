@@ -12,7 +12,9 @@ import { MatNativeDateModule } from "@angular/material/core";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { MatSelectModule } from "@angular/material/select";
 import { MatCheckboxModule } from "@angular/material/checkbox";
-import { TpCopyLibraryItemComponent } from "app/training-peaks-actions/tp-copy-library-item/tp-copy-library-item.component";
+import {
+  TpCopyLibraryItemComponent
+} from "app/training-peaks-actions/tp-copy-library-item/tp-copy-library-item.component";
 import { formatDate } from "utils/date-formatter";
 import { WorkoutClient } from "infrastructure/workout.client";
 import { ConfigurationClient } from "infrastructure/configuration.client";
@@ -20,7 +22,7 @@ import { NotificationService } from "infrastructure/notification.service";
 import { finalize } from "rxjs";
 
 @Component({
-  selector: 'tp-schedule-workouts',
+  selector: 'copy-planned-workouts-to-tp',
   standalone: true,
   imports: [
     MatGridListModule,
@@ -39,31 +41,26 @@ import { finalize } from "rxjs";
     MatCheckboxModule,
     TpCopyLibraryItemComponent
   ],
-  templateUrl: './tp-schedule-workouts.component.html',
-  styleUrl: './tp-schedule-workouts.component.scss'
+  templateUrl: './copy-planned-workouts-to-tp.component.html',
+  styleUrl: './copy-planned-workouts-to-tp.component.scss'
 })
-export class TpScheduleWorkoutsComponent implements OnInit {
+export class CopyPlannedWorkoutsToTpComponent implements OnInit {
 
   formGroup: FormGroup = this.formBuilder.group({
-    direction: [null, Validators.required],
     trainingTypes: [null, Validators.required],
     startDate: [null, Validators.required],
     endDate: [null, Validators.required],
     skipSynced: [null, Validators.required],
   });
 
-  inProgress = false
-
-  readonly directions = [
-    {name: 'Intervals.icu -> Training Peaks', value: {sourcePlatform: 'INTERVALS', targetPlatform: 'TRAINING_PEAKS'}},
-    {name: 'Training Peaks -> Intervals.icu', value: {sourcePlatform: 'TRAINING_PEAKS', targetPlatform: 'INTERVALS'}},
-  ]
   trainingTypes: any[];
+
+  inProgress = false
 
   private readonly todayDate = formatDate(new Date())
   private readonly tomorrowDate = formatDate(new Date(new Date().setDate(new Date().getDate() + 1)))
-  private readonly selectedPlanDirection = this.directions[0].value;
   private readonly selectedTrainingTypes = ['BIKE', 'VIRTUAL_BIKE', 'MTB', 'RUN'];
+  private readonly direction = {sourcePlatform: 'TRAINING_PEAKS', targetPlatform: 'INTERVALS'}
 
   constructor(
     private formBuilder: FormBuilder,
@@ -73,7 +70,9 @@ export class TpScheduleWorkoutsComponent implements OnInit {
   ) {
   }
 
-  ngOnInit(): void {
+  ngOnInit()
+    :
+    void {
     this.configurationClient.getTrainingTypes().subscribe(types => {
       this.trainingTypes = types
       this.initFormValues();
@@ -86,8 +85,7 @@ export class TpScheduleWorkoutsComponent implements OnInit {
     let endDate = this.tomorrowDate
     let trainingTypes = this.formGroup.value.trainingTypes
     let skipSynced = this.formGroup.value.skipSynced
-    let direction = this.formGroup.value.direction
-    this.workoutClient.planWorkout(startDate, endDate, trainingTypes, skipSynced, direction).pipe(
+    this.workoutClient.planWorkout(startDate, endDate, trainingTypes, skipSynced, this.direction).pipe(
       finalize(() => this.inProgress = false)
     ).subscribe((response) => {
       this.notificationService.success(
@@ -97,7 +95,6 @@ export class TpScheduleWorkoutsComponent implements OnInit {
 
   private initFormValues() {
     this.formGroup.patchValue({
-      direction: this.selectedPlanDirection,
       trainingTypes: this.selectedTrainingTypes,
       startDate: this.todayDate,
       endDate: this.tomorrowDate,

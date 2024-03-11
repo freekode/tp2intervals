@@ -19,7 +19,7 @@ import { MatSelectModule } from "@angular/material/select";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 
 @Component({
-  selector: 'tp-copy-planned-workouts',
+  selector: 'copy-planned-workouts-from-tp',
   standalone: true,
   imports: [
     MatGridListModule,
@@ -37,10 +37,10 @@ import { MatCheckboxModule } from "@angular/material/checkbox";
     MatSelectModule,
     MatCheckboxModule,
   ],
-  templateUrl: './tp-copy-planned-workouts.component.html',
-  styleUrl: './tp-copy-planned-workouts.component.scss'
+  templateUrl: './copy-planned-workouts-from-tp.component.html',
+  styleUrl: './copy-planned-workouts-from-tp.component.scss'
 })
-export class TpCopyPlannedWorkoutsComponent implements OnInit {
+export class CopyPlannedWorkoutsFromTpComponent implements OnInit {
 
   formGroup: FormGroup = this.formBuilder.group({
     name: [null, Validators.required],
@@ -53,12 +53,13 @@ export class TpCopyPlannedWorkoutsComponent implements OnInit {
   inProgress = false
 
   trainingTypes: any[];
-  planType = [
+  readonly planType = [
     {name: 'Plan', value: true},
     {name: 'Folder', value: false}
   ]
 
   private readonly selectedTrainingTypes = ['BIKE', 'VIRTUAL_BIKE', 'MTB', 'RUN'];
+  private readonly direction = {sourcePlatform: 'TRAINING_PEAKS', targetPlatform: 'INTERVALS'}
 
   constructor(
     private formBuilder: FormBuilder,
@@ -81,9 +82,8 @@ export class TpCopyPlannedWorkoutsComponent implements OnInit {
     let trainingTypes = this.formGroup.value.trainingTypes
     let startDate = formatDate(this.formGroup.value.startDate)
     let endDate = formatDate(this.formGroup.value.endDate)
-    let direction = {sourcePlatform: 'TRAINING_PEAKS', targetPlatform: 'INTERVALS'}
     let isPlan = this.formGroup.value.isPlan
-    this.workoutClient.copyScheduledWorkoutsFromCalendar(name, startDate, endDate, trainingTypes, direction, isPlan).pipe(
+    this.workoutClient.copyScheduledWorkoutsFromCalendar(name, startDate, endDate, trainingTypes, this.direction, isPlan).pipe(
       finalize(() => this.inProgress = false)
     ).subscribe((response) => {
       this.notificationService.success(

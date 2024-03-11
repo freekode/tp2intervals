@@ -1,4 +1,4 @@
-package org.freekode.tp2intervals.rest.plan
+package org.freekode.tp2intervals.rest.library
 
 import org.freekode.tp2intervals.app.plan.CopyLibraryRequest
 import org.freekode.tp2intervals.app.plan.CopyPlanResponse
