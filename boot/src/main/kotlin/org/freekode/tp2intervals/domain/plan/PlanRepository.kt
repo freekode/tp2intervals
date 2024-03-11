@@ -8,5 +8,5 @@ interface PlanRepository {
 
     fun createPlan(name: String, startDate: LocalDate, isPlan: Boolean): Plan
 
-    fun getPlans(): List<Plan>
+    fun getLibraries(): List<Plan>
 }

@@ -1,8 +1,8 @@
 package org.freekode.tp2intervals.rest.plan
 
-import org.freekode.tp2intervals.app.plan.CopyPlanRequest
+import org.freekode.tp2intervals.app.plan.CopyLibraryRequest
 import org.freekode.tp2intervals.app.plan.CopyPlanResponse
-import org.freekode.tp2intervals.app.plan.PlanService
+import org.freekode.tp2intervals.app.plan.LibraryService
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.plan.Plan
 import org.springframework.web.bind.annotation.GetMapping
@@ -12,17 +12,17 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class PlanController(
-    private val planService: PlanService
+class LibraryController(
+    private val libraryService: LibraryService
 ) {
 
-    @GetMapping("/api/plan")
-    fun getPlans(@RequestParam platform: Platform): List<Plan> {
-        return planService.getPlans(platform)
+    @GetMapping("/api/library")
+    fun getLibraries(@RequestParam platform: Platform): List<Plan> {
+        return libraryService.getLibraries(platform)
     }
 
-    @PostMapping("/api/plan/copy")
-    fun copyPlan(@RequestBody request: CopyPlanRequest): CopyPlanResponse {
-        return planService.copyPlan(request)
+    @PostMapping("/api/library/copy")
+    fun copyLibrary(@RequestBody request: CopyLibraryRequest): CopyPlanResponse {
+        return libraryService.copyLibrary(request)
     }
 }

@@ -1,4 +1,4 @@
-package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.library
+package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.library
 
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.TPBaseWorkoutResponseDTO
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.TPWorkoutStructureDTO

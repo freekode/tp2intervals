@@ -11,9 +11,7 @@ interface WorkoutRepository {
 
     fun planWorkout(workout: Workout)
 
-    fun getWorkoutsFromPlan(plan: Plan): List<Workout>
+    fun getWorkoutsFromLibrary(plan: Plan): List<Workout>
 
-    fun findWorkoutsFromLibraryByName(name: String): List<Workout>
-
-    fun saveWorkoutToPlan(workout: Workout, plan: Plan)
+    fun saveWorkoutToLibrary(workout: Workout, plan: Plan)
 }

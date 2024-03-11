@@ -37,7 +37,7 @@ class IntervalsWorkoutRepository(
         intervalsApiClient.createEvent(intervalsConfigurationRepository.getConfiguration().athleteId, request)
     }
 
-    override fun saveWorkoutToPlan(workout: Workout, plan: Plan) {
+    override fun saveWorkoutToLibrary(workout: Workout, plan: Plan) {
         val workoutString = getWorkoutString(workout)
         val description = getDescription(workout, workoutString)
 
@@ -69,11 +69,7 @@ class IntervalsWorkoutRepository(
             .mapNotNull { toWorkout(it) }
     }
 
-    override fun getWorkoutsFromPlan(plan: Plan): List<Workout> {
-        TODO("Not yet implemented")
-    }
-
-    override fun findWorkoutsFromLibraryByName(name: String): List<Workout> {
+    override fun getWorkoutsFromLibrary(plan: Plan): List<Workout> {
         TODO("Not yet implemented")
     }
 

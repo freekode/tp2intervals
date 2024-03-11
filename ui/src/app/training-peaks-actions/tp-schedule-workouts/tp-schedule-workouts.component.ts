@@ -12,7 +12,7 @@ import { MatNativeDateModule } from "@angular/material/core";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { MatSelectModule } from "@angular/material/select";
 import { MatCheckboxModule } from "@angular/material/checkbox";
-import { TpCopyPlanComponent } from "app/training-peaks-actions/tp-copy-plan/tp-copy-plan.component";
+import { TpCopyLibraryItemComponent } from "app/training-peaks-actions/tp-copy-library-item/tp-copy-library-item.component";
 import { formatDate } from "utils/date-formatter";
 import { WorkoutClient } from "infrastructure/workout.client";
 import { ConfigurationClient } from "infrastructure/configuration.client";
@@ -37,7 +37,7 @@ import { finalize } from "rxjs";
     MatSnackBarModule,
     MatSelectModule,
     MatCheckboxModule,
-    TpCopyPlanComponent
+    TpCopyLibraryItemComponent
   ],
   templateUrl: './tp-schedule-workouts.component.html',
   styleUrl: './tp-schedule-workouts.component.scss'

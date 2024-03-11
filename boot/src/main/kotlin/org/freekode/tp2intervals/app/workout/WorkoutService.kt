@@ -48,14 +48,13 @@ class WorkoutService(
         val filteredWorkouts = allWorkouts.filter { request.types.contains(it.type) }
 
         val plan = targetPlanRepository.createPlan(request.name, request.startDate, request.isPlan)
-        filteredWorkouts.forEach { targetWorkoutRepository.saveWorkoutToPlan(it, plan) }
+        filteredWorkouts.forEach { targetWorkoutRepository.saveWorkoutToLibrary(it, plan) }
         return CopyWorkoutsResponse(
             filteredWorkouts.size, allWorkouts.size - filteredWorkouts.size, request.startDate, request.endDate
         )
     }
 
     fun findWorkoutsByName(platform: Platform, name: String): List<Workout> {
-        val workoutRepository = workoutRepositoryMap[platform]!!
-        return workoutRepository.findWorkoutsFromLibraryByName(name)
+        TODO("not implemented")
     }
 }

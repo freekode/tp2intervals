@@ -5,7 +5,6 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.temporal.TemporalAdjusters
-import java.util.*
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.plan.Plan
 import org.freekode.tp2intervals.domain.workout.Workout
@@ -13,14 +12,17 @@ import org.freekode.tp2intervals.domain.workout.WorkoutRepository
 import org.freekode.tp2intervals.infrastructure.PlatformException
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.TrainingPeaksApiClient
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.configuration.TrainingPeaksConfigurationRepository
+import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.library.TPWorkoutLibraryRepository
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.plan.TPPlanRepository
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.user.TrainingPeaksUserRepository
-import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.library.TPWorkoutLibraryRepository
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.StructureToTPConverter
 import org.freekode.tp2intervals.infrastructure.utils.Date
+import org.springframework.cache.annotation.CacheConfig
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Repository
 
 
+@CacheConfig(cacheNames = ["tpWorkoutsCache"])
 @Repository
 class TrainingPeaksWorkoutRepository(
     private val trainingPeaksApiClient: TrainingPeaksApiClient,
@@ -44,7 +46,31 @@ class TrainingPeaksWorkoutRepository(
         trainingPeaksApiClient.createAndPlanWorkout(athleteId, createRequest)
     }
 
-    override fun getWorkoutsFromPlan(plan: Plan): List<Workout> {
+    @Cacheable(key = "#plan.externalData.trainingPeaksId")
+    override fun getWorkoutsFromLibrary(plan: Plan): List<Workout> {
+        return if (plan.isPlan) {
+            getWorkoutsFromTPPlan(plan)
+        } else {
+            getWorkoutsFromTPLibrary(plan)
+        }
+    }
+
+    override fun saveWorkoutToLibrary(workout: Workout, plan: Plan) {
+        throw PlatformException(Platform.TRAINING_PEAKS, "TP doesn't support workout copying")
+    }
+
+    override fun getPlannedWorkouts(startDate: LocalDate, endDate: LocalDate): List<Workout> {
+        val userId = trainingPeaksUserRepository.getUserId()
+        val tpWorkouts = trainingPeaksApiClient.getWorkouts(userId, startDate.toString(), endDate.toString())
+
+        val noteEndDate = getNoteEndDateForFilter(startDate, endDate)
+        val tpNotes = trainingPeaksApiClient.getNotes(userId, startDate.toString(), noteEndDate.toString())
+        val workouts = tpWorkouts.map { tpToWorkoutConverter.toWorkout(it) }
+        val notes = tpNotes.map { tpToWorkoutConverter.toWorkout(it) }
+        return workouts + notes
+    }
+
+    private fun getWorkoutsFromTPPlan(plan: Plan): List<Workout> {
         val planId = plan.externalData.trainingPeaksId!!
         val planApplyDate = getPlanApplyDate()
         val response = tpPlanRepository.applyPlan(planId, planApplyDate)
@@ -65,24 +91,8 @@ class TrainingPeaksWorkoutRepository(
         }
     }
 
-    override fun findWorkoutsFromLibraryByName(name: String): List<Workout> {
-        return tpWorkoutLibraryRepository.getAllWorkoutsFromLibraries()
-            .filter { it.name.lowercase(Locale.getDefault()).contains(name) }
-    }
-
-    override fun saveWorkoutToPlan(workout: Workout, plan: Plan) {
-        throw PlatformException(Platform.TRAINING_PEAKS, "TP doesn't support workout copying")
-    }
-
-    override fun getPlannedWorkouts(startDate: LocalDate, endDate: LocalDate): List<Workout> {
-        val userId = trainingPeaksUserRepository.getUserId()
-        val tpWorkouts = trainingPeaksApiClient.getWorkouts(userId, startDate.toString(), endDate.toString())
-
-        val noteEndDate = getNoteEndDateForFilter(startDate, endDate)
-        val tpNotes = trainingPeaksApiClient.getNotes(userId, startDate.toString(), noteEndDate.toString())
-        val workouts = tpWorkouts.map { tpToWorkoutConverter.toWorkout(it) }
-        val notes = tpNotes.map { tpToWorkoutConverter.toWorkout(it) }
-        return workouts + notes
+    private fun getWorkoutsFromTPLibrary(library: Plan): List<Workout> {
+        return tpWorkoutLibraryRepository.getLibraryItems(library.externalData.trainingPeaksId!!)
     }
 
     private fun getPlanApplyDate(): LocalDate = LocalDate.now()

@@ -12,7 +12,7 @@ import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Repository
 
 
-@CacheConfig(cacheNames = ["plansCache"])
+@CacheConfig(cacheNames = ["libraryItemsCache"])
 @Repository
 class IntervalsFolderRepository(
     private val intervalsFolderApiClient: IntervalsFolderApiClient,
@@ -28,7 +28,7 @@ class IntervalsFolderRepository(
     }
 
     @Cacheable(key = "'INTERVALS'")
-    override fun getPlans(): List<Plan> {
+    override fun getLibraries(): List<Plan> {
         return intervalsFolderApiClient.getFolders(intervalsConfigurationRepository.getConfiguration().athleteId)
             .map { toPlan(it) }
     }

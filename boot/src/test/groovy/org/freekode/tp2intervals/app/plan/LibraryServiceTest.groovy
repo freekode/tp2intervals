@@ -7,9 +7,9 @@ import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.T
 import org.springframework.beans.factory.annotation.Autowired
 import spock.lang.Ignore
 
-class PlanServiceTest extends SpringIT {
+class LibraryServiceTest extends SpringIT {
     @Autowired
-    PlanService planService
+    LibraryService planService
 
     @Autowired
     TPPlanRepository tpPlanRepository
@@ -20,13 +20,13 @@ class PlanServiceTest extends SpringIT {
     @Ignore
     def "should copy plan"() {
         given:
-        def plans = planService.getPlans(Platform.TRAINING_PEAKS)
+        def plans = planService.getLibraries(Platform.TRAINING_PEAKS)
         def plan = plans.stream()
                 .filter { it.externalData.trainingPeaksId == "124295" }
                 .findFirst()
                 .orElseThrow()
         when:
-        def response = planService.copyPlan(new CopyPlanRequest(plan, Platform.TRAINING_PEAKS, Platform.INTERVALS))
+        def response = planService.copyLibrary(new CopyLibraryRequest(plan, "sdfsd", Platform.TRAINING_PEAKS, Platform.INTERVALS))
 
         then:
         response != null

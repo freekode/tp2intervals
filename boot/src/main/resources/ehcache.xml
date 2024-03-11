@@ -32,7 +32,7 @@
             <offheap unit="MB">1</offheap>
         </resources>
     </cache>
-    <cache alias="workoutsCache">
+    <cache alias="tpWorkoutsCache">
         <key-type>java.lang.String</key-type>
         <value-type>java.util.ArrayList</value-type>
         <expiry>
@@ -43,7 +43,7 @@
         </resources>
     </cache>
 
-    <cache alias="plansCache">
+    <cache alias="libraryItemsCache">
         <key-type>java.lang.String</key-type>
         <value-type>java.util.ArrayList</value-type>
         <expiry>

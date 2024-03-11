@@ -16,11 +16,11 @@ import { WorkoutClient } from "infrastructure/workout.client";
 import { ConfigurationClient } from "infrastructure/configuration.client";
 import { NotificationService } from "infrastructure/notification.service";
 import { finalize } from "rxjs";
-import { PlanClient } from "infrastructure/plan.client";
+import { LibraryClient } from "infrastructure/library-client.service";
 import { Platform } from "infrastructure/platform";
 
 @Component({
-  selector: 'tp-copy-plan',
+  selector: 'tp-copy-library-item',
   standalone: true,
   imports: [
     MatGridListModule,
@@ -38,13 +38,14 @@ import { Platform } from "infrastructure/platform";
     MatSelectModule,
     MatCheckboxModule
   ],
-  templateUrl: './tp-copy-plan.component.html',
-  styleUrl: './tp-copy-plan.component.scss'
+  templateUrl: './tp-copy-library-item.component.html',
+  styleUrl: './tp-copy-library-item.component.scss'
 })
-export class TpCopyPlanComponent implements OnInit {
+export class TpCopyLibraryItemComponent implements OnInit {
 
   formGroup: FormGroup = this.formBuilder.group({
     plan: [null, Validators.required],
+    newName: [null, Validators.required],
   });
 
   inProgress = false
@@ -54,7 +55,7 @@ export class TpCopyPlanComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private workoutClient: WorkoutClient,
-    private planClient: PlanClient,
+    private planClient: LibraryClient,
     private configurationClient: ConfigurationClient,
     private notificationService: NotificationService
   ) {
@@ -62,23 +63,29 @@ export class TpCopyPlanComponent implements OnInit {
 
   ngOnInit(): void {
     this.formGroup.disable()
-    this.planClient.getPlans(Platform.TRAINING_PEAKS.key).subscribe(plans => {
+    this.planClient.getLibraries(Platform.TRAINING_PEAKS.key).subscribe(plans => {
       this.plans = plans.map(plan => {
-        return {name: plan.name, value: plan}
+        return {name: plan.name + (plan.isPlan ? ' (plan)' : ''), value: plan}
       })
       this.formGroup.enable()
+    })
+    this.formGroup.controls['plan'].valueChanges.subscribe(value => {
+      this.formGroup.patchValue({
+        newName: value.name
+      })
     })
   }
 
   copyPlanSubmit() {
     this.inProgress = true
     let plan = this.formGroup.value.plan
+    let newName = this.formGroup.value.newName
     let direction = {sourcePlatform: 'TRAINING_PEAKS', targetPlatform: 'INTERVALS'}
-    this.planClient.copyPlan(plan, direction).pipe(
+    this.planClient.copyLibrary(plan, newName, direction).pipe(
       finalize(() => this.inProgress = false)
     ).subscribe((response) => {
       this.notificationService.success(
-        `Plan name: ${response.planName}\nCopied workouts: ${response.workouts}`)
+        `Library name: ${response.planName}\nCopied workouts: ${response.workouts}`)
     })
   }
 }

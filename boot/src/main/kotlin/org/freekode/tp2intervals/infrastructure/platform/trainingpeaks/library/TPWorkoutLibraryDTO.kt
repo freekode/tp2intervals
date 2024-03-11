@@ -1,4 +1,4 @@
-package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.library
+package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.library
 
 import java.io.Serializable
 
