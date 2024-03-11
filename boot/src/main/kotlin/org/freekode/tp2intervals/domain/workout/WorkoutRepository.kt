@@ -7,13 +7,13 @@ import org.freekode.tp2intervals.domain.plan.Plan
 interface WorkoutRepository {
     fun platform(): Platform
 
-    fun getScheduledWorkouts(startDate: LocalDate, endDate: LocalDate): List<Workout>
+    fun getPlannedWorkouts(startDate: LocalDate, endDate: LocalDate): List<Workout>
 
-    fun getWorkouts(plan: Plan): List<Workout>
+    fun planWorkout(workout: Workout)
 
-    fun findWorkoutsByName(name: String): List<Workout>
+    fun getWorkoutsFromPlan(plan: Plan): List<Workout>
 
-    fun scheduleWorkout(workout: Workout)
+    fun findWorkoutsFromLibraryByName(name: String): List<Workout>
 
     fun saveWorkoutToPlan(workout: Workout, plan: Plan)
 }

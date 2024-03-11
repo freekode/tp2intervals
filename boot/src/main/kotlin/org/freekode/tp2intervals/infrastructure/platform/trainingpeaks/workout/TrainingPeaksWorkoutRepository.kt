@@ -33,7 +33,7 @@ class TrainingPeaksWorkoutRepository(
 ) : WorkoutRepository {
     override fun platform() = Platform.TRAINING_PEAKS
 
-    override fun scheduleWorkout(workout: Workout) {
+    override fun planWorkout(workout: Workout) {
         val structureStr = StructureToTPConverter.toStructureString(objectMapper, workout)
         val athleteId = trainingPeaksUserRepository.getUserId()
         val createRequest = CreateTPWorkoutDTO.planWorkout(
@@ -44,7 +44,7 @@ class TrainingPeaksWorkoutRepository(
         trainingPeaksApiClient.createAndPlanWorkout(athleteId, createRequest)
     }
 
-    override fun getWorkouts(plan: Plan): List<Workout> {
+    override fun getWorkoutsFromPlan(plan: Plan): List<Workout> {
         val planId = plan.externalData.trainingPeaksId!!
         val planApplyDate = getPlanApplyDate()
         val response = tpPlanRepository.applyPlan(planId, planApplyDate)
@@ -53,7 +53,7 @@ class TrainingPeaksWorkoutRepository(
             val planEndDate = LocalDateTime.parse(response.endDate).toLocalDate()
 
             val workoutDateShiftDays = Date.daysDiff(plan.startDate, planApplyDate)
-            val workouts = getScheduledWorkouts(planApplyDate, planEndDate)
+            val workouts = getPlannedWorkouts(planApplyDate, planEndDate)
                 .map { it.withDate(it.date.minusDays(workoutDateShiftDays.toLong())) }
             val tpPlan = tpPlanRepository.getPlan(planId)
             assert(tpPlan.workoutCount == workouts.size)
@@ -65,7 +65,7 @@ class TrainingPeaksWorkoutRepository(
         }
     }
 
-    override fun findWorkoutsByName(name: String): List<Workout> {
+    override fun findWorkoutsFromLibraryByName(name: String): List<Workout> {
         return tpWorkoutLibraryRepository.getAllWorkoutsFromLibraries()
             .filter { it.name.lowercase(Locale.getDefault()).contains(name) }
     }
@@ -74,7 +74,7 @@ class TrainingPeaksWorkoutRepository(
         throw PlatformException(Platform.TRAINING_PEAKS, "TP doesn't support workout copying")
     }
 
-    override fun getScheduledWorkouts(startDate: LocalDate, endDate: LocalDate): List<Workout> {
+    override fun getPlannedWorkouts(startDate: LocalDate, endDate: LocalDate): List<Workout> {
         val userId = trainingPeaksUserRepository.getUserId()
         val tpWorkouts = trainingPeaksApiClient.getWorkouts(userId, startDate.toString(), endDate.toString())
 

@@ -18,11 +18,11 @@ class WorkoutService(
         val sourceWorkoutRepository = workoutRepositoryMap[request.sourcePlatform]!!
         val targetWorkoutRepository = workoutRepositoryMap[request.targetPlatform]!!
 
-        val allWorkoutsToPlan = sourceWorkoutRepository.getScheduledWorkouts(request.startDate, request.endDate)
+        val allWorkoutsToPlan = sourceWorkoutRepository.getPlannedWorkouts(request.startDate, request.endDate)
         var filteredWorkoutsToPlan = allWorkoutsToPlan
             .filter { request.types.contains(it.type) }
         if (request.skipSynced) {
-            val plannedWorkouts = targetWorkoutRepository.getScheduledWorkouts(request.startDate, request.endDate)
+            val plannedWorkouts = targetWorkoutRepository.getPlannedWorkouts(request.startDate, request.endDate)
                 .filter { request.types.contains(it.type) }
 
             filteredWorkoutsToPlan = filteredWorkoutsToPlan
@@ -35,7 +35,7 @@ class WorkoutService(
             request.startDate,
             request.endDate
         )
-        filteredWorkoutsToPlan.forEach { targetWorkoutRepository.scheduleWorkout(it) }
+        filteredWorkoutsToPlan.forEach { targetWorkoutRepository.planWorkout(it) }
         return response
     }
 
@@ -44,7 +44,7 @@ class WorkoutService(
         val targetWorkoutRepository = workoutRepositoryMap[request.targetPlatform]!!
         val targetPlanRepository = planRepositoryMap[request.targetPlatform]!!
 
-        val allWorkouts = sourceWorkoutRepository.getScheduledWorkouts(request.startDate, request.endDate)
+        val allWorkouts = sourceWorkoutRepository.getPlannedWorkouts(request.startDate, request.endDate)
         val filteredWorkouts = allWorkouts.filter { request.types.contains(it.type) }
 
         val plan = targetPlanRepository.createPlan(request.name, request.startDate, request.isPlan)
@@ -56,6 +56,6 @@ class WorkoutService(
 
     fun findWorkoutsByName(platform: Platform, name: String): List<Workout> {
         val workoutRepository = workoutRepositoryMap[platform]!!
-        return workoutRepository.findWorkoutsByName(name)
+        return workoutRepository.findWorkoutsFromLibraryByName(name)
     }
 }

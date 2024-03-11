@@ -25,7 +25,7 @@ class PlanService(
         val sourceWorkoutRepository = workoutRepositoryMap[request.sourcePlatform]!!
         val targetWorkoutRepository = workoutRepositoryMap[request.targetPlatform]!!
 
-        val workouts = sourceWorkoutRepository.getWorkouts(request.plan)
+        val workouts = sourceWorkoutRepository.getWorkoutsFromPlan(request.plan)
         val newPlan = targetPlanRepository.createPlan(request.plan.name, Date.thisMonday(), true)
         workouts.forEach { targetWorkoutRepository.saveWorkoutToPlan(it, newPlan) }
         return CopyPlanResponse(newPlan.name, workouts.size)
