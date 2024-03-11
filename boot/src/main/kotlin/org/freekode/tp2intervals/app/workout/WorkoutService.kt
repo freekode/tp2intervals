@@ -39,7 +39,7 @@ class WorkoutService(
         return response
     }
 
-    fun copyPlannedWorkouts(request: CopyWorkoutsRequest): CopyWorkoutsResponse {
+    fun copyPlannedWorkoutsToLibrary(request: CopyWorkoutsRequest): CopyWorkoutsResponse {
         val sourceWorkoutRepository = workoutRepositoryMap[request.sourcePlatform]!!
         val targetWorkoutRepository = workoutRepositoryMap[request.targetPlatform]!!
         val targetPlanRepository = planRepositoryMap[request.targetPlatform]!!

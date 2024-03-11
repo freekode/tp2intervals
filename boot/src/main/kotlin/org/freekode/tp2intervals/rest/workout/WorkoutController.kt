@@ -19,7 +19,7 @@ class WorkoutController(
 ) {
 
     @PostMapping("/api/workout/copy-planned")
-    fun syncPlannedWorkouts(@RequestBody requestDTO: PlanWorkoutsRequestDTO): ScheduleWorkoutsResponse {
+    fun copyPlannedWorkouts(@RequestBody requestDTO: CopyPlannedRequestDTO): ScheduleWorkoutsResponse {
         return workoutService.copyPlannedWorkouts(
             ScheduleWorkoutsRequest(
                 LocalDate.parse(requestDTO.startDate),
@@ -32,15 +32,9 @@ class WorkoutController(
         )
     }
 
-    @GetMapping("/api/workout/find")
-    fun findWorkoutsByName(@RequestParam platform: Platform, @RequestParam name: String): List<WorkoutDTO> {
-        return workoutService.findWorkoutsByName(platform, name)
-            .map { WorkoutDTO(it.name, it.duration, it.load, it.externalData) }
-    }
-
-    @PostMapping("/api/workout/copy-from-calendar")
-    fun copyWorkouts(@RequestBody requestDTO: CopyWorkoutsFromCalendarRequestDTO): CopyWorkoutsResponse {
-        return workoutService.copyPlannedWorkouts(
+    @PostMapping("/api/workout/copy-planned-to-library")
+    fun copyPlannedWorkoutsToLibrary(@RequestBody requestDTO: CopyPlannedToLibraryRequestDTO): CopyWorkoutsResponse {
+        return workoutService.copyPlannedWorkoutsToLibrary(
             CopyWorkoutsRequest(
                 requestDTO.name,
                 requestDTO.isPlan,
@@ -51,5 +45,11 @@ class WorkoutController(
                 requestDTO.targetPlatform
             )
         )
+    }
+
+    @GetMapping("/api/workout/find")
+    fun findWorkoutsByName(@RequestParam platform: Platform, @RequestParam name: String): List<WorkoutDTO> {
+        return workoutService.findWorkoutsByName(platform, name)
+            .map { WorkoutDTO(it.name, it.duration, it.load, it.externalData) }
     }
 }
