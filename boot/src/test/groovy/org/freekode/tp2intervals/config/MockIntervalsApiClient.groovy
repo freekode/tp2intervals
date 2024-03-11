@@ -21,11 +21,6 @@ class MockIntervalsApiClient implements IntervalsApiClient {
     }
 
     @Override
-    FolderDTO createFolder(String athleteId, CreateFolderRequestDTO createFolderRequestDTO) {
-        return null
-    }
-
-    @Override
     void createWorkout(String athleteId, CreateWorkoutRequestDTO createWorkoutRequestDTO) {
 
     }
