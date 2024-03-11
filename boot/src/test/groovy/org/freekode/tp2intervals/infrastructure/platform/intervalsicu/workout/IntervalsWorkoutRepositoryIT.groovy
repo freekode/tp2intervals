@@ -31,7 +31,7 @@ class IntervalsWorkoutRepositoryIT extends SpringIT {
 
     def "should parse hr workout"() {
         when:
-        def workouts = intervalsWorkoutRepository.getPlannedWorkouts(LocalDate.now(), LocalDate.now())
+        def workouts = intervalsWorkoutRepository.getScheduledWorkouts(LocalDate.now(), LocalDate.now())
 
         then:
         workouts.size() == 5
@@ -61,7 +61,7 @@ class IntervalsWorkoutRepositoryIT extends SpringIT {
 
     def "should parse power workout"() {
         when:
-        def workouts = intervalsWorkoutRepository.getPlannedWorkouts(LocalDate.now(), LocalDate.now())
+        def workouts = intervalsWorkoutRepository.getScheduledWorkouts(LocalDate.now(), LocalDate.now())
 
         then:
         workouts.size() == 5
@@ -95,7 +95,7 @@ class IntervalsWorkoutRepositoryIT extends SpringIT {
 
     def "should parse pace workout"() {
         when:
-        def workouts = intervalsWorkoutRepository.getPlannedWorkouts(LocalDate.now(), LocalDate.now())
+        def workouts = intervalsWorkoutRepository.getScheduledWorkouts(LocalDate.now(), LocalDate.now())
 
         then:
         workouts.size() == 5
@@ -121,7 +121,7 @@ class IntervalsWorkoutRepositoryIT extends SpringIT {
 
     def "should parse virtual ride workout"() {
         when:
-        def workouts = intervalsWorkoutRepository.getPlannedWorkouts(LocalDate.now(), LocalDate.now())
+        def workouts = intervalsWorkoutRepository.getScheduledWorkouts(LocalDate.now(), LocalDate.now())
 
         then:
         workouts.size() == 5
@@ -134,7 +134,7 @@ class IntervalsWorkoutRepositoryIT extends SpringIT {
 
     def "should parse other workout"() {
         when:
-        def workouts = intervalsWorkoutRepository.getPlannedWorkouts(LocalDate.now(), LocalDate.now())
+        def workouts = intervalsWorkoutRepository.getScheduledWorkouts(LocalDate.now(), LocalDate.now())
 
         then:
         workouts.size() == 5

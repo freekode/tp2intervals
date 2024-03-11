@@ -20,7 +20,7 @@ import { PlanClient } from "infrastructure/plan.client";
 import { Platform } from "infrastructure/platform";
 
 @Component({
-  selector: 'app-tp-copy-plan',
+  selector: 'tp-copy-plan',
   standalone: true,
   imports: [
     MatGridListModule,
@@ -66,7 +66,6 @@ export class TpCopyPlanComponent implements OnInit {
       this.plans = plans.map(plan => {
         return {name: plan.name, value: plan}
       })
-      this.initFormValues();
       this.formGroup.enable()
     })
   }
@@ -81,10 +80,5 @@ export class TpCopyPlanComponent implements OnInit {
       this.notificationService.success(
         `Plan name: ${response.planName}\nCopied workouts: ${response.workouts}`)
     })
-  }
-
-
-  private initFormValues() {
-    this.formGroup.patchValue({})
   }
 }

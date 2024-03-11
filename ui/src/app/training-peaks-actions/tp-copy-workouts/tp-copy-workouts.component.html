@@ -1,18 +1,15 @@
 <form [formGroup]="formGroup" novalidate (ngSubmit)="submit()">
   <mat-card>
     <mat-card-header>
-      <mat-card-title>Copy workout</mat-card-title>
-      <mat-card-subtitle>
-        Copy a workout from TrainingPeaks workout library to Intervals
-      </mat-card-subtitle>
+      <mat-card-title>Copy workout from the library</mat-card-title>
     </mat-card-header>
 
     <mat-card-content>
       <div class="row">
         <div class="col">
           <mat-form-field class="form-field">
-            <mat-label>TP Workout name from library</mat-label>
-            <input type="text" matInput formControlName="workout" [matAutocomplete]="workoutAutocomplete">
+            <mat-label>TrainingPeaks workout to copy</mat-label>
+            <input type="text" matInput formControlName="tpWorkout" [matAutocomplete]="workoutAutocomplete">
             <mat-autocomplete #workoutAutocomplete="matAutocomplete" [displayWith]="displayFn">
               @for (option of workouts | async; track option) {
                 <mat-option [value]="option">{{option.name}}</mat-option>
@@ -24,6 +21,19 @@
                 Not found
               </mat-option>
             </mat-autocomplete>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="form-field">
+            <mat-label>Copy to Intervals folder</mat-label>
+            <mat-select formControlName="intervalsPlan" panelWidth="null">
+              @for (item of plans; track item) {
+                <mat-option [value]="item.value">{{ item.name }}</mat-option>
+              }
+            </mat-select>
           </mat-form-field>
         </div>
       </div>

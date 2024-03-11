@@ -18,7 +18,7 @@ import { MatAutocompleteModule } from "@angular/material/autocomplete";
 import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 
 @Component({
-  selector: 'app-tp-copy-workouts',
+  selector: 'tp-copy-workouts',
   standalone: true,
   imports: [
     MatButtonModule,
@@ -40,13 +40,15 @@ import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
 export class TpCopyWorkoutsComponent implements OnInit {
 
   formGroup: FormGroup = this.formBuilder.group({
-    workout: [null, Validators.required],
+    tpWorkout: [null, Validators.required],
+    intervalsPlan: [null, Validators.required],
   });
 
   searchInProgress = false
   inProgress = false
 
   workouts: Observable<any[]>;
+  plans: any[];
 
   constructor(
     private formBuilder: FormBuilder,
@@ -58,18 +60,8 @@ export class TpCopyWorkoutsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.workouts = this.formGroup.controls['workout'].valueChanges.pipe(
-      debounceTime(300),
-      filter(value => value.length > 2),
-      tap(() => {
-        this.searchInProgress = true
-      }),
-      switchMap(value => this.workoutClient.findWorkoutsByName(Platform.TRAINING_PEAKS.key, value).pipe(
-        finalize(() => {
-          this.searchInProgress = false
-        })
-      ))
-    )
+    this.loadPlans();
+    this.subscribeOnWorkoutChange();
   }
 
   submit() {
@@ -86,5 +78,30 @@ export class TpCopyWorkoutsComponent implements OnInit {
 
   displayFn(workout): string {
     return workout ? workout.name : '';
+  }
+
+  private loadPlans() {
+    this.formGroup.disable()
+    this.planClient.getPlans(Platform.INTERVALS.key).subscribe(plans => {
+      this.plans = plans.map(plan => {
+        return {name: plan.name, value: plan}
+      })
+      this.formGroup.enable()
+    })
+  }
+
+  private subscribeOnWorkoutChange() {
+    this.workouts = this.formGroup.controls['tpWorkout'].valueChanges.pipe(
+      debounceTime(300),
+      filter(value => !!value && value.length > 2),
+      tap(() => {
+        this.searchInProgress = true
+      }),
+      switchMap(value => this.workoutClient.findWorkoutsByName(Platform.TRAINING_PEAKS.key, value).pipe(
+        finalize(() => {
+          this.searchInProgress = false
+        })
+      ))
+    )
   }
 }

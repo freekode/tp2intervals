@@ -20,7 +20,7 @@ import { NotificationService } from "infrastructure/notification.service";
 import { finalize } from "rxjs";
 
 @Component({
-  selector: 'app-tp-plan-workouts',
+  selector: 'tp-schedule-workouts',
   standalone: true,
   imports: [
     MatGridListModule,
@@ -39,29 +39,31 @@ import { finalize } from "rxjs";
     MatCheckboxModule,
     TpCopyPlanComponent
   ],
-  templateUrl: './tp-plan-workouts.component.html',
-  styleUrl: './tp-plan-workouts.component.scss'
+  templateUrl: './tp-schedule-workouts.component.html',
+  styleUrl: './tp-schedule-workouts.component.scss'
 })
-export class TpPlanWorkoutsComponent  implements OnInit {
+export class TpScheduleWorkoutsComponent implements OnInit {
 
   formGroup: FormGroup = this.formBuilder.group({
     direction: [null, Validators.required],
     trainingTypes: [null, Validators.required],
+    startDate: [null, Validators.required],
+    endDate: [null, Validators.required],
     skipSynced: [null, Validators.required],
   });
 
   inProgress = false
 
-  directions = [
+  readonly directions = [
     {name: 'Intervals.icu -> Training Peaks', value: {sourcePlatform: 'INTERVALS', targetPlatform: 'TRAINING_PEAKS'}},
     {name: 'Training Peaks -> Intervals.icu', value: {sourcePlatform: 'TRAINING_PEAKS', targetPlatform: 'INTERVALS'}},
   ]
   trainingTypes: any[];
 
-  private readonly selectedPlanDirection = this.directions[0].value;
-  private readonly selectedTrainingTypes = ['BIKE', 'VIRTUAL_BIKE', 'MTB', 'RUN'];
   private readonly todayDate = formatDate(new Date())
   private readonly tomorrowDate = formatDate(new Date(new Date().setDate(new Date().getDate() + 1)))
+  private readonly selectedPlanDirection = this.directions[0].value;
+  private readonly selectedTrainingTypes = ['BIKE', 'VIRTUAL_BIKE', 'MTB', 'RUN'];
 
   constructor(
     private formBuilder: FormBuilder,
@@ -78,19 +80,13 @@ export class TpPlanWorkoutsComponent  implements OnInit {
     })
   }
 
-  planTodayClick() {
-    this.planWorkouts(this.todayDate, this.todayDate)
-  }
-
-  planTomorrowClick() {
-    this.planWorkouts(this.tomorrowDate, this.tomorrowDate)
-  }
-
-  private planWorkouts(startDate, endDate) {
+  submit() {
     this.inProgress = true
+    let startDate = this.todayDate
+    let endDate = this.tomorrowDate
+    let trainingTypes = this.formGroup.value.trainingTypes
     let skipSynced = this.formGroup.value.skipSynced
     let direction = this.formGroup.value.direction
-    let trainingTypes = this.formGroup.value.trainingTypes
     this.workoutClient.planWorkout(startDate, endDate, trainingTypes, skipSynced, direction).pipe(
       finalize(() => this.inProgress = false)
     ).subscribe((response) => {
@@ -103,6 +99,8 @@ export class TpPlanWorkoutsComponent  implements OnInit {
     this.formGroup.patchValue({
       direction: this.selectedPlanDirection,
       trainingTypes: this.selectedTrainingTypes,
+      startDate: this.todayDate,
+      endDate: this.tomorrowDate,
       skipSynced: true
     })
   }

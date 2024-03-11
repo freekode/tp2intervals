@@ -16,7 +16,7 @@ class TrainerRoadWorkoutRepository(
 ) : WorkoutRepository {
     override fun platform() = Platform.TRAINER_ROAD
 
-    override fun planWorkout(workout: Workout) {
+    override fun scheduleWorkout(workout: Workout) {
         throw PlatformException(Platform.TRAINER_ROAD, "TR doesn't support workout planning")
     }
 
@@ -28,7 +28,7 @@ class TrainerRoadWorkoutRepository(
         TODO("Not yet implemented")
     }
 
-    override fun getPlannedWorkouts(startDate: LocalDate, endDate: LocalDate): List<Workout> {
+    override fun getScheduledWorkouts(startDate: LocalDate, endDate: LocalDate): List<Workout> {
         TODO("Not yet implemented")
     }
 

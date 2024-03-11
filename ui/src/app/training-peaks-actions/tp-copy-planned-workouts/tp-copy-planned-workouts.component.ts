@@ -17,11 +17,9 @@ import { MatNativeDateModule } from "@angular/material/core";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { MatSelectModule } from "@angular/material/select";
 import { MatCheckboxModule } from "@angular/material/checkbox";
-import { TpCopyPlanComponent } from "app/training-peaks-actions/tp-copy-plan/tp-copy-plan.component";
-import { TpPlanWorkoutsComponent } from "app/training-peaks-actions/tp-plan-workouts/tp-plan-workouts.component";
 
 @Component({
-  selector: 'app-tp-copy-planned-workouts',
+  selector: 'tp-copy-planned-workouts',
   standalone: true,
   imports: [
     MatGridListModule,
@@ -38,8 +36,6 @@ import { TpPlanWorkoutsComponent } from "app/training-peaks-actions/tp-plan-work
     MatSnackBarModule,
     MatSelectModule,
     MatCheckboxModule,
-    TpCopyPlanComponent,
-    TpPlanWorkoutsComponent
   ],
   templateUrl: './tp-copy-planned-workouts.component.html',
   styleUrl: './tp-copy-planned-workouts.component.scss'
@@ -87,7 +83,7 @@ export class TpCopyPlannedWorkoutsComponent implements OnInit {
     let endDate = formatDate(this.formGroup.value.endDate)
     let direction = {sourcePlatform: 'TRAINING_PEAKS', targetPlatform: 'INTERVALS'}
     let isPlan = this.formGroup.value.isPlan
-    this.workoutClient.copyPlannedWorkouts(name, startDate, endDate, trainingTypes, direction, isPlan).pipe(
+    this.workoutClient.copyScheduledWorkoutsFromCalendar(name, startDate, endDate, trainingTypes, direction, isPlan).pipe(
       finalize(() => this.inProgress = false)
     ).subscribe((response) => {
       this.notificationService.success(
@@ -97,7 +93,7 @@ export class TpCopyPlannedWorkoutsComponent implements OnInit {
 
   private initFormValues() {
     this.formGroup.patchValue({
-      name: 'My New Plan',
+      name: 'My New Library',
       trainingTypes: this.selectedTrainingTypes,
       isPlan: true
     })

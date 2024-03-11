@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { TpPlanWorkoutsComponent } from "app/training-peaks-actions/tp-plan-workouts/tp-plan-workouts.component";
+import { TpScheduleWorkoutsComponent } from "app/training-peaks-actions/tp-schedule-workouts/tp-schedule-workouts.component";
 import { TpCopyPlanComponent } from "app/training-peaks-actions/tp-copy-plan/tp-copy-plan.component";
 import { TpCopyPlannedWorkoutsComponent } from "app/training-peaks-actions/tp-copy-planned-workouts/tp-copy-planned-workouts.component";
 import { TpCopyWorkoutsComponent } from "app/training-peaks-actions/tp-copy-workouts/tp-copy-workouts.component";
@@ -8,7 +8,7 @@ import { TpCopyWorkoutsComponent } from "app/training-peaks-actions/tp-copy-work
   selector: 'app-training-peaks-actions',
   standalone: true,
   imports: [
-    TpPlanWorkoutsComponent,
+    TpScheduleWorkoutsComponent,
     TpCopyPlanComponent,
     TpCopyPlannedWorkoutsComponent,
     TpCopyWorkoutsComponent

@@ -13,12 +13,15 @@ export class WorkoutClient {
 
   planWorkout(startDate, endDate, types, skipSynced, platformDirection): Observable<any> {
     return this.httpClient
-      .post(`/api/workout/plan`, {startDate, endDate, types, skipSynced, ...platformDirection})
+      .post(`/api/workout/copy-planned`, {startDate, endDate, types, skipSynced, ...platformDirection})
   }
 
-  copyPlannedWorkouts(name, startDate, endDate, types, platformDirection, isPlan): Observable<any> {
+  copyScheduledWorkouts
+
+
+  copyScheduledWorkoutsFromCalendar(name, startDate, endDate, types, platformDirection, isPlan): Observable<any> {
     return this.httpClient
-      .post(`/api/workout/copy`, {name, startDate, endDate, types, ...platformDirection, isPlan})
+      .post(`/api/workout/copy-from-calendar`, {name, startDate, endDate, types, ...platformDirection, isPlan})
   }
 
   findWorkoutsByName(platform, name): Observable<any> {

@@ -33,7 +33,7 @@ class TrainingPeaksWorkoutRepository(
 ) : WorkoutRepository {
     override fun platform() = Platform.TRAINING_PEAKS
 
-    override fun planWorkout(workout: Workout) {
+    override fun scheduleWorkout(workout: Workout) {
         val structureStr = StructureToTPConverter.toStructureString(objectMapper, workout)
         val athleteId = trainingPeaksUserRepository.getUserId()
         val createRequest = CreateTPWorkoutDTO.planWorkout(
@@ -53,7 +53,7 @@ class TrainingPeaksWorkoutRepository(
             val planEndDate = LocalDateTime.parse(response.endDate).toLocalDate()
 
             val workoutDateShiftDays = Date.daysDiff(plan.startDate, planApplyDate)
-            val workouts = getPlannedWorkouts(planApplyDate, planEndDate)
+            val workouts = getScheduledWorkouts(planApplyDate, planEndDate)
                 .map { it.withDate(it.date.minusDays(workoutDateShiftDays.toLong())) }
             val tpPlan = tpPlanRepository.getPlan(planId)
             assert(tpPlan.workoutCount == workouts.size)
@@ -74,7 +74,7 @@ class TrainingPeaksWorkoutRepository(
         throw PlatformException(Platform.TRAINING_PEAKS, "TP doesn't support workout copying")
     }
 
-    override fun getPlannedWorkouts(startDate: LocalDate, endDate: LocalDate): List<Workout> {
+    override fun getScheduledWorkouts(startDate: LocalDate, endDate: LocalDate): List<Workout> {
         val userId = trainingPeaksUserRepository.getUserId()
         val tpWorkouts = trainingPeaksApiClient.getWorkouts(userId, startDate.toString(), endDate.toString())
 

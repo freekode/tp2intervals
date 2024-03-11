@@ -3,8 +3,8 @@ package org.freekode.tp2intervals.rest.workout
 import java.time.LocalDate
 import org.freekode.tp2intervals.app.workout.CopyWorkoutsRequest
 import org.freekode.tp2intervals.app.workout.CopyWorkoutsResponse
-import org.freekode.tp2intervals.app.workout.PlanWorkoutsRequest
-import org.freekode.tp2intervals.app.workout.PlanWorkoutsResponse
+import org.freekode.tp2intervals.app.workout.ScheduleWorkoutsRequest
+import org.freekode.tp2intervals.app.workout.ScheduleWorkoutsResponse
 import org.freekode.tp2intervals.app.workout.WorkoutService
 import org.freekode.tp2intervals.domain.Platform
 import org.springframework.web.bind.annotation.GetMapping
@@ -18,10 +18,10 @@ class WorkoutController(
     private val workoutService: WorkoutService
 ) {
 
-    @PostMapping("/api/workout/plan")
-    fun planWorkout(@RequestBody requestDTO: PlanWorkoutsRequestDTO): PlanWorkoutsResponse {
-        return workoutService.planWorkouts(
-            PlanWorkoutsRequest(
+    @PostMapping("/api/workout/copy-planned")
+    fun syncPlannedWorkouts(@RequestBody requestDTO: PlanWorkoutsRequestDTO): ScheduleWorkoutsResponse {
+        return workoutService.copyPlannedWorkouts(
+            ScheduleWorkoutsRequest(
                 LocalDate.parse(requestDTO.startDate),
                 LocalDate.parse(requestDTO.endDate),
                 requestDTO.types,
@@ -38,9 +38,9 @@ class WorkoutController(
             .map { WorkoutDTO(it.name, it.duration, it.load, it.externalData) }
     }
 
-    @PostMapping("/api/workout/copy")
-    fun copyWorkouts(@RequestBody requestDTO: CopyWorkoutsRequestDTO): CopyWorkoutsResponse {
-        return workoutService.copyWorkouts(
+    @PostMapping("/api/workout/copy-from-calendar")
+    fun copyWorkouts(@RequestBody requestDTO: CopyWorkoutsFromCalendarRequestDTO): CopyWorkoutsResponse {
+        return workoutService.copyPlannedWorkouts(
             CopyWorkoutsRequest(
                 requestDTO.name,
                 requestDTO.isPlan,
@@ -51,24 +51,5 @@ class WorkoutController(
                 requestDTO.targetPlatform
             )
         )
-    }
-
-    @PostMapping("/api/workout/plan/schedule")
-    fun addScheduledPlanWorkoutsRequest(@RequestBody requestDTO: PlanWorkoutsRequestDTO) {
-        workoutService.addScheduledPlanWorkoutsRequest(
-            PlanWorkoutsRequest(
-                LocalDate.parse(requestDTO.startDate),
-                LocalDate.parse(requestDTO.endDate),
-                requestDTO.types,
-                requestDTO.skipSynced,
-                requestDTO.sourcePlatform,
-                requestDTO.targetPlatform
-            )
-        )
-    }
-
-    @GetMapping("/api/workout/plan/schedule")
-    fun getScheduledPlanWorkoutsRequests(): PlanWorkoutsRequest? {
-        return workoutService.getScheduledPlanWorkoutsRequest()
     }
 }

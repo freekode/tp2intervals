@@ -2,21 +2,9 @@
   <mat-card>
     <mat-card-header>
       <mat-card-title>Copy planned workouts</mat-card-title>
-      <mat-card-subtitle>
-        Copy planned workouts from TrainingPeaks to Intervals training plan or workouts folder
-      </mat-card-subtitle>
     </mat-card-header>
 
     <mat-card-content>
-      <div class="row">
-        <div class="col">
-          <mat-form-field class="form-field">
-            <mat-label>Name</mat-label>
-            <input matInput placeholder="My New Plan" formControlName="name">
-          </mat-form-field>
-        </div>
-      </div>
-
       <div class="row">
         <div class="col">
           <mat-form-field class="form-field">
@@ -41,6 +29,15 @@
             </mat-date-range-input>
             <mat-datepicker-toggle matIconSuffix [for]="copyPlanDatePicker"></mat-datepicker-toggle>
             <mat-date-range-picker #copyPlanDatePicker></mat-date-range-picker>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="form-field">
+            <mat-label>Name</mat-label>
+            <input matInput placeholder="My New Plan" formControlName="name">
           </mat-form-field>
         </div>
       </div>

@@ -1,6 +1,7 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.plan
 
 import java.time.LocalDate
+import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.plan.Plan
 import org.freekode.tp2intervals.domain.plan.PlanRepository
@@ -10,7 +11,7 @@ import org.springframework.cache.annotation.CacheConfig
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Repository
 
-@CacheConfig(cacheNames = ["tpPlanCache"])
+@CacheConfig(cacheNames = ["plansCache"])
 @Repository
 class TPPlanRepository(
     private val trainingPeaksUserRepository: TrainingPeaksUserRepository,
@@ -24,9 +25,8 @@ class TPPlanRepository(
 
     @Cacheable(key = "'TRAINING_PEAKS'")
     override fun getPlans(): List<Plan> {
-        val converter = TPPlanConverter()
         return trainingPeaksPlanApiClient.getPlans()
-            .map { converter.toPlan(it) }
+            .map { toPlan(it) }
             .sortedBy { it.name }
             .toList()
     }
@@ -50,5 +50,12 @@ class TPPlanRepository(
             "appliedPlanId" to appliedPlanId
         )
         trainingPeaksPlanApiClient.removePlan(request)
+    }
+
+    fun toPlan(planDto: TPPlanDto): Plan {
+        return Plan.planFromMonday(
+            planDto.title,
+            ExternalData.empty().withTrainingPeaks(planDto.planId)
+        )
     }
 }

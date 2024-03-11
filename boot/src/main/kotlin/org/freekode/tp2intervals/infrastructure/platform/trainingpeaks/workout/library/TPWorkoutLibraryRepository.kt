@@ -7,14 +7,14 @@ import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Repository
 
 
-@CacheConfig(cacheNames = ["tpWorkoutLibraryItemsCache"])
+@CacheConfig(cacheNames = ["workoutsCache"])
 @Repository
 class TPWorkoutLibraryRepository(
     private val trainingPeaksWorkoutLibraryApiClient: TrainingPeaksWorkoutLibraryApiClient,
     private val tpToWorkoutConverter: TPToWorkoutConverter,
 ) {
 
-    @Cacheable(key = "'singleton'")
+    @Cacheable(key = "'TRAINING_PEAKS'")
     fun getAllWorkoutsFromLibraries(): List<Workout> {
         return getLibraries()
             .map { getLibraryItems(it.exerciseLibraryId) }
