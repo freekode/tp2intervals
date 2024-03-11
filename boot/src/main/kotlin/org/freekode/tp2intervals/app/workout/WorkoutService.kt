@@ -14,7 +14,7 @@ class WorkoutService(
     private val workoutRepositoryMap = workoutRepositories.associateBy { it.platform() }
     private val planRepositoryMap = planRepositories.associateBy { it.platform() }
 
-    fun copyPlannedWorkouts(request: ScheduleWorkoutsRequest): ScheduleWorkoutsResponse {
+    fun copyPlannedWorkouts(request: CopyPlannedWorkoutsRequest): CopyPlannedWorkoutsResponse {
         val sourceWorkoutRepository = workoutRepositoryMap[request.sourcePlatform]!!
         val targetWorkoutRepository = workoutRepositoryMap[request.targetPlatform]!!
 
@@ -29,7 +29,7 @@ class WorkoutService(
                 .filter { !plannedWorkouts.contains(it) }
         }
 
-        val response = ScheduleWorkoutsResponse(
+        val response = CopyPlannedWorkoutsResponse(
             filteredWorkoutsToPlan.size,
             allWorkoutsToPlan.size - filteredWorkoutsToPlan.size,
             request.startDate,
@@ -39,7 +39,7 @@ class WorkoutService(
         return response
     }
 
-    fun copyPlannedWorkoutsToLibrary(request: CopyWorkoutsRequest): CopyWorkoutsResponse {
+    fun copyPlannedWorkoutsToLibrary(request: CopyPlannedToLibraryWorkoutsRequest): CopyPlannedToLibraryResponse {
         val sourceWorkoutRepository = workoutRepositoryMap[request.sourcePlatform]!!
         val targetWorkoutRepository = workoutRepositoryMap[request.targetPlatform]!!
         val targetPlanRepository = planRepositoryMap[request.targetPlatform]!!
@@ -49,7 +49,7 @@ class WorkoutService(
 
         val plan = targetPlanRepository.createPlan(request.name, request.startDate, request.isPlan)
         filteredWorkouts.forEach { targetWorkoutRepository.saveWorkoutToLibrary(it, plan) }
-        return CopyWorkoutsResponse(
+        return CopyPlannedToLibraryResponse(
             filteredWorkouts.size, allWorkouts.size - filteredWorkouts.size, request.startDate, request.endDate
         )
     }

@@ -2,7 +2,7 @@ package org.freekode.tp2intervals.app.workout
 
 import java.time.LocalDate
 
-data class CopyWorkoutsResponse(
+data class CopyPlannedToLibraryResponse(
     val copied: Int,
     val filteredOut: Int,
     val startDate: LocalDate,

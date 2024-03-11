@@ -1,10 +1,10 @@
 package org.freekode.tp2intervals.rest.workout
 
 import java.time.LocalDate
-import org.freekode.tp2intervals.app.workout.CopyWorkoutsRequest
-import org.freekode.tp2intervals.app.workout.CopyWorkoutsResponse
-import org.freekode.tp2intervals.app.workout.ScheduleWorkoutsRequest
-import org.freekode.tp2intervals.app.workout.ScheduleWorkoutsResponse
+import org.freekode.tp2intervals.app.workout.CopyPlannedToLibraryWorkoutsRequest
+import org.freekode.tp2intervals.app.workout.CopyPlannedToLibraryResponse
+import org.freekode.tp2intervals.app.workout.CopyPlannedWorkoutsRequest
+import org.freekode.tp2intervals.app.workout.CopyPlannedWorkoutsResponse
 import org.freekode.tp2intervals.app.workout.WorkoutService
 import org.freekode.tp2intervals.domain.Platform
 import org.springframework.web.bind.annotation.GetMapping
@@ -19,9 +19,9 @@ class WorkoutController(
 ) {
 
     @PostMapping("/api/workout/copy-planned")
-    fun copyPlannedWorkouts(@RequestBody requestDTO: CopyPlannedRequestDTO): ScheduleWorkoutsResponse {
+    fun copyPlannedWorkouts(@RequestBody requestDTO: CopyPlannedRequestDTO): CopyPlannedWorkoutsResponse {
         return workoutService.copyPlannedWorkouts(
-            ScheduleWorkoutsRequest(
+            CopyPlannedWorkoutsRequest(
                 LocalDate.parse(requestDTO.startDate),
                 LocalDate.parse(requestDTO.endDate),
                 requestDTO.types,
@@ -33,9 +33,9 @@ class WorkoutController(
     }
 
     @PostMapping("/api/workout/copy-planned-to-library")
-    fun copyPlannedWorkoutsToLibrary(@RequestBody requestDTO: CopyPlannedToLibraryRequestDTO): CopyWorkoutsResponse {
+    fun copyPlannedWorkoutsToLibrary(@RequestBody requestDTO: CopyPlannedToLibraryRequestDTO): CopyPlannedToLibraryResponse {
         return workoutService.copyPlannedWorkoutsToLibrary(
-            CopyWorkoutsRequest(
+            CopyPlannedToLibraryWorkoutsRequest(
                 requestDTO.name,
                 requestDTO.isPlan,
                 LocalDate.parse(requestDTO.startDate),
