@@ -11,7 +11,6 @@ import org.springframework.scheduling.annotation.EnableScheduling
 @SpringBootApplication
 @EnableFeignClients
 @EnableCaching
-@EnableScheduling
 @EnableConfigurationProperties(DevConfiguration::class)
 class Application
 

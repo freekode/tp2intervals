@@ -2,7 +2,7 @@ package org.freekode.tp2intervals.app
 
 
 import org.freekode.tp2intervals.app.schedule.ScheduleService
-import org.freekode.tp2intervals.app.workout.ScheduleWorkoutsRequest
+import org.freekode.tp2intervals.app.workout.CopyPlannedWorkoutsRequest
 import org.freekode.tp2intervals.config.SpringIT
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.TrainingType
@@ -16,12 +16,12 @@ class ScheduleServiceTest extends SpringIT {
 
     def "should do"() {
         given:
-        def request = new ScheduleWorkoutsRequest(LocalDate.now(), LocalDate.now(), [TrainingType.VIRTUAL_BIKE],
+        def request = new CopyPlannedWorkoutsRequest(LocalDate.now(), LocalDate.now(), [TrainingType.VIRTUAL_BIKE],
                 true, Platform.INTERVALS, Platform.TRAINER_ROAD)
 
         when:
         scheduleService.addScheduledRequest(request)
-        def newReq = scheduleService.getScheduledRequest(ScheduleWorkoutsRequest.class)
+        def newReq = scheduleService.getScheduledRequest(CopyPlannedWorkoutsRequest.class)
 
         then:
         newReq != null
