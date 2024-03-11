@@ -20,7 +20,7 @@ class TrainerRoadWorkoutRepository(
         throw PlatformException(Platform.TRAINER_ROAD, "TR doesn't support workout planning")
     }
 
-    override fun saveWorkout(workout: Workout, plan: Plan) {
+    override fun saveWorkoutToLibrary(workout: Workout, plan: Plan) {
         throw PlatformException(Platform.TRAINER_ROAD, "TR doesn't support workout copying")
     }
 
@@ -28,12 +28,12 @@ class TrainerRoadWorkoutRepository(
         TODO("Not yet implemented")
     }
 
-    override fun getWorkout(id: String): Workout {
-        val workoutDetails = trainerRoadApiClient.getWorkoutDetails(id)
-        return TRWorkoutConverter(workoutDetails).toWorkout()
+    override fun getWorkoutsFromLibrary(plan: Plan): List<Workout> {
+        TODO("Not yet implemented")
     }
 
-    override fun getWorkouts(plan: Plan): List<Workout> {
-        TODO("Not yet implemented")
+    fun getWorkout(id: String): Workout {
+        val workoutDetails = trainerRoadApiClient.getWorkoutDetails(id)
+        return TRWorkoutConverter(workoutDetails).toWorkout()
     }
 }

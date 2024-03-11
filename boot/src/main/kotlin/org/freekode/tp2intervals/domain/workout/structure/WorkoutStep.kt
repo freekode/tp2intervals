@@ -1,5 +1,7 @@
 package org.freekode.tp2intervals.domain.workout.structure
 
-interface WorkoutStep {
+import java.io.Serializable
+
+interface WorkoutStep : Serializable {
     fun isSingleStep(): Boolean
 }

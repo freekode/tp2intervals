@@ -8,26 +8,26 @@ import org.freekode.tp2intervals.infrastructure.utils.Date
 import org.springframework.stereotype.Service
 
 @Service
-class PlanService(
+class LibraryService(
     workoutRepositories: List<WorkoutRepository>,
     planRepositories: List<PlanRepository>,
 ) {
     private val workoutRepositoryMap = workoutRepositories.associateBy { it.platform() }
     private val planRepositoryMap = planRepositories.associateBy { it.platform() }
 
-    fun getPlans(platform: Platform): List<Plan> {
+    fun getLibraries(platform: Platform): List<Plan> {
         val repository = planRepositoryMap[platform]!!
-        return repository.getPlans()
+        return repository.getLibraries()
     }
 
-    fun copyPlan(request: CopyPlanRequest): CopyPlanResponse {
+    fun copyLibrary(request: CopyLibraryRequest): CopyPlanResponse {
         val targetPlanRepository = planRepositoryMap[request.targetPlatform]!!
         val sourceWorkoutRepository = workoutRepositoryMap[request.sourcePlatform]!!
         val targetWorkoutRepository = workoutRepositoryMap[request.targetPlatform]!!
 
-        val workouts = sourceWorkoutRepository.getWorkouts(request.plan)
-        val newPlan = targetPlanRepository.createPlan(request.plan.name, Date.thisMonday(), true)
-        workouts.forEach { targetWorkoutRepository.saveWorkout(it, newPlan) }
+        val workouts = sourceWorkoutRepository.getWorkoutsFromLibrary(request.plan)
+        val newPlan = targetPlanRepository.createPlan(request.newName, Date.thisMonday(), true)
+        workouts.forEach { targetWorkoutRepository.saveWorkoutToLibrary(it, newPlan) }
         return CopyPlanResponse(newPlan.name, workouts.size)
     }
 }

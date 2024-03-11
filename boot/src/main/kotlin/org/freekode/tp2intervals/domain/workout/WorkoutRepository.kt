@@ -1,19 +1,17 @@
 package org.freekode.tp2intervals.domain.workout
 
+import java.time.LocalDate
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.plan.Plan
-import java.time.LocalDate
 
 interface WorkoutRepository {
     fun platform(): Platform
 
     fun getPlannedWorkouts(startDate: LocalDate, endDate: LocalDate): List<Workout>
 
-    fun getWorkout(id: String): Workout
-
-    fun getWorkouts(plan: Plan): List<Workout>
-
     fun planWorkout(workout: Workout)
 
-    fun saveWorkout(workout: Workout, plan: Plan)
+    fun getWorkoutsFromLibrary(plan: Plan): List<Workout>
+
+    fun saveWorkoutToLibrary(workout: Workout, plan: Plan)
 }

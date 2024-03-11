@@ -1,6 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { MatGridListModule } from "@angular/material/grid-list";
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
+import { formatDate } from "utils/date-formatter";
+import { WorkoutClient } from "infrastructure/workout.client";
+import { ConfigurationClient } from "infrastructure/configuration.client";
+import { NotificationService } from "infrastructure/notification.service";
+import { finalize } from "rxjs";
+import { MatGridListModule } from "@angular/material/grid-list";
 import { MatButtonModule } from "@angular/material/button";
 import { MatCardModule } from "@angular/material/card";
 import { MatFormFieldModule } from "@angular/material/form-field";
@@ -12,15 +17,9 @@ import { MatNativeDateModule } from "@angular/material/core";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { MatSelectModule } from "@angular/material/select";
 import { MatCheckboxModule } from "@angular/material/checkbox";
-import { TpCopyPlanComponent } from "app/training-peaks-actions/tp-copy-plan/tp-copy-plan.component";
-import { formatDate } from "utils/date-formatter";
-import { WorkoutClient } from "infrastructure/workout.client";
-import { ConfigurationClient } from "infrastructure/configuration.client";
-import { NotificationService } from "infrastructure/notification.service";
-import { finalize } from "rxjs";
 
 @Component({
-  selector: 'app-tp-plan-workouts',
+  selector: 'tp-copy-planned-to-library',
   standalone: true,
   imports: [
     MatGridListModule,
@@ -37,31 +36,30 @@ import { finalize } from "rxjs";
     MatSnackBarModule,
     MatSelectModule,
     MatCheckboxModule,
-    TpCopyPlanComponent
   ],
-  templateUrl: './tp-plan-workouts.component.html',
-  styleUrl: './tp-plan-workouts.component.scss'
+  templateUrl: './to-copy-planned-to-library.component.html',
+  styleUrl: './to-copy-planned-to-library.component.scss'
 })
-export class TpPlanWorkoutsComponent  implements OnInit {
+export class ToCopyPlannedToLibraryComponent implements OnInit {
 
   formGroup: FormGroup = this.formBuilder.group({
-    direction: [null, Validators.required],
+    name: [null, Validators.required],
     trainingTypes: [null, Validators.required],
-    skipSynced: [null, Validators.required],
+    startDate: [null, Validators.required],
+    endDate: [null, Validators.required],
+    isPlan: [null, Validators.required],
   });
 
   inProgress = false
 
-  directions = [
-    {name: 'Intervals.icu -> Training Peaks', value: {sourcePlatform: 'INTERVALS', targetPlatform: 'TRAINING_PEAKS'}},
-    {name: 'Training Peaks -> Intervals.icu', value: {sourcePlatform: 'TRAINING_PEAKS', targetPlatform: 'INTERVALS'}},
-  ]
   trainingTypes: any[];
+  readonly planType = [
+    {name: 'Plan', value: true},
+    {name: 'Folder', value: false}
+  ]
 
-  private readonly selectedPlanDirection = this.directions[0].value;
   private readonly selectedTrainingTypes = ['BIKE', 'VIRTUAL_BIKE', 'MTB', 'RUN'];
-  private readonly todayDate = formatDate(new Date())
-  private readonly tomorrowDate = formatDate(new Date(new Date().setDate(new Date().getDate() + 1)))
+  private readonly direction = {sourcePlatform: 'TRAINING_PEAKS', targetPlatform: 'INTERVALS'}
 
   constructor(
     private formBuilder: FormBuilder,
@@ -78,32 +76,26 @@ export class TpPlanWorkoutsComponent  implements OnInit {
     })
   }
 
-  planTodayClick() {
-    this.planWorkouts(this.todayDate, this.todayDate)
-  }
-
-  planTomorrowClick() {
-    this.planWorkouts(this.tomorrowDate, this.tomorrowDate)
-  }
-
-  private planWorkouts(startDate, endDate) {
+  copyWorkoutsSubmit() {
     this.inProgress = true
-    let skipSynced = this.formGroup.value.skipSynced
-    let direction = this.formGroup.value.direction
+    let name = this.formGroup.value.name
     let trainingTypes = this.formGroup.value.trainingTypes
-    this.workoutClient.planWorkout(startDate, endDate, trainingTypes, skipSynced, direction).pipe(
+    let startDate = formatDate(this.formGroup.value.startDate)
+    let endDate = formatDate(this.formGroup.value.endDate)
+    let isPlan = this.formGroup.value.isPlan
+    this.workoutClient.copyPlannedWorkoutsToLibrary(name, startDate, endDate, trainingTypes, this.direction, isPlan).pipe(
       finalize(() => this.inProgress = false)
     ).subscribe((response) => {
       this.notificationService.success(
-        `Planned: ${response.planned}\n Filtered out: ${response.filteredOut}\n From ${response.startDate} to ${response.endDate}`)
+        `Copied: ${response.copied}\n Filtered out: ${response.filteredOut}\n From ${response.startDate} to ${response.endDate}`)
     })
   }
 
   private initFormValues() {
     this.formGroup.patchValue({
-      direction: this.selectedPlanDirection,
+      name: 'My New Library',
       trainingTypes: this.selectedTrainingTypes,
-      skipSynced: true
+      isPlan: true
     })
   }
 }

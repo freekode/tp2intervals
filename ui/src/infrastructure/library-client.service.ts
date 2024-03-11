@@ -6,19 +6,19 @@ import { map, Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-export class PlanClient {
+export class LibraryClient {
 
   constructor(private httpClient: HttpClient) {
   }
 
-  getPlans(platform: string): Observable<any[]> {
-    return this.httpClient.get(`/api/plan`, {params: {platform}}).pipe(
+  getLibraries(platform: string): Observable<any[]> {
+    return this.httpClient.get(`/api/library`, {params: {platform}}).pipe(
       map(plans => (<any[]>plans))
     )
   }
 
-  copyPlan(plan, platformDirection): Observable<any> {
+  copyLibrary(plan, newName, platformDirection): Observable<any> {
     return this.httpClient
-      .post(`/api/plan/copy`, {plan, ...platformDirection})
+      .post(`/api/library/copy`, {plan, newName, ...platformDirection})
   }
 }

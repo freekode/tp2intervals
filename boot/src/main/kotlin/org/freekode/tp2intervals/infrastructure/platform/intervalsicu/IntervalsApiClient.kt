@@ -24,12 +24,6 @@ import org.springframework.web.multipart.MultipartFile
 )
 interface IntervalsApiClient {
 
-    @PostMapping("/api/v1/athlete/{athleteId}/folders")
-    fun createFolder(
-        @PathVariable("athleteId") athleteId: String,
-        @RequestBody createFolderRequestDTO: CreateFolderRequestDTO
-    ): FolderDTO
-
     @PostMapping("/api/v1/athlete/{athleteId}/workouts")
     fun createWorkout(
         @PathVariable("athleteId") athleteId: String,

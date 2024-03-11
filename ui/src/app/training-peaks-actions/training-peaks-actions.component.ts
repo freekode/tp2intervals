@@ -1,15 +1,21 @@
 import { Component, OnInit } from '@angular/core';
-import { TpPlanWorkoutsComponent } from "app/training-peaks-actions/tp-plan-workouts/tp-plan-workouts.component";
-import { TpCopyPlanComponent } from "app/training-peaks-actions/tp-copy-plan/tp-copy-plan.component";
-import { TpCopyWorkoutsComponent } from "app/training-peaks-actions/tp-copy-workouts/tp-copy-workouts.component";
+import {
+  TpCopyPlannedWorkoutsComponent
+} from "app/training-peaks-actions/tp-copy-planned-workouts/tp-copy-planned-workouts.component";
+import {
+  TpCopyLibraryItemComponent
+} from "app/training-peaks-actions/tp-copy-library-item/tp-copy-library-item.component";
+import {
+  ToCopyPlannedToLibraryComponent
+} from "app/training-peaks-actions/to-copy-planned-to-library/to-copy-planned-to-library.component";
 
 @Component({
   selector: 'app-training-peaks-actions',
   standalone: true,
   imports: [
-    TpPlanWorkoutsComponent,
-    TpCopyPlanComponent,
-    TpCopyWorkoutsComponent
+    TpCopyPlannedWorkoutsComponent,
+    TpCopyLibraryItemComponent,
+    ToCopyPlannedToLibraryComponent,
   ],
   templateUrl: './training-peaks-actions.component.html',
   styleUrl: './training-peaks-actions.component.scss'
