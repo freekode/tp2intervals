@@ -4,7 +4,7 @@ import java.time.LocalDate
 import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.plan.Plan
-import org.freekode.tp2intervals.domain.plan.PlanRepository
+import org.freekode.tp2intervals.domain.plan.LibraryRepository
 import org.freekode.tp2intervals.infrastructure.Signature
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfigurationRepository
 import org.springframework.cache.annotation.CacheConfig
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Repository
 class IntervalsFolderRepository(
     private val intervalsFolderApiClient: IntervalsFolderApiClient,
     private val intervalsConfigurationRepository: IntervalsConfigurationRepository
-) : PlanRepository {
+) : LibraryRepository {
 
     override fun platform() = Platform.INTERVALS
 
@@ -28,7 +28,7 @@ class IntervalsFolderRepository(
     }
 
     @Cacheable(key = "'INTERVALS'")
-    override fun getLibraries(): List<Plan> {
+    override fun getLibraryItems(): List<Plan> {
         return intervalsFolderApiClient.getFolders(intervalsConfigurationRepository.getConfiguration().athleteId)
             .map { toPlan(it) }
     }

@@ -2,7 +2,7 @@ package org.freekode.tp2intervals.app.plan
 
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.plan.Plan
-import org.freekode.tp2intervals.domain.plan.PlanRepository
+import org.freekode.tp2intervals.domain.plan.LibraryRepository
 import org.freekode.tp2intervals.domain.workout.WorkoutRepository
 import org.freekode.tp2intervals.infrastructure.utils.Date
 import org.springframework.stereotype.Service
@@ -10,14 +10,14 @@ import org.springframework.stereotype.Service
 @Service
 class LibraryService(
     workoutRepositories: List<WorkoutRepository>,
-    planRepositories: List<PlanRepository>,
+    planRepositories: List<LibraryRepository>,
 ) {
     private val workoutRepositoryMap = workoutRepositories.associateBy { it.platform() }
     private val planRepositoryMap = planRepositories.associateBy { it.platform() }
 
     fun getLibraries(platform: Platform): List<Plan> {
         val repository = planRepositoryMap[platform]!!
-        return repository.getLibraries()
+        return repository.getLibraryItems()
     }
 
     fun copyLibrary(request: CopyLibraryRequest): CopyPlanResponse {

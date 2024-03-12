@@ -2,10 +2,13 @@ package org.freekode.tp2intervals.config
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.freekode.tp2intervals.infrastructure.platform.trainerroad.TRFindWorkoutsRequestDTO
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.TrainerRoadApiClient
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.TrainerRoadMemberDTO
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.activity.TrainerRoadActivityDTO
+import org.freekode.tp2intervals.infrastructure.platform.trainerroad.workout.TRFindWorkoutsResponseDTO
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.workout.TRWorkoutResponseDTO
+import org.jetbrains.annotations.NotNull
 import org.springframework.core.io.Resource
 
 class MockTrainerRoadApiClient implements TrainerRoadApiClient {
@@ -43,6 +46,11 @@ class MockTrainerRoadApiClient implements TrainerRoadApiClient {
             case "abney": return trWorkoutResponseDTOAbney
             case "obelisk": return trWorkoutResponseDTOObelisk
         }
+        return null
+    }
+
+    @Override
+    TRFindWorkoutsResponseDTO findWorkouts(TRFindWorkoutsRequestDTO requestDTO) {
         return null
     }
 }

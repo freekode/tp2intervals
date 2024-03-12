@@ -48,8 +48,8 @@ class WorkoutController(
     }
 
     @GetMapping("/api/workout/find")
-    fun findWorkoutsByName(@RequestParam platform: Platform, @RequestParam name: String): List<WorkoutDTO> {
+    fun findWorkoutsByName(@RequestParam platform: Platform, @RequestParam name: String): List<WorkoutIdentityDTO> {
         return workoutService.findWorkoutsByName(platform, name)
-            .map { WorkoutDTO(it.name, it.duration, it.load, it.externalData) }
+            .map { WorkoutIdentityDTO(it.name, it.duration, it.load, it.externalData) }
     }
 }

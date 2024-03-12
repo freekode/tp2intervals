@@ -8,6 +8,7 @@ import java.time.temporal.TemporalAdjusters
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.plan.Plan
 import org.freekode.tp2intervals.domain.workout.Workout
+import org.freekode.tp2intervals.domain.workout.WorkoutDetails
 import org.freekode.tp2intervals.domain.workout.WorkoutRepository
 import org.freekode.tp2intervals.infrastructure.PlatformException
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.TrainingPeaksApiClient
@@ -70,6 +71,13 @@ class TrainingPeaksWorkoutRepository(
         return workouts + notes
     }
 
+    override fun findWorkoutsFromLibraryByName(name: String): List<WorkoutDetails> {
+        return tpWorkoutLibraryRepository.getLibraries()
+            .flatMap { tpWorkoutLibraryRepository.getLibraryItems(it.externalData.trainingPeaksId!!) }
+            .map { it.details }
+            .filter { it.name.contains(name) }
+    }
+
     private fun getWorkoutsFromTPPlan(plan: Plan): List<Workout> {
         val planId = plan.externalData.trainingPeaksId!!
         val planApplyDate = getPlanApplyDate()
@@ -80,7 +88,7 @@ class TrainingPeaksWorkoutRepository(
 
             val workoutDateShiftDays = Date.daysDiff(plan.startDate, planApplyDate)
             val workouts = getPlannedWorkouts(planApplyDate, planEndDate)
-                .map { it.withDate(it.date.minusDays(workoutDateShiftDays.toLong())) }
+                .map { it.withDate(it.date!!.minusDays(workoutDateShiftDays.toLong())) }
             val tpPlan = tpPlanRepository.getPlan(planId)
             assert(tpPlan.workoutCount == workouts.size)
             return workouts

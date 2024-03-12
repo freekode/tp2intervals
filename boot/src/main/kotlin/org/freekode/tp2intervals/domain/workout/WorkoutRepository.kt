@@ -13,5 +13,7 @@ interface WorkoutRepository {
 
     fun getWorkoutsFromLibrary(plan: Plan): List<Workout>
 
+    fun findWorkoutsFromLibraryByName(name: String): List<WorkoutDetails>
+
     fun saveWorkoutToLibrary(workout: Workout, plan: Plan)
 }

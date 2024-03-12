@@ -4,6 +4,7 @@ import java.time.LocalDate
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.plan.Plan
 import org.freekode.tp2intervals.domain.workout.Workout
+import org.freekode.tp2intervals.domain.workout.WorkoutDetails
 import org.freekode.tp2intervals.domain.workout.WorkoutRepository
 import org.freekode.tp2intervals.infrastructure.PlatformException
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsApiClient
@@ -28,9 +29,9 @@ class IntervalsWorkoutRepository(
         val description = getDescription(workout, workoutString)
 
         val request = CreateEventRequestDTO(
-            workout.date.atStartOfDay().toString(),
-            workout.name,
-            workout.type.title,
+            (workout.date ?: LocalDate.now()).atStartOfDay().toString(),
+            workout.details.name,
+            workout.details.type.title,
             "WORKOUT",
             description
         )
@@ -43,11 +44,11 @@ class IntervalsWorkoutRepository(
 
         val request = CreateWorkoutRequestDTO(
             plan.externalData.intervalsId.toString(),
-            Date.daysDiff(plan.startDate, workout.date),
-            IntervalsTrainingTypeMapper.getByTrainingType(workout.type),
-            workout.name, // "Name is too long"
-            workout.duration?.seconds,
-            workout.load,
+            Date.daysDiff(plan.startDate, workout.date ?: LocalDate.now()),
+            IntervalsTrainingTypeMapper.getByTrainingType(workout.details.type),
+            workout.details.name, // "Name is too long"
+            workout.details.duration?.seconds,
+            workout.details.load,
             description,
             null,
         )
@@ -69,12 +70,16 @@ class IntervalsWorkoutRepository(
             .mapNotNull { toWorkout(it) }
     }
 
+    override fun findWorkoutsFromLibraryByName(name: String): List<WorkoutDetails> {
+        TODO("Not yet implemented")
+    }
+
     override fun getWorkoutsFromLibrary(plan: Plan): List<Workout> {
         TODO("Not yet implemented")
     }
 
     private fun getDescription(workout: Workout, workoutString: String?): String {
-        var description = workout.description
+        var description = workout.details.description
             .orEmpty()
             .replace(unwantedStepRegex, "--")
         description += workoutString

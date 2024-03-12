@@ -1,15 +1,15 @@
 package org.freekode.tp2intervals.app.workout
 
 import org.freekode.tp2intervals.domain.Platform
-import org.freekode.tp2intervals.domain.plan.PlanRepository
-import org.freekode.tp2intervals.domain.workout.Workout
+import org.freekode.tp2intervals.domain.plan.LibraryRepository
+import org.freekode.tp2intervals.domain.workout.WorkoutDetails
 import org.freekode.tp2intervals.domain.workout.WorkoutRepository
 import org.springframework.stereotype.Service
 
 @Service
 class WorkoutService(
     workoutRepositories: List<WorkoutRepository>,
-    planRepositories: List<PlanRepository>,
+    planRepositories: List<LibraryRepository>,
 ) {
     private val workoutRepositoryMap = workoutRepositories.associateBy { it.platform() }
     private val planRepositoryMap = planRepositories.associateBy { it.platform() }
@@ -20,10 +20,10 @@ class WorkoutService(
 
         val allWorkoutsToPlan = sourceWorkoutRepository.getPlannedWorkouts(request.startDate, request.endDate)
         var filteredWorkoutsToPlan = allWorkoutsToPlan
-            .filter { request.types.contains(it.type) }
+            .filter { request.types.contains(it.details.type) }
         if (request.skipSynced) {
             val plannedWorkouts = targetWorkoutRepository.getPlannedWorkouts(request.startDate, request.endDate)
-                .filter { request.types.contains(it.type) }
+                .filter { request.types.contains(it.details.type) }
 
             filteredWorkoutsToPlan = filteredWorkoutsToPlan
                 .filter { !plannedWorkouts.contains(it) }
@@ -45,7 +45,7 @@ class WorkoutService(
         val targetPlanRepository = planRepositoryMap[request.targetPlatform]!!
 
         val allWorkouts = sourceWorkoutRepository.getPlannedWorkouts(request.startDate, request.endDate)
-        val filteredWorkouts = allWorkouts.filter { request.types.contains(it.type) }
+        val filteredWorkouts = allWorkouts.filter { request.types.contains(it.details.type) }
 
         val plan = targetPlanRepository.createPlan(request.name, request.startDate, request.isPlan)
         filteredWorkouts.forEach { targetWorkoutRepository.saveWorkoutToLibrary(it, plan) }
@@ -54,7 +54,7 @@ class WorkoutService(
         )
     }
 
-    fun findWorkoutsByName(platform: Platform, name: String): List<Workout> {
-        TODO("not implemented")
+    fun findWorkoutsByName(platform: Platform, name: String): List<WorkoutDetails> {
+        return workoutRepositoryMap[platform]!!.findWorkoutsFromLibraryByName(name)
     }
 }

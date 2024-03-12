@@ -4,7 +4,7 @@ import java.time.LocalDate
 import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.plan.Plan
-import org.freekode.tp2intervals.domain.plan.PlanRepository
+import org.freekode.tp2intervals.domain.plan.LibraryRepository
 import org.freekode.tp2intervals.infrastructure.PlatformException
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.library.TPWorkoutLibraryRepository
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.user.TrainingPeaksUserRepository
@@ -16,9 +16,9 @@ import org.springframework.stereotype.Repository
 @Repository
 class TPPlanRepository(
     private val trainingPeaksUserRepository: TrainingPeaksUserRepository,
-    private val trainingPeaksPlanApiClient: TrainingPeaksPlanApiClient,
     private val tpWorkoutLibraryRepository: TPWorkoutLibraryRepository,
-) : PlanRepository {
+    private val trainingPeaksPlanApiClient: TrainingPeaksPlanApiClient,
+) : LibraryRepository {
     override fun platform() = Platform.TRAINING_PEAKS
 
     override fun createPlan(name: String, startDate: LocalDate, isPlan: Boolean): Plan {
@@ -26,7 +26,7 @@ class TPPlanRepository(
     }
 
     @Cacheable(key = "'TRAINING_PEAKS'")
-    override fun getLibraries(): List<Plan> {
+    override fun getLibraryItems(): List<Plan> {
         val plans = trainingPeaksPlanApiClient.getPlans()
             .map { toPlan(it) }
             .sortedBy { it.name }

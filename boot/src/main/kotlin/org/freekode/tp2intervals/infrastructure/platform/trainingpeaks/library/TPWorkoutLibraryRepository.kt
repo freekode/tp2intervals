@@ -5,9 +5,12 @@ import org.freekode.tp2intervals.domain.plan.Plan
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.TPToWorkoutConverter
 import org.freekode.tp2intervals.infrastructure.utils.Date
+import org.springframework.cache.annotation.CacheConfig
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Repository
 
 
+@CacheConfig(cacheNames = ["tpWorkoutsCache"])
 @Repository
 class TPWorkoutLibraryRepository(
     private val trainingPeaksWorkoutLibraryApiClient: TrainingPeaksWorkoutLibraryApiClient,
@@ -19,6 +22,7 @@ class TPWorkoutLibraryRepository(
             .map { toPlan(it) }
     }
 
+    @Cacheable
     fun getLibraryItems(libraryId: String): List<Workout> {
         val items = trainingPeaksWorkoutLibraryApiClient.getWorkoutLibraryItems(libraryId)
         return items.map { tpToWorkoutConverter.toWorkout(it) }

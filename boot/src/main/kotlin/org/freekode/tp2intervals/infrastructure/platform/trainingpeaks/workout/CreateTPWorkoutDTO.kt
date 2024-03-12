@@ -1,5 +1,6 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout
 
+import java.time.LocalDate
 import java.time.LocalDateTime
 import org.freekode.tp2intervals.domain.activity.Activity
 import org.freekode.tp2intervals.domain.workout.Workout
@@ -24,14 +25,14 @@ class CreateTPWorkoutDTO(
         ): CreateTPWorkoutDTO {
             return CreateTPWorkoutDTO(
                 athleteId,
-                workout.date.atStartOfDay(),
-                TPTrainingTypeMapper.getByType(workout.type),
-                workout.name,
-                workout.externalData.toSimpleString(),
+                (workout.date ?: LocalDate.now()).atStartOfDay(),
+                TPTrainingTypeMapper.getByType(workout.details.type),
+                workout.details.name,
+                workout.details.externalData.toSimpleString(),
                 null,
-                workout.duration?.toMinutes()?.toDouble()?.div(60),
+                workout.details.duration?.toMinutes()?.toDouble()?.div(60),
                 null,
-                workout.load,
+                workout.details.load,
                 structureStr
             )
         }
