@@ -6,8 +6,8 @@ import {
   TpCopyLibraryItemComponent
 } from "app/training-peaks-actions/tp-copy-library-item/tp-copy-library-item.component";
 import {
-  ToCopyPlannedToLibraryComponent
-} from "app/training-peaks-actions/to-copy-planned-to-library/to-copy-planned-to-library.component";
+  TpCopyPlannedToLibraryComponent
+} from "app/training-peaks-actions/tp-copy-planned-to-library/tp-copy-planned-to-library.component";
 
 @Component({
   selector: 'app-training-peaks-actions',
@@ -15,7 +15,7 @@ import {
   imports: [
     TpCopyPlannedWorkoutsComponent,
     TpCopyLibraryItemComponent,
-    ToCopyPlannedToLibraryComponent,
+    TpCopyPlannedToLibraryComponent,
   ],
   templateUrl: './training-peaks-actions.component.html',
   styleUrl: './training-peaks-actions.component.scss'

@@ -37,10 +37,10 @@ import { MatCheckboxModule } from "@angular/material/checkbox";
     MatSelectModule,
     MatCheckboxModule,
   ],
-  templateUrl: './to-copy-planned-to-library.component.html',
-  styleUrl: './to-copy-planned-to-library.component.scss'
+  templateUrl: './tp-copy-planned-to-library.component.html',
+  styleUrl: './tp-copy-planned-to-library.component.scss'
 })
-export class ToCopyPlannedToLibraryComponent implements OnInit {
+export class TpCopyPlannedToLibraryComponent implements OnInit {
 
   formGroup: FormGroup = this.formBuilder.group({
     name: [null, Validators.required],

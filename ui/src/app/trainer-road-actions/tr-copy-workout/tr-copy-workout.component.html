@@ -1,0 +1,55 @@
+<form [formGroup]="formGroup" novalidate (ngSubmit)="copyWorkoutSubmit()">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Copy workout</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="form-field">
+            <mat-label>TrainerRoad workout name</mat-label>
+            <input type="text" matInput formControlName="trWorkoutDetails" [matAutocomplete]="workoutAutocomplete">
+            <mat-autocomplete #workoutAutocomplete="matAutocomplete" [displayWith]="displayFn">
+              @for (option of workouts | async; track option) {
+                <mat-option [value]="option">{{option.name}}</mat-option>
+              }
+              <mat-option disabled *ngIf="(workouts | async)?.length === 0 && !searchInProgress">
+                Not found
+              </mat-option>
+            </mat-autocomplete>
+            <mat-progress-bar *ngIf="searchInProgress" mode="query"></mat-progress-bar>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <mat-form-field class="form-field">
+            <mat-label>Intervals library</mat-label>
+            <mat-select formControlName="plan" panelWidth="null">
+              @for (item of intervalsLibraryItem | async; track item) {
+                <mat-option [value]="item.value">{{ item.name }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        [disabled]="formGroup.invalid || formGroup.disabled"
+      >
+        Copy
+      </button>
+    </mat-card-actions>
+
+    <mat-card-footer>
+      <mat-progress-bar *ngIf="submitInProgress" mode="query"></mat-progress-bar>
+    </mat-card-footer>
+  </mat-card>
+</form>
