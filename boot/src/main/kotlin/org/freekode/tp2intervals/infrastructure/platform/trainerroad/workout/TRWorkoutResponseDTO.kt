@@ -14,7 +14,7 @@ class TRWorkoutResponseDTO(
 
     class DetailsDTO(
         @JsonProperty("Id")
-        val id: Double,
+        val id: String,
         @JsonProperty("WorkoutName")
         val workoutName: String,
         @JsonProperty("WorkoutDescription")

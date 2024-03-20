@@ -57,6 +57,8 @@ export class TrCopyLibraryToLibraryComponent implements OnInit {
   workouts: Observable<any[]>;
   intervalsLibraryItem: Observable<{ name: any; value: any }[]>;
 
+  private readonly direction = Platform.DIRECTION_TR_INT
+
   constructor(
     private formBuilder: FormBuilder,
     private workoutClient: WorkoutClient,
@@ -73,18 +75,22 @@ export class TrCopyLibraryToLibraryComponent implements OnInit {
 
   copyWorkoutSubmit() {
     this.submitInProgress = true
-    let plan = this.formGroup.value.plan
-    let direction = Platform.DIRECTION_TR_INT
-    // this.planClient.copyLibrary(plan, 'sadf', direction).pipe(
-    //   finalize(() => this.submitInProgress = false)
-    // ).subscribe((response) => {
-    //   this.notificationService.success(
-    //     `Plan name: ${response.planName}\nCopied workouts: ${response.workouts}`)
-    // })
+    let workoutDetails = this.formGroup.value.trWorkoutDetails
+    let intervalsPlan = this.formGroup.value.intervalsPlan
+    console.log(this.formGroup.getRawValue())
+    this.workoutClient.copyLibraryToLibrary(workoutDetails, intervalsPlan, this.direction).pipe(
+      finalize(() => this.submitInProgress = false)
+    ).subscribe((response) => {
+      this.notificationService.success(
+        `Copied successfully`)
+    })
   }
 
-  displayFn(workout): string {
-    return workout ? workout.name : '';
+  getWorkoutDetailsName(details) {
+    if (!details) {
+      return ''
+    }
+    return `${ details.name } (Duration: ${ details.duration || '0' }h, Load: ${details.load})`
   }
 
   private loadPlans() {

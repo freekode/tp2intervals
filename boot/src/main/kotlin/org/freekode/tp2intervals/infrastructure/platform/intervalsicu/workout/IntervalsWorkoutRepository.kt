@@ -7,6 +7,7 @@ import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutDetails
 import org.freekode.tp2intervals.domain.workout.WorkoutRepository
 import org.freekode.tp2intervals.infrastructure.PlatformException
+import org.freekode.tp2intervals.infrastructure.Signature
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsApiClient
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfigurationRepository
 import org.freekode.tp2intervals.infrastructure.utils.Date
@@ -86,6 +87,7 @@ class IntervalsWorkoutRepository(
         var description = workout.details.description
             .orEmpty()
             .replace(unwantedStepRegex, "--")
+            .let { "$it\n- - - -\n${Signature.description}" }
         description += workoutString
             ?.let { "\n\n- - - -\n$it" }
             .orEmpty()

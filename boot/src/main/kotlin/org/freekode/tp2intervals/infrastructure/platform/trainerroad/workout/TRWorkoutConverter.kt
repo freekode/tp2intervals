@@ -24,7 +24,7 @@ class TRWorkoutConverter {
                 trWorkout.details.workoutDescription,
                 Duration.ofMinutes(trWorkout.details.duration.toLong()),
                 trWorkout.details.tss,
-                ExternalData.empty().withTrainerRoad(trWorkout.details.id.toString())
+                ExternalData.empty().withTrainerRoad(trWorkout.details.id)
             ),
             null,
             WorkoutStructure(WorkoutStructure.TargetUnit.FTP_PERCENTAGE, steps),
@@ -38,7 +38,7 @@ class TRWorkoutConverter {
             trWorkout.workoutDescription,
             Duration.ofMinutes(trWorkout.duration.toLong()),
             trWorkout.tss,
-            ExternalData.empty().withTrainerRoad(trWorkout.id.toString())
+            ExternalData.empty().withTrainerRoad(trWorkout.id)
         )
     }
 
@@ -53,8 +53,10 @@ class TRWorkoutConverter {
             val duration = Duration.ofSeconds((interval.end - interval.start).toLong())
             val ftpPercent = interval.startTargetPowerPercent
 
+            val name = if (interval.name == "Fake") "Step" else interval.name
+
             val workoutSingleStep =
-                WorkoutSingleStep(interval.name, duration, WorkoutStepTarget(ftpPercent, ftpPercent), null, false)
+                WorkoutSingleStep(name, duration, WorkoutStepTarget(ftpPercent, ftpPercent), null, false)
             steps.add(workoutSingleStep)
         }
         return steps
