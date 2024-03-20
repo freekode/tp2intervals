@@ -2,7 +2,7 @@ package org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout
 
 import java.time.LocalDate
 import org.freekode.tp2intervals.domain.Platform
-import org.freekode.tp2intervals.domain.plan.Plan
+import org.freekode.tp2intervals.domain.librarycontainer.LibraryContainer
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutDetails
 import org.freekode.tp2intervals.domain.workout.WorkoutRepository
@@ -24,7 +24,7 @@ class IntervalsWorkoutRepository(
 
     override fun platform() = Platform.INTERVALS
 
-    override fun planWorkout(workout: Workout) {
+    override fun saveWorkoutToCalendar(workout: Workout) {
         val workoutString = getWorkoutString(workout)
         val description = getDescription(workout, workoutString)
 
@@ -38,13 +38,13 @@ class IntervalsWorkoutRepository(
         intervalsApiClient.createEvent(intervalsConfigurationRepository.getConfiguration().athleteId, request)
     }
 
-    override fun saveWorkoutToLibrary(workout: Workout, plan: Plan) {
+    override fun saveWorkoutToLibrary(libraryContainer: LibraryContainer, workout: Workout) {
         val workoutString = getWorkoutString(workout)
         val description = getDescription(workout, workoutString)
 
         val request = CreateWorkoutRequestDTO(
-            plan.externalData.intervalsId.toString(),
-            Date.daysDiff(plan.startDate, workout.date ?: LocalDate.now()),
+            libraryContainer.externalData.intervalsId.toString(),
+            Date.daysDiff(libraryContainer.startDate, workout.date ?: LocalDate.now()),
             IntervalsTrainingTypeMapper.getByTrainingType(workout.details.type),
             workout.details.name, // "Name is too long"
             workout.details.duration?.seconds,
@@ -55,7 +55,7 @@ class IntervalsWorkoutRepository(
         intervalsApiClient.createWorkout(intervalsConfigurationRepository.getConfiguration().athleteId, request)
     }
 
-    override fun getPlannedWorkouts(startDate: LocalDate, endDate: LocalDate): List<Workout> {
+    override fun getWorkoutsFromCalendar(startDate: LocalDate, endDate: LocalDate): List<Workout> {
         val configuration = intervalsConfigurationRepository.getConfiguration()
         val events = intervalsApiClient.getEvents(
             configuration.athleteId,
@@ -70,11 +70,15 @@ class IntervalsWorkoutRepository(
             .mapNotNull { toWorkout(it) }
     }
 
+    override fun getWorkoutFromLibrary(workoutDetails: WorkoutDetails): Workout {
+        TODO("Not yet implemented")
+    }
+
     override fun findWorkoutsFromLibraryByName(name: String): List<WorkoutDetails> {
         TODO("Not yet implemented")
     }
 
-    override fun getWorkoutsFromLibrary(plan: Plan): List<Workout> {
+    override fun getWorkoutsFromLibrary(libraryContainer: LibraryContainer): List<Workout> {
         TODO("Not yet implemented")
     }
 

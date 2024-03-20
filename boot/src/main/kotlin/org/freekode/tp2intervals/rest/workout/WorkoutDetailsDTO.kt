@@ -1,11 +1,10 @@
 package org.freekode.tp2intervals.rest.workout
 
-import java.time.Duration
 import org.freekode.tp2intervals.domain.ExternalData
 
-class WorkoutIdentityDTO(
+class WorkoutDetailsDTO(
     val name: String,
-    val duration: Duration?,
+    val duration: Double?,
     val load: Int?,
     val externalData: ExternalData,
 )

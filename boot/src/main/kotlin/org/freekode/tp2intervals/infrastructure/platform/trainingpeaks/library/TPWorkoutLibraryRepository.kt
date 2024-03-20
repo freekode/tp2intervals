@@ -1,7 +1,7 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.library
 
 import org.freekode.tp2intervals.domain.ExternalData
-import org.freekode.tp2intervals.domain.plan.Plan
+import org.freekode.tp2intervals.domain.librarycontainer.LibraryContainer
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.TPToWorkoutConverter
 import org.freekode.tp2intervals.infrastructure.utils.Date
@@ -17,19 +17,25 @@ class TPWorkoutLibraryRepository(
     private val tpToWorkoutConverter: TPToWorkoutConverter,
 ) {
 
-    fun getLibraries(): List<Plan> {
+    @Cacheable(key = "'singleton'")
+    fun getAllWorkouts(): List<Workout> {
+        return getLibraries()
+            .flatMap { getLibraryWorkouts(it.externalData.trainingPeaksId!!) }
+    }
+
+    fun getLibraries(): List<LibraryContainer> {
         return trainingPeaksWorkoutLibraryApiClient.getWorkoutLibraries()
             .map { toPlan(it) }
     }
 
     @Cacheable
-    fun getLibraryItems(libraryId: String): List<Workout> {
+    fun getLibraryWorkouts(libraryId: String): List<Workout> {
         val items = trainingPeaksWorkoutLibraryApiClient.getWorkoutLibraryItems(libraryId)
         return items.map { tpToWorkoutConverter.toWorkout(it) }
     }
 
-    private fun toPlan(libraryDTO: TPWorkoutLibraryDTO): Plan {
-        return Plan(
+    private fun toPlan(libraryDTO: TPWorkoutLibraryDTO): LibraryContainer {
+        return LibraryContainer(
             libraryDTO.libraryName,
             Date.thisMonday(),
             false,

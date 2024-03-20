@@ -2,7 +2,7 @@ package org.freekode.tp2intervals.app.plan
 
 import org.freekode.tp2intervals.config.SpringIT
 import org.freekode.tp2intervals.domain.Platform
-import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.plan.TPPlanRepository
+import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.plan.TPPlanContainerRepository
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.TrainingPeaksWorkoutRepository
 import org.springframework.beans.factory.annotation.Autowired
 import spock.lang.Ignore
@@ -12,7 +12,7 @@ class LibraryServiceTest extends SpringIT {
     LibraryService planService
 
     @Autowired
-    TPPlanRepository tpPlanRepository
+    TPPlanContainerRepository tpPlanRepository
 
     @Autowired
     TrainingPeaksWorkoutRepository trainingPeaksWorkoutRepository
@@ -20,7 +20,7 @@ class LibraryServiceTest extends SpringIT {
     @Ignore
     def "should copy plan"() {
         given:
-        def plans = planService.getLibraries(Platform.TRAINING_PEAKS)
+        def plans = planService.getLibraryContainers(Platform.TRAINING_PEAKS)
         def plan = plans.stream()
                 .filter { it.externalData.trainingPeaksId == "124295" }
                 .findFirst()

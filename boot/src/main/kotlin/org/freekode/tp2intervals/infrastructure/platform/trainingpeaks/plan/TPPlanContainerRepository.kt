@@ -3,8 +3,8 @@ package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.plan
 import java.time.LocalDate
 import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.Platform
-import org.freekode.tp2intervals.domain.plan.Plan
-import org.freekode.tp2intervals.domain.plan.LibraryRepository
+import org.freekode.tp2intervals.domain.librarycontainer.LibraryContainer
+import org.freekode.tp2intervals.domain.librarycontainer.LibraryContainerRepository
 import org.freekode.tp2intervals.infrastructure.PlatformException
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.library.TPWorkoutLibraryRepository
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.user.TrainingPeaksUserRepository
@@ -14,19 +14,19 @@ import org.springframework.stereotype.Repository
 
 @CacheConfig(cacheNames = ["libraryItemsCache"])
 @Repository
-class TPPlanRepository(
+class TPPlanContainerRepository(
     private val trainingPeaksUserRepository: TrainingPeaksUserRepository,
     private val tpWorkoutLibraryRepository: TPWorkoutLibraryRepository,
     private val trainingPeaksPlanApiClient: TrainingPeaksPlanApiClient,
-) : LibraryRepository {
+) : LibraryContainerRepository {
     override fun platform() = Platform.TRAINING_PEAKS
 
-    override fun createPlan(name: String, startDate: LocalDate, isPlan: Boolean): Plan {
+    override fun createLibraryContainer(name: String, startDate: LocalDate, isPlan: Boolean): LibraryContainer {
         throw PlatformException(platform(), "Doesn't support plan creation")
     }
 
     @Cacheable(key = "'TRAINING_PEAKS'")
-    override fun getLibraryItems(): List<Plan> {
+    override fun getLibraryContainer(): List<LibraryContainer> {
         val plans = trainingPeaksPlanApiClient.getPlans()
             .map { toPlan(it) }
             .sortedBy { it.name }
@@ -57,8 +57,8 @@ class TPPlanRepository(
         trainingPeaksPlanApiClient.removePlan(request)
     }
 
-    private fun toPlan(planDto: TPPlanDto): Plan {
-        return Plan.planFromMonday(
+    private fun toPlan(planDto: TPPlanDto): LibraryContainer {
+        return LibraryContainer.planFromMonday(
             planDto.title,
             ExternalData.empty().withTrainingPeaks(planDto.planId)
         )

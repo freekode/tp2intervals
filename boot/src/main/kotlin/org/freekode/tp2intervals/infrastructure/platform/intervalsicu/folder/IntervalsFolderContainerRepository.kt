@@ -3,8 +3,8 @@ package org.freekode.tp2intervals.infrastructure.platform.intervalsicu.folder
 import java.time.LocalDate
 import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.Platform
-import org.freekode.tp2intervals.domain.plan.Plan
-import org.freekode.tp2intervals.domain.plan.LibraryRepository
+import org.freekode.tp2intervals.domain.librarycontainer.LibraryContainer
+import org.freekode.tp2intervals.domain.librarycontainer.LibraryContainerRepository
 import org.freekode.tp2intervals.infrastructure.Signature
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfigurationRepository
 import org.springframework.cache.annotation.CacheConfig
@@ -14,21 +14,21 @@ import org.springframework.stereotype.Repository
 
 @CacheConfig(cacheNames = ["libraryItemsCache"])
 @Repository
-class IntervalsFolderRepository(
+class IntervalsFolderContainerRepository(
     private val intervalsFolderApiClient: IntervalsFolderApiClient,
     private val intervalsConfigurationRepository: IntervalsConfigurationRepository
-) : LibraryRepository {
+) : LibraryContainerRepository {
 
     override fun platform() = Platform.INTERVALS
 
-    override fun createPlan(name: String, startDate: LocalDate, isPlan: Boolean): Plan {
+    override fun createLibraryContainer(name: String, startDate: LocalDate, isPlan: Boolean): LibraryContainer {
         val folderType = if (isPlan) "PLAN" else "FOLDER"
         val newFolder = createFolder(name, startDate, folderType)
         return toPlan(newFolder)
     }
 
     @Cacheable(key = "'INTERVALS'")
-    override fun getLibraryItems(): List<Plan> {
+    override fun getLibraryContainer(): List<LibraryContainer> {
         return intervalsFolderApiClient.getFolders(intervalsConfigurationRepository.getConfiguration().athleteId)
             .map { toPlan(it) }
     }
@@ -43,11 +43,11 @@ class IntervalsFolderRepository(
         )
     }
 
-    private fun toPlan(folderDTO: FolderDTO): Plan {
+    private fun toPlan(folderDTO: FolderDTO): LibraryContainer {
         return if (folderDTO.type == "PLAN") {
-            Plan(folderDTO.name, folderDTO.startDateLocal!!, true, ExternalData.empty().withIntervals(folderDTO.id))
+            LibraryContainer(folderDTO.name, folderDTO.startDateLocal!!, true, ExternalData.empty().withIntervals(folderDTO.id))
         } else {
-            Plan.planFromMonday(folderDTO.name, ExternalData.empty().withIntervals(folderDTO.id))
+            LibraryContainer.planFromMonday(folderDTO.name, ExternalData.empty().withIntervals(folderDTO.id))
         }
     }
 }

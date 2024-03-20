@@ -15,12 +15,13 @@ import { MatCheckboxModule } from "@angular/material/checkbox";
 import { WorkoutClient } from "infrastructure/workout.client";
 import { ConfigurationClient } from "infrastructure/configuration.client";
 import { NotificationService } from "infrastructure/notification.service";
-import { filter, finalize, map, Observable, tap } from "rxjs";
+import { debounceTime, filter, finalize, map, Observable, switchMap, tap } from "rxjs";
 import { LibraryClient } from "infrastructure/library-client.service";
 import { Platform } from "infrastructure/platform";
+import { MatAutocompleteModule } from "@angular/material/autocomplete";
 
 @Component({
-  selector: 'tp-copy-library-item',
+  selector: 'tr-copy-library-to-library',
   standalone: true,
   imports: [
     MatGridListModule,
@@ -37,22 +38,24 @@ import { Platform } from "infrastructure/platform";
     MatSnackBarModule,
     MatSelectModule,
     MatCheckboxModule,
-    AsyncPipe
+    AsyncPipe,
+    MatAutocompleteModule
   ],
-  templateUrl: './tp-copy-library-item.component.html',
-  styleUrl: './tp-copy-library-item.component.scss'
+  templateUrl: './tr-copy-library-to-library.component.html',
+  styleUrl: './tr-copy-library-to-library.component.scss'
 })
-export class TpCopyLibraryItemComponent implements OnInit {
+export class TrCopyLibraryToLibraryComponent implements OnInit {
 
   formGroup: FormGroup = this.formBuilder.group({
-    plan: [null, Validators.required],
-    newName: [null, Validators.required],
+    trWorkoutDetails: [null, [Validators.required, Validators.minLength(3)]],
+    intervalsPlan: [null, Validators.required],
   });
 
+  searchInProgress = false
   submitInProgress = false
-  loadingInProgress = false
 
-  plans: Observable<any[]>;
+  workouts: Observable<any[]>;
+  intervalsLibraryItem: Observable<{ name: any; value: any }[]>;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -64,37 +67,51 @@ export class TpCopyLibraryItemComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loadPlans();
+    this.subscribeOnWorkoutNameChange();
+  }
+
+  copyWorkoutSubmit() {
+    this.submitInProgress = true
+    let plan = this.formGroup.value.plan
+    let direction = Platform.DIRECTION_TR_INT
+    // this.planClient.copyLibrary(plan, 'sadf', direction).pipe(
+    //   finalize(() => this.submitInProgress = false)
+    // ).subscribe((response) => {
+    //   this.notificationService.success(
+    //     `Plan name: ${response.planName}\nCopied workouts: ${response.workouts}`)
+    // })
+  }
+
+  displayFn(workout): string {
+    return workout ? workout.name : '';
+  }
+
+  private loadPlans() {
     this.formGroup.disable()
-    this.loadingInProgress = true
-    this.plans = this.planClient.getLibraries(Platform.TRAINING_PEAKS.key).pipe(
+    this.intervalsLibraryItem = this.planClient.getLibraries(Platform.INTERVALS.key).pipe(
       map(plans => plans.map(plan => {
-          return {name: plan.name + (plan.isPlan ? ' (plan)' : ''), value: plan}
+          return {name: plan.name, value: plan}
         })
       ),
-      finalize( () => {
-        this.loadingInProgress = false
+      finalize(() => {
         this.formGroup.enable()
       })
     )
-    this.formGroup.controls['plan'].valueChanges.pipe(
-      filter(value => value!!)
-    ).subscribe(value => {
-      this.formGroup.patchValue({
-        newName: value.name
-      })
-    })
   }
 
-  copyPlanSubmit() {
-    this.submitInProgress = true
-    let plan = this.formGroup.value.plan
-    let newName = this.formGroup.value.newName
-    let direction = {sourcePlatform: 'TRAINING_PEAKS', targetPlatform: 'INTERVALS'}
-    this.planClient.copyLibrary(plan, newName, direction).pipe(
-      finalize(() => this.submitInProgress = false)
-    ).subscribe((response) => {
-      this.notificationService.success(
-        `Library name: ${response.planName}\nCopied workouts: ${response.workouts}`)
-    })
+  private subscribeOnWorkoutNameChange() {
+    this.workouts = this.formGroup.controls['trWorkoutDetails'].valueChanges.pipe(
+      debounceTime(500),
+      filter(() => this.formGroup.controls['trWorkoutDetails'].valid),
+      tap(() => {
+        this.searchInProgress = true
+      }),
+      switchMap(value => this.workoutClient.findWorkoutsByName(Platform.TRAINER_ROAD.key, value).pipe(
+        finalize(() => {
+          this.searchInProgress = false
+        })
+      ))
+    )
   }
 }

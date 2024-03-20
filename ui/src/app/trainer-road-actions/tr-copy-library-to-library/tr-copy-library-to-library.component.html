@@ -12,7 +12,7 @@
             <input type="text" matInput formControlName="trWorkoutDetails" [matAutocomplete]="workoutAutocomplete">
             <mat-autocomplete #workoutAutocomplete="matAutocomplete" [displayWith]="displayFn">
               @for (option of workouts | async; track option) {
-                <mat-option [value]="option">{{option.name}}</mat-option>
+                <mat-option [value]="option">{{ option.name }} (Duration: {{ option.duration || '0' }}h, Load: {{option.load}})</mat-option>
               }
               <mat-option disabled *ngIf="(workouts | async)?.length === 0 && !searchInProgress">
                 Not found

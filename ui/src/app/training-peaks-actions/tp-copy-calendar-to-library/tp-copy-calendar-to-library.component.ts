@@ -1,6 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { MatGridListModule } from "@angular/material/grid-list";
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
+import { formatDate } from "utils/date-formatter";
+import { WorkoutClient } from "infrastructure/workout.client";
+import { ConfigurationClient } from "infrastructure/configuration.client";
+import { NotificationService } from "infrastructure/notification.service";
+import { finalize } from "rxjs";
+import { MatGridListModule } from "@angular/material/grid-list";
 import { MatButtonModule } from "@angular/material/button";
 import { MatCardModule } from "@angular/material/card";
 import { MatFormFieldModule } from "@angular/material/form-field";
@@ -12,17 +17,10 @@ import { MatNativeDateModule } from "@angular/material/core";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { MatSelectModule } from "@angular/material/select";
 import { MatCheckboxModule } from "@angular/material/checkbox";
-import {
-  TpCopyLibraryItemComponent
-} from "app/training-peaks-actions/tp-copy-library-item/tp-copy-library-item.component";
-import { formatDate } from "utils/date-formatter";
-import { WorkoutClient } from "infrastructure/workout.client";
-import { ConfigurationClient } from "infrastructure/configuration.client";
-import { NotificationService } from "infrastructure/notification.service";
-import { finalize } from "rxjs";
+import { Platform } from "infrastructure/platform";
 
 @Component({
-  selector: 'tp-copy-planned-workouts',
+  selector: 'tp-copy-calendar-to-library',
   standalone: true,
   imports: [
     MatGridListModule,
@@ -39,28 +37,30 @@ import { finalize } from "rxjs";
     MatSnackBarModule,
     MatSelectModule,
     MatCheckboxModule,
-    TpCopyLibraryItemComponent
   ],
-  templateUrl: './tp-copy-planned-workouts.component.html',
-  styleUrl: './tp-copy-planned-workouts.component.scss'
+  templateUrl: './tp-copy-calendar-to-library.component.html',
+  styleUrl: './tp-copy-calendar-to-library.component.scss'
 })
-export class TpCopyPlannedWorkoutsComponent implements OnInit {
+export class TpCopyCalendarToLibraryComponent implements OnInit {
 
   formGroup: FormGroup = this.formBuilder.group({
+    name: [null, Validators.required],
     trainingTypes: [null, Validators.required],
     startDate: [null, Validators.required],
     endDate: [null, Validators.required],
-    skipSynced: [null, Validators.required],
+    isPlan: [null, Validators.required],
   });
-
-  trainingTypes: any[];
 
   inProgress = false
 
-  private readonly todayDate = formatDate(new Date())
-  private readonly tomorrowDate = formatDate(new Date(new Date().setDate(new Date().getDate() + 1)))
+  trainingTypes: any[];
+  readonly planType = [
+    {name: 'Plan', value: true},
+    {name: 'Folder', value: false}
+  ]
+
   private readonly selectedTrainingTypes = ['BIKE', 'VIRTUAL_BIKE', 'MTB', 'RUN'];
-  private readonly direction = {sourcePlatform: 'TRAINING_PEAKS', targetPlatform: 'INTERVALS'}
+  private readonly direction = Platform.DIRECTION_TP_INT
 
   constructor(
     private formBuilder: FormBuilder,
@@ -70,35 +70,33 @@ export class TpCopyPlannedWorkoutsComponent implements OnInit {
   ) {
   }
 
-  ngOnInit()
-    :
-    void {
+  ngOnInit(): void {
     this.configurationClient.getTrainingTypes().subscribe(types => {
       this.trainingTypes = types
       this.initFormValues();
     })
   }
 
-  submit() {
+  copyWorkoutsSubmit() {
     this.inProgress = true
-    let startDate = this.todayDate
-    let endDate = this.tomorrowDate
+    let name = this.formGroup.value.name
     let trainingTypes = this.formGroup.value.trainingTypes
-    let skipSynced = this.formGroup.value.skipSynced
-    this.workoutClient.copyPlannedWorkouts(startDate, endDate, trainingTypes, skipSynced, this.direction).pipe(
+    let startDate = formatDate(this.formGroup.value.startDate)
+    let endDate = formatDate(this.formGroup.value.endDate)
+    let isPlan = this.formGroup.value.isPlan
+    this.workoutClient.copyCalendarToLibrary(name, startDate, endDate, trainingTypes, this.direction, isPlan).pipe(
       finalize(() => this.inProgress = false)
     ).subscribe((response) => {
       this.notificationService.success(
-        `Planned: ${response.planned}\n Filtered out: ${response.filteredOut}\n From ${response.startDate} to ${response.endDate}`)
+        `Copied: ${response.copied}\n Filtered out: ${response.filteredOut}\n From ${response.startDate} to ${response.endDate}`)
     })
   }
 
   private initFormValues() {
     this.formGroup.patchValue({
+      name: 'My New Library',
       trainingTypes: this.selectedTrainingTypes,
-      startDate: this.todayDate,
-      endDate: this.tomorrowDate,
-      skipSynced: true
+      isPlan: true
     })
   }
 }

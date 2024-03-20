@@ -35,7 +35,6 @@ interface TrainerRoadApiClient {
         @PathVariable workoutId: String,
     ): TRWorkoutResponseDTO
 
-
     @PostMapping("/app/api/activities/{activityId}/exports/fit")
     fun exportFit(@PathVariable activityId: String): Resource
 }

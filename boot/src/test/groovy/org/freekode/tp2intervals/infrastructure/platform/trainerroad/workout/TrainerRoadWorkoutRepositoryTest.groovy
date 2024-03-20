@@ -27,7 +27,7 @@ class TrainerRoadWorkoutRepositoryTest extends SpringIT {
 
     def "should parse simple workout"() {
         when:
-        def workout = trainerRoadWorkoutRepository.getWorkout("obelisk")
+        def workout = trainerRoadWorkoutRepository.getWorkoutsFromLibrary("obelisk")
 
         then:
         workout.type == TrainingType.VIRTUAL_BIKE
@@ -46,7 +46,7 @@ class TrainerRoadWorkoutRepositoryTest extends SpringIT {
 
     def "should parse complex workout"() {
         when:
-        def workout = trainerRoadWorkoutRepository.getWorkout("abney")
+        def workout = trainerRoadWorkoutRepository.getWorkoutsFromLibrary("abney")
 
         then:
         workout.type == TrainingType.VIRTUAL_BIKE

@@ -16,13 +16,13 @@ import { finalize } from "rxjs";
 import { ActivityClient } from "infrastructure/activity.client";
 import { MatSelectModule } from "@angular/material/select";
 import { formatDate } from "utils/date-formatter";
-import { TrCopyWorkoutComponent } from "app/trainer-road-actions/tr-copy-workout/tr-copy-workout.component";
+import { TrCopyLibraryToLibraryComponent } from "app/trainer-road-actions/tr-copy-library-to-library/tr-copy-library-to-library.component";
 
 @Component({
   selector: 'app-trainer-road-actions',
   standalone: true,
   imports: [
-    TrCopyWorkoutComponent
+    TrCopyLibraryToLibraryComponent
   ],
   templateUrl: './trainer-road-actions.component.html',
   styleUrl: './trainer-road-actions.component.scss'
