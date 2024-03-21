@@ -12,13 +12,13 @@ export class LibraryClient {
   }
 
   getLibraries(platform: string): Observable<any[]> {
-    return this.httpClient.get(`/api/library`, {params: {platform}}).pipe(
+    return this.httpClient.get(`/api/library-container`, {params: {platform}}).pipe(
       map(plans => (<any[]>plans))
     )
   }
 
-  copyLibrary(plan, newName, platformDirection): Observable<any> {
+  copyLibraryContainer(libraryContainer, newName, platformDirection): Observable<any> {
     return this.httpClient
-      .post(`/api/library/copy`, {plan, newName, ...platformDirection})
+      .post(`/api/library-container/copy`, {libraryContainer, newName, ...platformDirection})
   }
 }

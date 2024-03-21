@@ -5,8 +5,6 @@ import org.freekode.tp2intervals.domain.config.AppConfigurationRepository
 import org.freekode.tp2intervals.domain.config.PlatformConfigurationRepository
 import org.freekode.tp2intervals.domain.config.UpdateConfigurationRequest
 import org.freekode.tp2intervals.infrastructure.CatchFeignException
-import org.freekode.tp2intervals.infrastructure.PlatformException
-import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfiguration
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.token.TrainingPeaksTokenApiClient
 import org.springframework.stereotype.Service
 
@@ -26,17 +24,17 @@ class TrainingPeaksConfigurationRepository(
         val currentConfig =
             appConfigurationRepository.getConfigurationByPrefix(TrainingPeaksConfiguration.CONFIG_PREFIX)
         val newConfig = currentConfig.configMap + updatedConfig
-        validateConfiguration(newConfig)
+        validateConfiguration(newConfig, true)
         appConfigurationRepository.updateConfig(UpdateConfigurationRequest(newConfig))
     }
 
     override fun isValid(): Boolean {
         try {
             val currentConfig =
-                appConfigurationRepository.getConfigurationByPrefix(IntervalsConfiguration.CONFIG_PREFIX)
-            validateConfiguration(currentConfig.configMap)
+                appConfigurationRepository.getConfigurationByPrefix(TrainingPeaksConfiguration.CONFIG_PREFIX)
+            validateConfiguration(currentConfig.configMap, false)
             return true
-        } catch (e: PlatformException) {
+        } catch (e: Exception) {
             return false
         }
     }
@@ -46,10 +44,11 @@ class TrainingPeaksConfigurationRepository(
         return TrainingPeaksConfiguration(config)
     }
 
-    private fun validateConfiguration(newConfig: Map<String, String>) {
+    private fun validateConfiguration(newConfig: Map<String, String>, ignoreEmpty: Boolean) {
         val tpConfig = TrainingPeaksConfiguration(newConfig)
-        if (tpConfig.canValidate()) {
-            trainingPeaksTokenApiClient.getToken(tpConfig.authCookie!!)
+        if (!tpConfig.canValidate() && ignoreEmpty) {
+            return
         }
+        trainingPeaksTokenApiClient.getToken(tpConfig.authCookie ?: "")
     }
 }

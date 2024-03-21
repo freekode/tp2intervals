@@ -1,11 +1,14 @@
 package org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout
 
 import java.time.LocalDate
+import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.Platform
-import org.freekode.tp2intervals.domain.plan.Plan
+import org.freekode.tp2intervals.domain.librarycontainer.LibraryContainer
 import org.freekode.tp2intervals.domain.workout.Workout
+import org.freekode.tp2intervals.domain.workout.WorkoutDetails
 import org.freekode.tp2intervals.domain.workout.WorkoutRepository
 import org.freekode.tp2intervals.infrastructure.PlatformException
+import org.freekode.tp2intervals.infrastructure.Signature
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsApiClient
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfigurationRepository
 import org.freekode.tp2intervals.infrastructure.utils.Date
@@ -23,38 +26,38 @@ class IntervalsWorkoutRepository(
 
     override fun platform() = Platform.INTERVALS
 
-    override fun planWorkout(workout: Workout) {
+    override fun saveWorkoutToCalendar(workout: Workout) {
         val workoutString = getWorkoutString(workout)
         val description = getDescription(workout, workoutString)
 
         val request = CreateEventRequestDTO(
-            workout.date.atStartOfDay().toString(),
-            workout.name,
-            workout.type.title,
+            (workout.date ?: LocalDate.now()).atStartOfDay().toString(),
+            workout.details.name,
+            workout.details.type.title,
             "WORKOUT",
             description
         )
         intervalsApiClient.createEvent(intervalsConfigurationRepository.getConfiguration().athleteId, request)
     }
 
-    override fun saveWorkoutToLibrary(workout: Workout, plan: Plan) {
+    override fun saveWorkoutToLibrary(libraryContainer: LibraryContainer, workout: Workout) {
         val workoutString = getWorkoutString(workout)
         val description = getDescription(workout, workoutString)
 
         val request = CreateWorkoutRequestDTO(
-            plan.externalData.intervalsId.toString(),
-            Date.daysDiff(plan.startDate, workout.date),
-            IntervalsTrainingTypeMapper.getByTrainingType(workout.type),
-            workout.name, // "Name is too long"
-            workout.duration?.seconds,
-            workout.load,
+            libraryContainer.externalData.intervalsId.toString(),
+            Date.daysDiff(libraryContainer.startDate, workout.date ?: LocalDate.now()),
+            IntervalsTrainingTypeMapper.getByTrainingType(workout.details.type),
+            workout.details.name, // "Name is too long"
+            workout.details.duration?.seconds,
+            workout.details.load,
             description,
             null,
         )
         intervalsApiClient.createWorkout(intervalsConfigurationRepository.getConfiguration().athleteId, request)
     }
 
-    override fun getPlannedWorkouts(startDate: LocalDate, endDate: LocalDate): List<Workout> {
+    override fun getWorkoutsFromCalendar(startDate: LocalDate, endDate: LocalDate): List<Workout> {
         val configuration = intervalsConfigurationRepository.getConfiguration()
         val events = intervalsApiClient.getEvents(
             configuration.athleteId,
@@ -69,14 +72,23 @@ class IntervalsWorkoutRepository(
             .mapNotNull { toWorkout(it) }
     }
 
-    override fun getWorkoutsFromLibrary(plan: Plan): List<Workout> {
+    override fun getWorkoutFromLibrary(externalData: ExternalData): Workout {
+        TODO("Not yet implemented")
+    }
+
+    override fun findWorkoutsFromLibraryByName(name: String): List<WorkoutDetails> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getWorkoutsFromLibrary(libraryContainer: LibraryContainer): List<Workout> {
         TODO("Not yet implemented")
     }
 
     private fun getDescription(workout: Workout, workoutString: String?): String {
-        var description = workout.description
+        var description = workout.details.description
             .orEmpty()
             .replace(unwantedStepRegex, "--")
+            .let { "$it\n- - - -\n${Signature.description}" }
         description += workoutString
             ?.let { "\n\n- - - -\n$it" }
             .orEmpty()

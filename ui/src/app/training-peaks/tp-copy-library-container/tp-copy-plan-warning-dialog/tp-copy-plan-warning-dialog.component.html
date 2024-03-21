@@ -1,0 +1,8 @@
+<h2 mat-dialog-title>Are you sure?</h2>
+<mat-dialog-content>
+  <p>Plan contains: {{data.workoutsAmount}} workouts. Are you sure you want to copy it?</p>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button [mat-dialog-close]="true" cdkFocusInitial>Ok</button>
+  <button mat-button [mat-dialog-close]="false">Cancel</button>
+</mat-dialog-actions>

@@ -1,0 +1,37 @@
+<div *ngIf="platformValid === undefined" class="page-content">
+  <mat-progress-bar mode="query"></mat-progress-bar>
+</div>
+
+<div *ngIf="platformValid === false" class="page-content">
+  Platform is not configured. Please set required parameters on Configuration page
+</div>
+
+<div *ngIf="platformValid" class="page-content">
+  <mat-accordion multi>
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Copy workout
+        </mat-panel-title>
+        <mat-panel-description>
+          Copy workout from TrainerRoad library to Intervals workout library
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <tr-copy-library-to-library></tr-copy-library-to-library>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Copy planned workouts to library
+        </mat-panel-title>
+        <mat-panel-description>
+          Copy workouts from TrainerRoad calendar to Intervals workout library
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <tr-copy-calendar-to-library></tr-copy-calendar-to-library>
+    </mat-expansion-panel>
+  </mat-accordion>
+</div>

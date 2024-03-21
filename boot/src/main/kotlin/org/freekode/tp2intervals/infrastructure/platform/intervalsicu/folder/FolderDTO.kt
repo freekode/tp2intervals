@@ -9,4 +9,5 @@ class FolderDTO(
     val name: String,
     @JsonProperty("start_date_local")
     val startDateLocal: LocalDate?,
+    val num_workouts: Int,
 )

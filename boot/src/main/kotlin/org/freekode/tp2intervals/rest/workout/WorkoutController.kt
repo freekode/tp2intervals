@@ -1,10 +1,9 @@
 package org.freekode.tp2intervals.rest.workout
 
-import java.time.LocalDate
-import org.freekode.tp2intervals.app.workout.CopyPlannedToLibraryWorkoutsRequest
-import org.freekode.tp2intervals.app.workout.CopyPlannedToLibraryResponse
-import org.freekode.tp2intervals.app.workout.CopyPlannedWorkoutsRequest
-import org.freekode.tp2intervals.app.workout.CopyPlannedWorkoutsResponse
+import org.freekode.tp2intervals.app.workout.CopyFromCalendarToCalendarRequest
+import org.freekode.tp2intervals.app.workout.CopyFromCalendarToLibraryRequest
+import org.freekode.tp2intervals.app.workout.CopyFromLibraryToLibraryRequest
+import org.freekode.tp2intervals.app.workout.CopyWorkoutsResponse
 import org.freekode.tp2intervals.app.workout.WorkoutService
 import org.freekode.tp2intervals.domain.Platform
 import org.springframework.web.bind.annotation.GetMapping
@@ -18,38 +17,31 @@ class WorkoutController(
     private val workoutService: WorkoutService
 ) {
 
-    @PostMapping("/api/workout/copy-planned")
-    fun copyPlannedWorkouts(@RequestBody requestDTO: CopyPlannedRequestDTO): CopyPlannedWorkoutsResponse {
-        return workoutService.copyPlannedWorkouts(
-            CopyPlannedWorkoutsRequest(
-                LocalDate.parse(requestDTO.startDate),
-                LocalDate.parse(requestDTO.endDate),
-                requestDTO.types,
-                requestDTO.skipSynced,
-                requestDTO.sourcePlatform,
-                requestDTO.targetPlatform
-            )
-        )
+    @PostMapping("/api/workout/copy-calendar-to-calendar")
+    fun copyWorkoutsFromCalendarToCalendar(@RequestBody request: CopyFromCalendarToCalendarRequest): CopyWorkoutsResponse {
+        return workoutService.copyWorkoutsFromCalendarToCalendar(request)
     }
 
-    @PostMapping("/api/workout/copy-planned-to-library")
-    fun copyPlannedWorkoutsToLibrary(@RequestBody requestDTO: CopyPlannedToLibraryRequestDTO): CopyPlannedToLibraryResponse {
-        return workoutService.copyPlannedWorkoutsToLibrary(
-            CopyPlannedToLibraryWorkoutsRequest(
-                requestDTO.name,
-                requestDTO.isPlan,
-                LocalDate.parse(requestDTO.startDate),
-                LocalDate.parse(requestDTO.endDate),
-                requestDTO.types,
-                requestDTO.sourcePlatform,
-                requestDTO.targetPlatform
-            )
-        )
+    @PostMapping("/api/workout/copy-calendar-to-library")
+    fun copyWorkoutsFromCalendarToLibrary(@RequestBody request: CopyFromCalendarToLibraryRequest): CopyWorkoutsResponse {
+        return workoutService.copyWorkoutsFromCalendarToLibrary(request)
+    }
+
+    @PostMapping("/api/workout/copy-library-to-library")
+    fun copyWorkoutFromLibraryToLibrary(@RequestBody request: CopyFromLibraryToLibraryRequest): CopyWorkoutsResponse {
+        return workoutService.copyWorkoutFromLibraryToLibrary(request)
     }
 
     @GetMapping("/api/workout/find")
-    fun findWorkoutsByName(@RequestParam platform: Platform, @RequestParam name: String): List<WorkoutDTO> {
+    fun findWorkoutsByName(@RequestParam platform: Platform, @RequestParam name: String): List<WorkoutDetailsDTO> {
         return workoutService.findWorkoutsByName(platform, name)
-            .map { WorkoutDTO(it.name, it.duration, it.load, it.externalData) }
+            .map { workoutDetails ->
+                WorkoutDetailsDTO(
+                    workoutDetails.name,
+                    workoutDetails.duration.toString().replace("PT", "").lowercase(),
+                    workoutDetails.load,
+                    workoutDetails.externalData
+                )
+            }
     }
 }

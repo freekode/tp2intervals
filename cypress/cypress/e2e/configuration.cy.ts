@@ -4,7 +4,7 @@ describe('configuration page', () => {
   })
 
   it('should display configuration page', () => {
-    cy.get('button#configuration').click()
+    cy.get('button#config').click()
 
     cy.get('input[formControlName="intervals.api-key"]').should('exist')
     cy.get('input[formControlName="intervals.athlete-id"]').should('exist')

@@ -11,14 +11,19 @@ export class WorkoutClient {
   constructor(private httpClient: HttpClient) {
   }
 
-  copyPlannedWorkouts(startDate, endDate, types, skipSynced, platformDirection): Observable<any> {
+  copyCalendarToCalendar(startDate, endDate, types, skipSynced, platformDirection): Observable<any> {
     return this.httpClient
-      .post(`/api/workout/copy-planned`, {startDate, endDate, types, skipSynced, ...platformDirection})
+      .post(`/api/workout/copy-calendar-to-calendar`, {startDate, endDate, types, skipSynced, ...platformDirection})
   }
 
-  copyPlannedWorkoutsToLibrary(name, startDate, endDate, types, platformDirection, isPlan): Observable<any> {
+  copyCalendarToLibrary(name, startDate, endDate, types, platformDirection, isPlan): Observable<any> {
     return this.httpClient
-      .post(`/api/workout/copy-planned-to-library`, {name, startDate, endDate, types, ...platformDirection, isPlan})
+      .post(`/api/workout/copy-calendar-to-library`, {name, startDate, endDate, types, ...platformDirection, isPlan})
+  }
+
+  copyLibraryToLibrary(workoutDetails, targetLibraryContainer, platformDirection): Observable<any> {
+    return this.httpClient
+      .post(`/api/workout/copy-library-to-library`, {workoutDetails, targetLibraryContainer, ...platformDirection})
   }
 
   findWorkoutsByName(platform, name): Observable<any> {

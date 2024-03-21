@@ -10,14 +10,14 @@ import org.springframework.stereotype.Component
 @Component
 class TRActivityMapper {
     fun mapToActivity(dto: TrainerRoadActivityDTO, resource: Resource): Activity {
-        val type = if (dto.CompletedRide.IsOutside) TrainingType.BIKE else TrainingType.VIRTUAL_BIKE
+        val type = if (dto.completedRide!!.IsOutside) TrainingType.BIKE else TrainingType.VIRTUAL_BIKE
 
         return Activity(
-            dto.CompletedRide.Date,
+            dto.completedRide.Date,
             type,
-            dto.CompletedRide.Name,
-            Duration.ofSeconds(dto.CompletedRide.Duration),
-            dto.CompletedRide.Tss,
+            dto.completedRide.Name,
+            Duration.ofSeconds(dto.completedRide.Duration),
+            dto.completedRide.Tss,
             Base64.toString(resource)
         )
     }
