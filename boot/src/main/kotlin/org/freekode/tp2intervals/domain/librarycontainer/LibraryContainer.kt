@@ -9,11 +9,12 @@ data class LibraryContainer(
     val name: String,
     val startDate: LocalDate,
     val isPlan: Boolean,
+    val workoutsAmount: Int,
     val externalData: ExternalData,
 ) : Serializable {
     companion object {
-        fun planFromMonday(name: String, externalData: ExternalData): LibraryContainer {
-            return LibraryContainer(name, Date.thisMonday(), true, externalData)
+        fun planFromMonday(name: String, workoutsAmount: Int, externalData: ExternalData): LibraryContainer {
+            return LibraryContainer(name, Date.thisMonday(), true, workoutsAmount, externalData)
         }
     }
 }

@@ -4,7 +4,9 @@
       <mat-label>TrainingPeaks plan</mat-label>
       <mat-select formControlName="plan" panelWidth="null">
         @for (item of plans | async; track item) {
-          <mat-option [value]="item.value">{{ item.name }}</mat-option>
+          <mat-option [value]="item.value">
+            {{ item.name }} ({{ item.value.isPlan ? 'plan, ' : '' }}workouts: {{ item.value.workoutsAmount }})
+          </mat-option>
         }
       </mat-select>
       <mat-progress-bar *ngIf="loadingInProgress" mode="query"></mat-progress-bar>

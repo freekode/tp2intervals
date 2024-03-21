@@ -21,7 +21,9 @@
       <mat-label>Intervals library</mat-label>
       <mat-select formControlName="intervalsPlan" panelWidth="null">
         @for (item of intervalsLibraryItem | async; track item) {
-          <mat-option [value]="item.value">{{ item.name }}</mat-option>
+          <mat-option [value]="item.value">
+            {{ item.name }} ({{ item.value.isPlan ? 'plan, ' : '' }}workouts: {{ item.value.workoutsAmount }})
+          </mat-option>
         }
       </mat-select>
     </mat-form-field>

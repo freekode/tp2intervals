@@ -67,7 +67,7 @@ export class TpCopyLibraryContainerComponent implements OnInit {
     this.loadingInProgress = true
     this.plans = this.planClient.getLibraries(Platform.TRAINING_PEAKS.key).pipe(
       map(plans => plans.map(plan => {
-          return {name: plan.name + (plan.isPlan ? ' (plan)' : ''), value: plan}
+          return {name: plan.name, value: plan}
         })
       ),
       finalize( () => {

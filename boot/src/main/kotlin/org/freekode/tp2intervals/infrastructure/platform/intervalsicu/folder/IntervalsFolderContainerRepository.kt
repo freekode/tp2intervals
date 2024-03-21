@@ -45,9 +45,19 @@ class IntervalsFolderContainerRepository(
 
     private fun toPlan(folderDTO: FolderDTO): LibraryContainer {
         return if (folderDTO.type == "PLAN") {
-            LibraryContainer(folderDTO.name, folderDTO.startDateLocal!!, true, ExternalData.empty().withIntervals(folderDTO.id))
+            LibraryContainer(
+                folderDTO.name,
+                folderDTO.startDateLocal!!,
+                true,
+                folderDTO.num_workouts,
+                ExternalData.empty().withIntervals(folderDTO.id)
+            )
         } else {
-            LibraryContainer.planFromMonday(folderDTO.name, ExternalData.empty().withIntervals(folderDTO.id))
+            LibraryContainer.planFromMonday(
+                folderDTO.name,
+                folderDTO.num_workouts,
+                ExternalData.empty().withIntervals(folderDTO.id)
+            )
         }
     }
 }

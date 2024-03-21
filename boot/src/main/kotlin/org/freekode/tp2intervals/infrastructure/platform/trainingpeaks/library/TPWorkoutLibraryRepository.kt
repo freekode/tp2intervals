@@ -39,6 +39,7 @@ class TPWorkoutLibraryRepository(
             libraryDTO.libraryName,
             Date.thisMonday(),
             false,
+            0,
             ExternalData.empty().withTrainingPeaks(libraryDTO.exerciseLibraryId)
         )
     }

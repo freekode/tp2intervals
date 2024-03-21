@@ -28,7 +28,7 @@ class TPPlanContainerRepository(
     @Cacheable(key = "'TRAINING_PEAKS'")
     override fun getLibraryContainer(): List<LibraryContainer> {
         val plans = trainingPeaksPlanApiClient.getPlans()
-            .map { toPlan(it) }
+            .map { toLibraryContainer(it) }
             .sortedBy { it.name }
         val libraries = tpWorkoutLibraryRepository.getLibraries()
             .sortedBy { it.name }
@@ -57,9 +57,10 @@ class TPPlanContainerRepository(
         trainingPeaksPlanApiClient.removePlan(request)
     }
 
-    private fun toPlan(planDto: TPPlanDto): LibraryContainer {
+    private fun toLibraryContainer(planDto: TPPlanDto): LibraryContainer {
         return LibraryContainer.planFromMonday(
             planDto.title,
+            planDto.workoutCount,
             ExternalData.empty().withTrainingPeaks(planDto.planId)
         )
     }
