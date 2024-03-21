@@ -27,22 +27,24 @@
     </mat-form-field>
   </div>
 
-  <button
-    mat-raised-button
-    color="primary"
-    type="submit"
-    [disabled]="formGroup.invalid || formGroup.disabled"
-  >
-    Confirm
-  </button>
-  <button
-    mat-raised-button
-    color="primary"
-    style="margin-left: 10px"
-    type="reset"
-  >
-    Reset
-  </button>
+  <div class="action-button-section">
+    <button
+      mat-raised-button
+      color="primary"
+      type="submit"
+      [disabled]="formGroup.invalid || formGroup.disabled || submitInProgress"
+    >
+      Confirm
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      style="margin-left: 10px"
+      type="reset"
+    >
+      Reset
+    </button>
+  </div>
 
   <mat-progress-bar *ngIf="submitInProgress" mode="query"></mat-progress-bar>
 </form>

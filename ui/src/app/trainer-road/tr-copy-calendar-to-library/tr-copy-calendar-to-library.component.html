@@ -31,23 +31,24 @@
     </mat-form-field>
   </div>
 
-  <button
-    mat-raised-button
-    color="primary"
-    class="action-button"
-    type="submit"
-    [disabled]="formGroup.invalid"
-  >
-    Confirm
-  </button>
-  <button
-    mat-raised-button
-    color="primary"
-    style="margin-left: 10px"
-    type="reset"
-  >
-    Reset
-  </button>
+  <div class="action-button-section">
+    <button
+      mat-raised-button
+      color="primary"
+      type="submit"
+      [disabled]="formGroup.invalid || inProgress"
+    >
+      Confirm
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      style="margin-left: 10px"
+      type="reset"
+    >
+      Reset
+    </button>
+  </div>
 
   <mat-progress-bar *ngIf="inProgress" mode="query"></mat-progress-bar>
 </form>

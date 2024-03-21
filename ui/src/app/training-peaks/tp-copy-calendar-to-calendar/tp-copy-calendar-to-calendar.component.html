@@ -30,13 +30,16 @@
     </mat-checkbox>
   </div>
 
-  <button
-    mat-raised-button
-    color="primary"
-    [disabled]="formGroup.invalid"
-  >
-    Confirm
-  </button>
+  <div class="action-button-section">
+    <button
+      mat-raised-button
+      color="primary"
+      type="submit"
+      [disabled]="formGroup.invalid || inProgress"
+    >
+      Confirm
+    </button>
+  </div>
 
   <mat-progress-bar *ngIf="inProgress" mode="query"></mat-progress-bar>
 </form>

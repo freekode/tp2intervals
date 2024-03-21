@@ -46,15 +46,14 @@
     </mat-form-field>
   }
 
-  <div class="row">
+  <div class="row action-button-section">
     <button
       mat-raised-button
       color="primary"
-      class="action-button"
       type="submit"
-      [disabled]="formGroup.invalid"
+      [disabled]="formGroup.invalid || inProgress"
     >
-      Save
+      Confirm
     </button>
   </div>
 
