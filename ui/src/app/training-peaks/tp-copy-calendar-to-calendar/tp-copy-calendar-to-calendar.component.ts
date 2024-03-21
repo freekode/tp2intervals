@@ -14,7 +14,7 @@ import { MatSelectModule } from "@angular/material/select";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import {
   TpCopyLibraryContainerComponent
-} from "app/training-peaks-actions/tp-copy-library-container/tp-copy-library-container.component";
+} from "app/training-peaks/tp-copy-library-container/tp-copy-library-container.component";
 import { formatDate } from "utils/date-formatter";
 import { WorkoutClient } from "infrastructure/workout.client";
 import { ConfigurationClient } from "infrastructure/configuration.client";
@@ -29,7 +29,6 @@ import { Platform } from "infrastructure/platform";
     MatGridListModule,
     FormsModule,
     MatButtonModule,
-    MatCardModule,
     MatFormFieldModule,
     MatInputModule,
     ReactiveFormsModule,

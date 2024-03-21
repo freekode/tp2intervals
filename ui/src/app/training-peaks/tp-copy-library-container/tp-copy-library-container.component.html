@@ -1,0 +1,31 @@
+<form [formGroup]="formGroup" novalidate (ngSubmit)="copyPlanSubmit()">
+  <div class="row">
+      <mat-form-field class="form-field">
+        <mat-label>TrainingPeaks plan</mat-label>
+        <mat-select formControlName="plan" panelWidth="null">
+          @for (item of plans | async; track item) {
+            <mat-option [value]="item.value">{{ item.name }}</mat-option>
+          }
+        </mat-select>
+        <mat-progress-bar *ngIf="loadingInProgress" mode="query"></mat-progress-bar>
+      </mat-form-field>
+  </div>
+
+  <div class="row">
+      <mat-form-field class="form-field">
+        <mat-label>Intervals name</mat-label>
+        <input matInput placeholder="My New Library" formControlName="newName">
+      </mat-form-field>
+  </div>
+
+  <button
+    mat-raised-button
+    color="primary"
+    type="submit"
+    [disabled]="formGroup.invalid || formGroup.disabled"
+  >
+    Confirm
+  </button>
+
+  <mat-progress-bar *ngIf="submitInProgress" mode="query"></mat-progress-bar>
+</form>

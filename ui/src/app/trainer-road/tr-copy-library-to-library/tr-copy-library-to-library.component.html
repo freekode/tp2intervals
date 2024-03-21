@@ -1,0 +1,40 @@
+<form [formGroup]="formGroup" novalidate (ngSubmit)="copyWorkoutSubmit()">
+
+  <div class="row">
+    <mat-form-field class="form-field">
+      <mat-label>TrainerRoad workout name</mat-label>
+      <input type="text" matInput formControlName="trWorkoutDetails" [matAutocomplete]="workoutAutocomplete">
+      <mat-autocomplete #workoutAutocomplete="matAutocomplete" [displayWith]="getWorkoutDetailsName">
+        @for (option of workouts | async; track option) {
+          <mat-option [value]="option">{{ getWorkoutDetailsName(option) }}</mat-option>
+        }
+        <mat-option disabled *ngIf="(workouts | async)?.length === 0 && !searchInProgress">
+          Not found
+        </mat-option>
+      </mat-autocomplete>
+      <mat-progress-bar *ngIf="searchInProgress" mode="query"></mat-progress-bar>
+    </mat-form-field>
+  </div>
+
+  <div class="row">
+    <mat-form-field class="form-field">
+      <mat-label>Intervals library</mat-label>
+      <mat-select formControlName="intervalsPlan" panelWidth="null">
+        @for (item of intervalsLibraryItem | async; track item) {
+          <mat-option [value]="item.value">{{ item.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <button
+    mat-raised-button
+    color="primary"
+    type="submit"
+    [disabled]="formGroup.invalid || formGroup.disabled"
+  >
+    Confirm
+  </button>
+
+  <mat-progress-bar *ngIf="submitInProgress" mode="query"></mat-progress-bar>
+</form>

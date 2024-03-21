@@ -27,10 +27,6 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   flex: 1;
 }
 
-mat-card {
-  margin-bottom: 20px;
-}
-
 .form-field {
   width: 400px
 }
@@ -39,6 +35,13 @@ mat-card {
   margin-right: 10px;
 }
 
+.page-content {
+  padding: 10px;
+}
+
+mat-card {
+  margin-bottom: 20px;
+}
 mat-card-header {
   padding-bottom: 10px !important;
 }

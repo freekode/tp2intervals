@@ -26,7 +26,6 @@ import { Platform } from "infrastructure/platform";
     MatGridListModule,
     FormsModule,
     MatButtonModule,
-    MatCardModule,
     MatFormFieldModule,
     MatInputModule,
     ReactiveFormsModule,

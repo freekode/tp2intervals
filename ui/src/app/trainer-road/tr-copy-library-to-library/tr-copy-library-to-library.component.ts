@@ -27,7 +27,6 @@ import { MatAutocompleteModule } from "@angular/material/autocomplete";
     MatGridListModule,
     FormsModule,
     MatButtonModule,
-    MatCardModule,
     MatFormFieldModule,
     MatInputModule,
     ReactiveFormsModule,

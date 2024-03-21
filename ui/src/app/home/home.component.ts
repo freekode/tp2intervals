@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
-import { TrainingPeaksActionsComponent } from "app/training-peaks-actions/training-peaks-actions.component";
-import { TrainerRoadActionsComponent } from "app/trainer-road-actions/trainer-road-actions.component";
+import { TrainingPeaksComponent } from "app/training-peaks/training-peaks.component";
+import { TrainerRoadComponent } from "app/trainer-road/trainer-road.component";
 
 @Component({
   selector: 'app-home',
   standalone: true,
   imports: [
-    TrainingPeaksActionsComponent,
-    TrainerRoadActionsComponent
+    TrainingPeaksComponent,
+    TrainerRoadComponent
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'

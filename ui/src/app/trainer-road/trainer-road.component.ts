@@ -16,17 +16,31 @@ import { finalize } from "rxjs";
 import { ActivityClient } from "infrastructure/activity.client";
 import { MatSelectModule } from "@angular/material/select";
 import { formatDate } from "utils/date-formatter";
-import { TrCopyLibraryToLibraryComponent } from "app/trainer-road-actions/tr-copy-library-to-library/tr-copy-library-to-library.component";
+import { TrCopyLibraryToLibraryComponent } from "app/trainer-road/tr-copy-library-to-library/tr-copy-library-to-library.component";
+import { MatExpansionModule } from "@angular/material/expansion";
+import {
+  TpCopyCalendarToCalendarComponent
+} from "app/training-peaks/tp-copy-calendar-to-calendar/tp-copy-calendar-to-calendar.component";
+import {
+  TpCopyCalendarToLibraryComponent
+} from "app/training-peaks/tp-copy-calendar-to-library/tp-copy-calendar-to-library.component";
+import {
+  TpCopyLibraryContainerComponent
+} from "app/training-peaks/tp-copy-library-container/tp-copy-library-container.component";
 
 @Component({
-  selector: 'app-trainer-road-actions',
+  selector: 'app-trainer-road',
   standalone: true,
   imports: [
-    TrCopyLibraryToLibraryComponent
+    TrCopyLibraryToLibraryComponent,
+    MatExpansionModule,
+    TpCopyCalendarToCalendarComponent,
+    TpCopyCalendarToLibraryComponent,
+    TpCopyLibraryContainerComponent
   ],
-  templateUrl: './trainer-road-actions.component.html',
-  styleUrl: './trainer-road-actions.component.scss'
+  templateUrl: './trainer-road.component.html',
+  styleUrl: './trainer-road.component.scss'
 })
-export class TrainerRoadActionsComponent {
+export class TrainerRoadComponent {
 
 }

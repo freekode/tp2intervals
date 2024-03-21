@@ -1,0 +1,42 @@
+<form [formGroup]="formGroup" novalidate (ngSubmit)="submit()">
+  <div class="row">
+    <mat-form-field class="form-field">
+      <mat-label>Workout Types</mat-label>
+      <mat-select formControlName="trainingTypes" multiple>
+        @for (type of trainingTypes; track type) {
+          <mat-option [value]="type.value">{{ type.title }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div class="row">
+    <mat-form-field class="form-field">
+      <mat-label>Date Range</mat-label>
+      <mat-date-range-input
+        [disabled]="true"
+        [rangePicker]="copyPlanDatePicker">
+        <input matStartDate placeholder="Start Date" formControlName="startDate">
+        <input matEndDate placeholder="End Date" formControlName="endDate">
+      </mat-date-range-input>
+      <mat-datepicker-toggle matIconSuffix [for]="copyPlanDatePicker"></mat-datepicker-toggle>
+      <mat-date-range-picker #copyPlanDatePicker></mat-date-range-picker>
+    </mat-form-field>
+  </div>
+
+  <div class="row">
+    <mat-checkbox formControlName="skipSynced" style="padding-bottom: 10px">
+      Skip already synced workouts
+    </mat-checkbox>
+  </div>
+
+  <button
+    mat-raised-button
+    color="primary"
+    [disabled]="formGroup.invalid"
+  >
+    Confirm
+  </button>
+
+  <mat-progress-bar *ngIf="inProgress" mode="query"></mat-progress-bar>
+</form>
