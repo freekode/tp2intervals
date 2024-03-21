@@ -9,18 +9,20 @@ import org.freekode.tp2intervals.domain.workout.WorkoutRepository
 import org.freekode.tp2intervals.infrastructure.PlatformException
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.TRFindWorkoutsRequestDTO
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.TrainerRoadApiClient
+import org.freekode.tp2intervals.infrastructure.platform.trainerroad.member.TRUsernameRepository
 import org.springframework.stereotype.Repository
 
 
 @Repository
 class TrainerRoadWorkoutRepository(
+    private val trUsernameRepository: TRUsernameRepository,
+    private val trInternalWorkoutRepository: TRInternalWorkoutRepository,
     private val trainerRoadApiClient: TrainerRoadApiClient,
 ) : WorkoutRepository {
     override fun platform() = Platform.TRAINER_ROAD
 
     override fun getWorkoutFromLibrary(workoutDetails: WorkoutDetails): Workout {
-        val trWorkout = trainerRoadApiClient.getWorkoutDetails(workoutDetails.externalData.trainerRoadId!!)
-        return TRWorkoutConverter().toWorkout(trWorkout)
+        return trInternalWorkoutRepository.getWorkout(workoutDetails.externalData.trainerRoadId!!)
     }
 
     override fun findWorkoutsFromLibraryByName(name: String): List<WorkoutDetails> {
@@ -29,7 +31,13 @@ class TrainerRoadWorkoutRepository(
     }
 
     override fun getWorkoutsFromCalendar(startDate: LocalDate, endDate: LocalDate): List<Workout> {
-        TODO("Not yet implemented")
+        val username = trUsernameRepository.getUsername()
+        return trainerRoadApiClient.getActivities(username, startDate.toString(), endDate.toString())
+            .filter { it.activity != null }
+            .map { activity ->
+                trInternalWorkoutRepository.getWorkout(activity.activity!!.id)
+                    .withDate(activity.date.toLocalDate())
+            }
     }
 
     override fun saveWorkoutToCalendar(workout: Workout) {

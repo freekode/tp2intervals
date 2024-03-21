@@ -27,6 +27,9 @@ import {
 import {
   TpCopyLibraryContainerComponent
 } from "app/training-peaks/tp-copy-library-container/tp-copy-library-container.component";
+import {
+  TrCopyCalendarToLibraryComponent
+} from "app/trainer-road/tr-copy-calendar-to-library/tr-copy-calendar-to-library.component";
 
 @Component({
   selector: 'app-trainer-road',
@@ -36,7 +39,8 @@ import {
     MatExpansionModule,
     TpCopyCalendarToCalendarComponent,
     TpCopyCalendarToLibraryComponent,
-    TpCopyLibraryContainerComponent
+    TpCopyLibraryContainerComponent,
+    TrCopyCalendarToLibraryComponent
   ],
   templateUrl: './trainer-road.component.html',
   styleUrl: './trainer-road.component.scss'

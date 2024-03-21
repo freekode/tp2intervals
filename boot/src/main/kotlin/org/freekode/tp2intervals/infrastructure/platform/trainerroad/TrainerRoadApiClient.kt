@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.RequestBody
     configuration = [TrainerRoadApiClientConfig::class]
 )
 interface TrainerRoadApiClient {
-    @GetMapping("/app/api/calendar/activities/{memberId}?startDate={startDate}&endDate={endDate}")
+    @GetMapping("/app/api/calendar/activities/{username}?startDate={startDate}&endDate={endDate}")
     fun getActivities(
-        @PathVariable("memberId") memberId: String,
+        @PathVariable("username") username: String,
         @PathVariable("startDate") startDate: String,
         @PathVariable("endDate") endDate: String,
     ): List<TrainerRoadActivityDTO>
@@ -31,7 +31,7 @@ interface TrainerRoadApiClient {
     ): TRFindWorkoutsResponseDTO
 
     @GetMapping("/app/api/workoutdetails/{workoutId}")
-    fun getWorkoutDetails(
+    fun getWorkout(
         @PathVariable workoutId: String,
     ): TRWorkoutResponseDTO
 

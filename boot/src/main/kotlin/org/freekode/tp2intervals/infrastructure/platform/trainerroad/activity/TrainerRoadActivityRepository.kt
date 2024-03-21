@@ -17,14 +17,14 @@ class TrainerRoadActivityRepository(
     override fun platform() = Platform.TRAINER_ROAD
 
     override fun getActivities(startDate: LocalDate, endDate: LocalDate): List<Activity> {
-        val memberId = trUsernameRepository.getUsername()
-        val activities = trainerRoadApiClient.getActivities(memberId, startDate.toString(), endDate.toString())
+        val username = trUsernameRepository.getUsername()
+        val activities = trainerRoadApiClient.getActivities(username, startDate.toString(), endDate.toString())
         return activities
             .map { mapToActivity(it) }
     }
 
     private fun mapToActivity(it: TrainerRoadActivityDTO): Activity {
-        val resource = trainerRoadApiClient.exportFit(it.CompletedRide.WorkoutRecordId.toString())
+        val resource = trainerRoadApiClient.exportFit(it.completedRide!!.WorkoutRecordId.toString())
         return trActivityMapper.mapToActivity(it, resource)
     }
 

@@ -1,7 +1,6 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainerroad.workout
 
 import java.time.Duration
-import java.time.LocalDate
 import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.workout.Workout

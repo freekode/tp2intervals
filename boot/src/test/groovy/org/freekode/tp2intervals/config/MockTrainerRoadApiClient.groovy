@@ -41,7 +41,7 @@ class MockTrainerRoadApiClient implements TrainerRoadApiClient {
     }
 
     @Override
-    TRWorkoutResponseDTO getWorkoutDetails(String workoutId) {
+    TRWorkoutResponseDTO getWorkout(String workoutId) {
         switch (workoutId) {
             case "abney": return trWorkoutResponseDTOAbney
             case "obelisk": return trWorkoutResponseDTOObelisk
