@@ -60,9 +60,7 @@ class WorkoutService(
         val sourceWorkoutRepository = workoutRepositoryMap[request.sourcePlatform]!!
         val targetWorkoutRepository = workoutRepositoryMap[request.targetPlatform]!!
 
-        val workoutDetails =
-            WorkoutDetails(TrainingType.UNKNOWN, "unknown", null, null, null, request.workoutDetails.externalData)
-        val workout = sourceWorkoutRepository.getWorkoutFromLibrary(workoutDetails)
+        val workout = sourceWorkoutRepository.getWorkoutFromLibrary(request.workoutDetails.externalData)
         targetWorkoutRepository.saveWorkoutToLibrary(request.targetLibraryContainer, workout)
         return CopyWorkoutsResponse(1, 0, LocalDate.now(), LocalDate.now())
     }

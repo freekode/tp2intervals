@@ -1,6 +1,7 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainerroad.workout
 
 import org.freekode.tp2intervals.config.SpringIT
+import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.config.AppConfigurationRepository
 import org.freekode.tp2intervals.domain.config.UpdateConfigurationRequest
@@ -27,10 +28,11 @@ class TrainerRoadWorkoutRepositoryTest extends SpringIT {
 
     def "should parse simple workout"() {
         when:
-        def workout = trainerRoadWorkoutRepository.getWorkoutsFromLibrary("obelisk")
+        def data = new ExternalData(null, null, "obelisk")
+        def workout = trainerRoadWorkoutRepository.getWorkoutFromLibrary(data)
 
         then:
-        workout.type == TrainingType.VIRTUAL_BIKE
+        workout.details.type == TrainingType.VIRTUAL_BIKE
         workout.structure.target == WorkoutStructure.TargetUnit.FTP_PERCENTAGE
         workout.structure.steps.size() == 11
         (workout.structure.steps[0] as WorkoutSingleStep).duration == Duration.ofMinutes(5)
@@ -46,10 +48,11 @@ class TrainerRoadWorkoutRepositoryTest extends SpringIT {
 
     def "should parse complex workout"() {
         when:
-        def workout = trainerRoadWorkoutRepository.getWorkoutsFromLibrary("abney")
+        def data = new ExternalData(null, null, "abney")
+        def workout = trainerRoadWorkoutRepository.getWorkoutFromLibrary(data)
 
         then:
-        workout.type == TrainingType.VIRTUAL_BIKE
+        workout.details.type == TrainingType.VIRTUAL_BIKE
         workout.structure.target == WorkoutStructure.TargetUnit.FTP_PERCENTAGE
         workout.structure.steps.size() == 23
         (workout.structure.steps[0] as WorkoutSingleStep).duration == Duration.ofMinutes(4)

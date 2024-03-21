@@ -1,6 +1,7 @@
 package org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout
 
 import java.time.LocalDate
+import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.librarycontainer.LibraryContainer
 import org.freekode.tp2intervals.domain.workout.Workout
@@ -71,7 +72,7 @@ class IntervalsWorkoutRepository(
             .mapNotNull { toWorkout(it) }
     }
 
-    override fun getWorkoutFromLibrary(workoutDetails: WorkoutDetails): Workout {
+    override fun getWorkoutFromLibrary(externalData: ExternalData): Workout {
         TODO("Not yet implemented")
     }
 

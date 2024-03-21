@@ -5,6 +5,7 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.temporal.TemporalAdjusters
+import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.librarycontainer.LibraryContainer
 import org.freekode.tp2intervals.domain.workout.Workout
@@ -73,9 +74,9 @@ class TrainingPeaksWorkoutRepository(
             .filter { it.name.contains(name) }
     }
 
-    override fun getWorkoutFromLibrary(workoutDetails: WorkoutDetails): Workout {
+    override fun getWorkoutFromLibrary(externalData: ExternalData): Workout {
         return tpWorkoutLibraryRepository.getAllWorkouts()
-            .find { it.details == workoutDetails }!!
+            .find { it.details.externalData == externalData }!!
     }
 
     override fun saveWorkoutToLibrary(libraryContainer: LibraryContainer, workout: Workout) {

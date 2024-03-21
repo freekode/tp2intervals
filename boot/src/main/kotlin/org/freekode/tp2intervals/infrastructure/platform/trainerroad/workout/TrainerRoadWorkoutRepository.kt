@@ -1,6 +1,7 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainerroad.workout
 
 import java.time.LocalDate
+import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.librarycontainer.LibraryContainer
 import org.freekode.tp2intervals.domain.workout.Workout
@@ -21,8 +22,8 @@ class TrainerRoadWorkoutRepository(
 ) : WorkoutRepository {
     override fun platform() = Platform.TRAINER_ROAD
 
-    override fun getWorkoutFromLibrary(workoutDetails: WorkoutDetails): Workout {
-        return trInternalWorkoutRepository.getWorkout(workoutDetails.externalData.trainerRoadId!!)
+    override fun getWorkoutFromLibrary(externalData: ExternalData): Workout {
+        return trInternalWorkoutRepository.getWorkout(externalData.trainerRoadId!!)
     }
 
     override fun findWorkoutsFromLibraryByName(name: String): List<WorkoutDetails> {

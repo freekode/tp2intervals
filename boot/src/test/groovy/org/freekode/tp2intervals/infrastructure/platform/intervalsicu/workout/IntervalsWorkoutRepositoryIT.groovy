@@ -37,7 +37,7 @@ class IntervalsWorkoutRepositoryIT extends SpringIT {
         workouts.size() == 5
 
         def workout = findWorkoutWithName("hr test", workouts)
-        workout.type == TrainingType.BIKE
+        workout.details.type == TrainingType.BIKE
         workout.structure.target == WorkoutStructure.TargetUnit.LTHR_PERCENTAGE
         workout.structure.steps.size() == 5
         // 10m 50-70% LTHR
@@ -67,7 +67,7 @@ class IntervalsWorkoutRepositoryIT extends SpringIT {
         workouts.size() == 5
 
         def workout = findWorkoutWithName("power test", workouts)
-        workout.type == TrainingType.BIKE
+        workout.details.type == TrainingType.BIKE
         workout.structure.target == WorkoutStructure.TargetUnit.FTP_PERCENTAGE
         workout.structure.steps.size() == 5
         // 10m 10-30%
@@ -101,7 +101,7 @@ class IntervalsWorkoutRepositoryIT extends SpringIT {
         workouts.size() == 5
 
         def workout = findWorkoutWithName("pace test", workouts)
-        workout.type == TrainingType.RUN
+        workout.details.type == TrainingType.RUN
         workout.structure.target == WorkoutStructure.TargetUnit.PACE_PERCENTAGE
         workout.structure.steps.size() == 4
         // 10m 70% Pace
@@ -127,7 +127,7 @@ class IntervalsWorkoutRepositoryIT extends SpringIT {
         workouts.size() == 5
 
         def workout = findWorkoutWithName("virtual ride test", workouts)
-        workout.type == TrainingType.VIRTUAL_BIKE
+        workout.details.type == TrainingType.VIRTUAL_BIKE
         workout.structure.target == WorkoutStructure.TargetUnit.FTP_PERCENTAGE
         workout.structure.steps.size() == 5
     }
@@ -140,13 +140,13 @@ class IntervalsWorkoutRepositoryIT extends SpringIT {
         workouts.size() == 5
 
         def workout = findWorkoutWithName("other test", workouts)
-        workout.type == TrainingType.UNKNOWN
-        workout.duration == Duration.ofMinutes(45)
-        workout.load == 32
+        workout.details.type == TrainingType.UNKNOWN
+        workout.details.duration == Duration.ofMinutes(45)
+        workout.details.load == 32
         workout.structure == null
     }
 
     def findWorkoutWithName(name, List<Workout> workouts) {
-        workouts.stream().filter { it.getName() == name }.findFirst().orElseThrow()
+        workouts.stream().filter { it.details.getName() == name }.findFirst().orElseThrow()
     }
 }
