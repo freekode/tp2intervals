@@ -46,7 +46,7 @@ import { MatAutocompleteModule } from "@angular/material/autocomplete";
 export class TrCopyLibraryToLibraryComponent implements OnInit {
 
   formGroup: FormGroup = this.formBuilder.group({
-    trWorkoutDetails: [null, [Validators.required, Validators.minLength(3)]],
+    trWorkoutDetails: [null, [Validators.required, Validators.minLength(4)]],
     intervalsPlan: [null, Validators.required],
   });
 

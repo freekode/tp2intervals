@@ -6,7 +6,6 @@ import org.freekode.tp2intervals.domain.config.PlatformConfigurationRepository
 import org.freekode.tp2intervals.domain.config.UpdateConfigurationRequest
 import org.freekode.tp2intervals.infrastructure.CatchFeignException
 import org.freekode.tp2intervals.infrastructure.PlatformException
-import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfiguration
 import org.springframework.stereotype.Service
 
 @Service
@@ -25,17 +24,17 @@ class TrainerRoadConfigurationRepository(
         val currentConfig =
             appConfigurationRepository.getConfigurationByPrefix(TrainerRoadConfiguration.CONFIG_PREFIX)
         val newConfig = currentConfig.configMap + updatedConfig
-        validateConfiguration(newConfig)
+        validateConfiguration(newConfig, true)
         appConfigurationRepository.updateConfig(UpdateConfigurationRequest(newConfig))
     }
 
     override fun isValid(): Boolean {
         try {
             val currentConfig =
-                appConfigurationRepository.getConfigurationByPrefix(IntervalsConfiguration.CONFIG_PREFIX)
-            validateConfiguration(currentConfig.configMap)
+                appConfigurationRepository.getConfigurationByPrefix(TrainerRoadConfiguration.CONFIG_PREFIX)
+            validateConfiguration(currentConfig.configMap, false)
             return true
-        } catch (e: PlatformException) {
+        } catch (e: Exception) {
             return false
         }
     }
@@ -45,12 +44,12 @@ class TrainerRoadConfigurationRepository(
         return TrainerRoadConfiguration(config)
     }
 
-    private fun validateConfiguration(newConfig: Map<String, String>) {
+    private fun validateConfiguration(newConfig: Map<String, String>, ignoreEmpty: Boolean) {
         val config = TrainerRoadConfiguration(newConfig)
-        if (!config.canValidate()) {
+        if (!config.canValidate() && ignoreEmpty) {
             return
         }
-        if (trainerRoadValidationApiClient.getMember(config.authCookie!!).MemberId == -1L) {
+        if (trainerRoadValidationApiClient.getMember(config.authCookie ?: "").MemberId == -1L) {
             throw PlatformException(Platform.TRAINER_ROAD, "Access Denied")
         }
     }

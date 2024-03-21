@@ -9,6 +9,10 @@ import {
   TpCopyCalendarToLibraryComponent
 } from "app/training-peaks/tp-copy-calendar-to-library/tp-copy-calendar-to-library.component";
 import { MatExpansionModule } from "@angular/material/expansion";
+import { NgIf } from "@angular/common";
+import { ConfigurationClient } from "infrastructure/configuration.client";
+import { Platform } from "infrastructure/platform";
+import { MatProgressBarModule } from "@angular/material/progress-bar";
 
 @Component({
   selector: 'app-training-peaks',
@@ -18,15 +22,25 @@ import { MatExpansionModule } from "@angular/material/expansion";
     TpCopyLibraryContainerComponent,
     TpCopyCalendarToLibraryComponent,
     MatExpansionModule,
+    NgIf,
+    MatProgressBarModule,
   ],
   templateUrl: './training-peaks.component.html',
   styleUrl: './training-peaks.component.scss'
 })
 export class TrainingPeaksComponent implements OnInit {
+  platformValid: any = undefined;
 
-  constructor() {
+  private readonly platform = Platform.TRAINING_PEAKS
+
+  constructor(
+    private configurationClient: ConfigurationClient
+  ) {
   }
 
   ngOnInit(): void {
+    this.configurationClient.isValid(this.platform.key).subscribe(value => {
+      this.platformValid = value
+    })
   }
 }
