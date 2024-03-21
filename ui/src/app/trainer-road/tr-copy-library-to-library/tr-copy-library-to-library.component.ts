@@ -89,7 +89,7 @@ export class TrCopyLibraryToLibraryComponent implements OnInit {
     if (!details) {
       return ''
     }
-    return `${ details.name } (Duration: ${ details.duration || '0' }h, Load: ${details.load})`
+    return `${ details.name } (Duration: ${ details.duration || '0' }, Load: ${details.load})`
   }
 
   private loadPlans() {

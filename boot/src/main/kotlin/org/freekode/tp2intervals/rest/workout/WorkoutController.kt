@@ -38,7 +38,7 @@ class WorkoutController(
             .map { workoutDetails ->
                 WorkoutDetailsDTO(
                     workoutDetails.name,
-                    workoutDetails.duration?.let { it.toMinutes().toDouble() / 60 },
+                    workoutDetails.duration.toString().replace("PT", "").lowercase(),
                     workoutDetails.load,
                     workoutDetails.externalData
                 )
