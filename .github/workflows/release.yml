@@ -26,7 +26,15 @@ jobs:
       dry-run: false
 
   electron:
+    strategy:
+      matrix:
+        environment:
+          - os: ubuntu-latest
+          - os: macos-latest
+          - os: windows-latest
+
     uses: ./.github/workflows/build-electron.yml
     secrets: inherit
     with:
+      os: ${{ matrix.environment.os }}
       dry-run: false
