@@ -1,4 +1,4 @@
-[![Build main branch](https://github.com/freekode/tp2intervals/actions/workflows/main-branch.yml/badge.svg)](https://github.com/freekode/tp2intervals/actions/workflows/main-branch.yml)
+[![Build branches](https://github.com/freekode/tp2intervals/actions/workflows/branch.yml/badge.svg)](https://github.com/freekode/tp2intervals/actions/workflows/branch.yml)
 [![release](https://img.shields.io/github/release/freekode/tp2intervals)](https://github.com/freekode/tp2intervals/releases/latest)
 
 # Third Party to Intervals.icu

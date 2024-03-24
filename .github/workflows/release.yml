@@ -26,6 +26,8 @@ jobs:
       dry-run: false
 
   electron:
+    needs:
+      - jar
     strategy:
       matrix:
         environment:
