@@ -25,6 +25,19 @@ class WorkoutToIntervalsConverter {
         return request
     }
 
+    fun createEventRequestDTO(workout: Workout): CreateEventRequestDTO {
+        val workoutString = getWorkoutString(workout)
+        val description = getDescription(workout, workoutString)
+        return CreateEventRequestDTO(
+            (workout.date ?: LocalDate.now()).atStartOfDay().toString(),
+            workout.details.name,
+            workout.details.type.title,
+            "WORKOUT",
+            description
+        )
+    }
+
+
     private fun getDescription(workout: Workout, workoutString: String?): String {
         var description = workout.details.description
             .orEmpty()
