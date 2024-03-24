@@ -35,7 +35,7 @@ class StructureToIntervalsConverter(
     private fun getStepString(workoutStep: WorkoutSingleStep): String {
         val targetUnitStr = targetTypeMap[structure.target]
             ?: throw IllegalArgumentException("cant find target unit ${structure.target}")
-        val title: String = workoutStep.title
+        val title: String? = workoutStep.name
         val duration: Duration = workoutStep.duration
         val min: Int = workoutStep.target.start
         val max: Int = workoutStep.target.end
@@ -51,6 +51,6 @@ class StructureToIntervalsConverter(
             ""
         }
 
-        return "- ${title.replace("\\", "/")} $durationStr $min-$max${targetUnitStr} $rpmStr"
+        return "- ${title.orEmpty().replace("\\", "/")} $durationStr $min-$max${targetUnitStr} $rpmStr"
     }
 }

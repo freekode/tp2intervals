@@ -3,7 +3,7 @@ package org.freekode.tp2intervals.domain.workout.structure
 import java.time.Duration
 
 class WorkoutSingleStep(
-    val title: String,
+    val name: String?,
     val duration: Duration,
     val target: WorkoutStepTarget,
     val cadence: WorkoutStepTarget?,
@@ -39,7 +39,7 @@ class WorkoutSingleStep(
             remainedSeconds -= rampStepDuration
         }
 
-        return WorkoutMultiStep(title, 1, steps)
+        return WorkoutMultiStep(name, 1, steps)
     }
 
     private fun getRampSteps(stepDuration: Int): Int {

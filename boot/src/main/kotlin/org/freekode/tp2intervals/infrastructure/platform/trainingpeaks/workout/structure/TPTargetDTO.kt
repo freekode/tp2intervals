@@ -1,8 +1,8 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure
 
 class TPTargetDTO(
-    var minValue: Int,
-    var maxValue: Int,
+    var minValue: Int?,
+    var maxValue: Int?,
     var unit: String?,
 ) {
     companion object {

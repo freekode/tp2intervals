@@ -1,14 +1,15 @@
 package org.freekode.tp2intervals.rest.workout
 
-import java.time.LocalDate
-import org.freekode.tp2intervals.app.workout.CopyWorkoutsRequest
-import org.freekode.tp2intervals.app.workout.PlanWorkoutsRequest
+import org.freekode.tp2intervals.app.workout.CopyFromCalendarToCalendarRequest
+import org.freekode.tp2intervals.app.workout.CopyFromCalendarToLibraryRequest
+import org.freekode.tp2intervals.app.workout.CopyFromLibraryToLibraryRequest
+import org.freekode.tp2intervals.app.workout.CopyWorkoutsResponse
 import org.freekode.tp2intervals.app.workout.WorkoutService
 import org.freekode.tp2intervals.domain.Platform
-import org.freekode.tp2intervals.domain.plan.PlanType
-import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -16,52 +17,31 @@ class WorkoutController(
     private val workoutService: WorkoutService
 ) {
 
-    @PostMapping("/api/workout/plan/{sourcePlatform}/{targetPlatform}")
-    fun planWorkout(
-        @RequestBody requestDTO: WorkoutsBaseRequestDTO,
-        @PathVariable sourcePlatform: Platform,
-        @PathVariable targetPlatform: Platform
-    ): PlanWorkoutsResponseDTO {
-        val response = workoutService.planWorkouts(
-            PlanWorkoutsRequest(
-                LocalDate.parse(requestDTO.startDate),
-                LocalDate.parse(requestDTO.endDate),
-                requestDTO.types,
-                requestDTO.skipSynced,
-                sourcePlatform,
-                targetPlatform
-            )
-        )
-        return PlanWorkoutsResponseDTO(
-            response.planned,
-            response.filteredOut,
-            response.startDate.toString(),
-            response.endDate.toString()
-        )
+    @PostMapping("/api/workout/copy-calendar-to-calendar")
+    fun copyWorkoutsFromCalendarToCalendar(@RequestBody request: CopyFromCalendarToCalendarRequest): CopyWorkoutsResponse {
+        return workoutService.copyWorkoutsFromCalendarToCalendar(request)
     }
 
-    @PostMapping("/api/workout/copy/{sourcePlatform}/{targetPlatform}")
-    fun copyWorkouts(
-        @RequestBody requestDTO: CopyWorkoutsRequestDTO,
-        @PathVariable sourcePlatform: Platform,
-        @PathVariable targetPlatform: Platform
-    ): CopyWorkoutsResponseDTO {
-        val response = workoutService.copyWorkouts(
-            CopyWorkoutsRequest(
-                requestDTO.name,
-                PlanType.PLAN,
-                LocalDate.parse(requestDTO.startDate),
-                LocalDate.parse(requestDTO.endDate),
-                requestDTO.types,
-                sourcePlatform, targetPlatform
-            )
-        )
-        return CopyWorkoutsResponseDTO(
-            response.copied,
-            response.filteredOut,
-            response.startDate.toString(),
-            response.endDate.toString()
-        )
+    @PostMapping("/api/workout/copy-calendar-to-library")
+    fun copyWorkoutsFromCalendarToLibrary(@RequestBody request: CopyFromCalendarToLibraryRequest): CopyWorkoutsResponse {
+        return workoutService.copyWorkoutsFromCalendarToLibrary(request)
     }
 
+    @PostMapping("/api/workout/copy-library-to-library")
+    fun copyWorkoutFromLibraryToLibrary(@RequestBody request: CopyFromLibraryToLibraryRequest): CopyWorkoutsResponse {
+        return workoutService.copyWorkoutFromLibraryToLibrary(request)
+    }
+
+    @GetMapping("/api/workout/find")
+    fun findWorkoutsByName(@RequestParam platform: Platform, @RequestParam name: String): List<WorkoutDetailsDTO> {
+        return workoutService.findWorkoutsByName(platform, name)
+            .map { workoutDetails ->
+                WorkoutDetailsDTO(
+                    workoutDetails.name,
+                    workoutDetails.duration.toString().replace("PT", "").lowercase(),
+                    workoutDetails.load,
+                    workoutDetails.externalData
+                )
+            }
+    }
 }

@@ -10,6 +10,7 @@ import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.folder.Fol
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.CreateEventRequestDTO
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.CreateWorkoutRequestDTO
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsEventDTO
+import org.jetbrains.annotations.NotNull
 import org.springframework.web.multipart.MultipartFile
 
 class MockIntervalsApiClient implements IntervalsApiClient {
@@ -21,18 +22,7 @@ class MockIntervalsApiClient implements IntervalsApiClient {
     }
 
     @Override
-    Map<String, Object> getAthlete(String athleteId) {
-        return null
-    }
-
-    @Override
-    FolderDTO createFolder(String athleteId, CreateFolderRequestDTO createFolderRequestDTO) {
-        return null
-    }
-
-    @Override
-    void createWorkout(String athleteId, CreateWorkoutRequestDTO createWorkoutRequestDTO) {
-
+    void createWorkouts(String athleteId, List<CreateWorkoutRequestDTO> requests) {
     }
 
     @Override

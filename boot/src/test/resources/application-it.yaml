@@ -1,3 +1,6 @@
+dev:
+  mock: true
+
 logging:
   level:
     org.freekode.tp2intervals.infrastructure: debug

@@ -1,5 +1,6 @@
 package org.freekode.tp2intervals.app.confguration
 
+import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.config.AppConfiguration
 import org.freekode.tp2intervals.domain.config.AppConfigurationRepository
 import org.freekode.tp2intervals.domain.config.PlatformConfigurationRepository
@@ -12,12 +13,18 @@ class ConfigurationService(
     private val platformConfigurationRepositories: List<PlatformConfigurationRepository>,
     private val appConfigurationRepository: AppConfigurationRepository
 ) {
+    private val repositoryMap = platformConfigurationRepositories.associateBy { it.platform() }
+
     fun getConfiguration(key: String): String? = appConfigurationRepository.getConfiguration(key)
 
     fun getConfigurations(): AppConfiguration = appConfigurationRepository.getConfigurations()
 
     fun updateConfiguration(request: UpdateConfigurationRequest): List<String> {
         return platformConfigurationRepositories.mapNotNull { updateConfiguration(request, it) }
+    }
+
+    fun isValid(platform: Platform): Boolean {
+        return repositoryMap[platform]!!.isValid()
     }
 
     private fun updateConfiguration(

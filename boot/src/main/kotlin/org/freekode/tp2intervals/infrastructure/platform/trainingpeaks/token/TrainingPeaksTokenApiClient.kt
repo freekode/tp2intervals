@@ -1,6 +1,5 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.token
 
-import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.user.TrainingPeaksUserTokenDTO
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.http.HttpHeaders
 import org.springframework.web.bind.annotation.GetMapping

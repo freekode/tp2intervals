@@ -1,12 +1,14 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainerroad
 
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.activity.TrainerRoadActivityDTO
+import org.freekode.tp2intervals.infrastructure.platform.trainerroad.workout.TRFindWorkoutsResponseDTO
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.workout.TRWorkoutResponseDTO
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.core.io.Resource
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
 
 @FeignClient(
     value = "TrainerRoadApiClient",
@@ -16,18 +18,20 @@ import org.springframework.web.bind.annotation.PostMapping
     configuration = [TrainerRoadApiClientConfig::class]
 )
 interface TrainerRoadApiClient {
-    @GetMapping("/app/api/member-info")
-    fun getMember(): TrainerRoadMemberDTO
-
-    @GetMapping("/app/api/calendar/activities/{memberId}?startDate={startDate}&endDate={endDate}")
+    @GetMapping("/app/api/calendar/activities/{username}?startDate={startDate}&endDate={endDate}")
     fun getActivities(
-        @PathVariable("memberId") memberId: String,
+        @PathVariable("username") username: String,
         @PathVariable("startDate") startDate: String,
         @PathVariable("endDate") endDate: String,
     ): List<TrainerRoadActivityDTO>
 
-    @GetMapping("app/api/workoutdetails/{workoutId}")
-    fun getWorkoutDetails(
+    @GetMapping("/app/api/workouts")
+    fun findWorkouts(
+        @RequestBody requestDTO: TRFindWorkoutsRequestDTO,
+    ): TRFindWorkoutsResponseDTO
+
+    @GetMapping("/app/api/workoutdetails/{workoutId}")
+    fun getWorkout(
         @PathVariable workoutId: String,
     ): TRWorkoutResponseDTO
 

@@ -24,8 +24,19 @@ class TrainingPeaksConfigurationRepository(
         val currentConfig =
             appConfigurationRepository.getConfigurationByPrefix(TrainingPeaksConfiguration.CONFIG_PREFIX)
         val newConfig = currentConfig.configMap + updatedConfig
-        validateConfiguration(newConfig)
+        validateConfiguration(newConfig, true)
         appConfigurationRepository.updateConfig(UpdateConfigurationRequest(newConfig))
+    }
+
+    override fun isValid(): Boolean {
+        try {
+            val currentConfig =
+                appConfigurationRepository.getConfigurationByPrefix(TrainingPeaksConfiguration.CONFIG_PREFIX)
+            validateConfiguration(currentConfig.configMap, false)
+            return true
+        } catch (e: Exception) {
+            return false
+        }
     }
 
     fun getConfiguration(): TrainingPeaksConfiguration {
@@ -33,10 +44,11 @@ class TrainingPeaksConfigurationRepository(
         return TrainingPeaksConfiguration(config)
     }
 
-    private fun validateConfiguration(newConfig: Map<String, String>) {
+    private fun validateConfiguration(newConfig: Map<String, String>, ignoreEmpty: Boolean) {
         val tpConfig = TrainingPeaksConfiguration(newConfig)
-        if (tpConfig.canValidate()) {
-            trainingPeaksTokenApiClient.getToken(tpConfig.authCookie!!)
+        if (!tpConfig.canValidate() && ignoreEmpty) {
+            return
         }
+        trainingPeaksTokenApiClient.getToken(tpConfig.authCookie ?: "")
     }
 }

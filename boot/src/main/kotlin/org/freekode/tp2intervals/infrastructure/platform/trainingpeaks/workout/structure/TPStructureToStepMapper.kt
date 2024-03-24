@@ -32,7 +32,7 @@ class TPStructureToStepMapper(
 
     private fun mapMultiStep(TPStructureStepDTO: TPStructureStepDTO): WorkoutStep {
         return WorkoutMultiStep(
-            "Reps",
+            null,
             TPStructureStepDTO.length.reps().toInt(),
             TPStructureStepDTO.steps.map { mapSingleStep(it) },
         )
@@ -41,15 +41,15 @@ class TPStructureToStepMapper(
     private fun getMainTarget(targets: List<TPTargetDTO>): WorkoutStepTarget {
         val target = targets.first { it.unit == null }
         return WorkoutStepTarget(
-            target.minValue,
-            target.maxValue
+            target.minValue ?: target.maxValue!!,
+            target.maxValue ?: target.minValue!!,
         )
     }
 
     private fun getSecondaryTarget(targets: List<TPTargetDTO>): WorkoutStepTarget? {
         return targets
             .firstOrNull { it.unit != null }
-            ?.let { WorkoutStepTarget(it.minValue, it.maxValue) }
+            ?.let { WorkoutStepTarget(it.minValue!!, it.maxValue!!) }
     }
 
 }

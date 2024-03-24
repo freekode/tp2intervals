@@ -1,0 +1,50 @@
+<div *ngIf="platformValid === undefined" class="page-content">
+  <mat-progress-bar mode="query"></mat-progress-bar>
+</div>
+
+<div *ngIf="platformValid === false" class="page-content">
+  Platform is not configured. Please set required parameters on Configuration page
+</div>
+
+<div *ngIf="platformValid" class="page-content">
+  <mat-accordion multi>
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Sync planned workouts
+        </mat-panel-title>
+        <mat-panel-description>
+          Copy workouts from Intervals calendar to TrainingPeaks calendar
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <tp-copy-calendar-to-calendar></tp-copy-calendar-to-calendar>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Copy plan
+        </mat-panel-title>
+        <mat-panel-description>
+          Copy whole training plan from TrainingPeaks to Intervals
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <tp-copy-library-container></tp-copy-library-container>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Copy planned workouts to library
+        </mat-panel-title>
+        <mat-panel-description>
+          Copy workouts from TrainingPeaks calendar to Intervals workout library
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <tp-copy-calendar-to-library></tp-copy-calendar-to-library>
+    </mat-expansion-panel>
+  </mat-accordion>
+</div>

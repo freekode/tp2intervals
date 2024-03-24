@@ -1,4 +1,3 @@
-<mat-progress-bar *ngIf="inProgress" mode="query"></mat-progress-bar>
 
 <form [formGroup]="formGroup" novalidate (ngSubmit)="onSubmit()">
   <mat-form-field class="full-width">
@@ -16,6 +15,15 @@
     <input matInput placeholder="Production_tpAuth=very_long_string" formControlName="training-peaks.auth-cookie">
     @if (formGroup.controls['training-peaks.auth-cookie'].errors?.['pattern']) {
       <mat-error>Must be in format Production_tpAuth=...</mat-error>
+    }
+  </mat-form-field>
+
+
+  <mat-form-field class="full-width">
+    <mat-label>TrainerRoad Auth Cookie</mat-label>
+    <input matInput placeholder="TrainerRoadAuth=very_long_string" formControlName="trainer-road.auth-cookie">
+    @if (formGroup.controls['trainer-road.auth-cookie'].errors?.['pattern']) {
+      <mat-error>Must be in format TrainerRoadAuth=...</mat-error>
     }
   </mat-form-field>
 
@@ -37,23 +45,17 @@
       <input matInput type="number" placeholder="5.0" formControlName="intervals.pace-range">
     </mat-form-field>
   }
-  <!--          <mat-form-field class="full-width">-->
-  <!--            <mat-label>TrainerRoad Auth Cookie</mat-label>-->
-  <!--            <input matInput placeholder="TrainerRoadAuth=very_long_string" formControlName="trainer-road.auth-cookie">-->
-  <!--            @if (formGroup.controls['trainer-road.auth-cookie'].errors?.['pattern']) {-->
-  <!--              <mat-error>Must be in format TrainerRoadAuth=...</mat-error>-->
-  <!--            }-->
-  <!--          </mat-form-field>-->
 
-
-  <div class="row">
+  <div class="row action-button-section">
     <button
       mat-raised-button
       color="primary"
       type="submit"
-      [disabled]="formGroup.invalid"
+      [disabled]="formGroup.invalid || inProgress"
     >
-      Save
+      Confirm
     </button>
   </div>
+
+  <mat-progress-bar *ngIf="inProgress" mode="query"></mat-progress-bar>
 </form>

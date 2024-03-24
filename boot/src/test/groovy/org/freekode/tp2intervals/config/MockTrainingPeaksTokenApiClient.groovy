@@ -2,7 +2,7 @@ package org.freekode.tp2intervals.config
 
 
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.token.TrainingPeaksTokenApiClient
-import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.user.TrainingPeaksUserTokenDTO
+import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.token.TrainingPeaksUserTokenDTO
 
 class MockTrainingPeaksTokenApiClient implements TrainingPeaksTokenApiClient {
 

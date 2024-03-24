@@ -5,3 +5,17 @@
 .github-link {
   padding-top: 7px;
 }
+
+.progress-bar {
+  height: 4px
+}
+
+main {
+  //align-items: center;
+  display: flex;
+  flex-direction: column;
+  width: 75%;
+  max-width: 1080px;
+  margin: auto;
+  padding: 16px;
+}

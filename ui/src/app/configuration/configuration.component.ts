@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ConfigService } from 'infrastructure/config.service';
 import { ConfigData } from 'infrastructure/config-data';
 import { Router } from '@angular/router';
 import { MatCardModule } from "@angular/material/card";
@@ -13,6 +12,7 @@ import { NgIf } from "@angular/common";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { NotificationService } from "infrastructure/notification.service";
 import { MatCheckboxChange, MatCheckboxModule } from "@angular/material/checkbox";
+import { ConfigurationClient } from "infrastructure/client/configuration.client";
 
 @Component({
   selector: 'app-configuration',
@@ -39,14 +39,14 @@ export class ConfigurationComponent implements OnInit {
   constructor(
     private router: Router,
     private formBuilder: FormBuilder,
-    private configurationService: ConfigService,
+    private configClient: ConfigurationClient,
     private notificationService: NotificationService
   ) {
   }
 
   ngOnInit(): void {
     this.inProgress = true
-    this.configurationService.getConfig().subscribe(config => {
+    this.configClient.getConfig().subscribe(config => {
       this.formGroup.patchValue(config.config);
       this.inProgress = false
     });
@@ -56,7 +56,7 @@ export class ConfigurationComponent implements OnInit {
     this.inProgress = true
     let newConfiguration = new ConfigData(this.formGroup.getRawValue());
 
-    this.configurationService.updateConfig(newConfiguration).pipe(
+    this.configClient.updateConfig(newConfiguration).pipe(
       finalize(() => this.inProgress = false)
     ).subscribe(() => {
       this.notificationService.success('Configuration successfully saved')

@@ -1,8 +1,6 @@
 package org.freekode.tp2intervals.infrastructure.platform.intervalsicu
 
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.activity.CreateActivityResponseDTO
-import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.folder.CreateFolderRequestDTO
-import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.folder.FolderDTO
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.CreateEventRequestDTO
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.CreateWorkoutRequestDTO
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsEventDTO
@@ -24,19 +22,10 @@ import org.springframework.web.multipart.MultipartFile
 )
 interface IntervalsApiClient {
 
-    @GetMapping("/api/v1/athlete/{athleteId}")
-    fun getAthlete(@PathVariable("athleteId") athleteId: String): Map<String, Any>
-
-    @PostMapping("/api/v1/athlete/{athleteId}/folders")
-    fun createFolder(
-        @PathVariable("athleteId") athleteId: String,
-        @RequestBody createFolderRequestDTO: CreateFolderRequestDTO
-    ): FolderDTO
-
-    @PostMapping("/api/v1/athlete/{athleteId}/workouts")
-    fun createWorkout(
-        @PathVariable("athleteId") athleteId: String,
-        @RequestBody createWorkoutRequestDTO: CreateWorkoutRequestDTO
+    @PostMapping("/api/v1/athlete/{athleteId}/workouts/bulk")
+    fun createWorkouts(
+        @PathVariable athleteId: String,
+        @RequestBody requests: List<CreateWorkoutRequestDTO>
     )
 
     @PostMapping("/api/v1/athlete/{athleteId}/events")

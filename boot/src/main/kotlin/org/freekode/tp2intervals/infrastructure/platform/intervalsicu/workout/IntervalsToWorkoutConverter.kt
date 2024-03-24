@@ -2,7 +2,7 @@ package org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout
 
 import java.time.Duration
 import org.freekode.tp2intervals.domain.workout.Workout
-import org.freekode.tp2intervals.domain.workout.WorkoutExternalData
+import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutMultiStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutSingleStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStep
@@ -24,7 +24,7 @@ class IntervalsToWorkoutConverter(
             eventDTO.mapDuration(),
             eventDTO.icu_training_load,
             workoutsStructure,
-            WorkoutExternalData.empty().withIntervals(eventDTO.id.toString())
+            ExternalData.empty().withIntervals(eventDTO.id.toString())
         )
     }
 
@@ -51,7 +51,7 @@ class IntervalsToWorkoutConverter(
         stepDTO: IntervalsWorkoutDocDTO.WorkoutStepDTO
     ): WorkoutMultiStep {
         return WorkoutMultiStep(
-            stepDTO.text ?: "Step",
+            stepDTO.text,
             stepDTO.reps!!,
             stepDTO.steps!!.map { mapSingleStep(it) }
         )
@@ -69,7 +69,7 @@ class IntervalsToWorkoutConverter(
         val cadenceTarget = stepDTO.cadence?.let { targetMapper.toCadenceTarget(it) }
 
         return WorkoutSingleStep(
-            stepDTO.text ?: "Step",
+            stepDTO.text,
             stepDTO.duration?.let { Duration.ofSeconds(it) } ?: Duration.ofMinutes(10),
             mainTarget,
             cadenceTarget,

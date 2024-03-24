@@ -1,14 +1,14 @@
 import { Router } from "@angular/router";
 import { map } from "rxjs";
-import { ConfigService } from "infrastructure/config.service";
 import { inject } from "@angular/core";
+import { ConfigurationClient } from "infrastructure/client/configuration.client";
 
 export function canActivateHome(
 ) {
-  let configService = inject(ConfigService)
+  let configClient = inject(ConfigurationClient)
   let router = inject(Router)
 
-  return configService.getConfig().pipe(
+  return configClient.getConfig().pipe(
     map(config => {
       if (config.hasRequiredConfig()) {
         return true
