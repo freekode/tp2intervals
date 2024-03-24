@@ -71,7 +71,7 @@ class StructureToTPConverter(
             ?.also { targetList.add(it) }
 
         return TPStepDTO(
-            workoutStep.title,
+            workoutStep.name,
             TPLengthDTO.seconds(workoutStep.duration.seconds),
             targetList,
             "active",

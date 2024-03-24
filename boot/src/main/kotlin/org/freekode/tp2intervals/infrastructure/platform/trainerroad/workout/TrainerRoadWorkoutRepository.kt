@@ -45,7 +45,7 @@ class TrainerRoadWorkoutRepository(
         throw PlatformException(Platform.TRAINER_ROAD, "TR doesn't support workout planning")
     }
 
-    override fun saveWorkoutToLibrary(libraryContainer: LibraryContainer, workout: Workout) {
+    override fun saveWorkoutsToLibrary(libraryContainer: LibraryContainer, workouts: List<Workout>) {
         throw PlatformException(Platform.TRAINER_ROAD, "TR doesn't support workout creation")
     }
 

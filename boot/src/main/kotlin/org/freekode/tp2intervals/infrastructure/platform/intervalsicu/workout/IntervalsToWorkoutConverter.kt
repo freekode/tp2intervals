@@ -51,7 +51,7 @@ class IntervalsToWorkoutConverter(
         stepDTO: IntervalsWorkoutDocDTO.WorkoutStepDTO
     ): WorkoutMultiStep {
         return WorkoutMultiStep(
-            stepDTO.text ?: "Step",
+            stepDTO.text,
             stepDTO.reps!!,
             stepDTO.steps!!.map { mapSingleStep(it) }
         )
@@ -69,7 +69,7 @@ class IntervalsToWorkoutConverter(
         val cadenceTarget = stepDTO.cadence?.let { targetMapper.toCadenceTarget(it) }
 
         return WorkoutSingleStep(
-            stepDTO.text ?: "Step",
+            stepDTO.text,
             stepDTO.duration?.let { Duration.ofSeconds(it) } ?: Duration.ofMinutes(10),
             mainTarget,
             cadenceTarget,

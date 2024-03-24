@@ -79,8 +79,8 @@ class TrainingPeaksWorkoutRepository(
             .find { it.details.externalData == externalData }!!
     }
 
-    override fun saveWorkoutToLibrary(libraryContainer: LibraryContainer, workout: Workout) {
-        throw PlatformException(Platform.TRAINING_PEAKS, "TP doesn't support workout copying")
+    override fun saveWorkoutsToLibrary(libraryContainer: LibraryContainer, workouts: List<Workout>) {
+        throw PlatformException(Platform.TRAINING_PEAKS, "TP doesn't support workout creation")
     }
 
     private fun getWorkoutsFromTPPlan(libraryContainer: LibraryContainer): List<Workout> {

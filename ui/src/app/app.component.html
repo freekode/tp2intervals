@@ -23,4 +23,9 @@
     <i class="bi bi-github"></i>
   </a>
 </mat-toolbar>
-<router-outlet></router-outlet>
+<div class="progress-bar">
+  <mat-progress-bar *ngIf="progressBarVisible | async" mode="query"></mat-progress-bar>
+</div>
+<main>
+  <router-outlet></router-outlet>
+</main>

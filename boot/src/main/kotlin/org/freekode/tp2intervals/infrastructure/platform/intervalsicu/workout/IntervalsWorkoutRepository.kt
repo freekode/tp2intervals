@@ -23,6 +23,7 @@ class IntervalsWorkoutRepository(
 
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val unwantedStepRegex = "^-".toRegex(RegexOption.MULTILINE)
+    private val maxWorkoutsToSave = 10
 
     override fun platform() = Platform.INTERVALS
 
@@ -40,21 +41,16 @@ class IntervalsWorkoutRepository(
         intervalsApiClient.createEvent(intervalsConfigurationRepository.getConfiguration().athleteId, request)
     }
 
-    override fun saveWorkoutToLibrary(libraryContainer: LibraryContainer, workout: Workout) {
-        val workoutString = getWorkoutString(workout)
-        val description = getDescription(workout, workoutString)
+    override fun saveWorkoutsToLibrary(libraryContainer: LibraryContainer, workouts: List<Workout>) {
+        val workoutToIntervalsConverter = WorkoutToIntervalsConverter()
+        for (fromIndex in 0..workouts.size step maxWorkoutsToSave) {
+            val toIndex = if (fromIndex + maxWorkoutsToSave >= workouts.size) workouts.size else fromIndex + maxWorkoutsToSave
 
-        val request = CreateWorkoutRequestDTO(
-            libraryContainer.externalData.intervalsId.toString(),
-            Date.daysDiff(libraryContainer.startDate, workout.date ?: LocalDate.now()),
-            IntervalsTrainingTypeMapper.getByTrainingType(workout.details.type),
-            workout.details.name, // "Name is too long"
-            workout.details.duration?.seconds,
-            workout.details.load,
-            description,
-            null,
-        )
-        intervalsApiClient.createWorkout(intervalsConfigurationRepository.getConfiguration().athleteId, request)
+            val workoutsToSave = workouts.subList(fromIndex, toIndex)
+            val requests =
+                workoutsToSave.map { workoutToIntervalsConverter.createWorkoutRequestDTO(libraryContainer, it) }
+            intervalsApiClient.createWorkouts(intervalsConfigurationRepository.getConfiguration().athleteId, requests)
+        }
     }
 
     override fun getWorkoutsFromCalendar(startDate: LocalDate, endDate: LocalDate): List<Workout> {
@@ -82,6 +78,22 @@ class IntervalsWorkoutRepository(
 
     override fun getWorkoutsFromLibrary(libraryContainer: LibraryContainer): List<Workout> {
         TODO("Not yet implemented")
+    }
+
+    private fun createWorkoutRequestDTO(libraryContainer: LibraryContainer, workout: Workout): CreateWorkoutRequestDTO {
+        val workoutString = getWorkoutString(workout)
+        val description = getDescription(workout, workoutString)
+        val request = CreateWorkoutRequestDTO(
+            libraryContainer.externalData.intervalsId.toString(),
+            Date.daysDiff(libraryContainer.startDate, workout.date ?: LocalDate.now()),
+            IntervalsTrainingTypeMapper.getByTrainingType(workout.details.type),
+            workout.details.name, // "Name is too long"
+            workout.details.duration?.seconds,
+            workout.details.load,
+            description,
+            null,
+        )
+        return request
     }
 
     private fun getDescription(workout: Workout, workoutString: String?): String {

@@ -2,7 +2,6 @@ package org.freekode.tp2intervals.app.workout
 
 import java.time.LocalDate
 import org.freekode.tp2intervals.domain.Platform
-import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.librarycontainer.LibraryContainerRepository
 import org.freekode.tp2intervals.domain.workout.WorkoutDetails
 import org.freekode.tp2intervals.domain.workout.WorkoutRepository
@@ -50,7 +49,7 @@ class WorkoutService(
         val filteredWorkouts = allWorkouts.filter { request.types.contains(it.details.type) }
 
         val plan = targetPlanRepository.createLibraryContainer(request.name, request.startDate, request.isPlan)
-        filteredWorkouts.forEach { targetWorkoutRepository.saveWorkoutToLibrary(plan, it) }
+        targetWorkoutRepository.saveWorkoutsToLibrary(plan, filteredWorkouts)
         return CopyWorkoutsResponse(
             filteredWorkouts.size, allWorkouts.size - filteredWorkouts.size, request.startDate, request.endDate
         )
@@ -61,7 +60,7 @@ class WorkoutService(
         val targetWorkoutRepository = workoutRepositoryMap[request.targetPlatform]!!
 
         val workout = sourceWorkoutRepository.getWorkoutFromLibrary(request.workoutDetails.externalData)
-        targetWorkoutRepository.saveWorkoutToLibrary(request.targetLibraryContainer, workout)
+        targetWorkoutRepository.saveWorkoutsToLibrary(request.targetLibraryContainer, listOf(workout))
         return CopyWorkoutsResponse(1, 0, LocalDate.now(), LocalDate.now())
     }
 

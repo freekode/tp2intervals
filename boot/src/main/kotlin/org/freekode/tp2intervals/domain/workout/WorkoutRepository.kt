@@ -18,5 +18,5 @@ interface WorkoutRepository {
 
     fun saveWorkoutToCalendar(workout: Workout)
 
-    fun saveWorkoutToLibrary(libraryContainer: LibraryContainer, workout: Workout)
+    fun saveWorkoutsToLibrary(libraryContainer: LibraryContainer, workouts: List<Workout>)
 }

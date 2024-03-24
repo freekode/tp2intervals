@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterContentInit, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { MatCardModule } from "@angular/material/card";
@@ -8,6 +8,9 @@ import { MatButtonModule } from "@angular/material/button";
 import { UpdateService } from "infrastructure/update.service";
 import { EnvironmentService } from "infrastructure/environment.service";
 import { MatOptionModule } from "@angular/material/core";
+import { MatProgressBarModule } from "@angular/material/progress-bar";
+import { Observable } from "rxjs";
+import { ProgressBarService } from "infrastructure/progress-bar.service";
 
 
 @Component({
@@ -21,12 +24,13 @@ import { MatOptionModule } from "@angular/material/core";
     MatToolbarModule,
     RouterLink,
     MatButtonModule,
-    MatOptionModule
+    MatOptionModule,
+    MatProgressBarModule
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, AfterContentInit {
   appVersion: string
 
   menuButtons = [
@@ -36,9 +40,12 @@ export class AppComponent implements OnInit {
     {name: 'Configuration', url: '/config'},
   ]
 
+  progressBarVisible: Observable<boolean>
+
   constructor(
     protected router: Router,
     private updateService: UpdateService,
+    private progressBarService: ProgressBarService,
     private environmentService: EnvironmentService
   ) {
   }
@@ -48,5 +55,9 @@ export class AppComponent implements OnInit {
     this.environmentService.getVersion().subscribe(version => {
       this.appVersion = version
     })
+  }
+
+  ngAfterContentInit(): void {
+    this.progressBarVisible = this.progressBarService.subscribe()
   }
 }

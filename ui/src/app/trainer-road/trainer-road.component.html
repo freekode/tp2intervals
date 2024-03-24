@@ -1,12 +1,12 @@
-<div *ngIf="platformValid === undefined" class="page-content">
+<div *ngIf="platformValid === undefined">
   <mat-progress-bar mode="query"></mat-progress-bar>
 </div>
 
-<div *ngIf="platformValid === false" class="page-content">
+<div *ngIf="platformValid === false">
   Platform is not configured. Please set required parameters on Configuration page
 </div>
 
-<div *ngIf="platformValid" class="page-content">
+<div *ngIf="platformValid">
   <mat-accordion multi>
     <mat-expansion-panel>
       <mat-expansion-panel-header>
