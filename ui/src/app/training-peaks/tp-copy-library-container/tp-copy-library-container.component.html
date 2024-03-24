@@ -13,6 +13,15 @@
     </mat-form-field>
   </div>
 
+  <div class="row" *ngIf="isPlanSelected | async">
+    <mat-form-field class="form-field">
+      <mat-label>Start Date</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="newStartDate">
+      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+  </div>
+
   <div class="row">
     <mat-form-field class="form-field">
       <mat-label>Intervals name</mat-label>

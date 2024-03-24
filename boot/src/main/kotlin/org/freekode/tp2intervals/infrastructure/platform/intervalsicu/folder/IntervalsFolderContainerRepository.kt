@@ -21,7 +21,7 @@ class IntervalsFolderContainerRepository(
 
     override fun platform() = Platform.INTERVALS
 
-    override fun createLibraryContainer(name: String, startDate: LocalDate, isPlan: Boolean): LibraryContainer {
+    override fun createLibraryContainer(name: String, startDate: LocalDate?, isPlan: Boolean): LibraryContainer {
         val folderType = if (isPlan) "PLAN" else "FOLDER"
         val newFolder = createFolder(name, startDate, folderType)
         return toPlan(newFolder)

@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { MatGridListModule } from "@angular/material/grid-list";
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
-import { MatCardModule } from "@angular/material/card";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatProgressBarModule } from "@angular/material/progress-bar";
@@ -45,22 +44,21 @@ import { Platform } from "infrastructure/platform";
   styleUrl: './tp-copy-calendar-to-calendar.component.scss'
 })
 export class TpCopyCalendarToCalendarComponent implements OnInit {
+  private readonly todayDate = formatDate(new Date())
+  private readonly tomorrowDate = formatDate(new Date(new Date().setDate(new Date().getDate() + 1)))
+  private readonly selectedTrainingTypes = ['BIKE', 'VIRTUAL_BIKE', 'MTB', 'RUN'];
+  private readonly direction = Platform.DIRECTION_INT_TP
 
   formGroup: FormGroup = this.formBuilder.group({
-    trainingTypes: [null, Validators.required],
-    startDate: [null, Validators.required],
-    endDate: [null, Validators.required],
-    skipSynced: [null, Validators.required],
+    trainingTypes: [this.selectedTrainingTypes, Validators.required],
+    startDate: [this.todayDate, Validators.required],
+    endDate: [this.tomorrowDate, Validators.required],
+    skipSynced: [true, Validators.required],
   });
 
   trainingTypes: any[];
 
   inProgress = false
-
-  private readonly todayDate = formatDate(new Date())
-  private readonly tomorrowDate = formatDate(new Date(new Date().setDate(new Date().getDate() + 1)))
-  private readonly selectedTrainingTypes = ['BIKE', 'VIRTUAL_BIKE', 'MTB', 'RUN'];
-  private readonly direction = Platform.DIRECTION_INT_TP
 
   constructor(
     private formBuilder: FormBuilder,
@@ -73,7 +71,6 @@ export class TpCopyCalendarToCalendarComponent implements OnInit {
   ngOnInit(): void {
     this.configurationClient.getTrainingTypes().subscribe(types => {
       this.trainingTypes = types
-      this.initFormValues();
     })
   }
 
@@ -88,15 +85,6 @@ export class TpCopyCalendarToCalendarComponent implements OnInit {
     ).subscribe((response) => {
       this.notificationService.success(
         `Planned: ${response.copied}\n Filtered out: ${response.filteredOut}\n From ${response.startDate} to ${response.endDate}`)
-    })
-  }
-
-  private initFormValues() {
-    this.formGroup.patchValue({
-      trainingTypes: this.selectedTrainingTypes,
-      startDate: this.todayDate,
-      endDate: this.tomorrowDate,
-      skipSynced: true
     })
   }
 }

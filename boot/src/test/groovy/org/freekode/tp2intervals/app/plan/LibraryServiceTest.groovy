@@ -7,6 +7,8 @@ import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.T
 import org.springframework.beans.factory.annotation.Autowired
 import spock.lang.Ignore
 
+import java.time.LocalDate
+
 class LibraryServiceTest extends SpringIT {
     @Autowired
     LibraryService planService
@@ -26,7 +28,8 @@ class LibraryServiceTest extends SpringIT {
                 .findFirst()
                 .orElseThrow()
         when:
-        def response = planService.copyLibrary(new CopyLibraryRequest(plan, "sdfsd", Platform.TRAINING_PEAKS, Platform.INTERVALS))
+        def response = planService.copyLibrary(new CopyLibraryRequest(plan, "sdfsd",
+                LocalDate.now(), Platform.TRAINING_PEAKS, Platform.INTERVALS))
 
         then:
         response != null

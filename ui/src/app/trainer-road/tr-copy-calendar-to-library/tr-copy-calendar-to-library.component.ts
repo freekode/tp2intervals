@@ -7,7 +7,6 @@ import { NotificationService } from "infrastructure/notification.service";
 import { finalize } from "rxjs";
 import { MatGridListModule } from "@angular/material/grid-list";
 import { MatButtonModule } from "@angular/material/button";
-import { MatCardModule } from "@angular/material/card";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatProgressBarModule } from "@angular/material/progress-bar";
@@ -41,13 +40,15 @@ import { Platform } from "infrastructure/platform";
   styleUrl: './tr-copy-calendar-to-library.component.scss'
 })
 export class TrCopyCalendarToLibraryComponent implements OnInit {
+  private readonly selectedTrainingTypes = ['BIKE', 'VIRTUAL_BIKE', 'MTB', 'RUN'];
+  private readonly direction = Platform.DIRECTION_TR_INT
 
   formGroup: FormGroup = this.formBuilder.group({
-    name: [null, Validators.required],
-    trainingTypes: [null, Validators.required],
+    name: ['My New Library', Validators.required],
+    trainingTypes: [this.selectedTrainingTypes, Validators.required],
     startDate: [null, Validators.required],
     endDate: [null, Validators.required],
-    isPlan: [null, Validators.required],
+    isPlan: [true, Validators.required],
   });
 
   inProgress = false
@@ -57,9 +58,6 @@ export class TrCopyCalendarToLibraryComponent implements OnInit {
     {name: 'Plan', value: true},
     {name: 'Folder', value: false}
   ]
-
-  private readonly selectedTrainingTypes = ['BIKE', 'VIRTUAL_BIKE', 'MTB', 'RUN'];
-  private readonly direction = Platform.DIRECTION_TR_INT
 
   constructor(
     private formBuilder: FormBuilder,
@@ -72,7 +70,6 @@ export class TrCopyCalendarToLibraryComponent implements OnInit {
   ngOnInit(): void {
     this.configurationClient.getTrainingTypes().subscribe(types => {
       this.trainingTypes = types
-      this.initFormValues();
     })
   }
 
@@ -88,14 +85,6 @@ export class TrCopyCalendarToLibraryComponent implements OnInit {
     ).subscribe((response) => {
       this.notificationService.success(
         `Copied: ${response.copied}\n Filtered out: ${response.filteredOut}\n From ${response.startDate} to ${response.endDate}`)
-    })
-  }
-
-  private initFormValues() {
-    this.formGroup.patchValue({
-      name: 'My New Library',
-      trainingTypes: this.selectedTrainingTypes,
-      isPlan: true
     })
   }
 }
