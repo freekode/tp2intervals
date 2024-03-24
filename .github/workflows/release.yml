@@ -6,7 +6,23 @@ on:
   workflow_dispatch:
 
 jobs:
+  electron:
+    strategy:
+      matrix:
+        environment:
+          - os: ubuntu-latest
+          - os: macos-latest
+          - os: windows-latest
+
+    uses: ./.github/workflows/build-electron.yml
+    secrets: inherit
+    with:
+      os: ${{ matrix.environment.os }}
+      dry-run: false
+
   jar:
+    needs:
+      - electron
     uses: ./.github/workflows/build-jar.yml
     secrets: inherit
     with:
@@ -23,20 +39,4 @@ jobs:
       jar-name: tp2intervals
       jar-artifact-name: tp2intervals-jar
       image-name: tp2intervals
-      dry-run: false
-
-  electron:
-    needs:
-      - jar
-    strategy:
-      matrix:
-        environment:
-          - os: ubuntu-latest
-          - os: macos-latest
-          - os: windows-latest
-
-    uses: ./.github/workflows/build-electron.yml
-    secrets: inherit
-    with:
-      os: ${{ matrix.environment.os }}
       dry-run: false
