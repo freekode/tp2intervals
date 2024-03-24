@@ -12,7 +12,7 @@ import { NgIf } from "@angular/common";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { NotificationService } from "infrastructure/notification.service";
 import { MatCheckboxChange, MatCheckboxModule } from "@angular/material/checkbox";
-import { ConfigurationClient } from "infrastructure/configuration.client";
+import { ConfigurationClient } from "infrastructure/client/configuration.client";
 
 @Component({
   selector: 'app-configuration',

@@ -16,8 +16,8 @@ import {
   TpCopyLibraryContainerComponent
 } from "app/training-peaks/tp-copy-library-container/tp-copy-library-container.component";
 import { formatDate } from "utils/date-formatter";
-import { WorkoutClient } from "infrastructure/workout.client";
-import { ConfigurationClient } from "infrastructure/configuration.client";
+import { WorkoutClient } from "infrastructure/client/workout.client";
+import { ConfigurationClient } from "infrastructure/client/configuration.client";
 import { NotificationService } from "infrastructure/notification.service";
 import { finalize } from "rxjs";
 import { Platform } from "infrastructure/platform";

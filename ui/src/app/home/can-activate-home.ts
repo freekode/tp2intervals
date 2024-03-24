@@ -1,7 +1,7 @@
 import { Router } from "@angular/router";
 import { map } from "rxjs";
 import { inject } from "@angular/core";
-import { ConfigurationClient } from "infrastructure/configuration.client";
+import { ConfigurationClient } from "infrastructure/client/configuration.client";
 
 export function canActivateHome(
 ) {

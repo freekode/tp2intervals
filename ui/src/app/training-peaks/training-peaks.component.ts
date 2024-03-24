@@ -10,7 +10,7 @@ import {
 } from "app/training-peaks/tp-copy-calendar-to-library/tp-copy-calendar-to-library.component";
 import { MatExpansionModule } from "@angular/material/expansion";
 import { NgIf } from "@angular/common";
-import { ConfigurationClient } from "infrastructure/configuration.client";
+import { ConfigurationClient } from "infrastructure/client/configuration.client";
 import { Platform } from "infrastructure/platform";
 import { MatProgressBarModule } from "@angular/material/progress-bar";
 

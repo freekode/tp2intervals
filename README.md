@@ -66,7 +66,8 @@ If your configuration is wrong. You will see an error that there is no access to
 Check all your values and save configuration again.
 
 ## FAQ
-* Only duration based steps in workouts are supported, the app can't work with distance based steps 
+* Only duration based steps in workouts are supported, the app can't work with distance based steps
+* Ramp steps in TrainerRoad are not supported
 * **MacOS** app is not signed. Usually you need to open it twice. After opening it, be patient, it takes some time to start.
 * **Windows** The app will ask to access local network and Internet allow it. After all it makes HTTP requests.
 * Contact me in case of any problems. You can create an issue in [GitHub](https://github.com/freekode/tp2intervals/issues) 

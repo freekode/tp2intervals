@@ -18,8 +18,7 @@ import {
   TrCopyCalendarToLibraryComponent
 } from "app/trainer-road/tr-copy-calendar-to-library/tr-copy-calendar-to-library.component";
 import { Platform } from "infrastructure/platform";
-import { ConfigurationClient } from "infrastructure/configuration.client";
-import { ProgressBarService } from "infrastructure/progress-bar.service";
+import { ConfigurationClient } from "infrastructure/client/configuration.client";
 
 @Component({
   selector: 'app-trainer-road',
@@ -44,15 +43,12 @@ export class TrainerRoadComponent implements OnInit {
 
   constructor(
     private configurationClient: ConfigurationClient,
-    private progressBarService: ProgressBarService
   ) {
   }
 
   ngOnInit(): void {
-    this.progressBarService.start()
     this.configurationClient.isValid(this.platform.key).subscribe(value => {
       this.platformValid = value
-      this.progressBarService.stop()
     })
   }
 }
