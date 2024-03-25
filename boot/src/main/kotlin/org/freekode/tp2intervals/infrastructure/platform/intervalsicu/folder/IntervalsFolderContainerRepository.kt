@@ -28,7 +28,7 @@ class IntervalsFolderContainerRepository(
     }
 
     @Cacheable(key = "'INTERVALS'")
-    override fun getLibraryContainer(): List<LibraryContainer> {
+    override fun getLibraryContainers(): List<LibraryContainer> {
         return intervalsFolderApiClient.getFolders(intervalsConfigurationRepository.getConfiguration().athleteId)
             .map { toPlan(it) }
     }

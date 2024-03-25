@@ -26,7 +26,7 @@ class TPPlanContainerRepository(
     }
 
     @Cacheable(key = "'TRAINING_PEAKS'")
-    override fun getLibraryContainer(): List<LibraryContainer> {
+    override fun getLibraryContainers(): List<LibraryContainer> {
         val plans = trainingPeaksPlanApiClient.getPlans()
             .map { toLibraryContainer(it) }
             .sortedBy { it.name }

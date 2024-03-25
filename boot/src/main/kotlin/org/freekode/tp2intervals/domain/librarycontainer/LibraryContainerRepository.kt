@@ -8,5 +8,5 @@ interface LibraryContainerRepository {
 
     fun createLibraryContainer(name: String, startDate: LocalDate?, isPlan: Boolean): LibraryContainer
 
-    fun getLibraryContainer(): List<LibraryContainer>
+    fun getLibraryContainers(): List<LibraryContainer>
 }

@@ -17,7 +17,7 @@ class LibraryService(
 
     fun getLibraryContainers(platform: Platform): List<LibraryContainer> {
         val repository = planRepositoryMap[platform]!!
-        return repository.getLibraryContainer()
+        return repository.getLibraryContainers()
     }
 
     fun copyLibrary(request: CopyLibraryRequest): CopyPlanResponse {

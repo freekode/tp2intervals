@@ -7,7 +7,7 @@ import org.freekode.tp2intervals.infrastructure.Signature
 import org.freekode.tp2intervals.infrastructure.utils.Date
 
 class WorkoutToIntervalsConverter {
-    private val unwantedStepRegex = "^-".toRegex(RegexOption.MULTILINE)
+    private val unwantedStepRegex = "^[-*]".toRegex(RegexOption.MULTILINE)
 
     fun createWorkoutRequestDTO(libraryContainer: LibraryContainer, workout: Workout): CreateWorkoutRequestDTO {
         val workoutString = getWorkoutString(workout)
@@ -41,7 +41,7 @@ class WorkoutToIntervalsConverter {
     private fun getDescription(workout: Workout, workoutString: String?): String {
         var description = workout.details.description
             .orEmpty()
-            .replace(unwantedStepRegex, "--")
+            .replace(unwantedStepRegex, "`-")
             .let { "$it\n- - - -\n${Signature.description}" }
         description += workoutString
             ?.let { "\n\n- - - -\n$it" }
