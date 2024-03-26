@@ -37,15 +37,17 @@ class TrainingPeaksWorkoutRepository(
 ) : WorkoutRepository {
     override fun platform() = Platform.TRAINING_PEAKS
 
-    override fun saveWorkoutToCalendar(workout: Workout) {
-        val structureStr = StructureToTPConverter.toStructureString(objectMapper, workout)
-        val athleteId = trainingPeaksUserRepository.getUserId()
-        val createRequest = CreateTPWorkoutDTO.planWorkout(
-            athleteId,
-            workout,
-            structureStr
-        )
-        trainingPeaksApiClient.createAndPlanWorkout(athleteId, createRequest)
+    override fun saveWorkoutsToCalendar(workouts: List<Workout>) {
+        workouts.forEach {
+            val structureStr = StructureToTPConverter.toStructureString(objectMapper, it)
+            val athleteId = trainingPeaksUserRepository.getUserId()
+            val createRequest = CreateTPWorkoutDTO.planWorkout(
+                athleteId,
+                it,
+                structureStr
+            )
+            trainingPeaksApiClient.createAndPlanWorkout(athleteId, createRequest)
+        }
     }
 
     @Cacheable(key = "#libraryContainer.externalData.trainingPeaksId")

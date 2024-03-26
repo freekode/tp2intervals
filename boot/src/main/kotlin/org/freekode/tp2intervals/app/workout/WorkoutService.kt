@@ -36,7 +36,7 @@ class WorkoutService(
             request.startDate,
             request.endDate
         )
-        filteredWorkoutsToPlan.forEach { targetWorkoutRepository.saveWorkoutToCalendar(it) }
+        targetWorkoutRepository.saveWorkoutsToCalendar(filteredWorkoutsToPlan)
         return response
     }
 
