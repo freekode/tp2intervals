@@ -15,6 +15,8 @@ App to sync workouts between TrainingPeaks, TrainerRoad and Intervals.icu.
 
 Executables for MacOS (DMG), Windows (EXE installer), Linux (AppImage) are available for download [here](https://github.com/freekode/tp2intervals/releases/latest)
 
+<img src="https://github.com/freekode/tp2intervals/blob/main/docs/tp.png?raw=true" width="30%"><img src="https://github.com/freekode/tp2intervals/blob/main/docs/tr.png?raw=true" width="30%">
+
 **Only for educational purposes**
 
 ## Other ways to run the app
