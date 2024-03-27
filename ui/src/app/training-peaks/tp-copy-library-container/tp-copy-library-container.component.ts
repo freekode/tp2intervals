@@ -14,13 +14,14 @@ import { MatCheckboxModule } from "@angular/material/checkbox";
 import { WorkoutClient } from "infrastructure/client/workout.client";
 import { ConfigurationClient } from "infrastructure/client/configuration.client";
 import { NotificationService } from "infrastructure/notification.service";
-import { filter, finalize, map, Observable } from "rxjs";
+import { filter, finalize, map, Observable, of } from "rxjs";
 import { LibraryClient } from "infrastructure/client/library-client.service";
 import { Platform } from "infrastructure/platform";
 import { MatDialog } from "@angular/material/dialog";
 import {
   TpCopyPlanWarningDialogComponent
 } from "app/training-peaks/tp-copy-library-container/tp-copy-plan-warning-dialog/tp-copy-plan-warning-dialog.component";
+import { formatDate } from "utils/date-formatter";
 
 @Component({
   selector: 'tp-copy-library-container',
@@ -45,12 +46,16 @@ import {
   styleUrl: './tp-copy-library-container.component.scss'
 })
 export class TpCopyLibraryContainerComponent implements OnInit {
+  private readonly mondayDate = formatDate(this.getMonday(new Date()))
 
   formGroup: FormGroup = this.formBuilder.group({
     plan: [null, Validators.required],
     newName: [null, Validators.required],
+    newStartDate: [this.mondayDate, Validators.required],
   });
 
+  // isPlanSelected = this.formGroup.controls['plan'].valueChanges.pipe(map(value => value?.isPlan))
+  isPlanSelected = of(false)
   submitInProgress = false
   loadingInProgress = false
 
@@ -101,8 +106,9 @@ export class TpCopyLibraryContainerComponent implements OnInit {
     this.submitInProgress = true
     let plan = this.formGroup.value.plan
     let newName = this.formGroup.value.newName
+    let newStartDate = this.formGroup.value.newStartDate
     let direction = Platform.DIRECTION_TP_INT
-    this.planClient.copyLibraryContainer(plan, newName, direction).pipe(
+    this.planClient.copyLibraryContainer(plan, newName, newStartDate, direction).pipe(
       finalize(() => this.submitInProgress = false)
     ).subscribe((response) => {
       this.notificationService.success(
@@ -120,5 +126,12 @@ export class TpCopyLibraryContainerComponent implements OnInit {
         continueCallback.bind(this)()
       }
     });
+  }
+
+  private getMonday(date) {
+    date = new Date(date);
+    let day = date.getDay(),
+      diff = date.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
+    return new Date(date.setDate(diff));
   }
 }

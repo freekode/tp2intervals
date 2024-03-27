@@ -6,7 +6,7 @@ import java.time.LocalDate
 interface LibraryContainerRepository {
     fun platform(): Platform
 
-    fun createLibraryContainer(name: String, startDate: LocalDate, isPlan: Boolean): LibraryContainer
+    fun createLibraryContainer(name: String, startDate: LocalDate?, isPlan: Boolean): LibraryContainer
 
-    fun getLibraryContainer(): List<LibraryContainer>
+    fun getLibraryContainers(): List<LibraryContainer>
 }

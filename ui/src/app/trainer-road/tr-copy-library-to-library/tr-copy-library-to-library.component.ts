@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { MatGridListModule } from "@angular/material/grid-list";
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
-import { MatCardModule } from "@angular/material/card";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatProgressBarModule } from "@angular/material/progress-bar";
@@ -89,7 +88,7 @@ export class TrCopyLibraryToLibraryComponent implements OnInit {
     if (!details) {
       return ''
     }
-    return `${ details.name } (Duration: ${ details.duration || '0' }, Load: ${details.load})`
+    return `${details.name} (Duration: ${details.duration || '0'}, Load: ${details.load})`
   }
 
   private loadPlans() {

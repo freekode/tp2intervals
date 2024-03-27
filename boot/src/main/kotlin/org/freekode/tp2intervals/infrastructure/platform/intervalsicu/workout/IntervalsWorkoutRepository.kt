@@ -24,10 +24,12 @@ class IntervalsWorkoutRepository(
 
     override fun platform() = Platform.INTERVALS
 
-    override fun saveWorkoutToCalendar(workout: Workout) {
-        val workoutToIntervalsConverter = WorkoutToIntervalsConverter()
-        val request = workoutToIntervalsConverter.createEventRequestDTO(workout)
-        intervalsApiClient.createEvent(intervalsConfigurationRepository.getConfiguration().athleteId, request)
+    override fun saveWorkoutsToCalendar(workouts: List<Workout>) {
+        workouts.forEach {
+            val workoutToIntervalsConverter = WorkoutToIntervalsConverter()
+            val request = workoutToIntervalsConverter.createEventRequestDTO(it)
+            intervalsApiClient.createEvent(intervalsConfigurationRepository.getConfiguration().athleteId, request)
+        }
     }
 
     override fun saveWorkoutsToLibrary(libraryContainer: LibraryContainer, workouts: List<Workout>) {

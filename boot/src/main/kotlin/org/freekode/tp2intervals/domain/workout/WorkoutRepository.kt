@@ -16,7 +16,7 @@ interface WorkoutRepository {
 
     fun findWorkoutsFromLibraryByName(name: String): List<WorkoutDetails>
 
-    fun saveWorkoutToCalendar(workout: Workout)
+    fun saveWorkoutsToCalendar(workouts: List<Workout>)
 
     fun saveWorkoutsToLibrary(libraryContainer: LibraryContainer, workouts: List<Workout>)
 }

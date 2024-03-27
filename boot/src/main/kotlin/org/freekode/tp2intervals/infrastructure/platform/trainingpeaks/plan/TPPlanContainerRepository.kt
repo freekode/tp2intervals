@@ -21,12 +21,12 @@ class TPPlanContainerRepository(
 ) : LibraryContainerRepository {
     override fun platform() = Platform.TRAINING_PEAKS
 
-    override fun createLibraryContainer(name: String, startDate: LocalDate, isPlan: Boolean): LibraryContainer {
+    override fun createLibraryContainer(name: String, startDate: LocalDate?, isPlan: Boolean): LibraryContainer {
         throw PlatformException(platform(), "Doesn't support plan creation")
     }
 
     @Cacheable(key = "'TRAINING_PEAKS'")
-    override fun getLibraryContainer(): List<LibraryContainer> {
+    override fun getLibraryContainers(): List<LibraryContainer> {
         val plans = trainingPeaksPlanApiClient.getPlans()
             .map { toLibraryContainer(it) }
             .sortedBy { it.name }

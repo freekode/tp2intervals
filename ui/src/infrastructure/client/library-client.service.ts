@@ -17,8 +17,8 @@ export class LibraryClient {
     )
   }
 
-  copyLibraryContainer(libraryContainer, newName, platformDirection): Observable<any> {
+  copyLibraryContainer(libraryContainer, newName, newStartDate, platformDirection): Observable<any> {
     return this.httpClient
-      .post(`/api/library-container/copy`, {libraryContainer, newName, ...platformDirection})
+      .post(`/api/library-container/copy`, {libraryContainer, newName, newStartDate, ...platformDirection})
   }
 }

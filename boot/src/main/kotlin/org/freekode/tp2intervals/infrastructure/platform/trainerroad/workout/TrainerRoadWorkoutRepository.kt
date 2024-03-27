@@ -41,7 +41,7 @@ class TrainerRoadWorkoutRepository(
             }
     }
 
-    override fun saveWorkoutToCalendar(workout: Workout) {
+    override fun saveWorkoutsToCalendar(workouts: List<Workout>) {
         throw PlatformException(Platform.TRAINER_ROAD, "TR doesn't support workout planning")
     }
 
