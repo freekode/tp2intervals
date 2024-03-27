@@ -1,15 +1,15 @@
-[![Build main branch](https://github.com/freekode/tp2intervals/actions/workflows/main-branch.yml/badge.svg)](https://github.com/freekode/tp2intervals/actions/workflows/main-branch.yml)
+[![Build branches](https://github.com/freekode/tp2intervals/actions/workflows/branch.yml/badge.svg)](https://github.com/freekode/tp2intervals/actions/workflows/branch.yml)
 [![release](https://img.shields.io/github/release/freekode/tp2intervals)](https://github.com/freekode/tp2intervals/releases/latest)
 
 # Third Party to Intervals.icu
 App to sync workouts between TrainingPeaks, TrainerRoad and Intervals.icu.
 
-**TrainingPeaks related features:**
+### TrainingPeaks features
 * Sync planned workouts from Intervals to TrainingPeaks for today and tomorrow (free TP account)
 * Copy whole training plan from TrainingPeaks
 * Copy planned workouts for date range from TrainingPeaks to Intervals.icu training plan or workout folder
 
-**TrainerRoad related features:**
+### TrainerRoad features
 * Copy workouts from TrainerRoad library to Intervals
 * Copy planned workouts for date range from TrainerRoad to Intervals.icu training plan or workout folder
 
