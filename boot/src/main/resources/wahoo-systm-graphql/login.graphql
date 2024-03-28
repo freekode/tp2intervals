@@ -1,0 +1,53 @@
+mutation Login($appInformation: AppInformation!, $username: String!, $password: String!) {
+    loginUser(
+        appInformation: $appInformation
+        username: $username
+        password: $password
+    ) {
+        status
+        message,
+        user
+        token
+        failureId
+        __typename
+    }
+}
+
+input AppInformation {
+    platform: String! = "web",
+    version: String! = "7.73.0-web.3239",
+    installId: String! = "ED556205D4C1CC9CECC2ADF4BEE2B983"
+}
+
+type Mutation {
+    loginUser(appInformation: AppInformation!, username: String!, password: String!): UserResult!
+}
+
+type UserResult {
+    status: String!
+    message: String!
+    user: User!
+    token: String!
+    failureId: String!
+}
+
+type User {
+    id: String!
+    wahooId: String!
+    #    profiles: {
+    #        riderProfile {
+    #            ...userProfileFragment
+    #            __typename
+    #        }
+    #        __typename
+    #    }
+}
+
+type UserProfile {
+    nm: String!
+    ac: String!
+    map: String!
+    ftp: String!
+    lthr: String!
+    cadenceThreshold: String!
+}

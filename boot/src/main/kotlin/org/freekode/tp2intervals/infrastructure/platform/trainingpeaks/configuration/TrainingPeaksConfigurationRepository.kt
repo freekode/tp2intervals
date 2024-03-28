@@ -17,12 +17,12 @@ class TrainingPeaksConfigurationRepository(
 
     @CatchFeignException(platform = Platform.TRAINING_PEAKS)
     override fun updateConfig(request: UpdateConfigurationRequest) {
-        val updatedConfig = request.getByPrefix(TrainingPeaksConfiguration.CONFIG_PREFIX)
+        val updatedConfig = request.getByPrefix(platform().key)
         if (updatedConfig.isEmpty()) {
             return
         }
         val currentConfig =
-            appConfigurationRepository.getConfigurationByPrefix(TrainingPeaksConfiguration.CONFIG_PREFIX)
+            appConfigurationRepository.getConfigurationByPrefix(platform().key)
         val newConfig = currentConfig.configMap + updatedConfig
         validateConfiguration(newConfig, true)
         appConfigurationRepository.updateConfig(UpdateConfigurationRequest(newConfig))
@@ -31,7 +31,7 @@ class TrainingPeaksConfigurationRepository(
     override fun isValid(): Boolean {
         try {
             val currentConfig =
-                appConfigurationRepository.getConfigurationByPrefix(TrainingPeaksConfiguration.CONFIG_PREFIX)
+                appConfigurationRepository.getConfigurationByPrefix(platform().key)
             validateConfiguration(currentConfig.configMap, false)
             return true
         } catch (e: Exception) {
@@ -40,7 +40,7 @@ class TrainingPeaksConfigurationRepository(
     }
 
     fun getConfiguration(): TrainingPeaksConfiguration {
-        val config = appConfigurationRepository.getConfigurationByPrefix(TrainingPeaksConfiguration.CONFIG_PREFIX)
+        val config = appConfigurationRepository.getConfigurationByPrefix(platform().key)
         return TrainingPeaksConfiguration(config)
     }
 

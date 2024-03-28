@@ -26,7 +26,7 @@ class IntervalsConfigurationRepository(
     override fun isValid(): Boolean {
         try {
             val currentConfig =
-                appConfigurationRepository.getConfigurationByPrefix(IntervalsConfiguration.CONFIG_PREFIX)
+                appConfigurationRepository.getConfigurationByPrefix(platform().key)
             validateConfiguration(currentConfig.configMap)
             return true
         } catch (e: PlatformException) {
@@ -35,14 +35,14 @@ class IntervalsConfigurationRepository(
     }
 
     fun getConfiguration(): IntervalsConfiguration {
-        val config = appConfigurationRepository.getConfigurationByPrefix(IntervalsConfiguration.CONFIG_PREFIX)
+        val config = appConfigurationRepository.getConfigurationByPrefix(platform().key)
         return IntervalsConfiguration(config)
     }
 
     private fun getConfigToUpdate(request: UpdateConfigurationRequest): Map<String, String> {
         val currentConfig =
-            appConfigurationRepository.getConfigurationByPrefix(IntervalsConfiguration.CONFIG_PREFIX)
-        return currentConfig.configMap + request.getByPrefix(IntervalsConfiguration.CONFIG_PREFIX)
+            appConfigurationRepository.getConfigurationByPrefix(platform().key)
+        return currentConfig.configMap + request.getByPrefix(platform().key)
     }
 
     private fun validateConfiguration(newConfig: Map<String, String>) {

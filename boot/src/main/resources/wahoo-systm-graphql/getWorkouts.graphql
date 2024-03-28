@@ -1,0 +1,54 @@
+query GetWorkouts($id: ID) {
+    workouts(id: $id) {
+        id
+        sortOrder
+        sport
+        stampImage
+        bannerImage
+        bestFor
+        equipment {
+            name
+            description
+            thumbnail
+            __typename
+        }
+        details
+        shortDescription
+        level
+        durationSeconds
+        name
+        triggers
+        featuredRaces {
+            name
+            thumbnail
+            darkBackgroundThumbnail
+            __typename
+        }
+        metrics {
+            intensityFactor
+            tss
+            ratings {
+                nm
+                ac
+                map
+                ftp
+                __typename
+            }
+            __typename
+        }
+        brand
+        nonAppWorkout
+        notes
+        tags
+        imperatives {
+            userSettings {
+                birthday
+                gender
+                weight
+                __typename
+            }
+            __typename
+        }
+        __typename
+    }
+}

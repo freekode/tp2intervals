@@ -11,6 +11,7 @@ class IntervalsTrainingTypeMapper {
             TrainingType.RUN to "Run",
             TrainingType.SWIM to "Swim",
             TrainingType.WEIGHT to "WeightTraining",
+            TrainingType.YOGA to "Yoga",
             TrainingType.NOTE to "NOTE",
             TrainingType.UNKNOWN to "Other",
 //            TrainingType.WALK to "Walk",

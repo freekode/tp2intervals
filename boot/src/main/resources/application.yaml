@@ -7,6 +7,9 @@ intervals:
 trainer-road:
   api-url: https://www.trainerroad.com
 
+wahoo-systm:
+  api-url: https://api.thesufferfest.com/graphql
+
 spring:
   jackson:
     default-property-inclusion: non_null
