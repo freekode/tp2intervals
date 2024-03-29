@@ -91,7 +91,7 @@ class TrainingPeaksWorkoutRepository(
         val response = tpPlanRepository.applyPlan(planId, planApplyDate)
 
         try {
-            val planEndDate = LocalDateTime.parse(response.endDate).toLocalDate()
+            val planEndDate = response.endDate.toLocalDate()
 
             val workoutDateShiftDays = Date.daysDiff(libraryContainer.startDate, planApplyDate)
             val workouts = getWorkoutsFromCalendar(planApplyDate, planEndDate)
