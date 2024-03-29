@@ -1,3 +1,4 @@
+<mat-progress-bar *ngIf="inProgress" mode="query"></mat-progress-bar>
 
 <form [formGroup]="formGroup" novalidate (ngSubmit)="onSubmit()">
   <mat-form-field class="full-width">
@@ -44,6 +45,14 @@
       <mat-label>Intervals Pace range percentage</mat-label>
       <input matInput type="number" placeholder="5.0" formControlName="intervals.pace-range">
     </mat-form-field>
+    <mat-form-field class="full-width">
+      <mat-label>Log Level (saved only for current session)</mat-label>
+      <mat-select [formControl]="logLevelFormControl">
+        <mat-option [value]="'WARN'">WARN</mat-option>
+        <mat-option [value]="'INFO'">INFO</mat-option>
+        <mat-option [value]="'DEBUG'">DEBUG</mat-option>
+      </mat-select>
+    </mat-form-field>
   }
 
   <div class="row action-button-section">
@@ -57,5 +66,4 @@
     </button>
   </div>
 
-  <mat-progress-bar *ngIf="inProgress" mode="query"></mat-progress-bar>
 </form>

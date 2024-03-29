@@ -1,8 +1,7 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout
 
-import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.TPWorkoutStructureDTO
-import java.time.LocalDateTime
 import org.freekode.tp2intervals.domain.TrainingType
+import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.TPWorkoutStructureDTO
 
 abstract class TPBaseWorkoutResponseDTO(
     val id: String,

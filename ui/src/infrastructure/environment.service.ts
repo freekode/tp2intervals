@@ -24,4 +24,15 @@ export class EnvironmentService {
       )
     }
   }
+
+  setLoggerLevel(packageName, level): Observable<any> {
+    return this.httpClient.post(`/actuator/loggers/${packageName}`, {configuredLevel: level})
+  }
+
+  getLoggerLevel(packageName): Observable<string> {
+    return this.httpClient.get(`/actuator/loggers/${packageName}`).pipe(
+      map((response: any) => response.effectiveLevel)
+    )
+  }
+
 }
