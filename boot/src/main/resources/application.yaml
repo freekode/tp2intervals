@@ -8,6 +8,12 @@ trainer-road:
   api-url: https://www.trainerroad.com
 
 spring:
+  cloud:
+    openfeign:
+      client:
+        config:
+          default:
+            loggerLevel: full
   jackson:
     default-property-inclusion: non_null
     serialization:
@@ -33,6 +39,9 @@ management:
   endpoints:
     web:
       exposure:
-        include: 'health,info'
+        include: 'health,info,loggers'
       cors:
         allowed-origins: '*'
+  endpoint:
+    loggers:
+      enabled: true
