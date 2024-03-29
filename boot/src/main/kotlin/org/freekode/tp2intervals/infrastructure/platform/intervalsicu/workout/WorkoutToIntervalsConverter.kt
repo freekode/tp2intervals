@@ -11,12 +11,19 @@ class WorkoutToIntervalsConverter {
 
     fun createWorkoutRequestDTO(libraryContainer: LibraryContainer, workout: Workout): CreateWorkoutRequestDTO {
         val workoutString = getWorkoutString(workout)
-        val description = getDescription(workout, workoutString)
+        var description = getDescription(workout, workoutString)
+        val name: String
+        if (workout.details.name.length > 80) {
+            name = workout.details.name.substring(0, 76).trim() + "..."
+            description = "Name: ${workout.details.name}\n" + description
+        } else {
+            name = workout.details.name
+        }
         val request = CreateWorkoutRequestDTO(
             libraryContainer.externalData.intervalsId.toString(),
             Date.daysDiff(libraryContainer.startDate, workout.date ?: LocalDate.now()),
             IntervalsTrainingTypeMapper.getByTrainingType(workout.details.type),
-            workout.details.name, // "Name is too long"
+            name,
             workout.details.duration?.seconds,
             workout.details.load,
             description,
