@@ -1,4 +1,4 @@
-<form [formGroup]="formGroup" novalidate (ngSubmit)="submit()">
+<form [formGroup]="formGroup" novalidate>
   <div class="row">
     <mat-form-field class="form-field">
       <mat-label>Workout Types</mat-label>
@@ -14,7 +14,7 @@
     <mat-form-field class="form-field">
       <mat-label>Date Range</mat-label>
       <mat-date-range-input
-        [disabled]="true"
+        [max]="tomorrowDate"
         [rangePicker]="copyPlanDatePicker">
         <input matStartDate placeholder="Start Date" formControlName="startDate">
         <input matEndDate placeholder="End Date" formControlName="endDate">
@@ -34,10 +34,21 @@
     <button
       mat-raised-button
       color="primary"
-      type="submit"
+      type="button"
       [disabled]="formGroup.invalid || inProgress"
+      (click)="submit()"
     >
       Confirm
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      type="button"
+      style="margin-left: 10px"
+      [disabled]="formGroup.invalid || inProgress"
+      (click)="today()"
+    >
+      Only today
     </button>
   </div>
 

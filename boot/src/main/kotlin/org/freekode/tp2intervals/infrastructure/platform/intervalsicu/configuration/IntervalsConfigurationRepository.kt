@@ -48,7 +48,7 @@ class IntervalsConfigurationRepository(
     private fun validateConfiguration(newConfig: Map<String, String>) {
         val intervalsConfig: IntervalsConfiguration
         try {
-             intervalsConfig = IntervalsConfiguration(newConfig)
+            intervalsConfig = IntervalsConfiguration(newConfig)
         } catch (e: NullPointerException) {
             throw PlatformException(platform(), "Wrong configuration")
         }
