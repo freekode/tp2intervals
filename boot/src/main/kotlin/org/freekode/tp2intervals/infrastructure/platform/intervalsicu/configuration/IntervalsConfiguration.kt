@@ -12,13 +12,11 @@ data class IntervalsConfiguration(
     val paceRange: Float,
 ) {
     companion object {
-        const val CONFIG_PREFIX = "intervals"
-
-        private const val apiKeyConfigKey = "${CONFIG_PREFIX}.api-key"
-        private const val athleteIdConfigKey = "${CONFIG_PREFIX}.athlete-id"
-        private const val powerRangeConfigKey = "${CONFIG_PREFIX}.power-range"
-        private const val hrRangeConfigKey = "${CONFIG_PREFIX}.hr-range"
-        private const val paceRangeConfigKey = "${CONFIG_PREFIX}.pace-range"
+        private val apiKeyConfigKey = "${Platform.INTERVALS.key}.api-key"
+        private val athleteIdConfigKey = "${Platform.INTERVALS.key}.athlete-id"
+        private val powerRangeConfigKey = "${Platform.INTERVALS.key}.power-range"
+        private val hrRangeConfigKey = "${Platform.INTERVALS.key}.hr-range"
+        private val paceRangeConfigKey = "${Platform.INTERVALS.key}.pace-range"
     }
 
     constructor(appConfiguration: AppConfiguration) : this(appConfiguration.configMap)

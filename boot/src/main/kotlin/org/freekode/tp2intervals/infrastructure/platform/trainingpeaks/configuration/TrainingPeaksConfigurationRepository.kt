@@ -6,32 +6,39 @@ import org.freekode.tp2intervals.domain.config.PlatformConfigurationRepository
 import org.freekode.tp2intervals.domain.config.UpdateConfigurationRequest
 import org.freekode.tp2intervals.infrastructure.CatchFeignException
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.token.TrainingPeaksTokenApiClient
+import org.springframework.cache.CacheManager
+import org.springframework.cache.annotation.CacheConfig
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 
 @Service
+@CacheConfig(cacheNames = ["configValidCache"])
 class TrainingPeaksConfigurationRepository(
     private val appConfigurationRepository: AppConfigurationRepository,
     private val trainingPeaksTokenApiClient: TrainingPeaksTokenApiClient,
+    private val cacheManager: CacheManager,
 ) : PlatformConfigurationRepository {
     override fun platform() = Platform.TRAINING_PEAKS
 
     @CatchFeignException(platform = Platform.TRAINING_PEAKS)
     override fun updateConfig(request: UpdateConfigurationRequest) {
-        val updatedConfig = request.getByPrefix(TrainingPeaksConfiguration.CONFIG_PREFIX)
+        cacheManager.getCache("configValidCache")!!.evict(platform().key)
+        val updatedConfig = request.getByPrefix(platform().key)
         if (updatedConfig.isEmpty()) {
             return
         }
         val currentConfig =
-            appConfigurationRepository.getConfigurationByPrefix(TrainingPeaksConfiguration.CONFIG_PREFIX)
+            appConfigurationRepository.getConfigurationByPrefix(platform().key)
         val newConfig = currentConfig.configMap + updatedConfig
         validateConfiguration(newConfig, true)
         appConfigurationRepository.updateConfig(UpdateConfigurationRequest(newConfig))
     }
 
+    @Cacheable(key = "'training-peaks'")
     override fun isValid(): Boolean {
         try {
             val currentConfig =
-                appConfigurationRepository.getConfigurationByPrefix(TrainingPeaksConfiguration.CONFIG_PREFIX)
+                appConfigurationRepository.getConfigurationByPrefix(platform().key)
             validateConfiguration(currentConfig.configMap, false)
             return true
         } catch (e: Exception) {
@@ -40,7 +47,7 @@ class TrainingPeaksConfigurationRepository(
     }
 
     fun getConfiguration(): TrainingPeaksConfiguration {
-        val config = appConfigurationRepository.getConfigurationByPrefix(TrainingPeaksConfiguration.CONFIG_PREFIX)
+        val config = appConfigurationRepository.getConfigurationByPrefix(platform().key)
         return TrainingPeaksConfiguration(config)
     }
 

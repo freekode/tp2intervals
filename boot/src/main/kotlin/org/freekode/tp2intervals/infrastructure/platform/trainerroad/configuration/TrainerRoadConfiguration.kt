@@ -1,13 +1,13 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainerroad.configuration
 
+import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.config.AppConfiguration
 
 data class TrainerRoadConfiguration(
     val authCookie: String?,
 ) {
     companion object {
-        const val CONFIG_PREFIX = "trainer-road"
-        private const val authCookieKey = "${CONFIG_PREFIX}.auth-cookie"
+        private val authCookieKey = "${Platform.TRAINER_ROAD.key}.auth-cookie"
     }
 
     constructor(appConfiguration: AppConfiguration) : this(appConfiguration.configMap)

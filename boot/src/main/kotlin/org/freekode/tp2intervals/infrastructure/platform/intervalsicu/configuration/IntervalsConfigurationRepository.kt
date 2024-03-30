@@ -7,26 +7,33 @@ import org.freekode.tp2intervals.domain.config.UpdateConfigurationRequest
 import org.freekode.tp2intervals.infrastructure.CatchFeignException
 import org.freekode.tp2intervals.infrastructure.PlatformException
 import org.freekode.tp2intervals.infrastructure.utils.Auth
+import org.springframework.cache.CacheManager
+import org.springframework.cache.annotation.CacheConfig
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 
 @Service
+@CacheConfig(cacheNames = ["configValidCache"])
 class IntervalsConfigurationRepository(
     private val appConfigurationRepository: AppConfigurationRepository,
-    private val intervalsAthleteApiClient: IntervalsAthleteApiClient
+    private val intervalsAthleteApiClient: IntervalsAthleteApiClient,
+    private val cacheManager: CacheManager,
 ) : PlatformConfigurationRepository {
     override fun platform() = Platform.INTERVALS
 
     @CatchFeignException(platform = Platform.INTERVALS)
     override fun updateConfig(request: UpdateConfigurationRequest) {
+        cacheManager.getCache("configValidCache")!!.evict(platform().key)
         val newConfig = getConfigToUpdate(request)
         validateConfiguration(newConfig)
         appConfigurationRepository.updateConfig(UpdateConfigurationRequest(newConfig))
     }
 
+    @Cacheable(key = "'intervals'")
     override fun isValid(): Boolean {
         try {
             val currentConfig =
-                appConfigurationRepository.getConfigurationByPrefix(IntervalsConfiguration.CONFIG_PREFIX)
+                appConfigurationRepository.getConfigurationByPrefix(platform().key)
             validateConfiguration(currentConfig.configMap)
             return true
         } catch (e: PlatformException) {
@@ -35,14 +42,14 @@ class IntervalsConfigurationRepository(
     }
 
     fun getConfiguration(): IntervalsConfiguration {
-        val config = appConfigurationRepository.getConfigurationByPrefix(IntervalsConfiguration.CONFIG_PREFIX)
+        val config = appConfigurationRepository.getConfigurationByPrefix(platform().key)
         return IntervalsConfiguration(config)
     }
 
     private fun getConfigToUpdate(request: UpdateConfigurationRequest): Map<String, String> {
         val currentConfig =
-            appConfigurationRepository.getConfigurationByPrefix(IntervalsConfiguration.CONFIG_PREFIX)
-        return currentConfig.configMap + request.getByPrefix(IntervalsConfiguration.CONFIG_PREFIX)
+            appConfigurationRepository.getConfigurationByPrefix(platform().key)
+        return currentConfig.configMap + request.getByPrefix(platform().key)
     }
 
     private fun validateConfiguration(newConfig: Map<String, String>) {
