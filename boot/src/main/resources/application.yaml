@@ -45,3 +45,7 @@ management:
   endpoint:
     loggers:
       enabled: true
+
+logging:
+  level:
+    org.freekode.tp2intervals: debug
