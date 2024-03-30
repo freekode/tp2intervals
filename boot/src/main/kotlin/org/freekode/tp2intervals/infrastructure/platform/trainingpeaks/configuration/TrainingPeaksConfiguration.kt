@@ -1,5 +1,6 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.configuration
 
+import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.config.AppConfiguration
 
 data class TrainingPeaksConfiguration(
@@ -7,9 +8,8 @@ data class TrainingPeaksConfiguration(
     val planDaysShift: Long,
 ) {
     companion object {
-        const val CONFIG_PREFIX = "training-peaks"
-        private const val authCookieKey = "${CONFIG_PREFIX}.auth-cookie"
-        private const val planDaysShiftKey = "${CONFIG_PREFIX}.copy-plan-days-shift"
+        private val authCookieKey = "${Platform.TRAINING_PEAKS.key}.auth-cookie"
+        private val planDaysShiftKey = "${Platform.TRAINING_PEAKS.key}.copy-plan-days-shift"
     }
 
     constructor(appConfiguration: AppConfiguration) : this(appConfiguration.configMap)
