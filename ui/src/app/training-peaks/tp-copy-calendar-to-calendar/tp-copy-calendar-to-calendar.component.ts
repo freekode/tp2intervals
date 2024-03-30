@@ -75,9 +75,19 @@ export class TpCopyCalendarToCalendarComponent implements OnInit {
   }
 
   submit() {
-    this.inProgress = true
     let startDate = formatDate(this.formGroup.controls['startDate'].value)
     let endDate = formatDate(this.formGroup.controls['endDate'].value)
+    this.copyWorkouts(startDate, endDate);
+  }
+
+  today() {
+    let startDate = formatDate(this.todayDate)
+    let endDate = formatDate(this.todayDate)
+    this.copyWorkouts(startDate, endDate);
+  }
+
+  private copyWorkouts(startDate, endDate) {
+    this.inProgress = true
     let trainingTypes = this.formGroup.value.trainingTypes
     let skipSynced = this.formGroup.value.skipSynced
     this.workoutClient.copyCalendarToCalendar(startDate, endDate, trainingTypes, skipSynced, this.direction).pipe(
