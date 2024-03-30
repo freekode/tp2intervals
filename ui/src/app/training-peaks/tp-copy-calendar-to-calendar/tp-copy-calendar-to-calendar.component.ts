@@ -81,9 +81,15 @@ export class TpCopyCalendarToCalendarComponent implements OnInit {
   }
 
   today() {
-    let startDate = formatDate(this.todayDate)
-    let endDate = formatDate(this.todayDate)
-    this.copyWorkouts(startDate, endDate);
+    this.copyWorkoutsForOneDay(formatDate(this.todayDate));
+  }
+
+  tomorrow() {
+    this.copyWorkoutsForOneDay(formatDate(this.tomorrowDate));
+  }
+
+  private copyWorkoutsForOneDay(date) {
+    this.copyWorkouts(date, date)
   }
 
   private copyWorkouts(startDate, endDate) {

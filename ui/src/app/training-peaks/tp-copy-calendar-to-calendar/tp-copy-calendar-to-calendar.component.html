@@ -50,6 +50,16 @@
     >
       Only today
     </button>
+    <button
+      mat-raised-button
+      color="primary"
+      type="button"
+      style="margin-left: 10px"
+      [disabled]="formGroup.invalid || inProgress"
+      (click)="tomorrow()"
+    >
+      Only tomorrow
+    </button>
   </div>
 
   <mat-progress-bar *ngIf="inProgress" mode="query"></mat-progress-bar>
