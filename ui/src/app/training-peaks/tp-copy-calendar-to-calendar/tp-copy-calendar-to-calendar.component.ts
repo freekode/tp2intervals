@@ -14,12 +14,12 @@ import { MatCheckboxModule } from "@angular/material/checkbox";
 import {
   TpCopyLibraryContainerComponent
 } from "app/training-peaks/tp-copy-library-container/tp-copy-library-container.component";
-import { formatDate } from "utils/date-formatter";
 import { WorkoutClient } from "infrastructure/client/workout.client";
 import { ConfigurationClient } from "infrastructure/client/configuration.client";
 import { NotificationService } from "infrastructure/notification.service";
 import { finalize } from "rxjs";
 import { Platform } from "infrastructure/platform";
+import { formatDate } from "utils/date-formatter";
 
 @Component({
   selector: 'tp-copy-calendar-to-calendar',
@@ -44,8 +44,8 @@ import { Platform } from "infrastructure/platform";
   styleUrl: './tp-copy-calendar-to-calendar.component.scss'
 })
 export class TpCopyCalendarToCalendarComponent implements OnInit {
-  private readonly todayDate = formatDate(new Date())
-  private readonly tomorrowDate = formatDate(new Date(new Date().setDate(new Date().getDate() + 1)))
+  private readonly todayDate = new Date()
+  readonly tomorrowDate = new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
   private readonly selectedTrainingTypes = ['BIKE', 'VIRTUAL_BIKE', 'MTB', 'RUN'];
   private readonly direction = Platform.DIRECTION_INT_TP
 
@@ -76,8 +76,8 @@ export class TpCopyCalendarToCalendarComponent implements OnInit {
 
   submit() {
     this.inProgress = true
-    let startDate = this.todayDate
-    let endDate = this.tomorrowDate
+    let startDate = formatDate(this.formGroup.controls['startDate'].value)
+    let endDate = formatDate(this.formGroup.controls['endDate'].value)
     let trainingTypes = this.formGroup.value.trainingTypes
     let skipSynced = this.formGroup.value.skipSynced
     this.workoutClient.copyCalendarToCalendar(startDate, endDate, trainingTypes, skipSynced, this.direction).pipe(

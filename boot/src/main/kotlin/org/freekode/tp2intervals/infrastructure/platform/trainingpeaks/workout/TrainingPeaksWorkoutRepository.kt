@@ -3,7 +3,6 @@ package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout
 import com.fasterxml.jackson.databind.ObjectMapper
 import java.time.DayOfWeek
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.temporal.TemporalAdjusters
 import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.Platform
@@ -38,16 +37,7 @@ class TrainingPeaksWorkoutRepository(
     override fun platform() = Platform.TRAINING_PEAKS
 
     override fun saveWorkoutsToCalendar(workouts: List<Workout>) {
-        workouts.forEach {
-            val structureStr = StructureToTPConverter.toStructureString(objectMapper, it)
-            val athleteId = trainingPeaksUserRepository.getUserId()
-            val createRequest = CreateTPWorkoutDTO.planWorkout(
-                athleteId,
-                it,
-                structureStr
-            )
-            trainingPeaksApiClient.createAndPlanWorkout(athleteId, createRequest)
-        }
+        workouts.forEach { saveWorkoutToCalendar(it) }
     }
 
     @Cacheable(key = "#libraryContainer.externalData.trainingPeaksId")
@@ -71,18 +61,25 @@ class TrainingPeaksWorkoutRepository(
     }
 
     override fun findWorkoutsFromLibraryByName(name: String): List<WorkoutDetails> {
-        return tpWorkoutLibraryRepository.getAllWorkouts()
-            .map { it.details }
-            .filter { it.name.contains(name) }
+        return tpWorkoutLibraryRepository.getAllWorkouts().map { it.details }.filter { it.name.contains(name) }
     }
 
     override fun getWorkoutFromLibrary(externalData: ExternalData): Workout {
-        return tpWorkoutLibraryRepository.getAllWorkouts()
-            .find { it.details.externalData == externalData }!!
+        return tpWorkoutLibraryRepository.getAllWorkouts().find { it.details.externalData == externalData }!!
     }
 
     override fun saveWorkoutsToLibrary(libraryContainer: LibraryContainer, workouts: List<Workout>) {
         throw PlatformException(Platform.TRAINING_PEAKS, "TP doesn't support workout creation")
+    }
+
+    private fun saveWorkoutToCalendar(workout: Workout) {
+        val createRequest: CreateTPWorkoutDTO
+        val structureStr = StructureToTPConverter.toStructureString(objectMapper, workout)
+        val athleteId = trainingPeaksUserRepository.getUserId()
+        createRequest = CreateTPWorkoutDTO.planWorkout(
+            athleteId, workout, structureStr
+        )
+        trainingPeaksApiClient.createAndPlanWorkout(athleteId, createRequest)
     }
 
     private fun getWorkoutsFromTPPlan(libraryContainer: LibraryContainer): List<Workout> {
@@ -94,8 +91,11 @@ class TrainingPeaksWorkoutRepository(
             val planEndDate = response.endDate.toLocalDate()
 
             val workoutDateShiftDays = Date.daysDiff(libraryContainer.startDate, planApplyDate)
-            val workouts = getWorkoutsFromCalendar(planApplyDate, planEndDate)
-                .map { it.withDate(it.date!!.minusDays(workoutDateShiftDays.toLong())) }
+            val workouts = getWorkoutsFromCalendar(planApplyDate, planEndDate).map {
+                    it.withDate(
+                        it.date!!.minusDays(workoutDateShiftDays.toLong())
+                    )
+                }
             val tpPlan = tpPlanRepository.getPlan(planId)
             assert(tpPlan.workoutCount == workouts.size)
             return workouts
@@ -110,9 +110,9 @@ class TrainingPeaksWorkoutRepository(
         return tpWorkoutLibraryRepository.getLibraryWorkouts(library.externalData.trainingPeaksId!!)
     }
 
-    private fun getPlanApplyDate(): LocalDate = LocalDate.now()
-        .plusDays(trainingPeaksConfigurationRepository.getConfiguration().planDaysShift)
-        .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+    private fun getPlanApplyDate(): LocalDate =
+        LocalDate.now().plusDays(trainingPeaksConfigurationRepository.getConfiguration().planDaysShift)
+            .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
 
     private fun getNoteEndDateForFilter(startDate: LocalDate, endDate: LocalDate): LocalDate =
         if (startDate == endDate) endDate.plusDays(1) else endDate
