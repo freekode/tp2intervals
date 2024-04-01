@@ -88,3 +88,4 @@ If you want to use TrainerRoad you need to configure it. Very similar to Trainer
 * Linux: ~/.config/tp2intervals/logs/main.log
 * MacOS: ~/Library/Logs/tp2intervals/main.log
 * Windows: %USERPROFILE%\AppData\Roaming\tp2intervals\logs\main.log
+* JAR: ./tp2intervals.log
