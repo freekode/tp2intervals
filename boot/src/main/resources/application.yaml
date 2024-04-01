@@ -45,3 +45,7 @@ management:
   endpoint:
     loggers:
       enabled: true
+
+logging:
+  file:
+    name: tp2intervals.log
