@@ -64,17 +64,18 @@ You need to configure it to gain access to Intervals.icu and to TrainingPeaks.
 ### Intervals API Key and Athlete Id
 These values available on [Settings page](https://intervals.icu/settings) in Developer Settings section.
 
-After you gathered all required configuration, you can click Submit button on Configuration page.
-If everything is fine, you will be redirected to the home page, where you can plan your workouts on TrainingPeaks.
-
-If your configuration is wrong. You will see an error that there is no access to TrainingPeaks or to Intervals.icu.
-Check all your values and save configuration again.
-
 ### TrainingPeaks Auth Cookie
 If you want ot use TrainingPeaks you need to configure it. Copy cookie `Production_tpAuth` (key and value, smth like `Production_tpAuth=very_long_string`) from the browser on TrainingPeaks page.
 
 ### TrainerRoad Auth Cookie
 If you want to use TrainerRoad you need to configure it. Very similar to TrainerRoad. Copy cookie `TrainerRoadAuth` (key and value, smth like `TrainerRoadAuth=very_long_string`) from the browser on TrainerRoad page.
+
+After you gathered all required configuration, you can click Confirm button.
+If everything is fine, you will be redirected to the home page.
+
+If your configuration is wrong. You will see an error that there is no access to particular platform.
+Check all your values and save configuration again.
+
 
 ## FAQ
 * Only duration based steps in workouts are supported, the app can't work with distance based steps
