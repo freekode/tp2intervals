@@ -5,7 +5,7 @@
       <mat-select formControlName="plan" panelWidth="null">
         @for (item of plans | async; track item) {
           <mat-option [value]="item.value">
-            {{ item.name }} ({{ item.value.isPlan ? 'plan, ' : '' }}workouts: {{ item.value.workoutsAmount }})
+            {{ item.name }} ({{ item.value.isPlan ? 'plan, workouts: ' + item.value.workoutsAmount : 'folder' }})
           </mat-option>
         }
       </mat-select>
