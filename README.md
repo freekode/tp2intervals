@@ -77,7 +77,7 @@ like `Production_tpAuth=very_long_string`) from the browser on TrainingPeaks pag
 
 ### TrainerRoad Auth Cookie
 
-If you want to use TrainerRoad you need to configure it. Very similar to TrainerRoad. Copy cookie `TrainerRoadAuth` (key
+If you want to use TrainerRoad you need to configure it. Very similar to TrainingPeaks. Copy cookie `TrainerRoadAuth` (key
 and value, smth like `TrainerRoadAuth=very_long_string`) from the browser on TrainerRoad page.
 
 After you gathered all required configuration, you can click Confirm button.
