@@ -26,7 +26,7 @@ class LibraryService(
         val targetWorkoutRepository = workoutRepositoryMap[request.targetPlatform]!!
 
         val workouts = sourceWorkoutRepository.getWorkoutsFromLibrary(request.libraryContainer)
-        val newPlan = targetPlanRepository.createLibraryContainer(request.newName, Date.thisMonday(), true)
+        val newPlan = targetPlanRepository.createLibraryContainer(request.newName, Date.thisMonday(), request.libraryContainer.isPlan)
         targetWorkoutRepository.saveWorkoutsToLibrary(newPlan, workouts)
         return CopyPlanResponse(newPlan.name, workouts.size)
     }
