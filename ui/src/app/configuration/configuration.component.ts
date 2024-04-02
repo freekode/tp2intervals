@@ -40,8 +40,8 @@ export class ConfigurationComponent implements OnInit {
   private readonly packageName = "org.freekode.tp2intervals";
 
   formGroup: FormGroup = this.formBuilder.group({
-    'training-peaks.auth-cookie': [null, [Validators.pattern('^Production_tpAuth=.*$')]],
-    'trainer-road.auth-cookie': [null, [Validators.pattern('^TrainerRoadAuth=.*$')]],
+    'training-peaks.auth-cookie': [null, [Validators.pattern('^Production_tpAuth=[a-zA-Z0-9-_]*$')]],
+    'trainer-road.auth-cookie': [null, [Validators.pattern('^TrainerRoadAuth=[A-Z0-9]*$')]],
     'intervals.api-key': [null, Validators.required],
     'intervals.athlete-id': [null, Validators.required],
     'intervals.power-range': [null, [Validators.required, Validators.min(0), Validators.max(100)]],
