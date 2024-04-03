@@ -1,6 +1,10 @@
-xdescribe('Tests for release', {
+describe('Tests for release', {
   defaultCommandTimeout: 10000
 }, () => {
+  if (!Cypress.env('release')) {
+    return
+  }
+
   beforeEach(() => {
     cy.visit('/')
   })
