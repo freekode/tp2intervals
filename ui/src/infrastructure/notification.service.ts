@@ -6,7 +6,7 @@ import { MatSnackBar } from "@angular/material/snack-bar";
   providedIn: 'root'
 })
 export class NotificationService {
-  private readonly duration = 10000
+  private readonly duration = 20 * 1000
 
   constructor(
     private snackBar: MatSnackBar
@@ -15,7 +15,7 @@ export class NotificationService {
 
   success(message) {
     let snackBarRef = this.snackBar.open(message, 'X', {
-      duration: this.duration,
+      // duration: this.duration,
       verticalPosition: 'top',
       horizontalPosition: 'right',
       panelClass: 'app-notification-success'
