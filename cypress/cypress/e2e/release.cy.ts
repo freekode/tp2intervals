@@ -1,6 +1,6 @@
-const bigTimeout = 10000
-
-xdescribe('Tests for release', () => {
+xdescribe('Tests for release', {
+  defaultCommandTimeout: 10000
+}, () => {
   beforeEach(() => {
     cy.visit('/')
   })
@@ -18,7 +18,7 @@ xdescribe('Tests for release', () => {
       cy.get('app-training-peaks mat-expansion-panel:nth-child(1)').click()
 
       cy.get(mainComponent).find('#btn-confirm').click()
-      cy.get('mat-snack-bar-container.app-notification-success', {timeout: 10000}).should('exist')
+      cy.get('mat-snack-bar-container.app-notification-success').should('exist')
     })
 
     it('should copy plan', () => {
@@ -32,7 +32,7 @@ xdescribe('Tests for release', () => {
       cy.get('mat-option').contains(`${planName} (plan, workouts: 7)`).click()
       cy.get(mainComponent).find('input[formControlName="newName"]').should('have.value', planName)
       cy.get(mainComponent).find('#btn-confirm').click()
-      cy.get('mat-snack-bar-container.app-notification-success', {timeout: bigTimeout}).should('exist')
+      cy.get('mat-snack-bar-container.app-notification-success').should('exist')
     })
 
     it('should copy workouts from calendar', () => {
@@ -46,7 +46,7 @@ xdescribe('Tests for release', () => {
       cy.get('mat-month-view tr[role="row"]:nth-child(2) td[role=gridcell]:nth-last-child(1)').click()
 
       cy.get(mainComponent).find('#btn-confirm').click()
-      cy.get('mat-snack-bar-container.app-notification-success', {timeout: bigTimeout}).should('exist')
+      cy.get('mat-snack-bar-container.app-notification-success').should('exist')
     })
 
   })
@@ -59,13 +59,13 @@ xdescribe('Tests for release', () => {
       cy.get('mat-expansion-panel:nth-child(1)').click()
 
       cy.get(mainComponent)
-        .find('mat-form-field#tr-workout-name input', {timeout: bigTimeout})
+        .find('mat-form-field#tr-workout-name input')
         .should('be.enabled')
       cy.get(mainComponent)
         .find('mat-form-field#tr-workout-name')
         .click()
         .type('Obelisk')
-      cy.get('mat-option', {timeout: bigTimeout})
+      cy.get('mat-option')
         .contains(`Obelisk`)
         .click()
 
@@ -73,7 +73,7 @@ xdescribe('Tests for release', () => {
       cy.get('mat-option').contains(`tp2intervals`).click()
 
       cy.get(mainComponent).find('#btn-confirm').click()
-      cy.get('mat-snack-bar-container.app-notification-success', {timeout: bigTimeout}).should('exist')
+      cy.get('mat-snack-bar-container.app-notification-success').should('exist')
     })
 
     it('should copy workouts from calendar', () => {
@@ -87,7 +87,7 @@ xdescribe('Tests for release', () => {
       cy.get('mat-month-view tr[role="row"]:nth-child(2) td[role=gridcell]:nth-last-child(1)').click()
 
       cy.get(mainComponent).find('#btn-confirm').click()
-      cy.get('mat-snack-bar-container.app-notification-success', {timeout: bigTimeout}).should('exist')
+      cy.get('mat-snack-bar-container.app-notification-success').should('exist')
     })
 
   })

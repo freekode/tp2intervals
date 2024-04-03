@@ -1,16 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, RouterLink } from "@angular/router";
 import { EnvironmentService } from "infrastructure/environment.service";
-import { MatButton, MatIconAnchor } from "@angular/material/button";
-import { MatToolbar } from "@angular/material/toolbar";
+import { MatButton, MatButtonModule, MatIconAnchor } from "@angular/material/button";
+import { MatToolbar, MatToolbarModule } from "@angular/material/toolbar";
 
 @Component({
   selector: 'app-top-bar',
   standalone: true,
   imports: [
-    MatButton,
-    MatIconAnchor,
-    MatToolbar,
+    MatButtonModule,
+    MatToolbarModule,
     RouterLink,
   ],
   templateUrl: './top-bar.component.html',
