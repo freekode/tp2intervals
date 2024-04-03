@@ -1,0 +1,25 @@
+<mat-toolbar color="primary">
+  @for (button of menuButtons; track button) {
+    @if (router.url === button.url) {
+      <button
+        id="{{button.url.substring(1, 100)}}"
+        mat-stroked-button
+        [routerLink]="[button.url]">
+        {{ button.name }}
+      </button>
+    } @else {
+      <button
+        mat-flat-button
+        color="primary"
+        id="{{button.url.substring(1, 100)}}"
+        [routerLink]="[button.url]">
+        {{ button.name }}
+      </button>
+    }
+  }
+  <span class="spacer"></span>
+  <div>v{{ appVersion }}</div>
+  <a mat-icon-button href="https://github.com/freekode/tp2intervals" target="_blank" class="github-link">
+    <i class="bi bi-github"></i>
+  </a>
+</mat-toolbar>
