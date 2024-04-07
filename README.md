@@ -46,7 +46,7 @@ Docker image also built for every release
 To run docker execute:
 
 ```shell
-docker run -rm --name tp2intervals -p 8080:80 ghcr.io/freekode/tp2intervals/tp2intervals:latest
+docker run --rm --name tp2intervals -p 8080:8080 ghcr.io/freekode/tp2intervals/tp2intervals:latest
 ```
 
 Or with `docker-compose`
@@ -58,7 +58,7 @@ services:
     image: ghcr.io/freekode/tp2intervals/tp2intervals:latest
     container_name: tp2intervals
     ports:
-      - '8080:80'
+      - '8080:8080'
 ```
 
 ## How to configure
