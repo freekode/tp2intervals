@@ -15,7 +15,7 @@ import org.springframework.web.multipart.MultipartFile
 
 @FeignClient(
     value = "IntervalsApiClient",
-    url = "\${intervals.api-url}",
+    url = "\${app.intervals.api-url}",
     dismiss404 = true,
     primary = false,
     configuration = [IntervalsApiClientConfig::class]

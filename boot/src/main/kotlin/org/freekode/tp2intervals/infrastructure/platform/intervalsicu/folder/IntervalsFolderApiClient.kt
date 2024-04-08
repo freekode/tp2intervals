@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody
 
 @FeignClient(
     value = "IntervalsFolderApiClient",
-    url = "\${intervals.api-url}",
+    url = "\${app.intervals.api-url}",
     dismiss404 = true,
     primary = false,
     configuration = [IntervalsApiClientConfig::class]

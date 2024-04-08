@@ -1,0 +1,548 @@
+[
+  {
+    "exerciseLibraryId": 1342793,
+    "exerciseLibraryItemId": 4172863,
+    "exerciseLibraryItemType": "WorkoutTemplate",
+    "itemName": "Absa Cape Epic Workout 4",
+    "workoutTypeId": 2,
+    "totalTimePlanned": 1.1333333333333333,
+    "tssPlanned": 85.6,
+    "ifPlanned": 0.87,
+    "description": "Today's session is all about lactate tolerance. During the Absa Cape Epic you will find many obstacles requiring you to go above threshold. Teaching your body to be able to deal with lactate after such efforts and continue at a steady state is vital to getting through stages as fast a possible.\r\n\r\nThe workout is focused on Z4 interspersed with 30 sec sprints. This type of workout is where it starts to get uncomfortable for me but it helps to keep the eye on the prize. We will start by doing two shorter accelerations in the warm up to get you used to the effort before we move into the main body of the session.",
+    "coachComments": null,
+    "fileAttachments": null,
+    "structure": {
+      "structure": [
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "name": "Warm up",
+              "length": {
+                "value": 600,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 45
+                }
+              ],
+              "intensityClass": "warmUp",
+              "openDuration": false
+            }
+          ],
+          "begin": 0,
+          "end": 600
+        },
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "name": "Active",
+              "length": {
+                "value": 30,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 109
+                }
+              ],
+              "intensityClass": "active",
+              "openDuration": false
+            }
+          ],
+          "begin": 600,
+          "end": 630
+        },
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "name": "Recovery",
+              "length": {
+                "value": 180,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 50
+                }
+              ],
+              "intensityClass": "rest",
+              "openDuration": false
+            }
+          ],
+          "begin": 630,
+          "end": 810
+        },
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "name": "Active",
+              "length": {
+                "value": 30,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 109
+                }
+              ],
+              "intensityClass": "active",
+              "openDuration": false
+            }
+          ],
+          "begin": 810,
+          "end": 840
+        },
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "name": "Recovery",
+              "length": {
+                "value": 300,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 50
+                }
+              ],
+              "intensityClass": "rest",
+              "openDuration": false
+            }
+          ],
+          "begin": 840,
+          "end": 1140
+        },
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "name": "Active",
+              "length": {
+                "value": 30,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 151
+                }
+              ],
+              "intensityClass": "active",
+              "openDuration": false
+            }
+          ],
+          "begin": 1140,
+          "end": 1170
+        },
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "name": "Active",
+              "length": {
+                "value": 300,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 91
+                }
+              ],
+              "intensityClass": "active",
+              "openDuration": false
+            }
+          ],
+          "begin": 1170,
+          "end": 1470
+        },
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "name": "Active",
+              "length": {
+                "value": 30,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 151
+                }
+              ],
+              "intensityClass": "active",
+              "openDuration": false
+            }
+          ],
+          "begin": 1470,
+          "end": 1500
+        },
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "name": "Active",
+              "length": {
+                "value": 300,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 91
+                }
+              ],
+              "intensityClass": "active",
+              "openDuration": false
+            }
+          ],
+          "begin": 1500,
+          "end": 1800
+        },
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "name": "Active",
+              "length": {
+                "value": 30,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 151
+                }
+              ],
+              "intensityClass": "active",
+              "openDuration": false
+            }
+          ],
+          "begin": 1800,
+          "end": 1830
+        },
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "name": "Active",
+              "length": {
+                "value": 300,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 91
+                }
+              ],
+              "intensityClass": "active",
+              "openDuration": false
+            }
+          ],
+          "begin": 1830,
+          "end": 2130
+        },
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "name": "Active",
+              "length": {
+                "value": 30,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 151
+                }
+              ],
+              "intensityClass": "active",
+              "openDuration": false
+            }
+          ],
+          "begin": 2130,
+          "end": 2160
+        },
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "name": "Recovery",
+              "length": {
+                "value": 300,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 50
+                }
+              ],
+              "intensityClass": "rest",
+              "openDuration": false
+            }
+          ],
+          "begin": 2160,
+          "end": 2460
+        },
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "name": "Active",
+              "length": {
+                "value": 30,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 151
+                }
+              ],
+              "intensityClass": "active",
+              "openDuration": false
+            }
+          ],
+          "begin": 2460,
+          "end": 2490
+        },
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "name": "Active",
+              "length": {
+                "value": 300,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 91
+                }
+              ],
+              "intensityClass": "active",
+              "openDuration": false
+            }
+          ],
+          "begin": 2490,
+          "end": 2790
+        },
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "name": "Active",
+              "length": {
+                "value": 30,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 151
+                }
+              ],
+              "intensityClass": "active",
+              "openDuration": false
+            }
+          ],
+          "begin": 2790,
+          "end": 2820
+        },
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "name": "Active",
+              "length": {
+                "value": 300,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 91
+                }
+              ],
+              "intensityClass": "active",
+              "openDuration": false
+            }
+          ],
+          "begin": 2820,
+          "end": 3120
+        },
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "name": "Active",
+              "length": {
+                "value": 30,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 151
+                }
+              ],
+              "intensityClass": "active",
+              "openDuration": false
+            }
+          ],
+          "begin": 3120,
+          "end": 3150
+        },
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "name": "Active",
+              "length": {
+                "value": 300,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 91
+                }
+              ],
+              "intensityClass": "active",
+              "openDuration": false
+            }
+          ],
+          "begin": 3150,
+          "end": 3450
+        },
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "name": "Active",
+              "length": {
+                "value": 30,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 151
+                }
+              ],
+              "intensityClass": "active",
+              "openDuration": false
+            }
+          ],
+          "begin": 3450,
+          "end": 3480
+        },
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "name": "Cool Down",
+              "length": {
+                "value": 600,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 45
+                }
+              ],
+              "intensityClass": "coolDown",
+              "openDuration": false
+            }
+          ],
+          "begin": 3480,
+          "end": 4080
+        }
+      ],
+      "primaryLengthMetric": "duration",
+      "primaryIntensityMetric": "percentOfFtp",
+      "primaryIntensityTargetOrRange": "target"
+    },
+    "fromLegacy": null
+  }
+]

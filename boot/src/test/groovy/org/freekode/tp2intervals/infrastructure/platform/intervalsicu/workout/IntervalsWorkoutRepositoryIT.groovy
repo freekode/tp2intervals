@@ -24,7 +24,7 @@ class IntervalsWorkoutRepositoryIT extends SpringIT {
         appConfigurationRepository.updateConfig(new UpdateConfigurationRequest(
                 Map.of(
                         "intervals.api-key", "my-key",
-                        "intervals.athlete-id", "my-athlete"
+                        "intervals.athlete-id", "i111111"
                 )
         ))
     }

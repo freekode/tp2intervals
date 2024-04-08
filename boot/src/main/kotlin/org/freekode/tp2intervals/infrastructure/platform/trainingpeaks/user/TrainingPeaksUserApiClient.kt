@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping
 
 @FeignClient(
     value = "TrainingPeaksUserApiClient",
-    url = "\${training-peaks.api-url}",
+    url = "\${app.training-peaks.api-url}",
     dismiss404 = true,
     primary = false,
     configuration = [TrainingPeaksApiClientConfig::class]

@@ -6,16 +6,16 @@ import org.freekode.tp2intervals.infrastructure.PlatformException
 
 class TPLengthDTO(
     var value: Long,
-    var unit: LengthUnit,
+    var unit: String,
 ) {
     companion object {
-        fun seconds(value: Long) = TPLengthDTO(value, LengthUnit.second)
-        fun repetitions(value: Long) = TPLengthDTO(value, LengthUnit.repetition)
+        fun seconds(value: Long) = TPLengthDTO(value, "second")
+        fun repetitions(value: Long) = TPLengthDTO(value, "repetition")
         fun single() = repetitions(1)
     }
 
     fun reps(): Long {
-        if (unit != LengthUnit.repetition) {
+        if (unit != "repetition") {
             throw PlatformException(Platform.TRAINING_PEAKS, "not a repetition length")
         }
         return value
@@ -23,12 +23,8 @@ class TPLengthDTO(
 
     fun mapDuration(): Duration {
         return when (unit) {
-            LengthUnit.second -> Duration.ofSeconds(value)
+            "second" -> Duration.ofSeconds(value)
             else -> throw PlatformException(Platform.TRAINING_PEAKS, "Can't map such unit - $unit")
         }
-    }
-
-    enum class LengthUnit {
-        step, second, repetition, meter
     }
 }
