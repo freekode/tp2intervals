@@ -1,9 +1,23 @@
-dev:
-  mock: true
+dev.mock: true
+
+app:
+  default-config:
+    'intervals.api-key': my-api-key
+    'intervals.athlete-id': i112233
+    'training-peaks.auth-cookie': Production_tpAuth=tp-auth-cookie
+    'trainer-road.auth-cookie': TrainerRoadAuth=tr-auth-cookie
+  training-peaks:
+    api-url: http://localhost:4567/training-peaks
+  intervals:
+    api-url: http://localhost:4567/intervals
+  trainer-road:
+    api-url: http://localhost:4567/trainer-road
 
 logging:
   level:
     org.freekode.tp2intervals.infrastructure: debug
+  file:
+    name:
 
 spring:
   main:

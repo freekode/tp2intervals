@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestHeader
 
 @FeignClient(
     value = "IntervalsAthleteApiClient",
-    url = "\${intervals.api-url}",
+    url = "\${app.intervals.api-url}",
     dismiss404 = true,
     primary = false,
 )

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody
 
 @FeignClient(
     value = "TrainerRoadApiClient",
-    url = "\${trainer-road.api-url}",
+    url = "\${app.trainer-road.api-url}",
     dismiss404 = true,
     primary = false,
     configuration = [TrainerRoadApiClientConfig::class]

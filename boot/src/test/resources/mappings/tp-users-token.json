@@ -1,0 +1,28 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/training-peaks/users/v3/token",
+    "headers": {
+      "Cookie": {
+        "contains": "tp-auth"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "success": true,
+      "token": {
+        "access_token": "my-access-token",
+        "token_type": "bearer",
+        "expires_in": 3600,
+        "refresh_token": "refresh_token",
+        "scope": "my-scope",
+        "expires": "2020-01-01T01:01:00.06159-06:00"
+      }
+    }
+  }
+}

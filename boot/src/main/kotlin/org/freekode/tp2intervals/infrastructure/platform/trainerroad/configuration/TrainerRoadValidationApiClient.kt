@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestHeader
 
 @FeignClient(
     value = "TrainerRoadValidationApiClient",
-    url = "\${trainer-road.api-url}",
+    url = "\${app.trainer-road.api-url}",
     dismiss404 = true,
 )
 interface TrainerRoadValidationApiClient {
