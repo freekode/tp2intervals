@@ -36,7 +36,7 @@ class TPWorkoutLibraryRepository(
 
     private fun toPlan(libraryDTO: TPWorkoutLibraryDTO): LibraryContainer {
         return LibraryContainer(
-            libraryDTO.libraryName,
+            "${libraryDTO.libraryName} (${libraryDTO.ownerName})",
             Date.thisMonday(),
             false,
             0,
