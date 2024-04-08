@@ -12,10 +12,11 @@ class TPStructureToStepMapper(
     fun mapToWorkoutSteps(): List<WorkoutStep> {
         return tPWorkoutStructureDTO.structure.map {
             when (it.type) {
-                TPStructureStepDTO.StructureType.step -> mapSingleStep(it.steps[0])
-                TPStructureStepDTO.StructureType.repetition -> mapMultiStep(it)
-                TPStructureStepDTO.StructureType.rampUp -> mapMultiStep(it)
-                TPStructureStepDTO.StructureType.rampDown -> mapMultiStep(it)
+                "step" -> mapSingleStep(it.steps[0])
+                "repetition" -> mapMultiStep(it)
+                "rampUp" -> mapMultiStep(it)
+                "rampDown" -> mapMultiStep(it)
+                else -> throw IllegalArgumentException("Unknown step type: ${it.type}")
             }
         }
     }

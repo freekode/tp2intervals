@@ -4,20 +4,10 @@ import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
 
 class TPWorkoutStructureDTO(
     var structure: List<TPStructureStepDTO>,
-    var primaryLengthMetric: LengthMetric,
+    var primaryLengthMetric: String, // distance, duration
     var primaryIntensityMetric: String,
-    var primaryIntensityTargetOrRange: IntensityTargetOrRange?,
+    var primaryIntensityTargetOrRange: String?, // range, target
     var visualizationDistanceUnit: String?
 ) {
     fun toTargetUnit(): WorkoutStructure.TargetUnit = TPTargetMapper.getByIntensity(primaryIntensityMetric)
-
-    enum class LengthMetric {
-        distance,
-        duration
-    }
-
-    enum class IntensityTargetOrRange {
-        range,
-        target
-    }
 }

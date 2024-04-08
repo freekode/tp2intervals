@@ -34,9 +34,9 @@ class StructureToTPConverter(
 
         return TPWorkoutStructureDTO(
             stepDTOs,
-            TPWorkoutStructureDTO.LengthMetric.duration,
+            "duration",
             TPTargetMapper.getByTargetUnit(structure.target),
-            TPWorkoutStructureDTO.IntensityTargetOrRange.range,
+            "range",
             null
         )
     }
