@@ -25,10 +25,6 @@
           "structure": [
             {
               "type": "step",
-              "length": {
-                "value": 1,
-                "unit": "repetition"
-              },
               "steps": [
                 {
                   "name": "Warm up",
