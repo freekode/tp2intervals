@@ -23,7 +23,18 @@ class TPToWorkoutConverter {
         return toWorkout(tpWorkout, LocalDate.now())
     }
 
-    fun toWorkout(tpWorkout: TPBaseWorkoutResponseDTO, workoutDate: LocalDate): Workout {
+    fun toWorkout(tpNote: TPNoteResponseDTO): Workout {
+        return Workout.note(
+            tpNote.noteDate.toLocalDate(),
+            tpNote.title,
+            tpNote.description,
+            ExternalData
+                .empty()
+                .withTrainingPeaks(tpNote.id.toString())
+        )
+    }
+
+    private fun toWorkout(tpWorkout: TPBaseWorkoutResponseDTO, workoutDate: LocalDate): Workout {
         val workoutsStructure = toWorkoutStructure(tpWorkout)
         var description = tpWorkout.description.orEmpty()
         description += tpWorkout.coachComments?.let { "\n- - - -\n$it" }.orEmpty()
@@ -45,17 +56,6 @@ class TPToWorkoutConverter {
             .empty()
             .withTrainingPeaks(tpWorkout.id)
             .withSimpleString(tpWorkout.description ?: "")
-    }
-
-    fun toWorkout(tpNote: TPNoteResponseDTO): Workout {
-        return Workout.note(
-            tpNote.noteDate.toLocalDate(),
-            tpNote.title,
-            tpNote.description,
-            ExternalData
-                .empty()
-                .withTrainingPeaks(tpNote.id.toString())
-        )
     }
 
     private fun toWorkoutStructure(tpWorkout: TPBaseWorkoutResponseDTO): WorkoutStructure? {
