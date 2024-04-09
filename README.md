@@ -98,6 +98,14 @@ Check all your values and save configuration again.
   in [GitHub](https://github.com/freekode/tp2intervals/issues)
   or write directly to me iam@freekode.org. Add logs from your app, it can help a lot to resolve the issue.
 
+### Scheduling for the next day with TrainingPeaks free account
+Officially you can't plan workouts for future dates, but practically you can plan workout for tomorrow.
+TP server local time is in UTC-6 time zone. You can plan workout for the next day relative to TP server local time.
+
+E.g your TZ is UTC+2, current local datetime 20.05.2024 06:00. TP server local datetime is 19.05.2024 22:00. You can plan workouts for 20.05.2024, you can't plan workouts for 21.05.2024, you can do it in 2 hours.
+
+E.g your TZ is UTC+12, current local datetime 20.05.2024 18:00. TP server local datetime is 20.05.2024 00:00. You can plan workouts for 21.05.2024.
+
 ### Log location
 
 * Linux: ~/.config/tp2intervals/logs/main.log
