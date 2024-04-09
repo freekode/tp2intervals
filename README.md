@@ -106,6 +106,8 @@ E.g your TZ is UTC+2, current local datetime 20.05.2024 06:00. TP server local d
 
 E.g your TZ is UTC+12, current local datetime 20.05.2024 18:00. TP server local datetime is 20.05.2024 00:00. You can plan workouts for 21.05.2024.
 
+Example with [worldtimebuddy](https://www.worldtimebuddy.com/?pl=1&lid=206,100,756135,2193733&h=206&hf=0)
+
 ### Log location
 
 * Linux: ~/.config/tp2intervals/logs/main.log
