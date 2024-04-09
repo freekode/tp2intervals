@@ -44,10 +44,8 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
-    testImplementation("org.springframework.boot:spring-boot-starter-test") {
-        exclude("junit", "junit")
-    }
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.10.2")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine")
     testImplementation("org.wiremock:wiremock-standalone:3.5.2")
 }
 

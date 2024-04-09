@@ -1,6 +1,5 @@
 package org.freekode.tp2intervals.infrastructure.configuration
 
-import jakarta.annotation.PostConstruct
 import org.freekode.tp2intervals.domain.config.AppConfigurationRepository
 import org.freekode.tp2intervals.domain.config.UpdateConfigurationRequest
 import org.slf4j.LoggerFactory
@@ -14,8 +13,11 @@ class DefaultConfigurationInitializer(
 ) {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
-    @PostConstruct
-    fun initDevProperties() {
+    init {
+        initDefaultProperties()
+    }
+
+    private fun initDefaultProperties() {
         if (defaultConfiguration.defaultConfig == null) {
             return
         }
