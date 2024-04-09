@@ -31,13 +31,13 @@ class ConfigurationService(
         request: UpdateConfigurationRequest,
         repository: PlatformConfigurationRepository
     ): String? {
-        try {
+        return try {
             repository.updateConfig(request)
-            return null
+            null
         } catch (e: PlatformException) {
-            return "${e.platform.title}: ${e.message}"
+            "${e.platform.title}: ${e.message}"
         } catch (e: Exception) {
-            return e.message
+            e.message
         }
     }
 }

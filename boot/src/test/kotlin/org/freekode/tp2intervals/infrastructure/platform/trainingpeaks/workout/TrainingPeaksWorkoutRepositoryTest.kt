@@ -14,7 +14,6 @@ class TrainingPeaksWorkoutRepositoryTest : SpringITConfig() {
     lateinit var trainingPeaksWorkoutRepository: TrainingPeaksWorkoutRepository
 
     @Test
-    @Disabled
     fun test() {
         val container =
             LibraryContainer("lib", LocalDate.now(), false, 0, ExternalData.empty().withTrainingPeaks("tp-id"))
