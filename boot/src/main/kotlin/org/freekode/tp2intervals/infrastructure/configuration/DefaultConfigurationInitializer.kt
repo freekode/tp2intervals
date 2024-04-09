@@ -19,6 +19,7 @@ class DefaultConfigurationInitializer(
 
     private fun initDefaultProperties() {
         if (defaultConfiguration.defaultConfig == null) {
+            log.info("Default configuration is empty")
             return
         }
         log.info("Initializing default configuration")

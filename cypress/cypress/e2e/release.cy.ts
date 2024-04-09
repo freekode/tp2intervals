@@ -21,6 +21,8 @@ describe('Tests for release', {
       cy.get('button#training-peaks').click()
       cy.get('app-training-peaks mat-expansion-panel:nth-child(1)').click()
 
+      selectCalendarDate(mainComponent)
+
       cy.get(mainComponent).find('#btn-confirm').click()
       cy.get('mat-snack-bar-container.app-notification-success').should('exist')
     })
@@ -33,7 +35,7 @@ describe('Tests for release', {
       cy.get('app-training-peaks mat-expansion-panel:nth-child(2)').click()
 
       cy.get(mainComponent).find('mat-select[formControlName="plan"]').click()
-      cy.get('mat-option').contains(`${planName} (plan, workouts: 7)`).click()
+      cy.get('mat-option').contains(`${planName} [plan, workouts: 7]`).click()
       cy.get(mainComponent).find('input[formControlName="newName"]').should('have.value', planName)
       cy.get(mainComponent).find('#btn-confirm').click()
       cy.get('mat-snack-bar-container.app-notification-success').should('exist')
@@ -45,9 +47,7 @@ describe('Tests for release', {
       cy.get('button#training-peaks').click()
       cy.get('app-training-peaks mat-expansion-panel:nth-child(3)').click()
 
-      cy.get(mainComponent).find('mat-datepicker-toggle').click()
-      cy.get('mat-month-view tr[role="row"]:nth-child(2) td[role=gridcell]:nth-child(2)').click()
-      cy.get('mat-month-view tr[role="row"]:nth-child(2) td[role=gridcell]:nth-last-child(1)').click()
+      selectCalendarDate(mainComponent)
 
       cy.get(mainComponent).find('#btn-confirm').click()
       cy.get('mat-snack-bar-container.app-notification-success').should('exist')
@@ -86,9 +86,7 @@ describe('Tests for release', {
       cy.get('button#trainer-road').click()
       cy.get('mat-expansion-panel:nth-child(2)').click()
 
-      cy.get(mainComponent).find('mat-datepicker-toggle').click()
-      cy.get('mat-month-view tr[role="row"]:nth-child(2) td[role=gridcell]:nth-child(2)').click()
-      cy.get('mat-month-view tr[role="row"]:nth-child(2) td[role=gridcell]:nth-last-child(1)').click()
+      selectCalendarDate(mainComponent)
 
       cy.get(mainComponent).find('#btn-confirm').click()
       cy.get('mat-snack-bar-container.app-notification-success').should('exist')
@@ -104,4 +102,13 @@ describe('Tests for release', {
     cy.get('input[formControlName="training-peaks.auth-cookie"]').should('exist')
     cy.get('input[formControlName="trainer-road.auth-cookie"]').should('exist')
   })
+
+  function selectCalendarDate(parentComponent) {
+    cy.get(parentComponent).find('mat-datepicker-toggle').click()
+    cy.get('mat-datepicker-content').find('button.mat-calendar-period-button').click()
+    cy.get('mat-datepicker-content').find('button.mat-calendar-body-cell').contains('2024').click()
+    cy.get('mat-datepicker-content').find('button.mat-calendar-body-cell').contains('APR').click()
+    cy.get('mat-datepicker-content').find('button.mat-calendar-body-cell').contains('2').click()
+    cy.get('mat-datepicker-content').find('button.mat-calendar-body-cell').contains('4').click()
+  }
 })

@@ -1,5 +1,3 @@
-dev.mock: true
-
 app:
   default-config:
     'intervals.api-key': my-api-key
