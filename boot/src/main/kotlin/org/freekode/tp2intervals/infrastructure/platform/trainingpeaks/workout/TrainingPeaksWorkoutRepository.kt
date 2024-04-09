@@ -18,6 +18,7 @@ import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.plan.TPPl
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.user.TrainingPeaksUserRepository
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.StructureToTPConverter
 import org.freekode.tp2intervals.infrastructure.utils.Date
+import org.slf4j.LoggerFactory
 import org.springframework.cache.annotation.CacheConfig
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Repository
@@ -34,6 +35,8 @@ class TrainingPeaksWorkoutRepository(
     private val trainingPeaksConfigurationRepository: TrainingPeaksConfigurationRepository,
     private val objectMapper: ObjectMapper,
 ) : WorkoutRepository {
+    private val log = LoggerFactory.getLogger(this.javaClass)
+
     override fun platform() = Platform.TRAINING_PEAKS
 
     override fun saveWorkoutsToCalendar(workouts: List<Workout>) {
@@ -55,7 +58,15 @@ class TrainingPeaksWorkoutRepository(
 
         val noteEndDate = getNoteEndDateForFilter(startDate, endDate)
         val tpNotes = trainingPeaksApiClient.getNotes(userId, startDate.toString(), noteEndDate.toString())
-        val workouts = tpWorkouts.map { tpToWorkoutConverter.toWorkout(it) }
+        val workouts = tpWorkouts.mapNotNull {
+            try {
+                tpToWorkoutConverter.toWorkout(it)
+            } catch (e: Exception) {
+                log.warn("Can't convert workout - ${it.title}, error - ${e.message}'", e)
+                null
+            }
+        }
+
         val notes = tpNotes.map { tpToWorkoutConverter.toWorkout(it) }
         return workouts + notes
     }

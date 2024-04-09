@@ -1,8 +1,8 @@
 package org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout
 
 import java.time.Duration
-import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.ExternalData
+import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutMultiStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutSingleStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStep
@@ -11,7 +11,7 @@ import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
 class IntervalsToWorkoutConverter(
     private val eventDTO: IntervalsEventDTO
 ) {
-    private val workoutDoc: IntervalsWorkoutDocDTO? = eventDTO.workout_doc
+    private val workoutDoc: IntervalsWorkoutDocDTO? by lazy { eventDTO.workout_doc }
 
     fun toWorkout(): Workout {
         val workoutsStructure = toWorkoutStructure()
@@ -29,12 +29,16 @@ class IntervalsToWorkoutConverter(
     }
 
     private fun toWorkoutStructure(): WorkoutStructure? {
-        return if (workoutDoc != null && workoutDoc.steps.isNotEmpty()) {
-            WorkoutStructure(
-                workoutDoc.mapTarget(),
-                mapToWorkoutSteps(workoutDoc)
-            )
-        } else null
+        return workoutDoc?.let { workoutDoc ->
+            if (workoutDoc.steps.isNotEmpty()) {
+                WorkoutStructure(
+                    workoutDoc.mapTarget(),
+                    mapToWorkoutSteps(workoutDoc)
+                )
+            } else {
+                null
+            }
+        }
     }
 
     private fun mapToWorkoutSteps(workoutDoc: IntervalsWorkoutDocDTO): List<WorkoutStep> {
@@ -62,8 +66,8 @@ class IntervalsToWorkoutConverter(
     ): WorkoutSingleStep {
         val targetMapper = IntervalsToTargetConverter(
             workoutDoc!!.ftp?.toDouble(),
-            workoutDoc.lthr?.toDouble(),
-            workoutDoc.threshold_pace?.toDouble()
+            workoutDoc!!.lthr?.toDouble(),
+            workoutDoc!!.threshold_pace?.toDouble()
         )
         val mainTarget = targetMapper.toMainTarget(stepDTO)
         val cadenceTarget = stepDTO.cadence?.let { targetMapper.toCadenceTarget(it) }

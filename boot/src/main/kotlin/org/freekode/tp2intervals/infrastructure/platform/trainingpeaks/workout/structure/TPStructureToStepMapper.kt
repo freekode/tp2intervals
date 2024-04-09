@@ -34,7 +34,7 @@ class TPStructureToStepMapper(
     private fun mapMultiStep(TPStructureStepDTO: TPStructureStepDTO): WorkoutStep {
         return WorkoutMultiStep(
             null,
-            TPStructureStepDTO.length.reps().toInt(),
+            TPStructureStepDTO.length!!.reps().toInt(),
             TPStructureStepDTO.steps.map { mapSingleStep(it) },
         )
     }

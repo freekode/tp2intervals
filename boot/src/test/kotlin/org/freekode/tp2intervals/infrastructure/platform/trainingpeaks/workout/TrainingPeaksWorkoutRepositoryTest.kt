@@ -15,13 +15,11 @@ class TrainingPeaksWorkoutRepositoryTest : SpringITConfig() {
 
     @Test
     @Disabled
-    fun test() {
+    fun `should parse workouts`() {
         val container =
             LibraryContainer("lib", LocalDate.now(), false, 0, ExternalData.empty().withTrainingPeaks("tp-id"))
         val workouts = trainingPeaksWorkoutRepository.getWorkoutsFromLibrary(container)
 
         assertTrue(workouts.isNotEmpty())
     }
-
-
 }
