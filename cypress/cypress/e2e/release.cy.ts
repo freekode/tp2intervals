@@ -24,7 +24,9 @@ describe('Tests for release', {
       selectCalendarDate(mainComponent, '11', '13')
 
       cy.get(mainComponent).find('#btn-confirm').click()
-      cy.get('mat-snack-bar-container.app-notification-success').should('exist')
+      // todo check that workouts were synced
+      cy.get('mat-snack-bar-container.app-notification-success')
+        .should('exist')
     })
 
     it('should copy plan', () => {
@@ -38,7 +40,9 @@ describe('Tests for release', {
       cy.get('mat-option').contains(planName).click()
       cy.get(mainComponent).find('input[formControlName="newName"]').should('have.value', planName)
       cy.get(mainComponent).find('#btn-confirm').click()
-      cy.get('mat-snack-bar-container.app-notification-success').should('exist')
+      cy.get('mat-snack-bar-container.app-notification-success')
+        .contains("Copied workouts: 23")
+        .should('exist')
     })
 
     it('should copy workouts from calendar to lib', () => {
@@ -55,7 +59,9 @@ describe('Tests for release', {
         .type(' ' + new Date().toISOString())
 
       cy.get(mainComponent).find('#btn-confirm').click()
-      cy.get('mat-snack-bar-container.app-notification-success').should('exist')
+      cy.get('mat-snack-bar-container.app-notification-success')
+        .contains("Copied: 3")
+        .should('exist')
     })
   })
 
@@ -81,7 +87,9 @@ describe('Tests for release', {
       cy.get('mat-option').contains(`tp2intervals`).click()
 
       cy.get(mainComponent).find('#btn-confirm').click()
-      cy.get('mat-snack-bar-container.app-notification-success').should('exist')
+      cy.get('mat-snack-bar-container.app-notification-success')
+        .contains("Copied successfully")
+        .should('exist')
     })
 
     it('should copy workouts from calendar', () => {
@@ -93,7 +101,8 @@ describe('Tests for release', {
       selectCalendarDate(mainComponent, '1', '2')
 
       cy.get(mainComponent).find('#btn-confirm').click()
-      cy.get('mat-snack-bar-container.app-notification-success').should('exist')
+      cy.get('mat-snack-bar-container.app-notification-success')
+        .should('exist')
     })
   })
 
