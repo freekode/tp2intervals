@@ -21,7 +21,7 @@ describe('Tests for release', {
       cy.get('button#training-peaks').click()
       cy.get('app-training-peaks mat-expansion-panel:nth-child(1)').click()
 
-      selectCalendarDate(mainComponent)
+      selectCalendarDate(mainComponent, '11', '13')
 
       cy.get(mainComponent).find('#btn-confirm').click()
       cy.get('mat-snack-bar-container.app-notification-success').should('exist')
@@ -29,30 +29,34 @@ describe('Tests for release', {
 
     it('should copy plan', () => {
       let mainComponent = 'tp-copy-library-container'
-      let planName = '4DP Full Frontal Test Peak Plan by The Sufferfest.'
+      let planName = 'Welcome Plan for Cyclists'
 
       cy.get('button#training-peaks').click()
       cy.get('app-training-peaks mat-expansion-panel:nth-child(2)').click()
 
       cy.get(mainComponent).find('mat-select[formControlName="plan"]').click()
-      cy.get('mat-option').contains(`${planName} [plan, workouts: 7]`).click()
+      cy.get('mat-option').contains(planName).click()
       cy.get(mainComponent).find('input[formControlName="newName"]').should('have.value', planName)
       cy.get(mainComponent).find('#btn-confirm').click()
       cy.get('mat-snack-bar-container.app-notification-success').should('exist')
     })
 
-    it('should copy workouts from calendar', () => {
+    it('should copy workouts from calendar to lib', () => {
       let mainComponent = 'tp-copy-calendar-to-library'
 
       cy.get('button#training-peaks').click()
       cy.get('app-training-peaks mat-expansion-panel:nth-child(3)').click()
 
-      selectCalendarDate(mainComponent)
+      selectCalendarDate(mainComponent, '4', '10')
+
+      cy.get(mainComponent)
+        .find('mat-form-field#intervals-plan-name')
+        .click()
+        .type(' ' + new Date().toISOString())
 
       cy.get(mainComponent).find('#btn-confirm').click()
       cy.get('mat-snack-bar-container.app-notification-success').should('exist')
     })
-
   })
 
   describe('Tests for Trainer Road', () => {
@@ -86,12 +90,11 @@ describe('Tests for release', {
       cy.get('button#trainer-road').click()
       cy.get('mat-expansion-panel:nth-child(2)').click()
 
-      selectCalendarDate(mainComponent)
+      selectCalendarDate(mainComponent, '1', '2')
 
       cy.get(mainComponent).find('#btn-confirm').click()
       cy.get('mat-snack-bar-container.app-notification-success').should('exist')
     })
-
   })
 
   it('should display configuration page', () => {
@@ -103,12 +106,12 @@ describe('Tests for release', {
     cy.get('input[formControlName="trainer-road.auth-cookie"]').should('exist')
   })
 
-  function selectCalendarDate(parentComponent) {
+  function selectCalendarDate(parentComponent, dayStart, dayEnd) {
     cy.get(parentComponent).find('mat-datepicker-toggle').click()
     cy.get('mat-datepicker-content').find('button.mat-calendar-period-button').click()
     cy.get('mat-datepicker-content').find('button.mat-calendar-body-cell').contains('2024').click()
-    cy.get('mat-datepicker-content').find('button.mat-calendar-body-cell').contains('APR').click()
-    cy.get('mat-datepicker-content').find('button.mat-calendar-body-cell').contains('2').click()
-    cy.get('mat-datepicker-content').find('button.mat-calendar-body-cell').contains('4').click()
+    cy.get('mat-datepicker-content').find('button.mat-calendar-body-cell').contains('MAR').click()
+    cy.get('mat-datepicker-content').find('button.mat-calendar-body-cell').contains(dayStart).click()
+    cy.get('mat-datepicker-content').find('button.mat-calendar-body-cell').contains(dayEnd).click()
   }
 })

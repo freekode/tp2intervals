@@ -1,6 +1,5 @@
 package org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout
 
-import java.time.Duration
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutMultiStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutSingleStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStep
@@ -33,24 +32,24 @@ class StructureToIntervalsConverter(
     }
 
     private fun getStepString(workoutStep: WorkoutSingleStep): String {
-        val targetUnitStr = targetTypeMap[structure.target]
-            ?: throw IllegalArgumentException("cant find target unit ${structure.target}")
-        val title: String? = workoutStep.name
-        val duration: Duration = workoutStep.duration
-        val min: Int = workoutStep.target.start
-        val max: Int = workoutStep.target.end
-        val rpmMin: Int? = workoutStep.cadence?.start
-        val rpmMax: Int? = workoutStep.cadence?.end
-
-        val durationStr = duration.toString()
+        val name = workoutStep.name.orEmpty().replace("\\", "/")
+        val duration = workoutStep.duration.toString()
             .substring(2)
             .lowercase()
-        val rpmStr = if (rpmMin != null && rpmMax != null) {
-            "$rpmMin-${rpmMax}rpm"
+        val targetUnitStr = targetTypeMap[structure.target]!!
+        val target: String = if (workoutStep.target.isSingleValue()) {
+            "${workoutStep.target.start}"
         } else {
-            ""
+            "${workoutStep.target.start}-${workoutStep.target.end}"
         }
+        val cadence = workoutStep.cadence?.let {
+            if (it.isSingleValue()) {
+                "${it.start}rpm"
+            } else {
+                "${it.start}-${it.end}rpm"
+            }
+        } ?: ""
 
-        return "- ${title.orEmpty().replace("\\", "/")} $durationStr $min-$max${targetUnitStr} $rpmStr"
+        return "- $name $duration $target$targetUnitStr $cadence"
     }
 }

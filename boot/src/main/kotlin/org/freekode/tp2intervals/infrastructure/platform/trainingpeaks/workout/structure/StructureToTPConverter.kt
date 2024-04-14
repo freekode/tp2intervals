@@ -67,7 +67,7 @@ class StructureToTPConverter(
     private fun mapToStepDTO(workoutStep: WorkoutSingleStep): TPStepDTO {
         val targetList = mutableListOf(TPTargetDTO.mainTarget(workoutStep.target.start, workoutStep.target.end))
         workoutStep.cadence
-            ?.let { TPTargetDTO.cadenceTarget(it.start, workoutStep.cadence.end) }
+            ?.let { TPTargetDTO.cadenceTarget(it.start, it.end) }
             ?.also { targetList.add(it) }
 
         return TPStepDTO(
