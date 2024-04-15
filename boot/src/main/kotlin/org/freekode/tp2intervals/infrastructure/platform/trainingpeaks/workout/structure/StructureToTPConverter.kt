@@ -6,6 +6,7 @@ import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutMultiStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutSingleStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStep
+import org.freekode.tp2intervals.domain.workout.structure.WorkoutStepTarget
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
 
 class StructureToTPConverter(
@@ -65,10 +66,9 @@ class StructureToTPConverter(
     }
 
     private fun mapToStepDTO(workoutStep: WorkoutSingleStep): TPStepDTO {
-        val targetList = mutableListOf(TPTargetDTO.mainTarget(workoutStep.target.start, workoutStep.target.end))
-        workoutStep.cadence
-            ?.let { TPTargetDTO.cadenceTarget(it.start, it.end) }
-            ?.also { targetList.add(it) }
+        val mainTarget = toMainTarget(workoutStep.target)
+        val cadenceTarget = workoutStep.cadence?.let { toCadenceTarget(workoutStep.cadence) }
+        val targetList = mutableListOf(mainTarget, cadenceTarget).filterNotNull()
 
         return TPStepDTO(
             workoutStep.name,
@@ -78,4 +78,19 @@ class StructureToTPConverter(
             null
         )
     }
+
+    private fun toMainTarget(target: WorkoutStepTarget) =
+        if (target.isSingleValue()) {
+            TPTargetDTO.mainTarget(target.start)
+        } else {
+            TPTargetDTO.mainTarget(target.start, target.end)
+        }
+
+    private fun toCadenceTarget(target: WorkoutStepTarget) =
+        if (target.isSingleValue()) {
+            TPTargetDTO.cadenceTarget(target.start)
+        } else {
+            TPTargetDTO.cadenceTarget(target.start, target.end)
+        }
+
 }
