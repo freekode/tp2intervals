@@ -22,7 +22,7 @@ class TrainingPeaksActivityRepository(
     }
 
     override fun createActivity(activity: Activity) {
-        val athleteId = trainingPeaksUserRepository.getUserId()
+        val athleteId = trainingPeaksUserRepository.getUser().userId
         val createRequest = CreateTPWorkoutDTO.createActivity(athleteId, activity)
         trainingPeaksApiClient.createAndPlanWorkout(athleteId, createRequest)
     }

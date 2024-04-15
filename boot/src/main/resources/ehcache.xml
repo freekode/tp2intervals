@@ -12,9 +12,9 @@
             <offheap unit="MB">1</offheap>
         </resources>
     </cache>
-    <cache alias="tpUserIdCache">
+    <cache alias="tpUserCache">
         <key-type>java.lang.String</key-type>
-        <value-type>java.lang.String</value-type>
+        <value-type>org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.user.TrainingPeaksUser</value-type>
         <expiry>
             <ttl unit="days">1</ttl>
         </expiry>

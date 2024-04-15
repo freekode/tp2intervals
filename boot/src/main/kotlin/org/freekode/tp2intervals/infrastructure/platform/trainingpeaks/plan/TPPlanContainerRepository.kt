@@ -42,7 +42,7 @@ class TPPlanContainerRepository(
 
     fun applyPlan(planId: String, startDate: LocalDate): ApplyTPPlanResponseDTO {
         val request = ApplyTPPlanRequestDTO(
-            trainingPeaksUserRepository.getUserId(),
+            trainingPeaksUserRepository.getUser().userId,
             planId,
             startDate.toString(),
             "1"

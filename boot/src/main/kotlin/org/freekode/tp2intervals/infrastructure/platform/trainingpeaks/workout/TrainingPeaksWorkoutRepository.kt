@@ -53,7 +53,7 @@ class TrainingPeaksWorkoutRepository(
     }
 
     override fun getWorkoutsFromCalendar(startDate: LocalDate, endDate: LocalDate): List<Workout> {
-        val userId = trainingPeaksUserRepository.getUserId()
+        val userId = trainingPeaksUserRepository.getUser().userId
         val tpWorkouts = trainingPeaksApiClient.getWorkouts(userId, startDate.toString(), endDate.toString())
 
         val noteEndDate = getNoteEndDateForFilter(startDate, endDate)
@@ -82,7 +82,7 @@ class TrainingPeaksWorkoutRepository(
     }
 
     override fun deleteWorkoutsFromCalendar(startDate: LocalDate, endDate: LocalDate) {
-        val userId = trainingPeaksUserRepository.getUserId()
+        val userId = trainingPeaksUserRepository.getUser().userId
         getWorkoutsFromCalendar(startDate, endDate).forEach {
             trainingPeaksApiClient.deleteWorkout(userId, it.details.externalData.trainingPeaksId!!)
         }
@@ -91,7 +91,7 @@ class TrainingPeaksWorkoutRepository(
     private fun saveWorkoutToCalendar(workout: Workout) {
         val createRequest: CreateTPWorkoutDTO
         val structureStr = StructureToTPConverter.toStructureString(objectMapper, workout)
-        val athleteId = trainingPeaksUserRepository.getUserId()
+        val athleteId = trainingPeaksUserRepository.getUser().userId
         createRequest = CreateTPWorkoutDTO.planWorkout(
             athleteId, workout, structureStr
         )
