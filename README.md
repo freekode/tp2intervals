@@ -64,7 +64,8 @@ services:
 ## How to configure
 
 After you successfully started the application and were able to open the web UI page.
-You need to configure it to gain access to Intervals.icu and to TrainingPeaks.
+You need to configure it to gain access to Intervals.icu and to your other platform.
+Nice post how to do it is written here https://forum.intervals.icu/t/implemented-push-workout-to-wahoo/783/87
 
 ### Intervals API Key and Athlete Id
 
@@ -92,11 +93,12 @@ Check all your values and save configuration again.
 * Only duration based steps in workouts are supported, the app can't work with distance based steps
 * Ramp steps in TrainerRoad are not supported
 * **MacOS** app is not signed. Usually you need to open it twice. After opening it, be patient, it takes some time to
-  start.
-* **Windows** The app will ask to access local network and Internet allow it. After all it makes HTTP requests.
-* Contact me in case of any problems. You can create an issue
+  start
+* **Windows** The app will ask to access local network and Internet allow it. After all it makes HTTP requests
+* In case of any problems. You can create an issue
   in [GitHub](https://github.com/freekode/tp2intervals/issues)
-  or write directly to me iam@freekode.org. Add logs from your app, it can help a lot to resolve the issue.
+  or write directly to me iam@freekode.org. Add logs from your app, it can help a lot to resolve the issue
+* More info you can find on the forum https://forum.intervals.icu/t/tp2intervals-copy-trainingpeaks-and-trainerroad-workouts-plans-to-intervals/63375
 
 ### Scheduling for the next day with TrainingPeaks free account
 Officially you can't plan workouts for future dates, but practically you can plan workout for tomorrow with free TP account.
