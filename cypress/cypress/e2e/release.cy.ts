@@ -21,11 +21,17 @@ describe('Tests for release', {
       cy.get('button#training-peaks').click()
       cy.get('app-training-peaks mat-expansion-panel:nth-child(1)').click()
 
-      selectCalendarDate(mainComponent, '11', '13')
+      cy.request("DELETE", "/api/workout", {
+        platform: "TRAINING_PEAKS",
+        startDate: "2024-03-11",
+        endDate: "2024-03-17"
+      })
+
+      selectCalendarDate(mainComponent, '11', '17')
 
       cy.get(mainComponent).find('#btn-confirm').click()
-      // todo check that workouts were synced
       cy.get('mat-snack-bar-container.app-notification-success')
+        .contains("Planned: 4")
         .should('exist')
     })
 

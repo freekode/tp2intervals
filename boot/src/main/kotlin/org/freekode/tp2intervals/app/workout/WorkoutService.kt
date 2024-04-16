@@ -5,6 +5,7 @@ import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.librarycontainer.LibraryContainerRepository
 import org.freekode.tp2intervals.domain.workout.WorkoutDetails
 import org.freekode.tp2intervals.domain.workout.WorkoutRepository
+import org.freekode.tp2intervals.rest.workout.DeleteWorkoutRequestDTO
 import org.springframework.stereotype.Service
 
 @Service
@@ -66,5 +67,10 @@ class WorkoutService(
 
     fun findWorkoutsByName(platform: Platform, name: String): List<WorkoutDetails> {
         return workoutRepositoryMap[platform]!!.findWorkoutsFromLibraryByName(name)
+    }
+
+    fun deleteWorkoutsFromCalendar(request: DeleteWorkoutRequestDTO) {
+        val workoutRepository = workoutRepositoryMap[request.platform]!!
+        workoutRepository.deleteWorkoutsFromCalendar(request.startDate, request.endDate)
     }
 }

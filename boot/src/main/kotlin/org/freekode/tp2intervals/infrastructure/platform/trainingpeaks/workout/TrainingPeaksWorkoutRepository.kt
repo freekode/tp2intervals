@@ -86,6 +86,13 @@ class TrainingPeaksWorkoutRepository(
         throw PlatformException(Platform.TRAINING_PEAKS, "TP doesn't support workout creation")
     }
 
+    override fun deleteWorkoutsFromCalendar(startDate: LocalDate, endDate: LocalDate) {
+        val userId = trainingPeaksUserRepository.getUserId()
+        getWorkoutsFromCalendar(startDate, endDate).forEach {
+            trainingPeaksApiClient.deleteWorkout(userId, it.details.externalData.trainingPeaksId!!)
+        }
+    }
+
     private fun saveWorkoutToCalendar(workout: Workout) {
         val createRequest: CreateTPWorkoutDTO
         val structureStr = StructureToTPConverter.toStructureString(objectMapper, workout)

@@ -37,8 +37,7 @@ class StructureToTPConverter(
             stepDTOs,
             "duration",
             TPTargetMapper.getByTargetUnit(structure.target),
-            "range",
-            null
+//            "range",
         )
     }
 
@@ -67,15 +66,13 @@ class StructureToTPConverter(
 
     private fun mapToStepDTO(workoutStep: WorkoutSingleStep): TPStepDTO {
         val mainTarget = toMainTarget(workoutStep.target)
-        val cadenceTarget = workoutStep.cadence?.let { toCadenceTarget(workoutStep.cadence) }
+        val cadenceTarget = workoutStep.cadence?.let { TPTargetDTO.cadenceTarget(it.start, it.end) }
         val targetList = mutableListOf(mainTarget, cadenceTarget).filterNotNull()
 
         return TPStepDTO(
             workoutStep.name,
             TPLengthDTO.seconds(workoutStep.duration.seconds),
             targetList,
-            "active",
-            null
         )
     }
 
@@ -85,12 +82,4 @@ class StructureToTPConverter(
         } else {
             TPTargetDTO.mainTarget(target.start, target.end)
         }
-
-    private fun toCadenceTarget(target: WorkoutStepTarget) =
-        if (target.isSingleValue()) {
-            TPTargetDTO.cadenceTarget(target.start)
-        } else {
-            TPTargetDTO.cadenceTarget(target.start, target.end)
-        }
-
 }

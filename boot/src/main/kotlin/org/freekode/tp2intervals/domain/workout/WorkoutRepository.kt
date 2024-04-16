@@ -19,4 +19,6 @@ interface WorkoutRepository {
     fun saveWorkoutsToCalendar(workouts: List<Workout>)
 
     fun saveWorkoutsToLibrary(libraryContainer: LibraryContainer, workouts: List<Workout>)
+
+    fun deleteWorkoutsFromCalendar(startDate: LocalDate, endDate: LocalDate)
 }

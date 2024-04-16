@@ -3,6 +3,7 @@ package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout
 import java.time.Duration
 import java.time.LocalDate
 import org.freekode.tp2intervals.domain.ExternalData
+import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
 import org.freekode.tp2intervals.infrastructure.PlatformException
@@ -64,6 +65,10 @@ class TPToWorkoutConverter {
         }
 
         try {
+            if (tpWorkout.structure.primaryLengthMetric == "distance") {
+                throw PlatformException(Platform.TRAINING_PEAKS, "distance based workout is not supported")
+            }
+
             val steps = TPStructureToStepMapper(tpWorkout.structure).mapToWorkoutSteps()
             return WorkoutStructure(
                 tpWorkout.structure.toTargetUnit(),

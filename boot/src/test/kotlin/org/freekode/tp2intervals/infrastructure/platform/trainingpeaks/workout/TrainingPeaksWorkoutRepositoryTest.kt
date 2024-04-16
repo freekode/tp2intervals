@@ -14,7 +14,6 @@ class TrainingPeaksWorkoutRepositoryTest : SpringITConfig() {
     lateinit var trainingPeaksWorkoutRepository: TrainingPeaksWorkoutRepository
 
     @Test
-    @Disabled
     fun `should parse workout library`() {
         val container =
             LibraryContainer("lib", LocalDate.now(), false, 0, ExternalData.empty().withTrainingPeaks("tp-id"))
@@ -24,7 +23,6 @@ class TrainingPeaksWorkoutRepositoryTest : SpringITConfig() {
     }
 
     @Test
-    @Disabled
     fun `should parse calendar workout`() {
         val workouts = trainingPeaksWorkoutRepository.getWorkoutsFromCalendar(LocalDate.now(), LocalDate.now())
 

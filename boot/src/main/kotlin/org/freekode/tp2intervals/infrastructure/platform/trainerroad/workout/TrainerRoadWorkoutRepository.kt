@@ -53,4 +53,8 @@ class TrainerRoadWorkoutRepository(
         throw PlatformException(Platform.TRAINER_ROAD, "TR has only one library, search by name")
     }
 
+    override fun deleteWorkoutsFromCalendar(startDate: LocalDate, endDate: LocalDate) {
+        TODO("Not yet implemented")
+    }
+
 }

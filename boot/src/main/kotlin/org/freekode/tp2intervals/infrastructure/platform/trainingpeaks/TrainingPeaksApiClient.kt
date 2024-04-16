@@ -5,6 +5,7 @@ import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.T
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.TPWorkoutResponseDTO
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.core.io.Resource
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -43,4 +44,10 @@ interface TrainingPeaksApiClient {
         @PathVariable("userId") userId: String,
         @RequestBody createTPWorkoutDTO: CreateTPWorkoutDTO
     )
+
+    @DeleteMapping("/fitness/v6/athletes/{userId}/workouts/{workoutId}")
+    fun deleteWorkout(
+        @PathVariable userId: String,
+        @PathVariable workoutId: String,
+    ): Boolean
 }
