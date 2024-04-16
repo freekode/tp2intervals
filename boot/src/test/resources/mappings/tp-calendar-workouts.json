@@ -10,7 +10,7 @@
     },
     "jsonBody": [
       {
-        "workoutId": 1342793,
+        "workoutId": 1,
         "title": "Absa Cape Epic Workout 4",
         "workoutDay": "2024-03-26T00:00:00",
         "workoutTypeValueId": 2,
@@ -18,8 +18,6 @@
         "tssPlanned": 85.6,
         "ifPlanned": 0.87,
         "description": "Today's session is all about lactate tolerance. During the Absa Cape Epic you will find many obstacles requiring you to go above threshold. Teaching your body to be able to deal with lactate after such efforts and continue at a steady state is vital to getting through stages as fast a possible.\r\n\r\nThe workout is focused on Z4 interspersed with 30 sec sprints. This type of workout is where it starts to get uncomfortable for me but it helps to keep the eye on the prize. We will start by doing two shorter accelerations in the warm up to get you used to the effort before we move into the main body of the session.",
-        "coachComments": null,
-        "fileAttachments": null,
         "structure": {
           "structure": [
             {
@@ -547,25 +545,15 @@
           "primaryLengthMetric": "duration",
           "primaryIntensityMetric": "percentOfFtp",
           "primaryIntensityTargetOrRange": "target"
-        },
-        "fromLegacy": null
+        }
       },
       {
-        "workoutId": 2585412717,
-        "athleteId": 4842855,
-        "title": "",
+        "workoutId": 2,
+        "title": "normal",
         "workoutTypeValueId": 2,
         "workoutDay": "2024-03-27T00:00:00",
-        "workoutComments": [],
-        "publicSettingValue": 2,
-        "sharedWorkoutInformationKey": "IJNWMKK46FWRL4I4KKPTGRPJYM",
-        "sharedWorkoutInformationExpireKey": "SYBHQFBSSLUYS5AET77S6QEXQC3YAR2MCGAFSOI",
         "totalTimePlanned": 1.1,
         "tssPlanned": 57.8,
-        "tssSource": 0,
-        "if": null,
-        "ifPlanned": 0.72,
-        "lastModifiedDate": "2024-04-10T12:31:01.283",
         "structure": {
           "structure": [
             {
@@ -665,11 +653,142 @@
           "primaryLengthMetric": "duration",
           "primaryIntensityMetric": "percentOfFtp",
           "primaryIntensityTargetOrRange": "range"
-        },
-        "orderOnDay": 1,
-        "personalRecordCount": 0,
-        "syncedTo": null,
-        "poolLengthOptionId": null
+        }
+      },
+      {
+        "workoutId": 3,
+        "title": "distance based",
+        "workoutTypeValueId": 2,
+        "workoutDay": "2024-03-27T00:00:00",
+        "totalTimePlanned": 1.1,
+        "tssPlanned": 57.8,
+        "structure": {
+          "structure": [
+            {
+              "type": "step",
+              "length": {
+                "value": 1,
+                "unit": "repetition"
+              },
+              "steps": [
+                {
+                  "name": "Warm up",
+                  "length": {
+                    "value": 1200,
+                    "unit": "second"
+                  },
+                  "targets": [
+                    {
+                      "minValue": 50
+                    }
+                  ],
+                  "intensityClass": "warmUp",
+                  "openDuration": false
+                }
+              ],
+              "begin": 0,
+              "end": 1200
+            }
+          ],
+          "primaryLengthMetric": "distance",
+          "primaryIntensityMetric": "percentOfFtp",
+          "primaryIntensityTargetOrRange": "range"
+        }
+      },
+      {
+        "workoutId": 4,
+        "title": "no length",
+        "workoutTypeValueId": 2,
+        "workoutDay": "2024-03-27T00:00:00",
+        "totalTimePlanned": 1.1,
+        "tssPlanned": 57.8,
+        "structure": {
+          "structure": [
+            {
+              "type": "step",
+              "steps": [
+                {
+                  "name": "Warm up",
+                  "length": {
+                    "value": 1200,
+                    "unit": "second"
+                  },
+                  "targets": [
+                    {
+                      "minValue": 50
+                    }
+                  ],
+                  "intensityClass": "warmUp",
+                  "openDuration": false
+                }
+              ],
+              "begin": 0,
+              "end": 1200
+            }
+          ],
+          "primaryIntensityMetric": "percentOfFtp",
+          "primaryIntensityTargetOrRange": "range"
+        }
+      },
+      {
+        "workoutId": 5,
+        "title": "no steps",
+        "workoutTypeValueId": 2,
+        "workoutDay": "2024-03-27T00:00:00",
+        "totalTimePlanned": 1.1,
+        "tssPlanned": 57.8,
+        "structure": {
+          "structure": [
+            {
+              "type": "step",
+              "length": {
+                "value": 1,
+                "unit": "repetition"
+              },
+              "steps": [
+                {
+                  "name": "Warm up",
+                  "length": {
+                    "value": 1200,
+                    "unit": "second"
+                  },
+                  "targets": [
+                    {
+                      "minValue": 50
+                    }
+                  ],
+                  "intensityClass": "warmUp",
+                  "openDuration": false
+                }
+              ],
+              "begin": 0,
+              "end": 1200
+            }
+          ],
+          "primaryIntensityMetric": "percentOfFtp",
+          "primaryIntensityTargetOrRange": "range"
+        }
+      },
+      {
+        "workoutId": 6,
+        "title": "no primaryIntensityMetric",
+        "workoutTypeValueId": 2,
+        "workoutDay": "2024-03-27T00:00:00",
+        "totalTimePlanned": 1.1,
+        "tssPlanned": 57.8,
+        "structure": {
+          "structure": [
+            {
+              "type": "step",
+              "length": {
+                "value": 1,
+                "unit": "repetition"
+              },
+              "begin": 0,
+              "end": 1200
+            }
+          ]
+        }
       }
     ]
   }

@@ -58,13 +58,8 @@ class TrainingPeaksWorkoutRepository(
 
         val noteEndDate = getNoteEndDateForFilter(startDate, endDate)
         val tpNotes = trainingPeaksApiClient.getNotes(userId, startDate.toString(), noteEndDate.toString())
-        val workouts = tpWorkouts.mapNotNull {
-            try {
-                tpToWorkoutConverter.toWorkout(it)
-            } catch (e: Exception) {
-                log.warn("Can't convert workout - ${it.title}, error - ${e.message}'", e)
-                null
-            }
+        val workouts = tpWorkouts.map {
+            tpToWorkoutConverter.toWorkout(it)
         }
 
         val notes = tpNotes.map { tpToWorkoutConverter.toWorkout(it) }
@@ -84,6 +79,13 @@ class TrainingPeaksWorkoutRepository(
 
     override fun saveWorkoutsToLibrary(libraryContainer: LibraryContainer, workouts: List<Workout>) {
         throw PlatformException(Platform.TRAINING_PEAKS, "TP doesn't support workout creation")
+    }
+
+    override fun deleteWorkoutsFromCalendar(startDate: LocalDate, endDate: LocalDate) {
+        val userId = trainingPeaksUserRepository.getUserId()
+        getWorkoutsFromCalendar(startDate, endDate).forEach {
+            trainingPeaksApiClient.deleteWorkout(userId, it.details.externalData.trainingPeaksId!!)
+        }
     }
 
     private fun saveWorkoutToCalendar(workout: Workout) {

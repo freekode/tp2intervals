@@ -12,7 +12,7 @@ class TPStructureToStepMapper(
     fun mapToWorkoutSteps(): List<WorkoutStep> {
         return tPWorkoutStructureDTO.structure.map {
             when (it.type) {
-                "step" -> mapSingleStep(it.steps[0])
+                "step" -> mapSingleStep(it.steps.firstOrNull() ?: throw IllegalArgumentException("There is no step"))
                 "repetition" -> mapMultiStep(it)
                 "rampUp" -> mapMultiStep(it)
                 "rampDown" -> mapMultiStep(it)
@@ -21,12 +21,12 @@ class TPStructureToStepMapper(
         }
     }
 
-    private fun mapSingleStep(TPStepDTO: TPStepDTO): WorkoutSingleStep {
+    private fun mapSingleStep(tPStepDTO: TPStepDTO): WorkoutSingleStep {
         return WorkoutSingleStep(
-            TPStepDTO.name,
-            TPStepDTO.length.mapDuration(),
-            getMainTarget(TPStepDTO.targets),
-            getSecondaryTarget(TPStepDTO.targets),
+            tPStepDTO.name,
+            tPStepDTO.length.mapDuration(),
+            getMainTarget(tPStepDTO.targets),
+            getSecondaryTarget(tPStepDTO.targets),
             false
         )
     }

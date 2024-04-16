@@ -72,6 +72,10 @@ class IntervalsWorkoutRepository(
         TODO("Not yet implemented")
     }
 
+    override fun deleteWorkoutsFromCalendar(startDate: LocalDate, endDate: LocalDate) {
+        TODO("Not yet implemented")
+    }
+
     private fun toWorkout(eventDTO: IntervalsEventDTO): Workout? {
         return try {
             IntervalsToWorkoutConverter(eventDTO).toWorkout()
