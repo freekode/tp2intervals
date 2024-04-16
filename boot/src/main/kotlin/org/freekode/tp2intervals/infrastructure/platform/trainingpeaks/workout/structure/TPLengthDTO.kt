@@ -16,7 +16,7 @@ class TPLengthDTO(
 
     fun reps(): Long {
         if (unit != "repetition") {
-            throw PlatformException(Platform.TRAINING_PEAKS, "not a repetition length")
+            throw IllegalArgumentException("not a repetition length")
         }
         return value
     }
@@ -24,7 +24,7 @@ class TPLengthDTO(
     fun mapDuration(): Duration {
         return when (unit) {
             "second" -> Duration.ofSeconds(value)
-            else -> throw PlatformException(Platform.TRAINING_PEAKS, "Can't map such unit - $unit")
+            else -> throw IllegalArgumentException("Can't map such unit - $unit")
         }
     }
 }

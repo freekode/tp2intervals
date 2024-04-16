@@ -5,7 +5,7 @@ import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
 class TPWorkoutStructureDTO(
     val structure: List<TPStructureStepDTO>,
     val primaryLengthMetric: String?, // distance, duration
-    val primaryIntensityMetric: String,
+    val primaryIntensityMetric: String?,
 ) {
-    fun toTargetUnit(): WorkoutStructure.TargetUnit = TPTargetMapper.getByIntensity(primaryIntensityMetric)
+    fun toTargetUnit(): WorkoutStructure.TargetUnit = TPTargetMapper.getByIntensity(primaryIntensityMetric!!)
 }

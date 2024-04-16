@@ -1,11 +1,9 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure
 
 class TPStructureStepDTO(
-    var type: String, // step, repetition, rampUp, rampDown
-    var length: TPLengthDTO?,
-    var steps: List<TPStepDTO>,
-    val begin: Long? = null,
-    val end: Long? = null
+    val type: String?, // step, repetition, rampUp, rampDown
+    val length: TPLengthDTO?,
+    val steps: List<TPStepDTO> = listOf(),
 ) {
     companion object {
         fun singleStep(stepDTO: TPStepDTO): TPStructureStepDTO =

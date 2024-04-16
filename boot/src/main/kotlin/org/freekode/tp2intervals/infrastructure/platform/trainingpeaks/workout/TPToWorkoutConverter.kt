@@ -3,12 +3,11 @@ package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout
 import java.time.Duration
 import java.time.LocalDate
 import org.freekode.tp2intervals.domain.ExternalData
-import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
-import org.freekode.tp2intervals.infrastructure.PlatformException
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.library.TPWorkoutLibraryItemDTO
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.TPStructureToStepMapper
+import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.TPWorkoutStructureDTO
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 
@@ -36,7 +35,15 @@ class TPToWorkoutConverter {
     }
 
     private fun toWorkout(tpWorkout: TPBaseWorkoutResponseDTO, workoutDate: LocalDate): Workout {
-        val workoutsStructure = toWorkoutStructure(tpWorkout)
+        val workoutsStructure = tpWorkout.structure?.let {
+            try {
+                toWorkoutStructure(it)
+            } catch (e: Exception) {
+                log.warn("Can't convert workout - ${tpWorkout.title}, error - ${e.message}'", e)
+                null
+            }
+        }
+
         var description = tpWorkout.description.orEmpty()
         description += tpWorkout.coachComments?.let { "\n- - - -\n$it" }.orEmpty()
 
@@ -59,24 +66,19 @@ class TPToWorkoutConverter {
             .withSimpleString(tpWorkout.description ?: "")
     }
 
-    private fun toWorkoutStructure(tpWorkout: TPBaseWorkoutResponseDTO): WorkoutStructure? {
-        if (tpWorkout.structure == null || tpWorkout.structure.structure.isEmpty()) {
-            return null
+    private fun toWorkoutStructure(structure: TPWorkoutStructureDTO): WorkoutStructure {
+        if (structure.structure.isEmpty()) {
+            throw IllegalArgumentException("structure is empty")
         }
 
-        try {
-            if (tpWorkout.structure.primaryLengthMetric == "distance") {
-                throw PlatformException(Platform.TRAINING_PEAKS, "distance based workout is not supported")
-            }
-
-            val steps = TPStructureToStepMapper(tpWorkout.structure).mapToWorkoutSteps()
-            return WorkoutStructure(
-                tpWorkout.structure.toTargetUnit(),
-                steps
-            )
-        } catch (e: PlatformException) {
-            log.warn("Can't convert workout - ${tpWorkout.title}, error - ${e.message}")
-            return null
+        if (structure.primaryLengthMetric == "distance") {
+            throw IllegalArgumentException("distance based workout is not supported")
         }
+
+        val steps = TPStructureToStepMapper(structure).mapToWorkoutSteps()
+        return WorkoutStructure(
+            structure.toTargetUnit(),
+            steps
+        )
     }
 }

@@ -58,13 +58,8 @@ class TrainingPeaksWorkoutRepository(
 
         val noteEndDate = getNoteEndDateForFilter(startDate, endDate)
         val tpNotes = trainingPeaksApiClient.getNotes(userId, startDate.toString(), noteEndDate.toString())
-        val workouts = tpWorkouts.mapNotNull {
-            try {
-                tpToWorkoutConverter.toWorkout(it)
-            } catch (e: Exception) {
-                log.warn("Can't convert workout - ${it.title}, error - ${e.message}'", e)
-                null
-            }
+        val workouts = tpWorkouts.map {
+            tpToWorkoutConverter.toWorkout(it)
         }
 
         val notes = tpNotes.map { tpToWorkoutConverter.toWorkout(it) }
