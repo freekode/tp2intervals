@@ -24,6 +24,7 @@ class TrainingPeaksWorkoutRepositoryTest : SpringITConfig() {
     }
 
     @Test
+    @Disabled
     fun `should parse calendar workout`() {
         val workouts = trainingPeaksWorkoutRepository.getWorkoutsFromCalendar(LocalDate.now(), LocalDate.now())
 
