@@ -28,6 +28,6 @@ class TrainingPeaksWorkoutRepositoryTest : SpringITConfig() {
     fun `should parse calendar workout`() {
         val workouts = trainingPeaksWorkoutRepository.getWorkoutsFromCalendar(LocalDate.now(), LocalDate.now())
 
-        assertEquals(workouts.size, 6)
+        assertEquals(workouts.size, 7)
     }
 }
