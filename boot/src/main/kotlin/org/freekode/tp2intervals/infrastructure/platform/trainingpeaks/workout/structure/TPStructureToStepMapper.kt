@@ -24,7 +24,7 @@ class TPStructureToStepMapper(
     private fun mapSingleStep(tPStepDTO: TPStepDTO): WorkoutSingleStep {
         return WorkoutSingleStep(
             tPStepDTO.name,
-            tPStepDTO.length.mapDuration(),
+            tPStepDTO.length!!.mapDuration(),
             getMainTarget(tPStepDTO.targets),
             getSecondaryTarget(tPStepDTO.targets),
             false
