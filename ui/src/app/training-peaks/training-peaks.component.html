@@ -8,16 +8,18 @@
 
 <div *ngIf="platformInfo.isValid">
   <mat-accordion multi>
-    <mat-expansion-panel
-      [disabled]="!platformInfo.isAthlete"
-      matTooltip="Available ony for TP athlete accounts"
-      [matTooltipDisabled]="platformInfo.isAthlete">
+    <mat-expansion-panel [disabled]="!platformInfo.isAthlete">
       <mat-expansion-panel-header>
         <mat-panel-title>
           Sync planned workouts
         </mat-panel-title>
         <mat-panel-description>
-          Copy workouts from Intervals calendar to TrainingPeaks calendar
+          <div
+            [matTooltipDisabled]="platformInfo.isAthlete"
+            matTooltip="Not available for TP coach account"
+            matTooltipPosition="right">
+            Copy workouts from Intervals calendar to TrainingPeaks calendar
+          </div>
         </mat-panel-description>
       </mat-expansion-panel-header>
 
@@ -37,16 +39,18 @@
       <tp-copy-library-container></tp-copy-library-container>
     </mat-expansion-panel>
 
-    <mat-expansion-panel
-      [disabled]="!platformInfo.isAthlete"
-      matTooltip="Available ony for TP athlete accounts"
-      [matTooltipDisabled]="platformInfo.isAthlete">
+    <mat-expansion-panel [disabled]="!platformInfo.isAthlete">
       <mat-expansion-panel-header>
         <mat-panel-title>
           Copy planned workouts to library
         </mat-panel-title>
         <mat-panel-description>
-          Copy workouts from TrainingPeaks calendar to Intervals workout library
+          <div
+            [matTooltipDisabled]="platformInfo.isAthlete"
+            matTooltip="Not available for TP coach account"
+            matTooltipPosition="right">
+            Copy workouts from TrainingPeaks calendar to Intervals workout library
+          </div>
         </mat-panel-description>
       </mat-expansion-panel-header>
 
