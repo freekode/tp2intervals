@@ -1,12 +1,15 @@
 package org.freekode.tp2intervals.rest.configuration
 
+import jakarta.websocket.server.PathParam
 import org.freekode.tp2intervals.app.confguration.ConfigurationService
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.TrainingType
+import org.freekode.tp2intervals.domain.config.PlatformInfo
 import org.freekode.tp2intervals.domain.config.UpdateConfigurationRequest
 import org.freekode.tp2intervals.rest.ErrorResponseDTO
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
@@ -37,8 +40,8 @@ class ConfigurationController(
         return TrainingType.entries.map { TrainingTypeDTO(it) }
     }
 
-    @GetMapping("/api/configuration/valid")
-    fun getConfigurations(@RequestParam platform: Platform): Boolean {
-        return configurationService.isValid(platform)
+    @GetMapping("/api/configuration/{platform}")
+    fun getConfigurations(@PathVariable platform: Platform): PlatformInfo {
+        return configurationService.platformInfo(platform)
     }
 }

@@ -2,8 +2,8 @@ package org.freekode.tp2intervals.domain.config
 
 import org.freekode.tp2intervals.domain.Platform
 
-interface PlatformConfigurationRepository {
+interface PlatformInfoRepository {
     fun platform(): Platform
 
-    fun updateConfig(request: UpdateConfigurationRequest)
+    fun platformInfo(): PlatformInfo
 }

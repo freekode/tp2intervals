@@ -1,14 +1,17 @@
-<div *ngIf="platformValid === undefined" class="page-content">
+<div *ngIf="!platformInfo">
   <mat-progress-bar mode="query"></mat-progress-bar>
 </div>
 
-<div *ngIf="platformValid === false" class="page-content">
+<div *ngIf="platformInfo.isValid === false">
   Platform is not configured. Please set required parameters on Configuration page
 </div>
 
-<div *ngIf="platformValid" class="page-content">
+<div *ngIf="platformInfo.isValid">
   <mat-accordion multi>
-    <mat-expansion-panel>
+    <mat-expansion-panel
+      [disabled]="!platformInfo.isAthlete"
+      matTooltip="Available ony for TP athlete accounts"
+      [matTooltipDisabled]="platformInfo.isAthlete">
       <mat-expansion-panel-header>
         <mat-panel-title>
           Sync planned workouts
@@ -34,7 +37,10 @@
       <tp-copy-library-container></tp-copy-library-container>
     </mat-expansion-panel>
 
-    <mat-expansion-panel>
+    <mat-expansion-panel
+      [disabled]="!platformInfo.isAthlete"
+      matTooltip="Available ony for TP athlete accounts"
+      [matTooltipDisabled]="platformInfo.isAthlete">
       <mat-expansion-panel-header>
         <mat-panel-title>
           Copy planned workouts to library

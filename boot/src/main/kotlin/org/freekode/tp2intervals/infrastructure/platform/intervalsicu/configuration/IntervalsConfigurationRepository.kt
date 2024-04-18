@@ -3,6 +3,8 @@ package org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configura
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.config.AppConfigurationRepository
 import org.freekode.tp2intervals.domain.config.PlatformConfigurationRepository
+import org.freekode.tp2intervals.domain.config.PlatformInfo
+import org.freekode.tp2intervals.domain.config.PlatformInfoRepository
 import org.freekode.tp2intervals.domain.config.UpdateConfigurationRequest
 import org.freekode.tp2intervals.infrastructure.CatchFeignException
 import org.freekode.tp2intervals.infrastructure.PlatformException
@@ -13,24 +15,36 @@ import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 
 @Service
-@CacheConfig(cacheNames = ["configValidCache"])
+@CacheConfig(cacheNames = ["platformInfoCache"])
 class IntervalsConfigurationRepository(
     private val appConfigurationRepository: AppConfigurationRepository,
     private val intervalsAthleteApiClient: IntervalsAthleteApiClient,
     private val cacheManager: CacheManager,
-) : PlatformConfigurationRepository {
+) : PlatformConfigurationRepository, PlatformInfoRepository {
     override fun platform() = Platform.INTERVALS
 
     @CatchFeignException(platform = Platform.INTERVALS)
     override fun updateConfig(request: UpdateConfigurationRequest) {
-        cacheManager.getCache("configValidCache")!!.evict(platform().key)
+        cacheManager.getCache("platformInfoCache")!!.evict(platform().key)
         val newConfig = getConfigToUpdate(request)
         validateConfiguration(newConfig)
         appConfigurationRepository.updateConfig(UpdateConfigurationRequest(newConfig))
     }
 
     @Cacheable(key = "'intervals'")
-    override fun isValid(): Boolean {
+    override fun platformInfo(): PlatformInfo {
+        val infoMap = mapOf(
+            "isValid" to isValid(),
+        )
+        return PlatformInfo(infoMap)
+    }
+
+    fun getConfiguration(): IntervalsConfiguration {
+        val config = appConfigurationRepository.getConfigurationByPrefix(platform().key)
+        return IntervalsConfiguration(config)
+    }
+
+    private fun isValid(): Boolean {
         try {
             val currentConfig =
                 appConfigurationRepository.getConfigurationByPrefix(platform().key)
@@ -39,11 +53,6 @@ class IntervalsConfigurationRepository(
         } catch (e: PlatformException) {
             return false
         }
-    }
-
-    fun getConfiguration(): IntervalsConfiguration {
-        val config = appConfigurationRepository.getConfigurationByPrefix(platform().key)
-        return IntervalsConfiguration(config)
     }
 
     private fun getConfigToUpdate(request: UpdateConfigurationRequest): Map<String, String> {
