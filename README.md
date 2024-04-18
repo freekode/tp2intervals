@@ -9,9 +9,15 @@ App to sync workouts between TrainingPeaks, TrainerRoad and Intervals.icu.
 
 ### TrainingPeaks features
 
+#### For athlete account
+
 * Sync planned workouts from Intervals to TrainingPeaks for today and tomorrow (free TP account)
 * Copy whole training plan from TrainingPeaks
 * Copy planned workouts for date range from TrainingPeaks to Intervals.icu training plan or workout folder
+
+#### For coach account
+
+* Copy whole training plan and workout library from TrainingPeaks
 
 ### TrainerRoad features
 
