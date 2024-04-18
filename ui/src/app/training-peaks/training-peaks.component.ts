@@ -13,7 +13,7 @@ import { NgIf } from "@angular/common";
 import { ConfigurationClient } from "infrastructure/client/configuration.client";
 import { Platform } from "infrastructure/platform";
 import { MatProgressBarModule } from "@angular/material/progress-bar";
-import { MatTooltip } from "@angular/material/tooltip";
+import { MatTooltip, MatTooltipModule } from "@angular/material/tooltip";
 
 @Component({
   selector: 'app-training-peaks',
@@ -25,7 +25,7 @@ import { MatTooltip } from "@angular/material/tooltip";
     MatExpansionModule,
     NgIf,
     MatProgressBarModule,
-    MatTooltip,
+    MatTooltipModule,
   ],
   templateUrl: './training-peaks.component.html',
   styleUrl: './training-peaks.component.scss'
