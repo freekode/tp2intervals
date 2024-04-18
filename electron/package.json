@@ -1,7 +1,7 @@
 {
   "name": "tp2intervals",
   "productName": "tp2intervals",
-  "version": "0.5.8",
+  "version": "0.6.0",
   "description": "Third Party synchronization with Intervals.icu",
   "keywords": [
     "trainingpeaks",
