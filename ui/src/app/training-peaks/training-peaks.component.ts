@@ -13,6 +13,7 @@ import { NgIf } from "@angular/common";
 import { ConfigurationClient } from "infrastructure/client/configuration.client";
 import { Platform } from "infrastructure/platform";
 import { MatProgressBarModule } from "@angular/material/progress-bar";
+import { MatTooltip, MatTooltipModule } from "@angular/material/tooltip";
 
 @Component({
   selector: 'app-training-peaks',
@@ -24,12 +25,13 @@ import { MatProgressBarModule } from "@angular/material/progress-bar";
     MatExpansionModule,
     NgIf,
     MatProgressBarModule,
+    MatTooltipModule,
   ],
   templateUrl: './training-peaks.component.html',
   styleUrl: './training-peaks.component.scss'
 })
 export class TrainingPeaksComponent implements OnInit {
-  platformValid: any = undefined;
+  platformInfo: any = undefined;
 
   private readonly platform = Platform.TRAINING_PEAKS
 
@@ -39,8 +41,8 @@ export class TrainingPeaksComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.configurationClient.isValid(this.platform.key).subscribe(value => {
-      this.platformValid = value
+    this.configurationClient.platformInfo(this.platform.key).subscribe(value => {
+      this.platformInfo = value
     })
   }
 }

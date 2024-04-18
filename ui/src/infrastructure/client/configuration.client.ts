@@ -29,9 +29,9 @@ export class ConfigurationClient {
       .get('/api/configuration/training-types')
   }
 
-  isValid(platform): Observable<boolean> {
-    return this.httpClient.get(`/api/configuration/valid`, {params: {platform}}).pipe(
-      map(response => (<boolean>response))
+  platformInfo(platform): Observable<any> {
+    return this.httpClient.get(`/api/configuration/${platform}`).pipe(
+      map(response => (<any>response).infoMap)
     )
   }
 }

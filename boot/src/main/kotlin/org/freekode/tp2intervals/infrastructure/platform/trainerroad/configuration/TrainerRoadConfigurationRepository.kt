@@ -3,6 +3,8 @@ package org.freekode.tp2intervals.infrastructure.platform.trainerroad.configurat
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.config.AppConfigurationRepository
 import org.freekode.tp2intervals.domain.config.PlatformConfigurationRepository
+import org.freekode.tp2intervals.domain.config.PlatformInfo
+import org.freekode.tp2intervals.domain.config.PlatformInfoRepository
 import org.freekode.tp2intervals.domain.config.UpdateConfigurationRequest
 import org.freekode.tp2intervals.infrastructure.CatchFeignException
 import org.freekode.tp2intervals.infrastructure.PlatformException
@@ -12,17 +14,17 @@ import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 
 @Service
-@CacheConfig(cacheNames = ["configValidCache"])
+@CacheConfig(cacheNames = ["platformInfoCache"])
 class TrainerRoadConfigurationRepository(
     private val appConfigurationRepository: AppConfigurationRepository,
     private val trainerRoadValidationApiClient: TrainerRoadValidationApiClient,
     private val cacheManager: CacheManager,
-) : PlatformConfigurationRepository {
+) : PlatformConfigurationRepository, PlatformInfoRepository {
     override fun platform() = Platform.TRAINER_ROAD
 
     @CatchFeignException(platform = Platform.TRAINER_ROAD)
     override fun updateConfig(request: UpdateConfigurationRequest) {
-        cacheManager.getCache("configValidCache")!!.evict(platform().key)
+        cacheManager.getCache("platformInfoCache")!!.evict(platform().key)
         val updatedConfig = request.getByPrefix(platform().key)
         if (updatedConfig.isEmpty()) {
             return
@@ -35,7 +37,19 @@ class TrainerRoadConfigurationRepository(
     }
 
     @Cacheable(key = "'trainer-road'")
-    override fun isValid(): Boolean {
+    override fun platformInfo(): PlatformInfo {
+        val infoMap = mapOf(
+            "isValid" to isValid(),
+        )
+        return PlatformInfo(infoMap)
+    }
+
+    fun getConfiguration(): TrainerRoadConfiguration {
+        val config = appConfigurationRepository.getConfigurationByPrefix(platform().key)
+        return TrainerRoadConfiguration(config)
+    }
+
+    private fun isValid(): Boolean {
         try {
             val currentConfig =
                 appConfigurationRepository.getConfigurationByPrefix(platform().key)
@@ -44,11 +58,6 @@ class TrainerRoadConfigurationRepository(
         } catch (e: Exception) {
             return false
         }
-    }
-
-    fun getConfiguration(): TrainerRoadConfiguration {
-        val config = appConfigurationRepository.getConfigurationByPrefix(platform().key)
-        return TrainerRoadConfiguration(config)
     }
 
     private fun validateConfiguration(newConfig: Map<String, String>, ignoreEmpty: Boolean) {

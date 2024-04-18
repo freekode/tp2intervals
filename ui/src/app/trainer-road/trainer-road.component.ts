@@ -37,7 +37,7 @@ import { ConfigurationClient } from "infrastructure/client/configuration.client"
   styleUrl: './trainer-road.component.scss'
 })
 export class TrainerRoadComponent implements OnInit {
-  platformValid: any = undefined;
+  platformInfo: any = undefined;
 
   private readonly platform = Platform.TRAINER_ROAD
 
@@ -47,8 +47,8 @@ export class TrainerRoadComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.configurationClient.isValid(this.platform.key).subscribe(value => {
-      this.platformValid = value
+    this.configurationClient.platformInfo(this.platform.key).subscribe(value => {
+      this.platformInfo = value
     })
   }
 }

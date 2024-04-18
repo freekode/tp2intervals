@@ -14,7 +14,8 @@ import org.freekode.tp2intervals.infrastructure.PlatformException
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.TrainingPeaksApiClient
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.configuration.TrainingPeaksConfigurationRepository
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.library.TPWorkoutLibraryRepository
-import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.plan.TPPlanContainerRepository
+import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.plan.TPPlanRepository
+import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.plan.TrainingPeaksPlanCoachApiClient
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.user.TrainingPeaksUserRepository
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.StructureToTPConverter
 import org.freekode.tp2intervals.infrastructure.utils.Date
@@ -28,8 +29,9 @@ import org.springframework.stereotype.Repository
 @Repository
 class TrainingPeaksWorkoutRepository(
     private val trainingPeaksApiClient: TrainingPeaksApiClient,
+    private val trainingPeaksPlanCoachApiClient: TrainingPeaksPlanCoachApiClient,
     private val tpToWorkoutConverter: TPToWorkoutConverter,
-    private val tpPlanRepository: TPPlanContainerRepository,
+    private val tpPlanRepository: TPPlanRepository,
     private val trainingPeaksUserRepository: TrainingPeaksUserRepository,
     private val tpWorkoutLibraryRepository: TPWorkoutLibraryRepository,
     private val trainingPeaksConfigurationRepository: TrainingPeaksConfigurationRepository,
@@ -45,15 +47,40 @@ class TrainingPeaksWorkoutRepository(
 
     @Cacheable(key = "#libraryContainer.externalData.trainingPeaksId")
     override fun getWorkoutsFromLibrary(libraryContainer: LibraryContainer): List<Workout> {
+        val user = trainingPeaksUserRepository.getUser()
         return if (libraryContainer.isPlan) {
-            getWorkoutsFromTPPlan(libraryContainer)
+            if (user.isAthlete) {
+                getWorkoutsFromTPPlan(libraryContainer)
+            } else {
+                getWorkoutsFromTPCoachPlan(libraryContainer)
+            }
         } else {
             getWorkoutsFromTPLibrary(libraryContainer)
         }
     }
 
+    private fun getWorkoutsFromTPCoachPlan(libraryContainer: LibraryContainer): List<Workout> {
+        val planWorkouts = trainingPeaksPlanCoachApiClient.getPlanWorkouts(
+            libraryContainer.externalData.trainingPeaksId!!,
+            libraryContainer.startDate.toString(),
+            libraryContainer.startDate.plusYears(1).toString()
+        )
+        val planNotes = trainingPeaksPlanCoachApiClient.getPlanNotes(
+            libraryContainer.externalData.trainingPeaksId,
+            libraryContainer.startDate.toString(),
+            libraryContainer.startDate.plusYears(1).toString()
+        )
+
+        val workouts = planWorkouts.map {
+            tpToWorkoutConverter.toWorkout(it)
+        }
+
+        val notes = planNotes.map { tpToWorkoutConverter.toWorkout(it) }
+        return workouts + notes
+    }
+
     override fun getWorkoutsFromCalendar(startDate: LocalDate, endDate: LocalDate): List<Workout> {
-        val userId = trainingPeaksUserRepository.getUserId()
+        val userId = trainingPeaksUserRepository.getUser().userId
         val tpWorkouts = trainingPeaksApiClient.getWorkouts(userId, startDate.toString(), endDate.toString())
 
         val noteEndDate = getNoteEndDateForFilter(startDate, endDate)
@@ -82,7 +109,7 @@ class TrainingPeaksWorkoutRepository(
     }
 
     override fun deleteWorkoutsFromCalendar(startDate: LocalDate, endDate: LocalDate) {
-        val userId = trainingPeaksUserRepository.getUserId()
+        val userId = trainingPeaksUserRepository.getUser().userId
         getWorkoutsFromCalendar(startDate, endDate).forEach {
             trainingPeaksApiClient.deleteWorkout(userId, it.details.externalData.trainingPeaksId!!)
         }
@@ -91,7 +118,7 @@ class TrainingPeaksWorkoutRepository(
     private fun saveWorkoutToCalendar(workout: Workout) {
         val createRequest: CreateTPWorkoutDTO
         val structureStr = StructureToTPConverter.toStructureString(objectMapper, workout)
-        val athleteId = trainingPeaksUserRepository.getUserId()
+        val athleteId = trainingPeaksUserRepository.getUser().userId
         createRequest = CreateTPWorkoutDTO.planWorkout(
             athleteId, workout, structureStr
         )

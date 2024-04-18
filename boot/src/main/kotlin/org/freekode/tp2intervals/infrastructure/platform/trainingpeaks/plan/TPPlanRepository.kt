@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository
 
 @CacheConfig(cacheNames = ["libraryItemsCache"])
 @Repository
-class TPPlanContainerRepository(
+class TPPlanRepository(
     private val trainingPeaksUserRepository: TrainingPeaksUserRepository,
     private val tpWorkoutLibraryRepository: TPWorkoutLibraryRepository,
     private val trainingPeaksPlanApiClient: TrainingPeaksPlanApiClient,
@@ -42,7 +42,7 @@ class TPPlanContainerRepository(
 
     fun applyPlan(planId: String, startDate: LocalDate): ApplyTPPlanResponseDTO {
         val request = ApplyTPPlanRequestDTO(
-            trainingPeaksUserRepository.getUserId(),
+            trainingPeaksUserRepository.getUser().userId,
             planId,
             startDate.toString(),
             "1"
@@ -58,8 +58,10 @@ class TPPlanContainerRepository(
     }
 
     private fun toLibraryContainer(planDto: TPPlanDto): LibraryContainer {
-        return LibraryContainer.planFromMonday(
+        return LibraryContainer(
             planDto.title,
+            planDto.startDate,
+            true,
             planDto.workoutCount,
             ExternalData.empty().withTrainingPeaks(planDto.planId)
         )

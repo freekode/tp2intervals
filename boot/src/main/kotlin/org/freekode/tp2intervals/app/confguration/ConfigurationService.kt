@@ -4,6 +4,8 @@ import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.config.AppConfiguration
 import org.freekode.tp2intervals.domain.config.AppConfigurationRepository
 import org.freekode.tp2intervals.domain.config.PlatformConfigurationRepository
+import org.freekode.tp2intervals.domain.config.PlatformInfo
+import org.freekode.tp2intervals.domain.config.PlatformInfoRepository
 import org.freekode.tp2intervals.domain.config.UpdateConfigurationRequest
 import org.freekode.tp2intervals.infrastructure.PlatformException
 import org.springframework.stereotype.Service
@@ -11,9 +13,10 @@ import org.springframework.stereotype.Service
 @Service
 class ConfigurationService(
     private val platformConfigurationRepositories: List<PlatformConfigurationRepository>,
+    platformInfoRepositories: List<PlatformInfoRepository>,
     private val appConfigurationRepository: AppConfigurationRepository
 ) {
-    private val repositoryMap = platformConfigurationRepositories.associateBy { it.platform() }
+    private val platformInfoRepositoryMap = platformInfoRepositories.associateBy { it.platform() }
 
     fun getConfiguration(key: String): String? = appConfigurationRepository.getConfiguration(key)
 
@@ -23,8 +26,8 @@ class ConfigurationService(
         return platformConfigurationRepositories.mapNotNull { updateConfiguration(request, it) }
     }
 
-    fun isValid(platform: Platform): Boolean {
-        return repositoryMap[platform]!!.isValid()
+    fun platformInfo(platform: Platform): PlatformInfo {
+        return platformInfoRepositoryMap[platform]!!.platformInfo()
     }
 
     private fun updateConfiguration(
