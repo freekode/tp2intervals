@@ -8,6 +8,7 @@ import org.freekode.tp2intervals.domain.librarycontainer.LibraryContainerReposit
 import org.freekode.tp2intervals.infrastructure.PlatformException
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.library.TPWorkoutLibraryRepository
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.user.TrainingPeaksUserRepository
+import org.freekode.tp2intervals.infrastructure.utils.Date
 import org.springframework.cache.annotation.CacheConfig
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Repository
@@ -60,7 +61,7 @@ class TPPlanRepository(
     private fun toLibraryContainer(planDto: TPPlanDto): LibraryContainer {
         return LibraryContainer(
             planDto.title,
-            planDto.startDate,
+            planDto.startDate ?: Date.thisMonday(),
             true,
             planDto.workoutCount,
             ExternalData.empty().withTrainingPeaks(planDto.planId)

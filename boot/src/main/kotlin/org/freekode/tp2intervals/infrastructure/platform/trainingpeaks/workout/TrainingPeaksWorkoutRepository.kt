@@ -62,13 +62,13 @@ class TrainingPeaksWorkoutRepository(
     private fun getWorkoutsFromTPCoachPlan(libraryContainer: LibraryContainer): List<Workout> {
         val planWorkouts = trainingPeaksPlanCoachApiClient.getPlanWorkouts(
             libraryContainer.externalData.trainingPeaksId!!,
-            libraryContainer.startDate.toString(),
-            libraryContainer.startDate.plusYears(1).toString()
+            libraryContainer.startDate.minusYears(10).toString(),
+            libraryContainer.startDate.plusYears(2).toString()
         )
         val planNotes = trainingPeaksPlanCoachApiClient.getPlanNotes(
             libraryContainer.externalData.trainingPeaksId,
-            libraryContainer.startDate.toString(),
-            libraryContainer.startDate.plusYears(1).toString()
+            libraryContainer.startDate.minusYears(10).toString(),
+            libraryContainer.startDate.plusYears(2).toString()
         )
 
         val workouts = planWorkouts.map {
