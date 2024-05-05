@@ -6,5 +6,5 @@ class TPPlanDto(
     val planId: String,
     val title: String,
     val workoutCount: Int,
-    val startDate: LocalDate,
+    val startDate: LocalDate?,
 )

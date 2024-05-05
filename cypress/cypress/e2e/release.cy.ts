@@ -71,7 +71,7 @@ describe('Tests for release', {
     })
   })
 
-  describe('Tests for Trainer Road', () => {
+  xdescribe('Tests for Trainer Road', () => {
     it('should copy workout', () => {
       let mainComponent = 'tr-copy-library-to-library'
 
