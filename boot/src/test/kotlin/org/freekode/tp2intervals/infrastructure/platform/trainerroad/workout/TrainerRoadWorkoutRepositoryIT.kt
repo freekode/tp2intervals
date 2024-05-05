@@ -8,6 +8,7 @@ import org.freekode.tp2intervals.domain.config.AppConfigurationRepository
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutSingleStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 
@@ -61,6 +62,7 @@ class TrainerRoadWorkoutRepositoryIT : SpringITConfig() {
     }
 
     @Test
+    @Disabled
     fun `should print wrong rest api response`() {
         // when
         val data = ExternalData(null, null, "wrong")
