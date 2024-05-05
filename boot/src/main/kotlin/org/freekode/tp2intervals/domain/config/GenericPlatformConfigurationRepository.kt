@@ -11,6 +11,6 @@ class GenericPlatformConfigurationRepository(
     override fun platform() = Platform.GENERIC
 
     override fun updateConfig(request: UpdateConfigurationRequest) {
-        appConfigurationRepository.updateConfig(UpdateConfigurationRequest(request.getByPrefix("generic")))
+        appConfigurationRepository.updateConfig(UpdateConfigurationRequest(request.getByPrefix(Platform.GENERIC.key)))
     }
 }

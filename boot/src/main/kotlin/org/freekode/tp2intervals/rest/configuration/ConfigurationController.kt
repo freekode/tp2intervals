@@ -7,7 +7,6 @@ import org.freekode.tp2intervals.domain.config.LogLevelService
 import org.freekode.tp2intervals.domain.config.PlatformInfo
 import org.freekode.tp2intervals.domain.config.UpdateConfigurationRequest
 import org.freekode.tp2intervals.rest.ErrorResponseDTO
-import org.springframework.boot.logging.LogLevel
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -44,10 +43,5 @@ class ConfigurationController(
     @GetMapping("/api/configuration/{platform}")
     fun getConfigurations(@PathVariable platform: Platform): PlatformInfo {
         return configurationService.platformInfo(platform)
-    }
-
-    @PutMapping("/api/configuration/log-level/{logLevel}")
-    fun setLogLevel(@PathVariable logLevel: LogLevel) {
-        logLevelService.setLogLevel(logLevel)
     }
 }
