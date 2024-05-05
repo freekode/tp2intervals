@@ -59,4 +59,25 @@ class TrainerRoadWorkoutRepositoryIT : SpringITConfig() {
         assertTrue((workout.structure!!.steps[2] as WorkoutSingleStep).target.start == 60)
         assertTrue((workout.structure!!.steps[2] as WorkoutSingleStep).target.end == 60)
     }
+
+    @Test
+    fun `should print wrong rest api response`() {
+        // when
+        val data = ExternalData(null, null, "wrong")
+        val workout = trainerRoadWorkoutRepository.getWorkoutFromLibrary(data)
+
+        // then
+        assertTrue(workout.details.type == TrainingType.VIRTUAL_BIKE)
+        assertTrue(workout.structure!!.target == WorkoutStructure.TargetUnit.FTP_PERCENTAGE)
+        assertTrue(workout.structure!!.steps.size == 11)
+        assertTrue((workout.structure!!.steps[0] as WorkoutSingleStep).duration == Duration.ofMinutes(5))
+        assertTrue((workout.structure!!.steps[0] as WorkoutSingleStep).target.start == 50)
+        assertTrue((workout.structure!!.steps[0] as WorkoutSingleStep).target.end == 50)
+        assertTrue((workout.structure!!.steps[1] as WorkoutSingleStep).duration == Duration.ofMinutes(3))
+        assertTrue((workout.structure!!.steps[1] as WorkoutSingleStep).target.start == 60)
+        assertTrue((workout.structure!!.steps[1] as WorkoutSingleStep).target.end == 60)
+        assertTrue((workout.structure!!.steps[2] as WorkoutSingleStep).duration == Duration.ofMinutes(13))
+        assertTrue((workout.structure!!.steps[2] as WorkoutSingleStep).target.start == 50)
+        assertTrue((workout.structure!!.steps[2] as WorkoutSingleStep).target.end == 50)
+    }
 }

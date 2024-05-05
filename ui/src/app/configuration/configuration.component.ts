@@ -37,8 +37,6 @@ import { EnvironmentService } from "infrastructure/environment.service";
   styleUrl: './configuration.component.scss'
 })
 export class ConfigurationComponent implements OnInit {
-  private readonly packageName = "org.freekode.tp2intervals";
-
   formGroup: FormGroup = this.formBuilder.group({
     'training-peaks.auth-cookie': [null, [Validators.pattern('^Production_tpAuth=[a-zA-Z0-9-_]*$')]],
     'trainer-road.auth-cookie': [null, [Validators.pattern('^TrainerRoadAuth=.*$')]],
@@ -47,9 +45,8 @@ export class ConfigurationComponent implements OnInit {
     'intervals.power-range': [null, [Validators.required, Validators.min(0), Validators.max(100)]],
     'intervals.hr-range': [null, [Validators.required, Validators.min(0), Validators.max(100)]],
     'intervals.pace-range': [null, [Validators.required, Validators.min(0), Validators.max(100)]],
+    'generic.log-level': [null, [Validators.required]],
   });
-
-  logLevelFormControl = new FormControl<string>('')
 
   inProgress = false;
   showAdvanced = false;
@@ -58,7 +55,6 @@ export class ConfigurationComponent implements OnInit {
     private router: Router,
     private formBuilder: FormBuilder,
     private configClient: ConfigurationClient,
-    private environmentService: EnvironmentService,
     private notificationService: NotificationService
   ) {
   }
@@ -69,18 +65,13 @@ export class ConfigurationComponent implements OnInit {
       this.formGroup.patchValue(config.config);
       this.inProgress = false
     });
-
-    this.environmentService.getLoggerLevel(this.packageName).subscribe(logLevel => {
-      this.logLevelFormControl.setValue(logLevel)
-    })
   }
 
   onSubmit(): void {
     this.inProgress = true
     let newConfiguration = new ConfigData(this.formGroup.getRawValue());
 
-    this.environmentService.setLoggerLevel(this.packageName, this.logLevelFormControl.value).pipe(
-      switchMap(() => this.configClient.updateConfig(newConfiguration)),
+    this.configClient.updateConfig(newConfiguration).pipe(
       finalize(() => this.inProgress = false)
     ).subscribe(() => {
       this.notificationService.success('Configuration successfully saved')

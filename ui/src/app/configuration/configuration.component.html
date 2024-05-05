@@ -47,7 +47,7 @@
     </mat-form-field>
     <mat-form-field class="full-width">
       <mat-label>Log Level (saved only for current session)</mat-label>
-      <mat-select [formControl]="logLevelFormControl">
+      <mat-select formControlName="generic.log-level">
         <mat-option [value]="'WARN'">WARN</mat-option>
         <mat-option [value]="'INFO'">INFO</mat-option>
         <mat-option [value]="'DEBUG'">DEBUG</mat-option>
