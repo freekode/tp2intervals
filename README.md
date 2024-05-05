@@ -116,7 +116,12 @@ E.g your TZ is UTC+12, current local datetime 20.05.2024 18:00. TP server local 
 
 Example with [worldtimebuddy](https://www.worldtimebuddy.com/?pl=1&lid=206,100,756135,2193733&h=206&hf=0)
 
-### Log location
+### How to get logs for your issue
+
+1. Go to Configuration, check Show advanced configuration
+2. Set Log Level to DEBUG, click Confirm
+3. Reproduce your issue
+4. Find log file according to your system
 
 * Linux: ~/.config/tp2intervals/logs/main.log
 * MacOS: ~/Library/Logs/tp2intervals/main.log
