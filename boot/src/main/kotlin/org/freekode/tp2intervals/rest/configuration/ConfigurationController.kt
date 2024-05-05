@@ -1,9 +1,9 @@
 package org.freekode.tp2intervals.rest.configuration
 
-import jakarta.websocket.server.PathParam
 import org.freekode.tp2intervals.app.confguration.ConfigurationService
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.TrainingType
+import org.freekode.tp2intervals.domain.config.LogLevelService
 import org.freekode.tp2intervals.domain.config.PlatformInfo
 import org.freekode.tp2intervals.domain.config.UpdateConfigurationRequest
 import org.freekode.tp2intervals.rest.ErrorResponseDTO
@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class ConfigurationController(
     private val configurationService: ConfigurationService,
+    private val logLevelService: LogLevelService
 ) {
 
     @GetMapping("/api/configuration")

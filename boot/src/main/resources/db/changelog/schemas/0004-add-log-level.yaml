@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: _
+      author: _
+      changes:
+        - insert:
+            tableName: config
+            columns:
+              - column:
+                  name: key
+                  value: 'generic.log-level'
+
+              - column:
+                  name: value
+                  value: 'INFO'

@@ -16,6 +16,5 @@ class TRInternalWorkoutRepository(
         val trWorkoutConverter = TRWorkoutConverter()
         return trainerRoadApiClient.getWorkout(trWorkoutId)
             .let { trWorkoutConverter.toWorkout(it) }
-
     }
 }
