@@ -9,6 +9,7 @@ class TRWorkoutResponseDTO(
     class TRWorkout(
         @JsonProperty("Details")
         val details: DetailsDTO,
+        @JsonProperty("IntervalData")
         val intervalData: List<IntervalsDataDTO>,
     )
 

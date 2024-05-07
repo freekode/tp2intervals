@@ -77,7 +77,7 @@
             }
           ]
         },
-        "intervalData": [
+        "IntervalData": [
           {
             "Start": 0,
             "End": 3600,
@@ -174,64 +174,7 @@
             "TestInterval": false,
             "StartTargetPowerPercent": 50.0
           }
-        ],
-        "Plans": [],
-        "Tags": [],
-        "Progression": {
-          "Id": 33,
-          "Text": "Endurance",
-          "MemberId": 1,
-          "Updated": "2019-04-09T22:12:12.603",
-          "TranslationsUpdated": null
-        },
-        "ProgressionId": 33,
-        "ProgressionLevel": 1.0,
-        "Alternative": null,
-        "WorkoutLabel": null,
-        "WorkoutLabelId": null,
-        "ExternalProviderType": null,
-        "WorkoutDifficultyRating": 6,
-        "WorkoutLevel": {
-          "Primary": {
-            "Zone": 33,
-            "Level": 1.0,
-            "ZonePercentage": 1.0,
-            "IsPrimary": true
-          },
-          "Secondary": [],
-          "PrimaryRaw": {
-            "Zone": 33,
-            "Level": 1.0360656976699829,
-            "ZonePercentage": 1.0,
-            "IsPrimary": true
-          },
-          "SecondaryRaw": [],
-          "ZonePointsTotalIsZero": false
-        },
-        "MemberProgressionLevels": {
-          "16": 1.76128006,
-          "33": 2.4512,
-          "41": 1.0,
-          "79": 1.0,
-          "83": 1.0,
-          "84": 1.0,
-          "85": 1.0,
-          "1001": 1.0
-        },
-        "Levels": [
-          {
-            "WorkoutId": 5460,
-            "ProgressionId": 33,
-            "FallBackProgressionId": null,
-            "FallBackLevel": null,
-            "Level": 1.0,
-            "IsPrimary": true
-          }
-        ],
-        "ProfileName": "Sustained Power",
-        "SecondaryProgressionLevelV1": {
-          "16": 1.0
-        }
+        ]
       }
     }
   }

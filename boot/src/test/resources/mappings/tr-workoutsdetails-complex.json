@@ -77,7 +77,7 @@
             }
           ]
         },
-        "intervalData": [
+        "IntervalData": [
           {
             "Start": 0,
             "End": 3600,
