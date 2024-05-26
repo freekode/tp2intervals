@@ -5,7 +5,14 @@
 
 # Third Party to Intervals.icu
 
-App to sync workouts between TrainingPeaks, TrainerRoad and Intervals.icu.
+App to sync workouts between TrainingPeaks, TrainerRoad (deprecated) and Intervals.icu.
+
+### Deprecation Notice
+
+There will be no updates for TrainerRoad platform.
+
+I don't have access to TrainerRoad anymore. Account, which I used, cancelled subscription. I don't use the platform and it's too expensive to have it for occasional fixes.
+I was able to fix some problems using only on logs, but they updating API and some problems can't be fix without access. Sorry about that.
 
 ### TrainingPeaks features
 
@@ -19,7 +26,7 @@ App to sync workouts between TrainingPeaks, TrainerRoad and Intervals.icu.
 
 * Copy whole training plan and workout library from TrainingPeaks
 
-### TrainerRoad features
+### TrainerRoad features (deprecated)
 
 * Copy workouts from TrainerRoad library to Intervals
 * Copy planned workouts for date range from TrainerRoad to Intervals.icu training plan or workout folder
