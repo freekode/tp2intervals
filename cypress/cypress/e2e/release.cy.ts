@@ -9,12 +9,14 @@ describe('Tests for release', {
     cy.visit('/')
   })
 
-  it('should load home page', () => {
-    cy.get('button#home').click()
-    cy.get('app-home').should('exist')
+  describe('Home Page', () => {
+    it('should load home page', () => {
+      cy.get('button#home').click()
+      cy.get('app-home').should('exist')
+    })
   })
 
-  describe('Tests for Training Peaks', () => {
+  describe('Training Peaks', () => {
     it('should sync workout', () => {
       let mainComponent = 'tp-copy-calendar-to-calendar'
 
@@ -71,7 +73,7 @@ describe('Tests for release', {
     })
   })
 
-  xdescribe('Tests for Trainer Road', () => {
+  xdescribe('Trainer Road', () => {
     it('should copy workout', () => {
       let mainComponent = 'tr-copy-library-to-library'
 
@@ -112,13 +114,15 @@ describe('Tests for release', {
     })
   })
 
-  it('should display configuration page', () => {
-    cy.get('button#config').click()
+  describe('Configuration Page', () => {
+    it('should display configuration page', () => {
+      cy.get('button#config').click()
 
-    cy.get('input[formControlName="intervals.api-key"]').should('exist')
-    cy.get('input[formControlName="intervals.athlete-id"]').should('exist')
-    cy.get('input[formControlName="training-peaks.auth-cookie"]').should('exist')
-    cy.get('input[formControlName="trainer-road.auth-cookie"]').should('exist')
+      cy.get('input[formControlName="intervals.api-key"]').should('exist')
+      cy.get('input[formControlName="intervals.athlete-id"]').should('exist')
+      cy.get('input[formControlName="training-peaks.auth-cookie"]').should('exist')
+      cy.get('input[formControlName="trainer-road.auth-cookie"]').should('exist')
+    })
   })
 
   function selectCalendarDate(parentComponent, dayStart, dayEnd) {
