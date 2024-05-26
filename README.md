@@ -7,7 +7,7 @@
 
 App to sync workouts between TrainingPeaks, TrainerRoad (deprecated) and Intervals.icu.
 
-### Deprecation Notice
+### Deprecation Notice ⚠️
 
 There will be no updates for TrainerRoad platform.
 
