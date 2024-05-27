@@ -38,8 +38,8 @@ class TPToWorkoutConverter {
         val workoutsStructure = tpWorkout.structure?.let {
             try {
                 toWorkoutStructure(it)
-            } catch (e: Exception) {
-                log.warn("Can't convert workout - ${tpWorkout.title}, error - ${e.message}'", e)
+            } catch (e: IllegalArgumentException) {
+                log.warn("Can't convert workout - ${tpWorkout.title}, error - ${e.message}'")
                 null
             }
         }

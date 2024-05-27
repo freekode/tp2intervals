@@ -1,9 +1,7 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import java.time.DayOfWeek
 import java.time.LocalDate
-import java.time.temporal.TemporalAdjusters
 import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.librarycontainer.LibraryContainer
@@ -127,20 +125,17 @@ class TrainingPeaksWorkoutRepository(
 
     private fun getWorkoutsFromTPPlan(libraryContainer: LibraryContainer): List<Workout> {
         val planId = libraryContainer.externalData.trainingPeaksId!!
-        val planApplyDate = getPlanApplyDate()
+        val planStartDateShift = trainingPeaksConfigurationRepository.getConfiguration().planDaysShift
+        val planStartDate = Date.thisMonday()
+        val planApplyDate = planStartDate.plusDays(planStartDateShift)
         val response = tpPlanRepository.applyPlan(planId, planApplyDate)
 
         try {
             val planEndDate = response.endDate.toLocalDate()
 
-            val workoutDateShiftDays = Date.daysDiff(libraryContainer.startDate, planApplyDate)
             val workouts = getWorkoutsFromCalendar(planApplyDate, planEndDate).map {
-                it.withDate(
-                    it.date!!.minusDays(workoutDateShiftDays.toLong())
-                )
+                it.withDate(it.date!!.minusDays(planStartDateShift))
             }
-            val tpPlan = tpPlanRepository.getPlan(planId)
-            assert(tpPlan.workoutCount == workouts.size)
             return workouts
         } catch (e: Exception) {
             throw e
@@ -152,10 +147,6 @@ class TrainingPeaksWorkoutRepository(
     private fun getWorkoutsFromTPLibrary(library: LibraryContainer): List<Workout> {
         return tpWorkoutLibraryRepository.getLibraryWorkouts(library.externalData.trainingPeaksId!!)
     }
-
-    private fun getPlanApplyDate(): LocalDate = LocalDate.now()
-        .plusDays(trainingPeaksConfigurationRepository.getConfiguration().planDaysShift)
-        .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
 
     private fun getNoteEndDateForFilter(startDate: LocalDate, endDate: LocalDate): LocalDate =
         if (startDate == endDate) endDate.plusDays(1) else endDate

@@ -59,10 +59,8 @@ class TPPlanRepository(
     }
 
     private fun toLibraryContainer(planDto: TPPlanDto): LibraryContainer {
-        return LibraryContainer(
+        return LibraryContainer.planFromMonday(
             planDto.title,
-            planDto.startDate ?: Date.thisMonday(),
-            true,
             planDto.workoutCount,
             ExternalData.empty().withTrainingPeaks(planDto.planId)
         )
