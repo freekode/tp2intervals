@@ -12,7 +12,7 @@ App to sync workouts between TrainingPeaks, TrainerRoad (deprecated) and Interva
 There will be no updates for TrainerRoad platform.
 
 I don't have access to TrainerRoad anymore. Account, which I used, cancelled subscription. I don't use the platform and it's too expensive to have it for occasional fixes.
-I was able to fix some problems using only on logs, but they updating API and some problems can't be fix without access. Sorry about that.
+I was able to fix some problems using only on logs, but they updating API and some problems can't be fix without access. Sorry about that. I will continue to fix what I can fix using only logs.
 
 ### TrainingPeaks features
 
