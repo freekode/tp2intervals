@@ -4,7 +4,6 @@ import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.librarycontainer.LibraryContainer
 import org.freekode.tp2intervals.domain.librarycontainer.LibraryContainerRepository
 import org.freekode.tp2intervals.domain.workout.WorkoutRepository
-import org.freekode.tp2intervals.infrastructure.utils.Date
 import org.springframework.stereotype.Service
 
 @Service
@@ -26,7 +25,11 @@ class LibraryService(
         val targetWorkoutRepository = workoutRepositoryMap[request.targetPlatform]!!
 
         val workouts = sourceWorkoutRepository.getWorkoutsFromLibrary(request.libraryContainer)
-        val newPlan = targetPlanRepository.createLibraryContainer(request.newName, Date.thisMonday(), request.libraryContainer.isPlan)
+        val newPlan = targetPlanRepository.createLibraryContainer(
+            request.newName,
+            workouts.first().date,
+            request.libraryContainer.isPlan
+        )
         targetWorkoutRepository.saveWorkoutsToLibrary(newPlan, workouts)
         return CopyPlanResponse(newPlan.name, workouts.size)
     }

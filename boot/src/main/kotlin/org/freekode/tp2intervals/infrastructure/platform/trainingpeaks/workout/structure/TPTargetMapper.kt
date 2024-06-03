@@ -1,8 +1,6 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure
 
-import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
-import org.freekode.tp2intervals.infrastructure.PlatformException
 
 class TPTargetMapper {
     companion object {
