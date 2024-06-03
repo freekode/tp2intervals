@@ -2,7 +2,7 @@ package org.freekode.tp2intervals.domain.workout.structure
 
 import java.io.Serializable
 
-data class WorkoutStructure(
+data class StepStructure(
     val target: TargetUnit,
     val steps: List<WorkoutStep>,
 ) : Serializable {

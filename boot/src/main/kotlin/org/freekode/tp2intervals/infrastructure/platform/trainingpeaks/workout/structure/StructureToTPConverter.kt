@@ -6,12 +6,12 @@ import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutMultiStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutSingleStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStep
-import org.freekode.tp2intervals.domain.workout.structure.WorkoutStepTarget
-import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
+import org.freekode.tp2intervals.domain.workout.structure.StepTarget
+import org.freekode.tp2intervals.domain.workout.structure.StepStructure
 
 class StructureToTPConverter(
     private val objectMapper: ObjectMapper,
-    private val structure: WorkoutStructure,
+    private val structure: StepStructure,
 ) {
     companion object {
         fun toStructureString(objectMapper: ObjectMapper, workout: Workout): String? {
@@ -76,7 +76,7 @@ class StructureToTPConverter(
         )
     }
 
-    private fun toMainTarget(target: WorkoutStepTarget) =
+    private fun toMainTarget(target: StepTarget) =
         if (target.isSingleValue()) {
             TPTargetDTO.mainTarget(target.start)
         } else {

@@ -4,7 +4,7 @@ import java.time.Duration
 import java.time.LocalDate
 import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.workout.Workout
-import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
+import org.freekode.tp2intervals.domain.workout.structure.StepStructure
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.library.TPWorkoutLibraryItemDTO
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.TPStructureToStepMapper
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.TPWorkoutStructureDTO
@@ -66,7 +66,7 @@ class TPToWorkoutConverter {
             .withSimpleString(tpWorkout.description ?: "")
     }
 
-    private fun toWorkoutStructure(structure: TPWorkoutStructureDTO): WorkoutStructure {
+    private fun toWorkoutStructure(structure: TPWorkoutStructureDTO): StepStructure {
         if (structure.structure.isEmpty()) {
             throw IllegalArgumentException("structure is empty")
         }
@@ -76,7 +76,7 @@ class TPToWorkoutConverter {
         }
 
         val steps = TPStructureToStepMapper(structure).mapToWorkoutSteps()
-        return WorkoutStructure(
+        return StepStructure(
             structure.toTargetUnit(),
             steps
         )

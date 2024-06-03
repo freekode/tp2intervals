@@ -3,15 +3,15 @@ package org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutMultiStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutSingleStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStep
-import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
+import org.freekode.tp2intervals.domain.workout.structure.StepStructure
 
 class StructureToIntervalsConverter(
-    private val structure: WorkoutStructure
+    private val structure: StepStructure
 ) {
     private val targetTypeMap = mapOf(
-        WorkoutStructure.TargetUnit.FTP_PERCENTAGE to "%",
-        WorkoutStructure.TargetUnit.LTHR_PERCENTAGE to "% LTHR",
-        WorkoutStructure.TargetUnit.PACE_PERCENTAGE to "% Pace",
+        StepStructure.TargetUnit.FTP_PERCENTAGE to "%",
+        StepStructure.TargetUnit.LTHR_PERCENTAGE to "% LTHR",
+        StepStructure.TargetUnit.PACE_PERCENTAGE to "% Pace",
     )
 
     fun toIntervalsStructureStr(): String {

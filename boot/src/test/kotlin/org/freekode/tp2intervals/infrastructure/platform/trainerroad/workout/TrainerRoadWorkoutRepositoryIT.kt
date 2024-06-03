@@ -6,9 +6,8 @@ import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.config.AppConfigurationRepository
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutSingleStep
-import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
+import org.freekode.tp2intervals.domain.workout.structure.StepStructure
 import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 
@@ -27,7 +26,7 @@ class TrainerRoadWorkoutRepositoryIT : SpringITConfig() {
 
         // then
         assertTrue(workout.details.type == TrainingType.VIRTUAL_BIKE)
-        assertTrue(workout.structure!!.target == WorkoutStructure.TargetUnit.FTP_PERCENTAGE)
+        assertTrue(workout.structure!!.target == StepStructure.TargetUnit.FTP_PERCENTAGE)
         assertTrue(workout.structure!!.steps.size == 11)
         assertTrue((workout.structure!!.steps[0] as WorkoutSingleStep).duration == Duration.ofMinutes(5))
         assertTrue((workout.structure!!.steps[0] as WorkoutSingleStep).target.start == 50)
@@ -48,7 +47,7 @@ class TrainerRoadWorkoutRepositoryIT : SpringITConfig() {
 
         // then
         assertTrue(workout.details.type == TrainingType.VIRTUAL_BIKE)
-        assertTrue(workout.structure!!.target == WorkoutStructure.TargetUnit.FTP_PERCENTAGE)
+        assertTrue(workout.structure!!.target == StepStructure.TargetUnit.FTP_PERCENTAGE)
         assertTrue(workout.structure!!.steps.size == 23)
         assertTrue((workout.structure!!.steps[0] as WorkoutSingleStep).duration == Duration.ofMinutes(4))
         assertTrue((workout.structure!!.steps[0] as WorkoutSingleStep).target.start == 50)
@@ -69,7 +68,7 @@ class TrainerRoadWorkoutRepositoryIT : SpringITConfig() {
 
         // then
         assertTrue(workout.details.type == TrainingType.VIRTUAL_BIKE)
-        assertTrue(workout.structure!!.target == WorkoutStructure.TargetUnit.FTP_PERCENTAGE)
+        assertTrue(workout.structure!!.target == StepStructure.TargetUnit.FTP_PERCENTAGE)
         assertTrue(workout.structure!!.steps.isNotEmpty())
     }
 }

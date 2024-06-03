@@ -1,7 +1,7 @@
 package org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout
 
 import org.freekode.tp2intervals.domain.Platform
-import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
+import org.freekode.tp2intervals.domain.workout.structure.StepStructure
 import org.freekode.tp2intervals.infrastructure.PlatformException
 
 class IntervalsWorkoutDocDTO(
@@ -14,12 +14,12 @@ class IntervalsWorkoutDocDTO(
     val target: String
 ) {
     private val targetMap = mapOf(
-        "POWER" to WorkoutStructure.TargetUnit.FTP_PERCENTAGE,
-        "HR" to WorkoutStructure.TargetUnit.LTHR_PERCENTAGE,
-        "PACE" to WorkoutStructure.TargetUnit.PACE_PERCENTAGE,
+        "POWER" to StepStructure.TargetUnit.FTP_PERCENTAGE,
+        "HR" to StepStructure.TargetUnit.LTHR_PERCENTAGE,
+        "PACE" to StepStructure.TargetUnit.PACE_PERCENTAGE,
     )
 
-    fun mapTarget(): WorkoutStructure.TargetUnit {
+    fun mapTarget(): StepStructure.TargetUnit {
         return targetMap[target] ?: throw PlatformException(Platform.INTERVALS, "Cant convert target - $target")
     }
 

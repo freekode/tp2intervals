@@ -5,16 +5,16 @@ import java.time.Duration
 import java.time.LocalDate
 import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.TrainingType
-import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
+import org.freekode.tp2intervals.domain.workout.structure.StepStructure
 
 data class Workout(
     val details: WorkoutDetails,
     val date: LocalDate?,
-    val structure: WorkoutStructure?,
+    val structure: StepStructure?,
 ) : Serializable {
     constructor(
         date: LocalDate, type: TrainingType, name: String, description: String?,
-        duration: Duration?, load: Int?, structure: WorkoutStructure?, externalData: ExternalData
+        duration: Duration?, load: Int?, structure: StepStructure?, externalData: ExternalData
     ) : this(WorkoutDetails(type, name, description, duration, load, externalData), date, structure)
 
     companion object {

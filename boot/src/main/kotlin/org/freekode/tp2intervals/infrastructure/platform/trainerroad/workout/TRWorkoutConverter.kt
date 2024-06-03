@@ -7,8 +7,8 @@ import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutDetails
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutSingleStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStep
-import org.freekode.tp2intervals.domain.workout.structure.WorkoutStepTarget
-import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
+import org.freekode.tp2intervals.domain.workout.structure.StepTarget
+import org.freekode.tp2intervals.domain.workout.structure.StepStructure
 
 class TRWorkoutConverter {
     fun toWorkout(trWorkoutResponseDTO: TRWorkoutResponseDTO): Workout {
@@ -26,7 +26,7 @@ class TRWorkoutConverter {
                 ExternalData.empty().withTrainerRoad(trWorkout.details.id)
             ),
             null,
-            WorkoutStructure(WorkoutStructure.TargetUnit.FTP_PERCENTAGE, steps),
+            StepStructure(StepStructure.TargetUnit.FTP_PERCENTAGE, steps),
         )
     }
 
@@ -55,7 +55,7 @@ class TRWorkoutConverter {
             val name = if (interval.name == "Fake") "Step" else interval.name
 
             val workoutSingleStep =
-                WorkoutSingleStep(name, duration, WorkoutStepTarget(ftpPercent, ftpPercent), null, false)
+                WorkoutSingleStep(name, duration, StepTarget(ftpPercent, ftpPercent), null, false)
             steps.add(workoutSingleStep)
         }
         return steps

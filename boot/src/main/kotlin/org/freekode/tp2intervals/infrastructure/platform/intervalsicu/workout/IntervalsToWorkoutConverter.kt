@@ -6,7 +6,7 @@ import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutMultiStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutSingleStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStep
-import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
+import org.freekode.tp2intervals.domain.workout.structure.StepStructure
 
 class IntervalsToWorkoutConverter(
     private val eventDTO: IntervalsEventDTO
@@ -28,10 +28,10 @@ class IntervalsToWorkoutConverter(
         )
     }
 
-    private fun toWorkoutStructure(): WorkoutStructure? {
+    private fun toWorkoutStructure(): StepStructure? {
         return workoutDoc?.let { workoutDoc ->
             if (workoutDoc.steps.isNotEmpty()) {
-                WorkoutStructure(
+                StepStructure(
                     workoutDoc.mapTarget(),
                     mapToWorkoutSteps(workoutDoc)
                 )

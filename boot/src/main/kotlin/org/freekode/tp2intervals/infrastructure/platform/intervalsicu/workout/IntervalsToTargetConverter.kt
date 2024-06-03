@@ -1,7 +1,7 @@
 package org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout
 
 import org.freekode.tp2intervals.domain.Platform
-import org.freekode.tp2intervals.domain.workout.structure.WorkoutStepTarget
+import org.freekode.tp2intervals.domain.workout.structure.StepTarget
 import org.freekode.tp2intervals.infrastructure.PlatformException
 
 class IntervalsToTargetConverter(
@@ -9,7 +9,7 @@ class IntervalsToTargetConverter(
     private val lthr: Double?,
     private val paceThreshold: Double?
 ) {
-    fun toMainTarget(stepDTO: IntervalsWorkoutDocDTO.WorkoutStepDTO): WorkoutStepTarget {
+    fun toMainTarget(stepDTO: IntervalsWorkoutDocDTO.WorkoutStepDTO): StepTarget {
         return if (stepDTO._power != null) {
             mapSimpleUnit(ftp!!, stepDTO._power)
         } else if (stepDTO._hr != null) {
@@ -21,21 +21,21 @@ class IntervalsToTargetConverter(
         }
     }
 
-    fun toCadenceTarget(stepValueDTO: IntervalsWorkoutDocDTO.StepValueDTO): WorkoutStepTarget {
+    fun toCadenceTarget(stepValueDTO: IntervalsWorkoutDocDTO.StepValueDTO): StepTarget {
         val (min, max) = if (stepValueDTO.value != null) {
             stepValueDTO.value to stepValueDTO.value
         } else {
             stepValueDTO.start!! to stepValueDTO.end!!
         }
-        return WorkoutStepTarget(min, max)
+        return StepTarget(min, max)
     }
 
     private fun mapSimpleUnit(
         thresholdValue: Double,
         resolvedStepValueDTO: IntervalsWorkoutDocDTO.ResolvedStepValueDTO
-    ): WorkoutStepTarget {
+    ): StepTarget {
         val (min, max) = getRange(thresholdValue, resolvedStepValueDTO)
-        return WorkoutStepTarget(min, max)
+        return StepTarget(min, max)
     }
 
     private fun getRange(
