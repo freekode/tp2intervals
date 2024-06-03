@@ -6,8 +6,8 @@ import java.time.LocalDate
 import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.config.AppConfigurationRepository
 import org.freekode.tp2intervals.domain.workout.Workout
-import org.freekode.tp2intervals.domain.workout.structure.WorkoutSingleStep
 import org.freekode.tp2intervals.domain.workout.structure.StepStructure
+import org.freekode.tp2intervals.domain.workout.structure.WorkoutSingleStep
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -32,7 +32,7 @@ class IntervalsWorkoutRepositoryIT : SpringITConfig() {
         Assertions.assertTrue(workout.structure!!.target == StepStructure.TargetUnit.LTHR_PERCENTAGE)
         Assertions.assertTrue(workout.structure!!.steps.size == 5)
         // 10m 50-70% LTHR
-        Assertions.assertTrue((workout.structure!!.steps[0] as WorkoutSingleStep).duration == Duration.ofMinutes(10))
+        Assertions.assertTrue((workout.structure!!.steps[0] as WorkoutSingleStep).length.value == 10L * 60)
         Assertions.assertTrue((workout.structure!!.steps[0] as WorkoutSingleStep).target.start == 50)
         Assertions.assertTrue((workout.structure!!.steps[0] as WorkoutSingleStep).target.end == 70)
         // 10m 80% LTHR
@@ -63,7 +63,7 @@ class IntervalsWorkoutRepositoryIT : SpringITConfig() {
         Assertions.assertTrue(workout.structure!!.target == StepStructure.TargetUnit.FTP_PERCENTAGE)
         Assertions.assertTrue(workout.structure!!.steps.size == 5)
         // 10m 10-30%
-        Assertions.assertTrue((workout.structure!!.steps[0] as WorkoutSingleStep).duration == Duration.ofMinutes(10))
+        Assertions.assertTrue((workout.structure!!.steps[0] as WorkoutSingleStep).length.value == 10L * 60)
         Assertions.assertTrue((workout.structure!!.steps[0] as WorkoutSingleStep).target.start == 10)
         Assertions.assertTrue((workout.structure!!.steps[0] as WorkoutSingleStep).target.end == 30)
         // 10m 40% 30-90rpm
@@ -98,7 +98,7 @@ class IntervalsWorkoutRepositoryIT : SpringITConfig() {
         Assertions.assertTrue(workout.structure!!.target == StepStructure.TargetUnit.PACE_PERCENTAGE)
         Assertions.assertTrue(workout.structure!!.steps.size == 4)
         // 10m 70% Pace
-        Assertions.assertTrue((workout.structure!!.steps[0] as WorkoutSingleStep).duration == Duration.ofMinutes(10))
+        Assertions.assertTrue((workout.structure!!.steps[0] as WorkoutSingleStep).length.value == 10L * 60)
         Assertions.assertTrue((workout.structure!!.steps[0] as WorkoutSingleStep).target.start == 68)
         Assertions.assertTrue((workout.structure!!.steps[0] as WorkoutSingleStep).target.end == 72)
         // 10m 80-110% Pace

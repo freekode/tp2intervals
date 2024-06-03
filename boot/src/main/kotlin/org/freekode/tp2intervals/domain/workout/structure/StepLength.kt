@@ -1,6 +1,7 @@
 package org.freekode.tp2intervals.domain.workout.structure
 
 import java.io.Serializable
+import java.time.Duration
 
 data class StepLength(
     val value: Long,

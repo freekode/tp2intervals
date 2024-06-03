@@ -33,7 +33,7 @@ class StructureToIntervalsConverter(
 
     private fun getStepString(workoutStep: WorkoutSingleStep): String {
         val name = workoutStep.name.orEmpty().replace("\\", "/")
-        val duration = workoutStep.duration.toString()
+        val duration = workoutStep.length.value.toString()
             .substring(2)
             .lowercase()
         val targetUnitStr = targetTypeMap[structure.target]!!

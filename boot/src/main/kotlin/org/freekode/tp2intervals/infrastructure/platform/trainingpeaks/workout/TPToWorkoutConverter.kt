@@ -71,10 +71,6 @@ class TPToWorkoutConverter {
             throw IllegalArgumentException("structure is empty")
         }
 
-        if (structure.primaryLengthMetric == "distance") {
-            throw IllegalArgumentException("distance based workout is not supported")
-        }
-
         val steps = TPStructureToStepMapper(structure).mapToWorkoutSteps()
         return StepStructure(
             structure.toTargetUnit(),

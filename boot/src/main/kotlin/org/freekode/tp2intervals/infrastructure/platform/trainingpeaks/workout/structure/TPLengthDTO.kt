@@ -10,6 +10,7 @@ class TPLengthDTO(
 ) {
     companion object {
         fun seconds(value: Long) = TPLengthDTO(value, "second")
+        fun meters(value: Long) = TPLengthDTO(value, "meter")
         fun repetitions(value: Long) = TPLengthDTO(value, "repetition")
         fun single() = repetitions(1)
     }

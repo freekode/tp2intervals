@@ -5,19 +5,18 @@ import java.time.Duration
 class WorkoutSingleStep(
     val name: String?,
     val length: StepLength,
-    @Deprecated("use length")
-    val duration: Duration,
     val target: StepTarget,
     val cadence: StepTarget?,
     val ramp: Boolean
 ) : WorkoutStep {
+    @Deprecated("use default")
     constructor(
         name: String?,
         duration: Duration,
         target: StepTarget,
         cadence: StepTarget?,
         ramp: Boolean
-    ) : this(name, StepLength.seconds(duration.seconds), duration, target, cadence, ramp)
+    ) : this(name, StepLength.seconds(duration.seconds), target, cadence, ramp)
 
     override fun isSingleStep() = true
 
