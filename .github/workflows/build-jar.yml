@@ -42,7 +42,9 @@ jobs:
         run: cp -r ui/dist/ui/browser boot/src/main/resources/static
 
       - name: Build boot
-        run: cd ./boot && ./gradlew build
+        run: |
+          cd ./boot
+          ./gradlew build
 
       - name: Cypress tests
         run: |
