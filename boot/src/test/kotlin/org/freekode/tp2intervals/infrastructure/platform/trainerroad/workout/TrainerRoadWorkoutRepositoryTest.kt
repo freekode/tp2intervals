@@ -1,23 +1,33 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainerroad.workout
 
-import config.SpringITConfig
+import config.mock.ObjectMapperFactory
+import config.mock.TrainerRoadApiClientMock
 import java.time.Duration
 import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.TrainingType
-import org.freekode.tp2intervals.domain.config.AppConfigurationRepository
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutSingleStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
+import org.freekode.tp2intervals.infrastructure.platform.trainerroad.member.TRUsernameRepository
 import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
+import org.mockito.Mockito.mock
+import org.springframework.util.ResourceUtils
 
-class TrainerRoadWorkoutRepositoryIT : SpringITConfig() {
-    @Autowired
-    lateinit var trainerRoadWorkoutRepository: TrainerRoadWorkoutRepository
+class TrainerRoadWorkoutRepositoryTest {
+    private val objectMapper = ObjectMapperFactory.objectMapper()
 
-    @Autowired
-    lateinit var appConfigurationRepository: AppConfigurationRepository
+    private val trainerRoadApiClient = TrainerRoadApiClientMock(
+        objectMapper,
+        ResourceUtils.getFile("classpath:tr-workoutsdetails-simple.json").inputStream(),
+        ResourceUtils.getFile("classpath:tr-workoutsdetails-complex.json").inputStream(),
+        ResourceUtils.getFile("classpath:tr-workoutsdetails-another.json").inputStream(),
+    )
+
+    private val trainerRoadWorkoutRepository = TrainerRoadWorkoutRepository(
+        mock(TRUsernameRepository::class.java),
+        TRInternalWorkoutRepository(trainerRoadApiClient),
+        trainerRoadApiClient
+    )
 
     @Test
     fun `should parse simple workout`() {

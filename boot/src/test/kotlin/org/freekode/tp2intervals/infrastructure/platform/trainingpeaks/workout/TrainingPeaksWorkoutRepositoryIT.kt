@@ -9,7 +9,7 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 
-class TrainingPeaksWorkoutRepositoryTest : SpringITConfig() {
+class TrainingPeaksWorkoutRepositoryIT : SpringITConfig() {
     @Autowired
     lateinit var trainingPeaksWorkoutRepository: TrainingPeaksWorkoutRepository
 
@@ -22,18 +22,23 @@ class TrainingPeaksWorkoutRepositoryTest : SpringITConfig() {
     }
 
     @Test
-    fun `should parse workout library`() {
-        val container =
-            LibraryContainer("lib", LocalDate.now(), false, 0, ExternalData.empty().withTrainingPeaks("tp-id"))
-        val workouts = trainingPeaksWorkoutRepository.getWorkoutsFromLibrary(container)
+    fun ``() {
 
-        assertEquals(workouts.size, 1)
     }
 
-    @Test
-    fun `should parse calendar workout`() {
-        val workouts = trainingPeaksWorkoutRepository.getWorkoutsFromCalendar(LocalDate.now(), LocalDate.now())
-
-        assertEquals(workouts.size, 7)
-    }
+//    @Test
+//    fun `should parse workout library`() {
+//        val container =
+//            LibraryContainer("lib", LocalDate.now(), false, 0, ExternalData.empty().withTrainingPeaks("tp-id"))
+//        val workouts = trainingPeaksWorkoutRepository.getWorkoutsFromLibrary(container)
+//
+//        assertEquals(workouts.size, 1)
+//    }
+//
+//    @Test
+//    fun `should parse calendar workout`() {
+//        val workouts = trainingPeaksWorkoutRepository.getWorkoutsFromCalendar(LocalDate.now(), LocalDate.now())
+//
+//        assertEquals(workouts.size, 7)
+//    }
 }

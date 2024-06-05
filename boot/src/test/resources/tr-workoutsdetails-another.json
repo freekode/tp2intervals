@@ -1,0 +1,338 @@
+{
+  "Workout": {
+    "Details": {
+      "Id": 11,
+      "WorkoutName": "Palisade +1",
+      "Kj": 1104,
+      "WorkoutDescription": "<div><p>Palisade +1 is 5x9-minute i",
+      "WorkoutTypeId": 809,
+      "IsOutside": false,
+      "GoalDescription": "<div><p>Over-unders chiefly aim to dev",
+      "Duration": 90,
+      "IntensityFactor": 88.0,
+      "TSS": 115.0
+    },
+    "IntervalData": [
+      {
+        "Start": 0,
+        "End": 5400,
+        "Name": "Workout",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 50.0
+      },
+      {
+        "Start": 0,
+        "End": 180,
+        "Name": "Fake",
+        "IsFake": true,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 50.0
+      },
+      {
+        "Start": 180,
+        "End": 420,
+        "Name": "Endurance 1",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 65.0
+      },
+      {
+        "Start": 420,
+        "End": 600,
+        "Name": "Sweet Spot 1",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 95.0
+      },
+      {
+        "Start": 600,
+        "End": 900,
+        "Name": "Fake",
+        "IsFake": true,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 40.0
+      },
+      {
+        "Start": 900,
+        "End": 960,
+        "Name": "Threshold 1",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 98.0
+      },
+      {
+        "Start": 960,
+        "End": 1080,
+        "Name": "Threshold 2",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 105.0
+      },
+      {
+        "Start": 1080,
+        "End": 1140,
+        "Name": "Threshold 3",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 98.0
+      },
+      {
+        "Start": 1140,
+        "End": 1260,
+        "Name": "Threshold 4",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 105.0
+      },
+      {
+        "Start": 1260,
+        "End": 1320,
+        "Name": "Threshold 5",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 98.0
+      },
+      {
+        "Start": 1320,
+        "End": 1440,
+        "Name": "Threshold 6",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 105.0
+      },
+      {
+        "Start": 1440,
+        "End": 1800,
+        "Name": "Fake",
+        "IsFake": true,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 40.0
+      },
+      {
+        "Start": 1800,
+        "End": 1860,
+        "Name": "Threshold 7",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 98.0
+      },
+      {
+        "Start": 1860,
+        "End": 1980,
+        "Name": "Threshold 8",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 105.0
+      },
+      {
+        "Start": 1980,
+        "End": 2040,
+        "Name": "Threshold 9",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 98.0
+      },
+      {
+        "Start": 2040,
+        "End": 2160,
+        "Name": "Threshold 10",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 105.0
+      },
+      {
+        "Start": 2160,
+        "End": 2220,
+        "Name": "Threshold 11",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 98.0
+      },
+      {
+        "Start": 2220,
+        "End": 2340,
+        "Name": "Threshold 12",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 105.0
+      },
+      {
+        "Start": 2340,
+        "End": 2700,
+        "Name": "Fake",
+        "IsFake": true,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 39.0
+      },
+      {
+        "Start": 2700,
+        "End": 2760,
+        "Name": "Threshold 13",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 98.0
+      },
+      {
+        "Start": 2760,
+        "End": 2880,
+        "Name": "Threshold 14",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 105.0
+      },
+      {
+        "Start": 2880,
+        "End": 2940,
+        "Name": "Threshold 15",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 98.0
+      },
+      {
+        "Start": 2940,
+        "End": 3060,
+        "Name": "Threshold 16",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 105.0
+      },
+      {
+        "Start": 3060,
+        "End": 3120,
+        "Name": "Threshold 17",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 98.0
+      },
+      {
+        "Start": 3120,
+        "End": 3240,
+        "Name": "Threshold 18",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 105.0
+      },
+      {
+        "Start": 3240,
+        "End": 3600,
+        "Name": "Fake",
+        "IsFake": true,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 40.0
+      },
+      {
+        "Start": 3600,
+        "End": 3660,
+        "Name": "Threshold 19",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 98.0
+      },
+      {
+        "Start": 3660,
+        "End": 3780,
+        "Name": "Threshold 20",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 105.0
+      },
+      {
+        "Start": 3780,
+        "End": 3840,
+        "Name": "Threshold 21",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 98.0
+      },
+      {
+        "Start": 3840,
+        "End": 3960,
+        "Name": "Threshold 22",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 105.0
+      },
+      {
+        "Start": 3960,
+        "End": 4020,
+        "Name": "Threshold 23",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 98.0
+      },
+      {
+        "Start": 4020,
+        "End": 4140,
+        "Name": "Threshold 24",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 105.0
+      },
+      {
+        "Start": 4140,
+        "End": 4500,
+        "Name": "Fake",
+        "IsFake": true,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 40.0
+      },
+      {
+        "Start": 4500,
+        "End": 4560,
+        "Name": "Threshold 25",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 98.0
+      },
+      {
+        "Start": 4560,
+        "End": 4680,
+        "Name": "Threshold 26",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 105.0
+      },
+      {
+        "Start": 4680,
+        "End": 4740,
+        "Name": "Threshold 27",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 98.0
+      },
+      {
+        "Start": 4740,
+        "End": 4860,
+        "Name": "Threshold 28",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 105.0
+      },
+      {
+        "Start": 4860,
+        "End": 4920,
+        "Name": "Threshold 29",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 98.0
+      },
+      {
+        "Start": 4920,
+        "End": 5040,
+        "Name": "Threshold 30",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 105.0
+      },
+      {
+        "Start": 5040,
+        "End": 5400,
+        "Name": "Fake",
+        "IsFake": true,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 40.0
+      }
+    ]
+  }
+}

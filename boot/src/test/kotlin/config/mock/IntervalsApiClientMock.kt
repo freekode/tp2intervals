@@ -1,5 +1,8 @@
-package config
+package config.mock
 
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.ObjectMapper
+import java.io.InputStream
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsActivityDTO
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsApiClient
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.activity.CreateActivityResponseDTO
@@ -8,10 +11,13 @@ import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.Cr
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsEventDTO
 import org.springframework.web.multipart.MultipartFile
 
-class IntervalsApiClientMock : IntervalsApiClient {
-    MockIntervalsApiClient(ObjectMapper objectMapper, String eventsResponse) {
-        events = objectMapper.readValue(eventsResponse, new TypeReference<List<IntervalsEventDTO>>(){}) as List<IntervalsEventDTO>
-    }
+class IntervalsApiClientMock(
+    objectMapper: ObjectMapper,
+    eventsResponse: InputStream
+) : IntervalsApiClient {
+    private val events: List<IntervalsEventDTO> = objectMapper.readValue(
+        eventsResponse,
+        object : TypeReference<List<IntervalsEventDTO>>() {}) as List<IntervalsEventDTO>;
 
     override fun createWorkouts(athleteId: String, requests: List<CreateWorkoutRequestDTO>) {
         TODO("Not yet implemented")
@@ -28,9 +34,8 @@ class IntervalsApiClientMock : IntervalsApiClient {
         powerRange: Float,
         hrRange: Float,
         paceRange: Float
-    ): List<IntervalsEventDTO> {
-        TODO("Not yet implemented")
-    }
+    ): List<IntervalsEventDTO> = events
+
 
     override fun getActivities(athleteId: String, startDate: String, endDate: String): List<IntervalsActivityDTO> {
         TODO("Not yet implemented")
