@@ -3,13 +3,19 @@ name: Build Electron
 on:
   workflow_call:
     inputs:
+      jar-name:
+        required: true
+        type: string
+      jar-artifact-name:
+        required: true
+        type: string
+      os:
+        required: true
+        type: string
       dry-run:
         required: false
         type: boolean
         default: true
-      os:
-        required: true
-        type: string
 
 jobs:
   executable:
@@ -17,35 +23,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-java@v4
+      - uses: actions/download-artifact@master
         with:
-          java-version: 21
-          distribution: 'corretto'
-          cache: 'gradle'
+          name: ${{ inputs.jar-artifact-name }}
+          path: artifact
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20.10.0
-          cache: 'npm'
-          cache-dependency-path: '**/package-lock.json'
-
-      - name: Cache JDKs
-        uses: actions/cache@v4
-        with:
-          path: jdktool/jdks
-          key: ${{ runner.os }}-jdks
-
-      - name: Build jar in unix
-        if: ${{ runner.os != 'Windows' }}
+      - name: Copy artifact
         run: |
-          cd ./boot
-          ./gradlew build
-
-      - name: Build jar in windows
-        if: ${{ runner.os == 'Windows' }}
-        run: |
-          cd ./boot
-          ./gradlew.bat build
+          mkdir -p electron/artifact
+          mv artifact/${{ inputs.jar-name }}.jar electron/artifact/boot.jar
 
       - name: Install dependencies
         run: |

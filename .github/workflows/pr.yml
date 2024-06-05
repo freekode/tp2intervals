@@ -10,7 +10,7 @@ concurrency:
 
 jobs:
   jar:
-    uses: ./.github/workflows/build-jar.yml
+    uses: ./.github/workflows/workflow-jar.yml
     with:
       jar-name: tp2intervals
       jar-artifact-name: tp2intervals-jar
@@ -18,7 +18,7 @@ jobs:
   docker-image:
     needs:
       - jar
-    uses: ./.github/workflows/build-docker-image.yml
+    uses: ./.github/workflows/workflow-docker-image.yml
     with:
       jar-name: tp2intervals
       jar-artifact-name: tp2intervals-jar
@@ -30,6 +30,6 @@ jobs:
         environment:
           - os: ubuntu-latest
 
-    uses: ./.github/workflows/build-electron.yml
+    uses: ./.github/workflows/workflow-electron.yml
     with:
       os: ${{ matrix.environment.os }}

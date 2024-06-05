@@ -36,8 +36,8 @@ appImage:
   artifactName: ${name}-${version}.${ext}
 npmRebuild: false
 extraResources:
-  - from: '../boot/build/libs/tp2intervals.jar'
-    to: 'tp2intervals.jar'
+  - from: 'artifact/boot.jar'
+    to: 'boot.jar'
   - from: '../jdktool/jdks/${os}/${arch}'
     filter: '**/*'
   - from: '../ui/dist/ui'
