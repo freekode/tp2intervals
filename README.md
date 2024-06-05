@@ -115,7 +115,7 @@ Check all your values and save configuration again.
 
 ### Scheduling for the next day with TrainingPeaks free account
 Officially you can't plan workouts for future dates, but practically you can plan workout for tomorrow with free TP account.
-TP server local time is in UTC-6 time zone. You can plan workout for the next day relative to TP server local time.
+You can plan workout for the next day relative to TP server local time. TP server local time is in UTC-6 time zone.
 
 E.g your TZ is UTC+2, current local datetime 20.05.2024 06:00. TP server local datetime is 19.05.2024 22:00. You can plan workouts for 20.05.2024, you can't plan workouts for 21.05.2024, you can do it in 2 hours.
 
