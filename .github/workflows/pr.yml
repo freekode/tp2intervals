@@ -25,6 +25,8 @@ jobs:
       image-name: tp2intervals
 
   electron:
+    needs:
+      - jar
     strategy:
       matrix:
         environment:
