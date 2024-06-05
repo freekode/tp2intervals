@@ -63,10 +63,9 @@ To run docker execute:
 docker run --rm --name tp2intervals -p 8080:8080 ghcr.io/freekode/tp2intervals/tp2intervals:latest
 ```
 
-Or with `docker-compose`
+Or with `docker compose`
 
 ```yaml
-version: '3.1'
 services:
   app:
     image: ghcr.io/freekode/tp2intervals/tp2intervals:latest
