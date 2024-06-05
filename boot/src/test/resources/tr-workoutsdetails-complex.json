@@ -1,0 +1,350 @@
+{
+  "Workout": {
+    "Details": {
+      "WorkoutLabel": {
+        "Id": 18,
+        "Text": "Short Block",
+        "MemberId": 1,
+        "Updated": "2019-10-24T15:43:14.797"
+      },
+      "WorkoutLabelId": 18,
+      "Id": 1249,
+      "WorkoutName": "complex",
+      "Kj": 424,
+      "WorkoutDescription": "<div><p>complex is 3x9-minute sets of ascending force intervals ranging from 80-90%FTP.<br><br></p><p>Each set consists of 3x3-minute repeats with 1 minute of recovery between intervals and 5 minutes of recovery between each set of intervals.</p></div>",
+      "WorkoutAlternateDescription": null,
+      "WorkoutTypeId": 809,
+      "IsOutside": false,
+      "IndoorAlternativeId": null,
+      "GoalDescription": "The primary aim here is to&nbsp;improve aerobic fitness via Tempo &amp; Sweet Spot power levels while targeting muscle control and improved movement patterns via slow-cadence work. <br><br>At the same time, another goal is to stress and strengthen the connective tissues in order to prevent joint injury when workout intensities increase.<br><br>Cadence can range widely - as low as 50rpm but ideally no higher than 70rpm - depending on leg strength and joint integrity, knees especially.<div></div>",
+      "Duration": 60,
+      "IntensityFactor": 71,
+      "TSS": 50,
+      "HasText": true,
+      "HasVideo": false,
+      "PicUrl": "https://trainrdtrprod01un1hot01.blob.core.windows.net/member-public/8299afad-6265-4d8a-a69b-91aff5e37491/workouts/1249/637855757983837531chart.svg",
+      "FirstPublishDate": null,
+      "WorkoutTypeDescription": null,
+      "VideoInstructionLink": null,
+      "VideoPreviewLink": null,
+      "VideoPublisherId": null,
+      "Rides": null,
+      "RidesDay": null,
+      "RidesWeek": null,
+      "RidesMonth": null,
+      "RidesQuarter": null,
+      "RidesYear": null,
+      "Zones": [
+        {
+          "Id": 701,
+          "WorkoutViewId": 0,
+          "Description": "SweetSpot"
+        }
+      ],
+      "Intervals": null,
+      "MemberId": 0,
+      "MemberFtp": 187,
+      "WorkoutWorkoutTags": null,
+      "Progression": {
+        "Id": 84,
+        "Text": "SweetSpot",
+        "MemberId": 1,
+        "Updated": "2020-09-02T17:32:46.753",
+        "TranslationsUpdated": null
+      },
+      "ProgressionId": 84,
+      "ProgressionLevel": 1,
+      "WorkoutDifficultyRating": 5,
+      "ApplicableProgressionLevel": null,
+      "ProgressionLevelDelta": null,
+      "WorkoutLevel": null,
+      "Levels": [
+        {
+          "WorkoutId": 1249,
+          "ProgressionId": 84,
+          "Level": 1,
+          "IsPrimary": true
+        }
+      ]
+    },
+    "IntervalData": [
+      {
+        "Start": 0,
+        "End": 3600,
+        "Name": "Workout",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 50
+      },
+      {
+        "Start": 0,
+        "End": 240,
+        "Name": "Fake",
+        "IsFake": true,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 50
+      },
+      {
+        "Start": 240,
+        "End": 360,
+        "Name": "Endurance 1",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 55
+      },
+      {
+        "Start": 360,
+        "End": 480,
+        "Name": "Endurance 2",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 60
+      },
+      {
+        "Start": 480,
+        "End": 600,
+        "Name": "Endurance 3",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 65
+      },
+      {
+        "Start": 600,
+        "End": 900,
+        "Name": "Fake",
+        "IsFake": true,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 40
+      },
+      {
+        "Start": 900,
+        "End": 1080,
+        "Name": "Tempo 1",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 80
+      },
+      {
+        "Start": 1080,
+        "End": 1140,
+        "Name": "Fake",
+        "IsFake": true,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 40
+      },
+      {
+        "Start": 1140,
+        "End": 1320,
+        "Name": "Sweet Spot 1",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 85
+      },
+      {
+        "Start": 1320,
+        "End": 1380,
+        "Name": "Fake",
+        "IsFake": true,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 40
+      },
+      {
+        "Start": 1380,
+        "End": 1560,
+        "Name": "Sweet Spot 2",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 90
+      },
+      {
+        "Start": 1560,
+        "End": 1860,
+        "Name": "Fake",
+        "IsFake": true,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 40
+      },
+      {
+        "Start": 1860,
+        "End": 2040,
+        "Name": "Tempo 2",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 80
+      },
+      {
+        "Start": 2040,
+        "End": 2100,
+        "Name": "Fake",
+        "IsFake": true,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 40
+      },
+      {
+        "Start": 2100,
+        "End": 2280,
+        "Name": "Sweet Spot 3",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 85
+      },
+      {
+        "Start": 2280,
+        "End": 2340,
+        "Name": "Fake",
+        "IsFake": true,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 40
+      },
+      {
+        "Start": 2340,
+        "End": 2520,
+        "Name": "Sweet Spot 4",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 90
+      },
+      {
+        "Start": 2520,
+        "End": 2820,
+        "Name": "Fake",
+        "IsFake": true,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 40
+      },
+      {
+        "Start": 2820,
+        "End": 3000,
+        "Name": "Tempo 3",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 80
+      },
+      {
+        "Start": 3000,
+        "End": 3060,
+        "Name": "Fake",
+        "IsFake": true,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 40
+      },
+      {
+        "Start": 3060,
+        "End": 3240,
+        "Name": "Sweet Spot 5",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 85
+      },
+      {
+        "Start": 3240,
+        "End": 3300,
+        "Name": "Fake",
+        "IsFake": true,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 40
+      },
+      {
+        "Start": 3300,
+        "End": 3480,
+        "Name": "Sweet Spot 6",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 90
+      },
+      {
+        "Start": 3480,
+        "End": 3600,
+        "Name": "Fake",
+        "IsFake": true,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 40
+      }
+    ],
+    "Plans": [],
+    "Tags": [],
+    "Progression": {
+      "Id": 84,
+      "Text": "SweetSpot",
+      "MemberId": 1,
+      "Updated": "2020-09-02T17:32:46.753",
+      "TranslationsUpdated": null
+    },
+    "ProgressionId": 84,
+    "ProgressionLevel": 1,
+    "Alternative": null,
+    "WorkoutLabel": null,
+    "WorkoutLabelId": null,
+    "ExternalProviderType": null,
+    "WorkoutDifficultyRating": 5,
+    "WorkoutLevel": {
+      "Primary": {
+        "Zone": 16,
+        "Level": 1.5,
+        "ZonePercentage": 0.46684210973459128,
+        "IsPrimary": true
+      },
+      "Secondary": [
+        {
+          "Zone": 33,
+          "Level": 1.2,
+          "ZonePercentage": 0.37508565564444768,
+          "IsPrimary": false
+        },
+        {
+          "Zone": 84,
+          "Level": 0.5,
+          "ZonePercentage": 0.15807220591919249,
+          "IsPrimary": false
+        }
+      ],
+      "PrimaryRaw": {
+        "Zone": 16,
+        "Level": 0.67196643352508545,
+        "ZonePercentage": 0.43601712768263989,
+        "IsPrimary": true
+      },
+      "SecondaryRaw": [
+        {
+          "Zone": 33,
+          "Level": 0.58868366479873657,
+          "ZonePercentage": 0.38197765220612467,
+          "IsPrimary": false
+        },
+        {
+          "Zone": 84,
+          "Level": 0.28049680590629578,
+          "ZonePercentage": 0.18200523944899152,
+          "IsPrimary": false
+        }
+      ],
+      "ZonePointsTotalIsZero": false
+    },
+    "MemberProgressionLevels": {
+      "16": 1.76128006,
+      "33": 2.4512,
+      "41": 1,
+      "79": 1,
+      "83": 1,
+      "84": 1,
+      "85": 1,
+      "1001": 1
+    },
+    "Levels": [
+      {
+        "WorkoutId": 1249,
+        "ProgressionId": 84,
+        "FallBackProgressionId": null,
+        "FallBackLevel": null,
+        "Level": 1,
+        "IsPrimary": true
+      }
+    ],
+    "ProfileName": "Intervals",
+    "SecondaryProgressionLevelV1": {
+      "16": 1,
+      "33": 1,
+      "83": 1
+    }
+  }
+}

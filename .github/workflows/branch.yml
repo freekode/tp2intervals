@@ -9,12 +9,13 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: build-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   jar:
-    uses: ./.github/workflows/build-jar.yml
+    uses: ./.github/workflows/workflow-jar.yml
+    secrets: inherit
     with:
       jar-name: tp2intervals
       jar-artifact-name: tp2intervals-jar
@@ -22,13 +23,15 @@ jobs:
   docker-image:
     needs:
       - jar
-    uses: ./.github/workflows/build-docker-image.yml
+    uses: ./.github/workflows/workflow-docker-image.yml
     with:
       jar-name: tp2intervals
       jar-artifact-name: tp2intervals-jar
       image-name: tp2intervals
 
   electron:
+    needs:
+      - jar
     strategy:
       matrix:
         environment:
@@ -36,6 +39,6 @@ jobs:
           - os: macos-latest
           - os: windows-latest
 
-    uses: ./.github/workflows/build-electron.yml
+    uses: ./.github/workflows/workflow-electron.yml
     with:
       os: ${{ matrix.environment.os }}

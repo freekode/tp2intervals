@@ -7,7 +7,7 @@ on:
 
 jobs:
   jar:
-    uses: ./.github/workflows/build-jar.yml
+    uses: ./.github/workflows/workflow-jar.yml
     secrets: inherit
     with:
       jar-name: tp2intervals
@@ -17,7 +17,7 @@ jobs:
   docker-image:
     needs:
       - jar
-    uses: ./.github/workflows/build-docker-image.yml
+    uses: ./.github/workflows/workflow-docker-image.yml
     secrets: inherit
     with:
       jar-name: tp2intervals
@@ -35,8 +35,10 @@ jobs:
           - os: macos-latest
           - os: windows-latest
 
-    uses: ./.github/workflows/build-electron.yml
+    uses: ./.github/workflows/workflow-electron.yml
     secrets: inherit
     with:
+      jar-name: tp2intervals
+      jar-artifact-name: tp2intervals-jar
       os: ${{ matrix.environment.os }}
       dry-run: false

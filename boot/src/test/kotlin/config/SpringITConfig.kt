@@ -6,7 +6,6 @@ import org.springframework.test.context.ActiveProfiles
 
 
 @SpringBootTest
-@ActiveProfiles("it")
+@ActiveProfiles("it", "dev")
 @Import(ITConfiguration::class)
-abstract class SpringITConfig {
-}
+abstract class SpringITConfig

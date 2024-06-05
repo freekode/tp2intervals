@@ -1,23 +1,35 @@
 package org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout
 
-import config.SpringITConfig
+import config.mock.IntervalsApiClientMock
+import config.mock.ObjectMapperFactory
 import java.time.Duration
 import java.time.LocalDate
 import org.freekode.tp2intervals.domain.TrainingType
-import org.freekode.tp2intervals.domain.config.AppConfigurationRepository
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutSingleStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsApiClient
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfiguration
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfigurationRepository
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.`when`
+import org.springframework.util.ResourceUtils
 
-class IntervalsWorkoutRepositoryIT : SpringITConfig() {
-    @Autowired
-    lateinit var intervalsWorkoutRepository: IntervalsWorkoutRepository
+class IntervalsWorkoutRepositoryTest {
+    private val objectMapper = ObjectMapperFactory.objectMapper()
 
-    @Autowired
-    lateinit var appConfigurationRepository: AppConfigurationRepository
+    private val intervalsApiClient: IntervalsApiClient = IntervalsApiClientMock(
+        objectMapper,
+        ResourceUtils.getFile("classpath:intervals-events-response.json").inputStream()
+    )
+
+    private val intervalsConfigurationRepository: IntervalsConfigurationRepository =
+        getIntervalsConfigurationRepository()
+
+    private val intervalsWorkoutRepository =
+        IntervalsWorkoutRepository(intervalsApiClient, intervalsConfigurationRepository)
 
     @Test
     fun `should parse hr workout`() {
@@ -141,7 +153,13 @@ class IntervalsWorkoutRepositoryIT : SpringITConfig() {
         Assertions.assertTrue(workout.structure == null)
     }
 
-    fun findWorkoutWithName(name: String, workouts: List<Workout>): Workout {
+    private fun findWorkoutWithName(name: String, workouts: List<Workout>): Workout {
         return workouts.find { it.details.name == name }!!
+    }
+
+    private fun getIntervalsConfigurationRepository(): IntervalsConfigurationRepository {
+        val repo = mock(IntervalsConfigurationRepository::class.java)
+        `when`(repo.getConfiguration()).thenReturn(IntervalsConfiguration("apiKey", "athleteId", 0.1f, 0.2f, 0.3f))
+        return repo
     }
 }
