@@ -1,4 +1,4 @@
-name: Build Electron
+name: Workflow Electron
 
 on:
   workflow_call:
