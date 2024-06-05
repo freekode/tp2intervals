@@ -32,7 +32,7 @@ I was able to fix some problems using only on logs, but they updating API and so
 * Copy planned workouts for date range from TrainerRoad to Intervals.icu training plan or workout folder
 
 Executables for MacOS (DMG), Windows (EXE installer), Linux (AppImage) are available for
-download [here](https://github.com/freekode/tp2intervals/releases/latest)
+download on [Release page](https://github.com/freekode/tp2intervals/releases/latest)
 
 <img src="https://github.com/freekode/tp2intervals/blob/main/docs/tp.png?raw=true" width="30%"><img src="https://github.com/freekode/tp2intervals/blob/main/docs/tr.png?raw=true" width="30%">
 
