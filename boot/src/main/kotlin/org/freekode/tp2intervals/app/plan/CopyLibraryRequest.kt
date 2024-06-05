@@ -6,6 +6,7 @@ import org.freekode.tp2intervals.domain.librarycontainer.LibraryContainer
 data class CopyLibraryRequest(
     val libraryContainer: LibraryContainer,
     val newName: String,
+    val additionalWorkoutStepParam: String,
     val sourcePlatform: Platform,
     val targetPlatform: Platform,
 )
