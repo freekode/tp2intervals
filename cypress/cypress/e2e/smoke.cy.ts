@@ -13,7 +13,7 @@ describe('Smoke tests', {
   })
 
   describe('Training Peaks', () => {
-    it('should sync workout', () => {
+    it('sync workout visible', () => {
       let mainComponent = 'tp-copy-calendar-to-calendar'
 
       cy.get('button#training-peaks').click()
@@ -24,7 +24,7 @@ describe('Smoke tests', {
       cy.get(mainComponent).find('#btn-confirm').should('exist')
     })
 
-    it('should copy plan', () => {
+    it('copy plan visible', () => {
       let mainComponent = 'tp-copy-library-container'
       let planName = 'Welcome Plan for Cyclists'
 
@@ -38,7 +38,7 @@ describe('Smoke tests', {
       cy.get(mainComponent).find('#btn-confirm').should('exist')
     })
 
-    it('should copy workouts from calendar to lib', () => {
+    it('copy workouts from calendar to lib visible', () => {
       let mainComponent = 'tp-copy-calendar-to-library'
 
       cy.get('button#training-peaks').click()
