@@ -107,9 +107,8 @@ Check all your values and save configuration again.
 * Ramp steps in TrainerRoad are not supported
 * **MacOS** app is not signed. Usually you need to open it twice. After opening it, be patient, it takes some time to
   start
-* **Windows** The app will ask to access local network and Internet allow it. After all it makes HTTP requests
-* In case of any problems. You can create an issue
-  in [GitHub](https://github.com/freekode/tp2intervals/issues)
+* **Windows** The app will ask to access local network and Internet, you need to allow it. After all it makes HTTP requests
+* In case of any problems. You can create an issue on [GitHub](https://github.com/freekode/tp2intervals/issues)
   or write directly to me iam@freekode.org. Add logs from your app, it can help a lot to resolve the issue
 * More info you can find on the forum https://forum.intervals.icu/t/tp2intervals-copy-trainingpeaks-and-trainerroad-workouts-plans-to-intervals/63375
 
