@@ -54,9 +54,9 @@ jobs:
         run: |
           npm ci --prefix cypress
           java -jar boot/build/libs/tp2intervals.jar \
-            --app.default-config.intervals.api-key: ${{ secrets.INTERVALS_API_KEY }} \
-            --app.default-config.intervals.athlete-id: ${{ secrets.INTERVALS_ATHLETE_ID }} \
-            --app.default-config.training-peaks.auth-cookie: ${{ secrets.TRAINING_PEAKS_AUTH_COOKIE }} \
+            --app.default-config.intervals.api-key=${{ secrets.INTERVALS_API_KEY }} \
+            --app.default-config.intervals.athlete-id=${{ secrets.INTERVALS_ATHLETE_ID }} \
+            --app.default-config.training-peaks.auth-cookie=${{ secrets.TRAINING_PEAKS_AUTH_COOKIE }} \
           & npm test --prefix cypress
 
       - uses: actions/upload-artifact@v4
