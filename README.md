@@ -7,6 +7,10 @@
 
 App to sync workouts between TrainingPeaks, TrainerRoad (deprecated) and Intervals.icu.
 
+Runs on MacOS (DMG), Windows (EXE installer), Linux (AppImage). Alternatively there is Docker image and executable JAR.
+
+All files are available for download on [Release page](https://github.com/freekode/tp2intervals/releases/latest).
+
 ### Deprecation Notice ⚠️
 
 There will be no updates for TrainerRoad platform.
@@ -30,9 +34,6 @@ I was able to fix some problems using only on logs, but they updating API and so
 
 * Copy workouts from TrainerRoad library to Intervals
 * Copy planned workouts for date range from TrainerRoad to Intervals.icu training plan or workout folder
-
-Executables for MacOS (DMG), Windows (EXE installer), Linux (AppImage) are available for
-download on [Release page](https://github.com/freekode/tp2intervals/releases/latest)
 
 <img src="https://github.com/freekode/tp2intervals/blob/main/docs/tp.png?raw=true" width="30%"><img src="https://github.com/freekode/tp2intervals/blob/main/docs/tr.png?raw=true" width="30%">
 
