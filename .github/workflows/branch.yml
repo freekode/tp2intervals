@@ -15,6 +15,7 @@ concurrency:
 jobs:
   jar:
     uses: ./.github/workflows/workflow-jar.yml
+    secrets: inherit
     with:
       jar-name: tp2intervals
       jar-artifact-name: tp2intervals-jar
@@ -29,6 +30,8 @@ jobs:
       image-name: tp2intervals
 
   electron:
+    needs:
+      - jar
     strategy:
       matrix:
         environment:
