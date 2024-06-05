@@ -51,6 +51,10 @@ jobs:
           ./gradlew build
 
       - name: Cypress tests
+        env:
+          APP_DEFAULT_CONFIG_INTERVALS_API_KEY: ${{ secrets.INTERVALS_API_KEY }}
+          APP_DEFAULT_CONFIG_INTERVALS_ATHLETE_ID: ${{ secrets.INTERVALS_ATHLETE_ID }}
+          APP_DEFAULT_CONFIG_TRAINING_PEAKS_AUTH_COOKIE: ${{ secrets.TRAINING_PEAKS_AUTH_COOKIE }}
         run: |
           npm ci --prefix cypress
           java -jar boot/build/libs/tp2intervals.jar & npm test --prefix cypress
