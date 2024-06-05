@@ -8,5 +8,9 @@ enum class TrainingType(val title: String) {
     SWIM("Swim"),
     WEIGHT("Weight"),
     NOTE("Note"),
-    UNKNOWN("Unknown")
+    UNKNOWN("Unknown");
+
+    companion object {
+        val DEFAULT_LIST = listOf(BIKE, VIRTUAL_BIKE, MTB, RUN, SWIM)
+    }
 }

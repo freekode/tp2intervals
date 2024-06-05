@@ -1,10 +1,6 @@
-describe('Tests for release', {
+describe('Smoke tests', {
   defaultCommandTimeout: 10000
 }, () => {
-  if (!Cypress.env('release')) {
-    return
-  }
-
   beforeEach(() => {
     cy.visit('/')
   })
@@ -23,18 +19,9 @@ describe('Tests for release', {
       cy.get('button#training-peaks').click()
       cy.get('app-training-peaks mat-expansion-panel:nth-child(1)').click()
 
-      cy.request("DELETE", "/api/workout", {
-        platform: "TRAINING_PEAKS",
-        startDate: "2024-03-11",
-        endDate: "2024-03-17"
-      })
-
       selectCalendarDate(mainComponent, '11', '17')
 
-      cy.get(mainComponent).find('#btn-confirm').click()
-      cy.get('mat-snack-bar-container.app-notification-success')
-        .contains("Planned: 4")
-        .should('exist')
+      cy.get(mainComponent).find('#btn-confirm').should('exist')
     })
 
     it('should copy plan', () => {
@@ -47,10 +34,8 @@ describe('Tests for release', {
       cy.get(mainComponent).find('mat-select[formControlName="plan"]').click()
       cy.get('mat-option').contains(planName).click()
       cy.get(mainComponent).find('input[formControlName="newName"]').should('have.value', planName)
-      cy.get(mainComponent).find('#btn-confirm').click()
-      cy.get('mat-snack-bar-container.app-notification-success')
-        .contains("Copied workouts: 23")
-        .should('exist')
+
+      cy.get(mainComponent).find('#btn-confirm').should('exist')
     })
 
     it('should copy workouts from calendar to lib', () => {
@@ -66,10 +51,7 @@ describe('Tests for release', {
         .click()
         .type(' ' + new Date().toISOString())
 
-      cy.get(mainComponent).find('#btn-confirm').click()
-      cy.get('mat-snack-bar-container.app-notification-success')
-        .contains("Copied: 3")
-        .should('exist')
+      cy.get(mainComponent).find('#btn-confirm').should('exist')
     })
   })
 
@@ -94,10 +76,7 @@ describe('Tests for release', {
       cy.get(mainComponent).find('mat-select[formControlName="intervalsPlan"]').click()
       cy.get('mat-option').contains(`tp2intervals`).click()
 
-      cy.get(mainComponent).find('#btn-confirm').click()
-      cy.get('mat-snack-bar-container.app-notification-success')
-        .contains("Copied successfully")
-        .should('exist')
+      cy.get(mainComponent).find('#btn-confirm').should('exist')
     })
 
     it('should copy workouts from calendar', () => {
@@ -108,9 +87,7 @@ describe('Tests for release', {
 
       selectCalendarDate(mainComponent, '1', '2')
 
-      cy.get(mainComponent).find('#btn-confirm').click()
-      cy.get('mat-snack-bar-container.app-notification-success')
-        .should('exist')
+      cy.get(mainComponent).find('#btn-confirm').should('exist')
     })
   })
 

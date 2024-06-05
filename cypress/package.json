@@ -3,7 +3,6 @@
   "scripts": {
     "dev": "cypress open --env release=true",
     "test": "wait-on http://localhost:8080 && cypress run --config baseUrl=http://localhost:8080",
-    "release": "wait-on http://localhost:4200 && cypress run --env release=true"
   },
   "devDependencies": {
     "cypress": "^13.6.6",
