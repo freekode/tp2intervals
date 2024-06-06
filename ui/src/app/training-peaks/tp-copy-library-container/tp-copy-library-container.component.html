@@ -3,7 +3,7 @@
     <mat-form-field class="form-field">
       <mat-label>TrainingPeaks plan</mat-label>
       <mat-select formControlName="plan" panelWidth="null">
-        @for (item of plans | async; track item) {
+        @for (item of plans; track item) {
           <mat-option [value]="item.value">
             {{ item.name }} [{{ item.value.isPlan ? 'plan, workouts: ' + item.value.workoutsAmount : 'folder' }}]
           </mat-option>
@@ -26,6 +26,20 @@
     <mat-form-field class="form-field">
       <mat-label>Intervals name</mat-label>
       <input matInput placeholder="My New Library" formControlName="newName">
+    </mat-form-field>
+  </div>
+
+  <div class="row">
+    <mat-form-field class="form-field">
+      <mat-label>Intervals step modifier</mat-label>
+      <mat-select formControlName="stepModifier" panelWidth="null">
+        @for (item of stepModifiers; track item) {
+          <mat-option [value]="item">
+            {{ item }}
+          </mat-option>
+        }
+      </mat-select>
+      <mat-progress-bar *ngIf="loadingInProgress" mode="query"></mat-progress-bar>
     </mat-form-field>
   </div>
 

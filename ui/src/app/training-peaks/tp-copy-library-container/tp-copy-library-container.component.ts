@@ -14,7 +14,7 @@ import { MatCheckboxModule } from "@angular/material/checkbox";
 import { WorkoutClient } from "infrastructure/client/workout.client";
 import { ConfigurationClient } from "infrastructure/client/configuration.client";
 import { NotificationService } from "infrastructure/notification.service";
-import { filter, finalize, map, Observable, of } from "rxjs";
+import { filter, finalize, map, of } from "rxjs";
 import { LibraryClient } from "infrastructure/client/library-client.service";
 import { Platform } from "infrastructure/platform";
 import { MatDialog } from "@angular/material/dialog";
@@ -52,6 +52,7 @@ export class TpCopyLibraryContainerComponent implements OnInit {
     plan: [null, Validators.required],
     newName: [null, Validators.required],
     newStartDate: [this.mondayDate, Validators.required],
+    stepModifier: ['NONE', Validators.required],
   });
 
   // isPlanSelected = this.formGroup.controls['plan'].valueChanges.pipe(map(value => value?.isPlan))
@@ -59,7 +60,8 @@ export class TpCopyLibraryContainerComponent implements OnInit {
   submitInProgress = false
   loadingInProgress = false
 
-  plans: Observable<any[]>;
+  plans: any[] = [];
+  stepModifiers: any[] = [];
 
   constructor(
     private formBuilder: FormBuilder,
@@ -74,22 +76,10 @@ export class TpCopyLibraryContainerComponent implements OnInit {
   ngOnInit(): void {
     this.formGroup.disable()
     this.loadingInProgress = true
-    this.plans = this.planClient.getLibraries(Platform.TRAINING_PEAKS.key).pipe(
-      map(plans => plans.map(plan => {
-          return {name: plan.name, value: plan}
-        })
-      ),
-      finalize(() => {
-        this.loadingInProgress = false
-        this.formGroup.enable()
-      })
-    )
-    this.formGroup.controls['plan'].valueChanges.pipe(
-      filter(value => value!!)
-    ).subscribe(value => {
-      this.formGroup.patchValue({
-        newName: value.name
-      })
+    this.getPlans();
+    this.onPlanChange();
+    this.configurationClient.getIntervalsStepModifiers().subscribe(values => {
+      this.stepModifiers = values
     })
   }
 
@@ -107,8 +97,9 @@ export class TpCopyLibraryContainerComponent implements OnInit {
     let plan = this.formGroup.value.plan
     let newName = this.formGroup.value.newName
     let newStartDate = this.formGroup.value.newStartDate
+    let stepModifier = this.formGroup.value.stepModifier
     let direction = Platform.DIRECTION_TP_INT
-    this.planClient.copyLibraryContainer(plan, newName, newStartDate, direction).pipe(
+    this.planClient.copyLibraryContainer(plan, newName, newStartDate, stepModifier, direction).pipe(
       finalize(() => this.submitInProgress = false)
     ).subscribe((response) => {
       this.notificationService.success(
@@ -133,5 +124,28 @@ export class TpCopyLibraryContainerComponent implements OnInit {
     let day = date.getDay(),
       diff = date.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
     return new Date(date.setDate(diff));
+  }
+
+  private getPlans() {
+    this.planClient.getLibraries(Platform.TRAINING_PEAKS.key).pipe(
+      map(plans => plans.map(plan => {
+          return {name: plan.name, value: plan}
+        })
+      ),
+      finalize(() => {
+        this.loadingInProgress = false
+        this.formGroup.enable()
+      })
+    ).subscribe(plans => this.plans = plans)
+  }
+
+  private onPlanChange() {
+    this.formGroup.controls['plan'].valueChanges.pipe(
+      filter(value => value!!)
+    ).subscribe(value => {
+      this.formGroup.patchValue({
+        newName: value.name
+      })
+    })
   }
 }

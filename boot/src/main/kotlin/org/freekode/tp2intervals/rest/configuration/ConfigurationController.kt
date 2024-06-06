@@ -3,9 +3,9 @@ package org.freekode.tp2intervals.rest.configuration
 import org.freekode.tp2intervals.app.confguration.ConfigurationService
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.TrainingType
-import org.freekode.tp2intervals.domain.config.LogLevelService
 import org.freekode.tp2intervals.domain.config.PlatformInfo
 import org.freekode.tp2intervals.domain.config.UpdateConfigurationRequest
+import org.freekode.tp2intervals.domain.workout.structure.StepModifier
 import org.freekode.tp2intervals.rest.ErrorResponseDTO
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class ConfigurationController(
     private val configurationService: ConfigurationService,
-    private val logLevelService: LogLevelService
 ) {
 
     @GetMapping("/api/configuration")
@@ -36,8 +35,13 @@ class ConfigurationController(
     }
 
     @GetMapping("/api/configuration/training-types")
-    fun getAllTrainingTypes(): List<TrainingTypeDTO> {
+    fun getTrainingTypes(): List<TrainingTypeDTO> {
         return TrainingType.entries.map { TrainingTypeDTO(it) }
+    }
+
+    @GetMapping("/api/configuration/intervals-step-modifiers")
+    fun getIntervalsStepModifiers(): List<StepModifier> {
+        return StepModifier.entries
     }
 
     @GetMapping("/api/configuration/{platform}")

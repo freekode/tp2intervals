@@ -12,19 +12,14 @@ data class Workout(
     val date: LocalDate?,
     val structure: WorkoutStructure?,
 ) : Serializable {
-    constructor(
-        date: LocalDate, type: TrainingType, name: String, description: String?,
-        duration: Duration?, load: Int?, structure: WorkoutStructure?, externalData: ExternalData
-    ) : this(WorkoutDetails(type, name, description, duration, load, externalData), date, structure)
-
     companion object {
-        fun note(date: LocalDate, title: String, description: String?, externalData: ExternalData): Workout {
-            return Workout(date, TrainingType.NOTE, title, description, null, null, null, externalData)
+        fun note(date: LocalDate, name: String, description: String?, externalData: ExternalData): Workout {
+            return Workout(WorkoutDetails(TrainingType.NOTE, name, description, null, null, externalData), date, null)
         }
     }
 
     fun withDate(date: LocalDate): Workout {
-        return Workout(date, details.type, details.name, details.description, details.duration, details.load, structure, details.externalData)
+        return Workout(details, date, structure)
     }
 
     override fun equals(other: Any?): Boolean {
