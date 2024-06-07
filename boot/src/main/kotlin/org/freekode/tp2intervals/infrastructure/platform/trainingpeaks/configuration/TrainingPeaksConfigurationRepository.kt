@@ -47,7 +47,7 @@ class TrainingPeaksConfigurationRepository(
         }
     }
 
-    private fun validateConfiguration(newConfig: Map<String, String>, ignoreEmpty: Boolean) {
+    private fun validateConfiguration(newConfig: Map<String, String?>, ignoreEmpty: Boolean) {
         val tpConfig = TrainingPeaksConfiguration(newConfig)
         if (!tpConfig.canValidate() && ignoreEmpty) {
             return

@@ -22,6 +22,7 @@ import {
   TpCopyPlanWarningDialogComponent
 } from "app/training-peaks/tp-copy-library-container/tp-copy-plan-warning-dialog/tp-copy-plan-warning-dialog.component";
 import { formatDate } from "utils/date-formatter";
+import { ConfigData } from "infrastructure/config-data";
 
 @Component({
   selector: 'tp-copy-library-container',
@@ -60,8 +61,9 @@ export class TpCopyLibraryContainerComponent implements OnInit {
   submitInProgress = false
   loadingInProgress = false
 
-  plans: any[] = [];
-  stepModifiers: any[] = [];
+  plans: any[];
+  stepModifiers: any[];
+  config: any;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -76,11 +78,10 @@ export class TpCopyLibraryContainerComponent implements OnInit {
   ngOnInit(): void {
     this.formGroup.disable()
     this.loadingInProgress = true
+    this.getConfig();
+    this.getStepModifiers();
     this.getPlans();
     this.onPlanChange();
-    this.configurationClient.getIntervalsStepModifiers().subscribe(values => {
-      this.stepModifiers = values
-    })
   }
 
   copyPlanSubmit() {
@@ -124,6 +125,18 @@ export class TpCopyLibraryContainerComponent implements OnInit {
     let day = date.getDay(),
       diff = date.getDate() - day + (day == 0 ? -6 : 1); // adjust when day is sunday
     return new Date(date.setDate(diff));
+  }
+
+  private getConfig() {
+    this.configurationClient.getConfig().subscribe(config => {
+      this.config = config.config
+    })
+  }
+
+  private getStepModifiers() {
+    this.configurationClient.getIntervalsStepModifiers().subscribe(values => {
+      this.stepModifiers = values
+    })
   }
 
   private getPlans() {

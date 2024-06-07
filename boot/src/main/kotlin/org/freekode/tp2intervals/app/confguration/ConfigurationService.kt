@@ -27,14 +27,18 @@ class ConfigurationService(
 
     fun updateConfiguration(request: UpdateConfigurationRequest): List<String> {
         val errors = platformConfigurationRepositories.mapNotNull { updateConfiguration(request, it) }
-        if (request.configMap.contains("generic.log-level")) {
-            logLevelService.setLogLevel(LogLevel.valueOf(request.configMap["generic.log-level"]!!))
-        }
+        updateLogLevelIfNecessary(request)
         return errors
     }
 
     fun platformInfo(platform: Platform): PlatformInfo {
         return platformInfoRepositoryMap[platform]!!.platformInfo()
+    }
+
+    private fun updateLogLevelIfNecessary(request: UpdateConfigurationRequest) {
+        if (request.configMap.contains("generic.log-level")) {
+            logLevelService.setLogLevel(LogLevel.valueOf(request.configMap["generic.log-level"]!!))
+        }
     }
 
     private fun updateConfiguration(
