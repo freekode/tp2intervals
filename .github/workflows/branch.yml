@@ -41,4 +41,6 @@ jobs:
 
     uses: ./.github/workflows/workflow-electron.yml
     with:
+      jar-name: tp2intervals
+      jar-artifact-name: tp2intervals-jar
       os: ${{ matrix.environment.os }}
