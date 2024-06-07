@@ -60,7 +60,7 @@ class TrainerRoadConfigurationRepository(
         }
     }
 
-    private fun validateConfiguration(newConfig: Map<String, String>, ignoreEmpty: Boolean) {
+    private fun validateConfiguration(newConfig: Map<String, String?>, ignoreEmpty: Boolean) {
         val config = TrainerRoadConfiguration(newConfig)
         if (!config.canValidate() && ignoreEmpty) {
             return

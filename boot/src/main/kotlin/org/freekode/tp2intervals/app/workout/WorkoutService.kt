@@ -1,6 +1,7 @@
 package org.freekode.tp2intervals.app.workout
 
 import java.time.LocalDate
+import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.librarycontainer.LibraryContainerRepository
 import org.freekode.tp2intervals.domain.workout.WorkoutDetails
@@ -20,24 +21,23 @@ class WorkoutService(
         val sourceWorkoutRepository = workoutRepositoryMap[request.sourcePlatform]!!
         val targetWorkoutRepository = workoutRepositoryMap[request.targetPlatform]!!
 
-        val allWorkoutsToPlan = sourceWorkoutRepository.getWorkoutsFromCalendar(request.startDate, request.endDate)
-        var filteredWorkoutsToPlan = allWorkoutsToPlan
-            .filter { request.types.contains(it.details.type) }
+        val allWorkoutsToSync = sourceWorkoutRepository.getWorkoutsFromCalendar(request.startDate, request.endDate)
+        var filteredWorkoutsToSync = allWorkoutsToSync.filter { request.types.contains(it.details.type) }
         if (request.skipSynced) {
             val plannedWorkouts = targetWorkoutRepository.getWorkoutsFromCalendar(request.startDate, request.endDate)
                 .filter { request.types.contains(it.details.type) }
 
-            filteredWorkoutsToPlan = filteredWorkoutsToPlan
-                .filter { !plannedWorkouts.contains(it) }
+            filteredWorkoutsToSync = filteredWorkoutsToSync.filter { !plannedWorkouts.contains(it) }
         }
 
         val response = CopyWorkoutsResponse(
-            filteredWorkoutsToPlan.size,
-            allWorkoutsToPlan.size - filteredWorkoutsToPlan.size,
+            filteredWorkoutsToSync.size,
+            allWorkoutsToSync.size - filteredWorkoutsToSync.size,
             request.startDate,
-            request.endDate
+            request.endDate,
+            ExternalData.empty() // TODO figure smth better
         )
-        targetWorkoutRepository.saveWorkoutsToCalendar(filteredWorkoutsToPlan)
+        targetWorkoutRepository.saveWorkoutsToCalendar(filteredWorkoutsToSync)
         return response
     }
 
@@ -49,10 +49,14 @@ class WorkoutService(
         val allWorkouts = sourceWorkoutRepository.getWorkoutsFromCalendar(request.startDate, request.endDate)
         val filteredWorkouts = allWorkouts.filter { request.types.contains(it.details.type) }
 
-        val plan = targetPlanRepository.createLibraryContainer(request.name, request.startDate, request.isPlan)
-        targetWorkoutRepository.saveWorkoutsToLibrary(plan, filteredWorkouts)
+        val newPlan = targetPlanRepository.createLibraryContainer(request.name, request.startDate, request.isPlan)
+        targetWorkoutRepository.saveWorkoutsToLibrary(newPlan, filteredWorkouts)
         return CopyWorkoutsResponse(
-            filteredWorkouts.size, allWorkouts.size - filteredWorkouts.size, request.startDate, request.endDate
+            filteredWorkouts.size,
+            allWorkouts.size - filteredWorkouts.size,
+            request.startDate,
+            request.endDate,
+            newPlan.externalData
         )
     }
 
@@ -62,7 +66,7 @@ class WorkoutService(
 
         val workout = sourceWorkoutRepository.getWorkoutFromLibrary(request.workoutDetails.externalData)
         targetWorkoutRepository.saveWorkoutsToLibrary(request.targetLibraryContainer, listOf(workout))
-        return CopyWorkoutsResponse(1, 0, LocalDate.now(), LocalDate.now())
+        return CopyWorkoutsResponse(1, 0, LocalDate.now(), LocalDate.now(), request.targetLibraryContainer.externalData)
     }
 
     fun findWorkoutsByName(platform: Platform, name: String): List<WorkoutDetails> {

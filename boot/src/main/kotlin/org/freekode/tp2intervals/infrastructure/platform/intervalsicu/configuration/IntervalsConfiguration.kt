@@ -21,7 +21,7 @@ data class IntervalsConfiguration(
 
     constructor(appConfiguration: AppConfiguration) : this(appConfiguration.configMap)
 
-    constructor(map: Map<String, String>) : this(
+    constructor(map: Map<String, String?>) : this(
         map[apiKeyConfigKey]!!,
         map[athleteIdConfigKey]!!,
         map[powerRangeConfigKey]!!.toFloat(),
@@ -29,7 +29,7 @@ data class IntervalsConfiguration(
         map[paceRangeConfigKey]!!.toFloat(),
     ) {
         val wrongValues = map.entries
-            .filter { it.value == "-1" || it.value.isBlank() }
+            .filter { it.value.isNullOrBlank() }
         if (wrongValues.isNotEmpty()) {
             val entriesString = wrongValues.joinToString(separator = ", ") { it.toString() }
             throw PlatformException(Platform.INTERVALS, "Wrong values: $entriesString")

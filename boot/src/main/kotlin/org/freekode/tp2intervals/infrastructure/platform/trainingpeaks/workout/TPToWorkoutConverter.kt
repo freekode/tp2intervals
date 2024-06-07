@@ -4,6 +4,7 @@ import java.time.Duration
 import java.time.LocalDate
 import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.workout.Workout
+import org.freekode.tp2intervals.domain.workout.WorkoutDetails
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.library.TPWorkoutLibraryItemDTO
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.TPStructureToStepMapper
@@ -28,9 +29,7 @@ class TPToWorkoutConverter {
             tpNote.noteDate.toLocalDate(),
             tpNote.title,
             tpNote.description,
-            ExternalData
-                .empty()
-                .withTrainingPeaks(tpNote.id.toString())
+            ExternalData.empty().withTrainingPeaks(tpNote.id.toString())
         )
     }
 
@@ -48,22 +47,21 @@ class TPToWorkoutConverter {
         description += tpWorkout.coachComments?.let { "\n- - - -\n$it" }.orEmpty()
 
         return Workout(
+            WorkoutDetails(
+                tpWorkout.getWorkoutType()!!,
+                tpWorkout.title.ifBlank { "Workout" },
+                description,
+                tpWorkout.totalTimePlanned?.let { Duration.ofMinutes((it * 60).toLong()) },
+                tpWorkout.tssPlanned,
+                getWorkoutExternalData(tpWorkout)
+            ),
             workoutDate,
-            tpWorkout.getWorkoutType()!!,
-            tpWorkout.title.ifBlank { "Workout" },
-            description,
-            tpWorkout.totalTimePlanned?.let { Duration.ofMinutes((it * 60).toLong()) },
-            tpWorkout.tssPlanned,
             workoutsStructure,
-            getWorkoutExternalData(tpWorkout)
         )
     }
 
     private fun getWorkoutExternalData(tpWorkout: TPBaseWorkoutResponseDTO): ExternalData {
-        return ExternalData
-            .empty()
-            .withTrainingPeaks(tpWorkout.id)
-            .withSimpleString(tpWorkout.description ?: "")
+        return ExternalData.empty().withTrainingPeaks(tpWorkout.id).withSimpleString(tpWorkout.description ?: "")
     }
 
     private fun toWorkoutStructure(structure: TPWorkoutStructureDTO): WorkoutStructure {
@@ -77,8 +75,7 @@ class TPToWorkoutConverter {
 
         val steps = TPStructureToStepMapper(structure).mapToWorkoutSteps()
         return WorkoutStructure(
-            structure.toTargetUnit(),
-            steps
+            structure.toTargetUnit(), steps
         )
     }
 }

@@ -4,12 +4,14 @@ import config.SpringITConfig
 import java.time.LocalDate
 import java.time.LocalDateTime
 import org.freekode.tp2intervals.app.plan.CopyLibraryRequest
+import org.freekode.tp2intervals.app.plan.DeleteLibraryRequest
 import org.freekode.tp2intervals.app.plan.LibraryService
 import org.freekode.tp2intervals.app.workout.CopyFromCalendarToCalendarRequest
 import org.freekode.tp2intervals.app.workout.CopyFromCalendarToLibraryRequest
 import org.freekode.tp2intervals.app.workout.WorkoutService
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.TrainingType
+import org.freekode.tp2intervals.domain.workout.structure.StepModifier
 import org.freekode.tp2intervals.rest.workout.DeleteWorkoutRequestDTO
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeAll
@@ -46,6 +48,7 @@ class TrainingPeaksWorkoutRepositoryIT : SpringITConfig() {
             Platform.TRAINING_PEAKS
         )
         val response = workoutService.copyWorkoutsFromCalendarToCalendar(copyRequest)
+
         workoutService.deleteWorkoutsFromCalendar(deleteRequest)
 
 
@@ -60,10 +63,12 @@ class TrainingPeaksWorkoutRepositoryIT : SpringITConfig() {
             CopyLibraryRequest(
                 plan!!,
                 "${plan.name} ${LocalDateTime.now()}",
+                StepModifier.NONE,
                 Platform.TRAINING_PEAKS,
                 Platform.INTERVALS
             )
         )
+        libraryService.deleteLibrary(DeleteLibraryRequest(response.externalData, Platform.INTERVALS))
 
         Assertions.assertEquals(response.workouts, 23)
     }
@@ -81,6 +86,7 @@ class TrainingPeaksWorkoutRepositoryIT : SpringITConfig() {
                 Platform.INTERVALS
             )
         )
+        libraryService.deleteLibrary(DeleteLibraryRequest(response.externalData, Platform.INTERVALS))
 
         Assertions.assertEquals(response.copied, 5)
     }

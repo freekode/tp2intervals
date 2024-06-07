@@ -37,6 +37,10 @@ class TPPlanRepository(
             .toList()
     }
 
+    override fun deleteLibraryContainer(externalData: ExternalData) {
+        TODO("Not yet implemented")
+    }
+
     fun getPlan(planId: String): TPPlanDto {
         return trainingPeaksPlanApiClient.getPlan(planId)
     }

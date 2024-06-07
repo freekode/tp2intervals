@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ConfigData } from 'infrastructure/config-data';
 import { Router } from '@angular/router';
 import { MatCardModule } from "@angular/material/card";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { MatButtonModule } from "@angular/material/button";
-import { finalize, switchMap } from "rxjs";
+import { finalize } from "rxjs";
 import { MatProgressBarModule } from "@angular/material/progress-bar";
 import { NgIf } from "@angular/common";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
@@ -15,7 +15,6 @@ import { MatCheckboxChange, MatCheckboxModule } from "@angular/material/checkbox
 import { ConfigurationClient } from "infrastructure/client/configuration.client";
 import { MatOptionModule } from "@angular/material/core";
 import { MatSelectModule } from "@angular/material/select";
-import { EnvironmentService } from "infrastructure/environment.service";
 
 @Component({
   selector: 'app-configuration',
@@ -46,6 +45,7 @@ export class ConfigurationComponent implements OnInit {
     'intervals.hr-range': [null, [Validators.required, Validators.min(0), Validators.max(100)]],
     'intervals.pace-range': [null, [Validators.required, Validators.min(0), Validators.max(100)]],
     'generic.log-level': [null, [Validators.required]],
+    'generic.beta-features-enabled': [null, [Validators.required]],
   });
 
   inProgress = false;
@@ -71,6 +71,7 @@ export class ConfigurationComponent implements OnInit {
     this.inProgress = true
     let newConfiguration = new ConfigData(this.formGroup.getRawValue());
 
+    console.log(newConfiguration)
     this.configClient.updateConfig(newConfiguration).pipe(
       finalize(() => this.inProgress = false)
     ).subscribe(() => {

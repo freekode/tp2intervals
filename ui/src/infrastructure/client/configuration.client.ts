@@ -29,6 +29,11 @@ export class ConfigurationClient {
       .get('/api/configuration/training-types')
   }
 
+  getIntervalsStepModifiers(): Observable<any> {
+    return this.httpClient
+      .get('/api/configuration/intervals-step-modifiers')
+  }
+
   platformInfo(platform): Observable<any> {
     return this.httpClient.get(`/api/configuration/${platform}`).pipe(
       map(response => (<any>response).infoMap)

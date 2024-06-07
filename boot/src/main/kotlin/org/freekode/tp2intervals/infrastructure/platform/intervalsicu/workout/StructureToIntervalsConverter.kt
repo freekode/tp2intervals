@@ -6,7 +6,7 @@ import org.freekode.tp2intervals.domain.workout.structure.WorkoutStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
 
 class StructureToIntervalsConverter(
-    private val structure: WorkoutStructure
+    private val structure: WorkoutStructure,
 ) {
     private val targetTypeMap = mapOf(
         WorkoutStructure.TargetUnit.FTP_PERCENTAGE to "%",
@@ -50,6 +50,6 @@ class StructureToIntervalsConverter(
             }
         } ?: ""
 
-        return "- $name $duration $target$targetUnitStr $cadence"
+        return "- $name $duration $target$targetUnitStr ${structure.modifier?.value} $cadence"
     }
 }

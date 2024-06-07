@@ -55,13 +55,13 @@ class IntervalsConfigurationRepository(
         }
     }
 
-    private fun getConfigToUpdate(request: UpdateConfigurationRequest): Map<String, String> {
+    private fun getConfigToUpdate(request: UpdateConfigurationRequest): Map<String, String?> {
         val currentConfig =
             appConfigurationRepository.getConfigurationByPrefix(platform().key)
         return currentConfig.configMap + request.getByPrefix(platform().key)
     }
 
-    private fun validateConfiguration(newConfig: Map<String, String>) {
+    private fun validateConfiguration(newConfig: Map<String, String?>) {
         val intervalsConfig: IntervalsConfiguration
         try {
             intervalsConfig = IntervalsConfiguration(newConfig)

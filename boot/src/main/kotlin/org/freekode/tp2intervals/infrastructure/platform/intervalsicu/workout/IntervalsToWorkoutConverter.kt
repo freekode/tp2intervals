@@ -3,6 +3,7 @@ package org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout
 import java.time.Duration
 import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.workout.Workout
+import org.freekode.tp2intervals.domain.workout.WorkoutDetails
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutMultiStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutSingleStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStep
@@ -17,14 +18,16 @@ class IntervalsToWorkoutConverter(
         val workoutsStructure = toWorkoutStructure()
 
         return Workout(
+            WorkoutDetails(
+                eventDTO.mapType(),
+                eventDTO.name,
+                eventDTO.description,
+                eventDTO.mapDuration(),
+                eventDTO.icu_training_load,
+                ExternalData.empty().withIntervals(eventDTO.id.toString())
+            ),
             eventDTO.start_date_local.toLocalDate(),
-            eventDTO.mapType(),
-            eventDTO.name,
-            eventDTO.description,
-            eventDTO.mapDuration(),
-            eventDTO.icu_training_load,
             workoutsStructure,
-            ExternalData.empty().withIntervals(eventDTO.id.toString())
         )
     }
 

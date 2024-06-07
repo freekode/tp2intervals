@@ -2,11 +2,11 @@
   <mat-progress-bar mode="query"></mat-progress-bar>
 </div>
 
-<div *ngIf="platformInfo.isValid === false">
+<div *ngIf="platformInfo?.isValid === false">
   Platform is not configured. Please set required parameters on Configuration page
 </div>
 
-<div *ngIf="platformInfo.isValid">
+<div *ngIf="platformInfo?.isValid">
   <mat-accordion multi>
     <mat-expansion-panel>
       <mat-expansion-panel-header>
