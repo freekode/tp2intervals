@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository
 @Repository
 class IntervalsFolderContainerRepository(
     private val intervalsFolderApiClient: IntervalsFolderApiClient,
-    private val intervalsConfigurationRepository: IntervalsConfigurationRepository
+    private val intervalsConfigurationRepository: IntervalsConfigurationRepository,
 ) : LibraryContainerRepository {
 
     override fun platform() = Platform.INTERVALS
@@ -31,6 +31,13 @@ class IntervalsFolderContainerRepository(
     override fun getLibraryContainers(): List<LibraryContainer> {
         return intervalsFolderApiClient.getFolders(intervalsConfigurationRepository.getConfiguration().athleteId)
             .map { toPlan(it) }
+    }
+
+    override fun deleteLibraryContainer(externalData: ExternalData) {
+        intervalsFolderApiClient.deleteFolder(
+            intervalsConfigurationRepository.getConfiguration().athleteId,
+            externalData.intervalsId!!
+        )
     }
 
     private fun createFolder(name: String, startDate: LocalDate?, type: String): FolderDTO {

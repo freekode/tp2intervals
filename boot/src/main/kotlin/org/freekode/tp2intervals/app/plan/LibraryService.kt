@@ -34,7 +34,12 @@ class LibraryService(
             request.libraryContainer.isPlan
         )
         targetWorkoutRepository.saveWorkoutsToLibrary(newPlan, workouts)
-        return CopyPlanResponse(newPlan.name, workouts.size)
+        return CopyPlanResponse(newPlan.name, workouts.size, newPlan.externalData)
+    }
+
+    fun deleteLibrary(request: DeleteLibraryRequest) {
+        val planRepository = planRepositoryMap[request.platform]!!
+        planRepository.deleteLibraryContainer(request.externalData)
     }
 
     private fun Workout.addWorkoutStepModifier(stepModifier: StepModifier): Workout =
