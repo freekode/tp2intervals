@@ -35,6 +35,12 @@ I was able to fix some problems using only on logs, but they updating API and so
 * Copy workouts from TrainerRoad library to Intervals
 * Copy planned workouts for date range from TrainerRoad to Intervals.icu training plan or workout folder
 
+### Beta features
+
+Beta features can be enabled in Configuration
+
+* Step Modifier. Based on selecton `power=1s`, `power=3s` will be added for each step on Intervals.
+
 <img src="https://github.com/freekode/tp2intervals/blob/main/docs/tp.png?raw=true" width="30%"><img src="https://github.com/freekode/tp2intervals/blob/main/docs/tr.png?raw=true" width="30%">
 
 **Only for educational purposes**
