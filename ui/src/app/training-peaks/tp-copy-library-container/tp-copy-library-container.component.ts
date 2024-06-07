@@ -23,6 +23,7 @@ import {
 } from "app/training-peaks/tp-copy-library-container/tp-copy-plan-warning-dialog/tp-copy-plan-warning-dialog.component";
 import { formatDate } from "utils/date-formatter";
 import { ConfigData } from "infrastructure/config-data";
+import { MatTooltip, MatTooltipModule } from "@angular/material/tooltip";
 
 @Component({
   selector: 'tp-copy-library-container',
@@ -41,7 +42,8 @@ import { ConfigData } from "infrastructure/config-data";
     MatSnackBarModule,
     MatSelectModule,
     MatCheckboxModule,
-    AsyncPipe
+    AsyncPipe,
+    MatTooltipModule
   ],
   templateUrl: './tp-copy-library-container.component.html',
   styleUrl: './tp-copy-library-container.component.scss'
