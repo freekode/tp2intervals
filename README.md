@@ -5,7 +5,7 @@
 
 # Third Party to Intervals.icu
 
-App to sync workouts between TrainingPeaks, TrainerRoad (deprecated) and Intervals.icu.
+App to sync workouts between TrainingPeaks, TrainerRoad and Intervals.icu.
 
 Runs on MacOS (DMG), Windows (EXE installer), Linux (AppImage). Alternatively there is Docker image and executable JAR.
 
@@ -28,7 +28,7 @@ To fix issues I can only relay on logs and HAR files from you.
 
 * Copy whole training plan and workout library from TrainingPeaks
 
-### TrainerRoad features (deprecated)
+### TrainerRoad features
 
 * Copy workouts from TrainerRoad library to Intervals
 * Copy planned workouts for date range from TrainerRoad to Intervals.icu training plan or workout folder
