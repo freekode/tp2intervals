@@ -11,12 +11,10 @@ Runs on MacOS (DMG), Windows (EXE installer), Linux (AppImage). Alternatively th
 
 All files are available for download on [Release page](https://github.com/freekode/tp2intervals/releases/latest).
 
-### Deprecation Notice ⚠️
-
-There will be no updates for TrainerRoad platform.
+### TrainerRoad Updates ⚠️
 
 I don't have access to TrainerRoad anymore. Account, which I used, cancelled subscription. I don't use the platform and it's too expensive to have it for occasional fixes.
-I was able to fix some problems using only on logs, but they updating API and some problems can't be fix without access. Sorry about that. I will continue to fix what I can using only logs.
+To fix issues I can only relay on logs and HAR files (soon will add how to create it) from you.
 
 ### TrainingPeaks features
 
