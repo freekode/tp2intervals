@@ -130,10 +130,13 @@ Example with [worldtimebuddy](https://www.worldtimebuddy.com/?pl=1&lid=206,100,7
 
 1. Open new tab in your browser 
 2. Open dev tools, check Preserve log (Firefox Cog -> Persist Logs)
-   <img src="https://github.com/freekode/tp2intervals/blob/main/docs/har-1.png?raw=true" width="30%">
+
+   <img src="https://github.com/freekode/tp2intervals/blob/main/docs/har-1.png?raw=true" width="70%">
 3. Next steps are very important, as they simulate what the app does.
    Open TrainerRoad page, open workout library, find any workout, open workout page (the page where you have chart with workout steps, description, alternatives, etc.)
-4. In dev tools, click Export HAR (Firefox - Cog -> Save All as HAR), save the file and send it to me.
+4. In dev tools, click Export HAR (Firefox - Cog -> Save All as HAR), save the file and send it to me
+ 
+   <img src="https://github.com/freekode/tp2intervals/blob/main/docs/har-2.png?raw=true" width="70%">
 
 
 ### How to get logs for your issue
