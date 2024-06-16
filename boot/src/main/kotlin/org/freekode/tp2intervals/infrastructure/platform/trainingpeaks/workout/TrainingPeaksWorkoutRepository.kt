@@ -12,7 +12,7 @@ import org.freekode.tp2intervals.infrastructure.PlatformException
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.TrainingPeaksApiClient
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.configuration.TrainingPeaksConfigurationRepository
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.library.TPWorkoutLibraryRepository
-import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.plan.TPPlanRepository
+import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.plan.TrainingPeaksPlanRepository
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.plan.TrainingPeaksPlanCoachApiClient
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.user.TrainingPeaksUserRepository
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.StructureToTPConverter
@@ -29,7 +29,7 @@ class TrainingPeaksWorkoutRepository(
     private val trainingPeaksApiClient: TrainingPeaksApiClient,
     private val trainingPeaksPlanCoachApiClient: TrainingPeaksPlanCoachApiClient,
     private val tpToWorkoutConverter: TPToWorkoutConverter,
-    private val tpPlanRepository: TPPlanRepository,
+    private val trainingPeaksPlanRepository: TrainingPeaksPlanRepository,
     private val trainingPeaksUserRepository: TrainingPeaksUserRepository,
     private val tpWorkoutLibraryRepository: TPWorkoutLibraryRepository,
     private val trainingPeaksConfigurationRepository: TrainingPeaksConfigurationRepository,
@@ -128,7 +128,7 @@ class TrainingPeaksWorkoutRepository(
         val planStartDateShift = trainingPeaksConfigurationRepository.getConfiguration().planDaysShift
         val planStartDate = Date.thisMonday()
         val planApplyDate = planStartDate.plusDays(planStartDateShift)
-        val response = tpPlanRepository.applyPlan(planId, planApplyDate)
+        val response = trainingPeaksPlanRepository.applyPlan(planId, planApplyDate)
 
         try {
             val planEndDate = response.endDate.toLocalDate()
@@ -140,7 +140,7 @@ class TrainingPeaksWorkoutRepository(
         } catch (e: Exception) {
             throw e
         } finally {
-            tpPlanRepository.removeAppliedPlan(response.appliedPlanId)
+            trainingPeaksPlanRepository.removeAppliedPlan(response.appliedPlanId)
         }
     }
 
