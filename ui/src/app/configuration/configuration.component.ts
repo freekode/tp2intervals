@@ -38,7 +38,7 @@ import { MatSelectModule } from "@angular/material/select";
 export class ConfigurationComponent implements OnInit {
   formGroup: FormGroup = this.formBuilder.group({
     'training-peaks.auth-cookie': [null, [Validators.pattern('^Production_tpAuth=[a-zA-Z0-9-_]*$')]],
-    'trainer-road.auth-cookie': [null],
+    'trainer-road.auth-cookie': [null, [Validators.pattern('^TrainerRoadAuth=.*$')]],
     'intervals.api-key': [null, Validators.required],
     'intervals.athlete-id': [null, Validators.required],
     'intervals.power-range': [null, [Validators.required, Validators.min(0), Validators.max(100)]],
