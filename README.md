@@ -14,7 +14,7 @@ All files are available for download on [Release page](https://github.com/freeko
 ### TrainerRoad Updates ⚠️
 
 I don't have access to TrainerRoad anymore. Account, which I used, cancelled subscription. I don't use the platform and it's too expensive to have it for occasional fixes.
-To fix issues I can only relay on logs and HAR files (soon will add how to create it) from you.
+To fix issues I can only relay on logs and HAR files from you.
 
 ### TrainingPeaks features
 
