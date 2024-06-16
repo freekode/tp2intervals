@@ -126,6 +126,16 @@ E.g your TZ is UTC+12, current local datetime 20.05.2024 18:00. TP server local 
 
 Example with [worldtimebuddy](https://www.worldtimebuddy.com/?pl=1&lid=206,100,756135,2193733&h=206&hf=0)
 
+### How to export HAR file
+
+1. Open new tab in your browser 
+2. Open dev tools, check Preserve log (Firefox Cog -> Persist Logs)
+   <img src="https://github.com/freekode/tp2intervals/blob/main/docs/har-1.png?raw=true" width="30%">
+3. Next steps are very important, as they simulate what the app does.
+   Open TrainerRoad page, open workout library, find any workout, open workout page (the page where you have chart with workout steps, description, alternatives, etc.)
+4. In dev tools, click Export HAR (Firefox - Cog -> Save All as HAR), save the file and send it to me.
+
+
 ### How to get logs for your issue
 
 1. Go to Configuration, check Show advanced configuration
