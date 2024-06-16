@@ -113,7 +113,7 @@ Check all your values and save configuration again.
   start
 * **Windows** The app will ask to access local network and Internet, you need to allow it. After all it makes HTTP requests
 * In case of any problems. You can create an issue on [GitHub](https://github.com/freekode/tp2intervals/issues)
-  or write directly to me iam@freekode.org. Add logs from your app, it can help a lot to resolve the issue
+  or write directly to me iam@freekode.org. Add logs from your app, it can help a lot to resolve the issue. Or in case of TrainerRoad create HAR file
 * More info you can find on the forum https://forum.intervals.icu/t/tp2intervals-copy-trainingpeaks-and-trainerroad-workouts-plans-to-intervals/63375
 
 ### Scheduling for the next day with TrainingPeaks free account
