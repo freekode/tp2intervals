@@ -39,7 +39,6 @@
   "dependencies": {
     "electron-log": "^5.1.1",
     "electron-squirrel-startup": "^1.0.0",
-    "electron-updater": "^6.1.7",
     "node-schedule": "^2.1.1",
     "semver": "^7.6.0",
     "typed-emitter": "^2.1.0"

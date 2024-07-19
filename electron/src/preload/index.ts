@@ -4,7 +4,6 @@ import {
   bootAddressSupplier,
   bootHealthySupplier,
   platformSupplier,
-  subscriptions
 } from "./renderer";
 
 contextBridge.exposeInMainWorld('electron', {
@@ -12,5 +11,4 @@ contextBridge.exposeInMainWorld('electron', {
   bootHealthy: bootHealthySupplier(),
   appVersion: appVersionSupplier(),
   appPlatform: platformSupplier(),
-  subscriptions: subscriptions,
 })
