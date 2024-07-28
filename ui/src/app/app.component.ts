@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { UpdateService } from "infrastructure/update.service";
+import { UpdateService } from "infrastructure/update";
 import { TopBarComponent } from "app/top-bar/top-bar.component";
 
 

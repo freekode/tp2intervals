@@ -34,6 +34,11 @@ export const httpHostInterceptor: HttpInterceptorFn = (
   let environmentService = inject(EnvironmentService)
   let host = environmentService.getBootAddress()
 
-  const apiReq = req.clone({url: `${host}/${req.url.replace(/^\/|\/$/g, '')}`});
+  let url = req.url.replace(/^\/|\/$/g, '')
+  if (!!host) {
+    url = `${host}/${url}`
+  }
+
+  const apiReq = req.clone({url});
   return next(apiReq);
 };
