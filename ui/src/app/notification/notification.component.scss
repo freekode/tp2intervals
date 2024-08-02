@@ -1,0 +1,13 @@
+.notification {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.notification-content {
+  align-self: center;
+}
+
+.notification-close {
+  color: white;
+  margin-left: 10px;
+}

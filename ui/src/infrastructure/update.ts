@@ -27,10 +27,10 @@ export class UpdateService {
       this.environmentService.getVersion(),
       this.configurationClient.getConfig()
     ]).pipe(
-      filter(result => semver.gt(result[0].version, result[1])),
-      filter(result => semver.gt(result[0].version, result[2].config['generic.skip-version'] || '0.0.0')),
+      // filter(result => semver.gt(result[0].version, result[1])),
+      // filter(result => semver.gt(result[0].version, result[2].config['generic.skip-version'] || '0.0.0')),
     ).subscribe(result => {
-      this.notificationService.success('Update available')
+      this.notificationService.success(`New version ${result[0].version} is available for download on <a href="${result[0].url}" target="_blank">GitHub</a>`);
       console.log(result);
     })
   }

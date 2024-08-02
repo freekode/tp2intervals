@@ -1,39 +1,43 @@
-import { Injectable } from '@angular/core';
-import { MatSnackBar } from "@angular/material/snack-bar";
+import {Injectable} from '@angular/core';
+import {MatSnackBar} from "@angular/material/snack-bar";
+import {NotificationComponent} from "app/notification/notification.component";
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class NotificationService {
-  private readonly duration = 20 * 1000
+  private static readonly duration = 20 * 1000
 
   constructor(
     private snackBar: MatSnackBar
   ) {
   }
 
-  success(message) {
-    let snackBarRef = this.snackBar.open(message, 'X', {
-      // duration: this.duration,
+  success(data) {
+    this.snackBar.openFromComponent(NotificationComponent, {
       verticalPosition: 'top',
       horizontalPosition: 'right',
-      panelClass: 'app-notification-success'
+      panelClass: 'app-notification-success',
+      data
     });
-    snackBarRef.onAction().subscribe(() => {
-      snackBarRef.dismiss()
-    })
   }
 
-  error(message) {
-    let snackBarRef = this.snackBar.open(message, 'X', {
-      duration: this.duration,
+  error(data) {
+    this.snackBar.openFromComponent(NotificationComponent, {
       verticalPosition: 'top',
       horizontalPosition: 'right',
-      panelClass: 'app-notification-error'
+      panelClass: 'app-notification-error',
+      data
     });
-    snackBarRef.onAction().subscribe(() => {
-      snackBarRef.dismiss()
-    })
+    // let snackBarRef = this.snackBar.open(message, 'X', {
+    //   // duration: duration,
+    //   verticalPosition: 'top',
+    //   horizontalPosition: 'right',
+    //   panelClass: 'app-notification-error'
+    // });
+    // snackBarRef.onAction().subscribe(() => {
+    //   snackBarRef.dismiss()
+    // })
   }
 }
