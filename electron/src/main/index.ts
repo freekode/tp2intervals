@@ -4,7 +4,6 @@ import './boot'
 import { bootController, initBootController } from './boot/boot-controller';
 import { systemEvents } from './events';
 import log from 'electron-log';
-import { appUpdater } from "./autoupdate/app-updater";
 import { isDev } from "./environment";
 
 
@@ -113,7 +112,6 @@ const createMainWindow = async () => {
   }
 
   bootController?.initializeSubscriptions(mainWindow);
-  appUpdater?.initializeSubscriptions(mainWindow);
   log.transports.console.level = isDev ? 'debug' : 'info'
 };
 
@@ -123,7 +121,6 @@ app.whenReady()
     systemEvents.on('boot-ready', () => {
       log.info('Creating main window (boot ready event)');
       createMainWindow();
-      appUpdater.checkForUpdates()
     });
     await initBootController()
   })
