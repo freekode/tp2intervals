@@ -18,14 +18,16 @@ export class NotificationService {
   success(data) {
     this.toastr.success(data, undefined, {
       enableHtml: true,
-      closeButton: true
+      closeButton: true,
+      timeOut: duration
     });
   }
 
   error(data) {
     this.toastr.error(data, undefined, {
       enableHtml: true,
-      closeButton: true
+      closeButton: true,
+      timeOut: duration
     });
   }
 }

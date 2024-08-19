@@ -18,10 +18,11 @@ class TRCookieRepository(
     fun getCookies(): String {
         val cookie = trainerRoadConfigurationRepository.getConfiguration().authCookie
             ?: throw PlatformException(Platform.TRAINER_ROAD, "Wrong configuration")
-        val response = trCookieApiClient.getCookies(cookie)
-        return response.headers()[HttpHeaders.SET_COOKIE]!!
-            .map { it.split(";") }
-            .map { it[0].trim() }
-            .joinToString(separator = ";")
+//        val response = trCookieApiClient.getCookies(cookie)
+//        return response.headers()[HttpHeaders.SET_COOKIE]!!
+//            .map { it.split(";") }
+//            .map { it[0].trim() }
+//            .joinToString(separator = ";")
+        return cookie
     }
 }

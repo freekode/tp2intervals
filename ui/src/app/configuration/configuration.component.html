@@ -24,7 +24,7 @@
     <mat-label>TrainerRoad Auth Cookie</mat-label>
     <input matInput placeholder="TrainerRoadAuth=very_long_string" formControlName="trainer-road.auth-cookie">
     @if (formGroup.controls['trainer-road.auth-cookie'].errors?.['pattern']) {
-      <mat-error>Must be in format TrainerRoadAuth=...</mat-error>
+      <mat-error>Must be in format SharedTrainerRoadAuth=...</mat-error>
     }
   </mat-form-field>
 

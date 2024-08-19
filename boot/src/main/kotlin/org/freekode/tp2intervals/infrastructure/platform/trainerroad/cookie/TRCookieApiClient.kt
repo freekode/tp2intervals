@@ -12,6 +12,6 @@ import org.springframework.web.bind.annotation.RequestHeader
     primary = false,
 )
 interface TRCookieApiClient {
-    @GetMapping("/app/career")
+    @GetMapping("/app/api/member-info")
     fun getCookies(@RequestHeader("Cookie") cookie: String): Response
 }
