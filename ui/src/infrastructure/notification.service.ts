@@ -19,7 +19,7 @@ export class NotificationService {
     this.toastr.success(data, undefined, {
       enableHtml: true,
       closeButton: true,
-      timeOut: duration
+      timeOut: NotificationService.duration
     });
   }
 
@@ -27,7 +27,7 @@ export class NotificationService {
     this.toastr.error(data, undefined, {
       enableHtml: true,
       closeButton: true,
-      timeOut: duration
+      timeOut: NotificationService.duration
     });
   }
 }
