@@ -20,6 +20,7 @@
     "@angular/platform-browser-dynamic": "^17.0.0",
     "@angular/router": "^17.0.0",
     "bootstrap-icons": "^1.11.3",
+    "ngx-toastr": "^19.0.0",
     "rxjs": "~7.8.0",
     "semver": "^7.6.3",
     "tslib": "^2.3.0",
