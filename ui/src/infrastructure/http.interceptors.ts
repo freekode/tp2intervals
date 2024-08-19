@@ -35,7 +35,7 @@ export const httpHostInterceptor: HttpInterceptorFn = (
   let host = environmentService.getBootAddress()
 
   let url = req.url.replace(/^\/|\/$/g, '')
-  if (!!host) {
+  if (!!host && !url.startsWith('http')) {
     url = `${host}/${url}`
   }
 
