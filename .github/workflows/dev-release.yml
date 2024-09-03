@@ -60,3 +60,9 @@ jobs:
 
       - name: Show me what you got
         run: ls artifacts
+
+      - uses: ncipollo/release-action@v1
+        with:
+          prerelease: true
+          artifactErrorsFailBuild: true
+          artifacts: artifacts/**
