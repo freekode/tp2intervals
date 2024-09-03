@@ -61,8 +61,15 @@ jobs:
       - name: Show me what you got
         run: ls artifacts
 
+
+      - name: Create tag
+        run: |
+          git tag dev-release --force
+          git push --tags
+
       - uses: ncipollo/release-action@v1
         with:
+          tag: 'dev-release'
           prerelease: true
           artifactErrorsFailBuild: true
           artifacts: artifacts/**
