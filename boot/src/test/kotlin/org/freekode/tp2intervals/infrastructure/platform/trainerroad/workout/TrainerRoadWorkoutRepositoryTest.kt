@@ -2,19 +2,19 @@ package org.freekode.tp2intervals.infrastructure.platform.trainerroad.workout
 
 import config.mock.ObjectMapperFactory
 import config.mock.TrainerRoadApiClientMock
-import java.time.Duration
 import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutSingleStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
-import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsAthleteApiClient
-import org.freekode.tp2intervals.infrastructure.platform.trainerroad.TrainerRoadApiClient
+import org.freekode.tp2intervals.infrastructure.platform.trainerroad.configuration.TrainerRoadConfiguration
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.configuration.TrainerRoadConfigurationRepository
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.member.TRUsernameRepository
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
+import org.mockito.Mockito.`when`
 import org.springframework.util.ResourceUtils
+import java.time.Duration
 
 class TrainerRoadWorkoutRepositoryTest {
     private val objectMapper = ObjectMapperFactory.objectMapper()
@@ -26,14 +26,17 @@ class TrainerRoadWorkoutRepositoryTest {
         ResourceUtils.getFile("classpath:tr-workoutsdetails-another.json").inputStream(),
     )
 
-    private val trainerRoadApiClientService = TrainerRoadApiClientService(
-        trainerRoadApiClient, mock(TrainerRoadConfigurationRepository::class.java)
-    )
+    private val trainerRoadConfigurationRepository = trainerRoadConfigurationRepository()
 
-    private val trainerRoadWorkoutRepository = TrainerRoadWorkoutRepository(
-        mock(TRUsernameRepository::class.java),
-        trainerRoadApiClientService
-    )
+    private fun trainerRoadConfigurationRepository(): TrainerRoadConfigurationRepository {
+        val mock = mock(TrainerRoadConfigurationRepository::class.java)
+        `when`(mock.getConfiguration()).thenReturn(TrainerRoadConfiguration(null, true))
+        return mock
+    }
+
+    private val trainerRoadApiClientService = TrainerRoadApiClientService(trainerRoadApiClient, trainerRoadConfigurationRepository)
+
+    private val trainerRoadWorkoutRepository = TrainerRoadWorkoutRepository(mock(TRUsernameRepository::class.java), trainerRoadApiClientService)
 
     @Test
     fun `should parse simple workout`() {
