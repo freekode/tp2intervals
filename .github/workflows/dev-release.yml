@@ -72,4 +72,4 @@ jobs:
           tag: 'dev-release'
           prerelease: true
           artifactErrorsFailBuild: true
-          artifacts: artifacts/**
+          artifacts: artifacts/**/*
