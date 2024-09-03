@@ -46,6 +46,9 @@ jobs:
       os: ${{ matrix.environment.os }}
 
   dev-release:
+    needs:
+      - jar
+      - electron
     runs-on: ubuntu-latest
 
     steps:
