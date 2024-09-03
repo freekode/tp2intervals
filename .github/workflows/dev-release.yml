@@ -2,7 +2,7 @@ name: Build branches
 
 on:
   push:
-    branches: [ main ]
+    branches: [ dev ]
     paths-ignore:
       - 'README.md'
       - 'LICENSE'
@@ -44,3 +44,16 @@ jobs:
       jar-name: tp2intervals
       jar-artifact-name: tp2intervals-jar
       os: ${{ matrix.environment.os }}
+
+  dev-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Show me what you got
+        run: ls artifacts
