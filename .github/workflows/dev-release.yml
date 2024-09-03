@@ -61,7 +61,6 @@ jobs:
       - name: Show me what you got
         run: ls artifacts
 
-
       - name: Create tag
         run: |
           git tag dev-release --force
@@ -72,6 +71,8 @@ jobs:
           release_name: 'dev-release'
 
       - uses: ncipollo/release-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag: 'dev-release'
           prerelease: true
