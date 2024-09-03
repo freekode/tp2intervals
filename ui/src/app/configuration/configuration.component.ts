@@ -15,6 +15,13 @@ import { MatCheckboxChange, MatCheckboxModule } from "@angular/material/checkbox
 import { ConfigurationClient } from "infrastructure/client/configuration.client";
 import { MatOptionModule } from "@angular/material/core";
 import { MatSelectModule } from "@angular/material/select";
+import {MatExpansionModule} from "@angular/material/expansion";
+import {
+  TrCopyCalendarToLibraryComponent
+} from "app/trainer-road/tr-copy-calendar-to-library/tr-copy-calendar-to-library.component";
+import {
+  TrCopyLibraryToLibraryComponent
+} from "app/trainer-road/tr-copy-library-to-library/tr-copy-library-to-library.component";
 
 @Component({
   selector: 'app-configuration',
@@ -30,7 +37,10 @@ import { MatSelectModule } from "@angular/material/select";
     NgIf,
     MatCheckboxModule,
     MatOptionModule,
-    MatSelectModule
+    MatSelectModule,
+    MatExpansionModule,
+    TrCopyCalendarToLibraryComponent,
+    TrCopyLibraryToLibraryComponent
   ],
   templateUrl: './configuration.component.html',
   styleUrl: './configuration.component.scss'
@@ -39,6 +49,7 @@ export class ConfigurationComponent implements OnInit {
   formGroup: FormGroup = this.formBuilder.group({
     'training-peaks.auth-cookie': [null, [Validators.pattern('^Production_tpAuth=[a-zA-Z0-9-_]*$')]],
     'trainer-road.auth-cookie': [null, [Validators.pattern('^SharedTrainerRoadAuth=.*$')]],
+    'trainer-road.remove-html-tags': [null, Validators.required],
     'intervals.api-key': [null, Validators.required],
     'intervals.athlete-id': [null, Validators.required],
     'intervals.power-range': [null, [Validators.required, Validators.min(0), Validators.max(100)]],
@@ -49,7 +60,6 @@ export class ConfigurationComponent implements OnInit {
   });
 
   inProgress = false;
-  showAdvanced = false;
 
   constructor(
     private router: Router,
@@ -78,9 +88,5 @@ export class ConfigurationComponent implements OnInit {
       this.notificationService.success('Configuration successfully saved')
       this.router.navigate(['/home']);
     });
-  }
-
-  showAdvancedChange($event: MatCheckboxChange) {
-    this.showAdvanced = $event.checked
   }
 }

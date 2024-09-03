@@ -10,8 +10,8 @@ import org.freekode.tp2intervals.domain.workout.structure.WorkoutStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStepTarget
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
 
-class TRWorkoutConverter {
-    fun toWorkout(trWorkoutResponseDTO: TRWorkoutResponseDTO): Workout {
+class TrainerRoadWorkoutConverter {
+    fun toWorkout(trWorkoutResponseDTO: TRWorkoutResponseDTO, removeHtmlTags: Boolean): Workout {
         val trWorkout: TRWorkoutResponseDTO.TRWorkout = trWorkoutResponseDTO.workout
 
         val steps = convertSteps(trWorkout.intervalData)
@@ -20,7 +20,7 @@ class TRWorkoutConverter {
             WorkoutDetails(
                 if (trWorkout.details.isOutside) TrainingType.BIKE else TrainingType.VIRTUAL_BIKE,
                 trWorkout.details.workoutName,
-                trWorkout.details.workoutDescription,
+                if (removeHtmlTags) trWorkout.details.workoutDescription.removeHtmlTags() else trWorkout.details.workoutDescription,
                 Duration.ofMinutes(trWorkout.details.duration.toLong()),
                 trWorkout.details.tss,
                 ExternalData.empty().withTrainerRoad(trWorkout.details.id)
@@ -30,17 +30,16 @@ class TRWorkoutConverter {
         )
     }
 
-    fun toWorkoutDetails(trWorkout: TRFindWorkoutsResponseDTO.TRWorkout): WorkoutDetails {
+    fun toWorkoutDetails(trWorkout: TRFindWorkoutsResponseDTO.TRWorkout, removeHtmlTags: Boolean): WorkoutDetails {
         return WorkoutDetails(
             if (trWorkout.isOutside) TrainingType.BIKE else TrainingType.VIRTUAL_BIKE,
             trWorkout.workoutName,
-            trWorkout.workoutDescription,
+            if (removeHtmlTags) trWorkout.workoutDescription.removeHtmlTags() else trWorkout.workoutDescription,
             Duration.ofMinutes(trWorkout.duration.toLong()),
             trWorkout.tss,
             ExternalData.empty().withTrainerRoad(trWorkout.id)
         )
     }
-
 
     private fun convertSteps(intervals: List<TRWorkoutResponseDTO.IntervalsDataDTO>): List<WorkoutStep> {
         val steps = mutableListOf<WorkoutStep>()
@@ -60,4 +59,7 @@ class TRWorkoutConverter {
         }
         return steps
     }
+
+    private fun String.removeHtmlTags() =
+        toString().replace("<[^>]*>".toRegex(), " ").replace("\\s+".toRegex(), " ")
 }
