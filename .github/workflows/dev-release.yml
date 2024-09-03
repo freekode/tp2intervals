@@ -67,6 +67,10 @@ jobs:
           git tag dev-release --force
           git push --tags --force
 
+      - uses: liudonghua123/delete-release-action@v1
+        with:
+          release_name: 'dev-release'
+
       - uses: ncipollo/release-action@v1
         with:
           tag: 'dev-release'
