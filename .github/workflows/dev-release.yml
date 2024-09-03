@@ -67,12 +67,12 @@ jobs:
           git push --tags --force
 
       - uses: liudonghua123/delete-release-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           release_name: 'dev-release'
 
       - uses: ncipollo/release-action@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag: 'dev-release'
           prerelease: true
