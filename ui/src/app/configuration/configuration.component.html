@@ -1,26 +1,61 @@
 <mat-progress-bar *ngIf="inProgress" mode="query"></mat-progress-bar>
 
 <form [formGroup]="formGroup" novalidate (ngSubmit)="onSubmit()">
-  <mat-form-field class="full-width">
-    <mat-label>Intervals API Key</mat-label>
-    <input matInput placeholder="123456qwerty123456qwerty1" formControlName="intervals.api-key">
-  </mat-form-field>
+  <div>
+    <h2>Intervals.icu</h2>
 
-  <mat-form-field class="full-width">
-    <mat-label>Intervals Athlete Id</mat-label>
-    <input matInput placeholder="i00000" formControlName="intervals.athlete-id">
-  </mat-form-field>
+    <mat-form-field class="full-width">
+      <mat-label>Intervals API Key</mat-label>
+      <input matInput placeholder="123456qwerty123456qwerty1" formControlName="intervals.api-key">
+    </mat-form-field>
 
-  <mat-form-field class="full-width">
+    <mat-form-field class="full-width">
+      <mat-label>Intervals Athlete Id</mat-label>
+      <input matInput placeholder="i00000" formControlName="intervals.athlete-id">
+    </mat-form-field>
+
+    <mat-accordion>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            Advanced properties
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <mat-form-field class="full-width">
+          <mat-label>Intervals Power range percentage</mat-label>
+          <input matInput type="number" placeholder="5.0" formControlName="intervals.power-range">
+        </mat-form-field>
+
+        <mat-form-field class="full-width">
+          <mat-label>Intervals HR range percentage</mat-label>
+          <input matInput type="number" placeholder="5.0" formControlName="intervals.hr-range">
+        </mat-form-field>
+
+        <mat-form-field class="full-width">
+          <mat-label>Intervals Pace range percentage</mat-label>
+          <input matInput type="number" placeholder="5.0" formControlName="intervals.pace-range">
+        </mat-form-field>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </div>
+
+  <div>
+    <h2>TrainingPeaks</h2>
+
+    <mat-form-field class="full-width">
     <mat-label>TrainingPeaks Auth Cookie</mat-label>
     <input matInput placeholder="Production_tpAuth=very_long_string" formControlName="training-peaks.auth-cookie">
     @if (formGroup.controls['training-peaks.auth-cookie'].errors?.['pattern']) {
       <mat-error>Must be in format Production_tpAuth=[a-zA-Z0-9-_]*</mat-error>
     }
   </mat-form-field>
+  </div>
 
+  <div>
+    <h2>TrainerRoad</h2>
 
-  <mat-form-field class="full-width">
+    <mat-form-field class="full-width">
     <mat-label>TrainerRoad Auth Cookie</mat-label>
     <input matInput placeholder="TrainerRoadAuth=very_long_string" formControlName="trainer-road.auth-cookie">
     @if (formGroup.controls['trainer-road.auth-cookie'].errors?.['pattern']) {
@@ -28,27 +63,18 @@
     }
   </mat-form-field>
 
-  <mat-checkbox class="form-checkbox" (change)="showAdvancedChange($event)">
-    Show advanced configuration
-  </mat-checkbox>
+    <mat-checkbox class="form-checkbox" formControlName="trainer-road.remove-html-tags">
+      Remove html tags from description
+    </mat-checkbox>
+  </div>
 
-  <mat-checkbox class="form-checkbox" formControlName="generic.beta-features-enabled">
-    Enable beta features
-  </mat-checkbox>
+  <div>
+    <h2>Generic</h2>
 
-  @if (showAdvanced) {
-    <mat-form-field class="full-width">
-      <mat-label>Intervals Power range percentage</mat-label>
-      <input matInput type="number" placeholder="5.0" formControlName="intervals.power-range">
-    </mat-form-field>
-    <mat-form-field class="full-width">
-      <mat-label>Intervals HR range percentage</mat-label>
-      <input matInput type="number" placeholder="5.0" formControlName="intervals.hr-range">
-    </mat-form-field>
-    <mat-form-field class="full-width">
-      <mat-label>Intervals Pace range percentage</mat-label>
-      <input matInput type="number" placeholder="5.0" formControlName="intervals.pace-range">
-    </mat-form-field>
+    <mat-checkbox class="form-checkbox" formControlName="generic.beta-features-enabled">
+      Enable beta features
+    </mat-checkbox>
+
     <mat-form-field class="full-width">
       <mat-label>Log Level (saved only for current session)</mat-label>
       <mat-select formControlName="generic.log-level">
@@ -57,7 +83,7 @@
         <mat-option [value]="'DEBUG'">DEBUG</mat-option>
       </mat-select>
     </mat-form-field>
-  }
+  </div>
 
   <div class="row action-button-section">
     <button

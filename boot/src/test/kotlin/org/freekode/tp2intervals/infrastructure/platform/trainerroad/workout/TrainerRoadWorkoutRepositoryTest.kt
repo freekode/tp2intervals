@@ -7,6 +7,9 @@ import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutSingleStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsAthleteApiClient
+import org.freekode.tp2intervals.infrastructure.platform.trainerroad.TrainerRoadApiClient
+import org.freekode.tp2intervals.infrastructure.platform.trainerroad.configuration.TrainerRoadConfigurationRepository
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.member.TRUsernameRepository
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -23,10 +26,13 @@ class TrainerRoadWorkoutRepositoryTest {
         ResourceUtils.getFile("classpath:tr-workoutsdetails-another.json").inputStream(),
     )
 
+    private val trainerRoadApiClientService = TrainerRoadApiClientService(
+        trainerRoadApiClient, mock(TrainerRoadConfigurationRepository::class.java)
+    )
+
     private val trainerRoadWorkoutRepository = TrainerRoadWorkoutRepository(
         mock(TRUsernameRepository::class.java),
-        TRInternalWorkoutRepository(trainerRoadApiClient),
-        trainerRoadApiClient
+        trainerRoadApiClientService
     )
 
     @Test

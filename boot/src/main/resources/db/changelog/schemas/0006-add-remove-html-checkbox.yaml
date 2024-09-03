@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: _
+      author: _
+      changes:
+        - insert:
+            tableName: config
+            columns:
+              - column:
+                  name: key
+                  value: 'trainer-road.remove-html-tags'
+
+              - column:
+                  name: value
+                  value: 'false'
