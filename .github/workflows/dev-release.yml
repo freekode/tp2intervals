@@ -65,7 +65,7 @@ jobs:
       - name: Create tag
         run: |
           git tag dev-release --force
-          git push --tags
+          git push --tags --force
 
       - uses: ncipollo/release-action@v1
         with:
