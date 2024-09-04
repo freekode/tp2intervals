@@ -64,7 +64,7 @@ jobs:
           path: artifacts
 
       - name: Show me what you got
-        run: ls artifacts
+        run: ls -R artifacts
 
       - name: Create tag
         run: |
