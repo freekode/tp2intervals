@@ -68,8 +68,8 @@ jobs:
 
       - name: Create tag
         run: |
-          git tag ${{ steps.set_tag_name.outputs.tag_name }}
-          git push --tags
+          git tag ${{ steps.set_tag_name.outputs.tag_name }} -f
+          git push --tags -f
 
       - uses: ncipollo/release-action@v1
         with:
@@ -77,4 +77,4 @@ jobs:
           skipIfReleaseExists: true
           prerelease: true
           artifactErrorsFailBuild: true
-          artifacts: artifacts/**/*/*
+          artifacts: artifacts/**/*.{AppImage,exe,dmg,jar}
