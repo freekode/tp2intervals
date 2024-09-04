@@ -10,7 +10,9 @@ on:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+
+env:
+  release-prefix: dev-release
 
 jobs:
   jar:
@@ -52,6 +54,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - id: set_tag_name
+        run: echo "tag_name=${{env.release-prefix}}-$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
       - uses: actions/checkout@v4
 
       - uses: actions/download-artifact@v4
@@ -63,13 +68,13 @@ jobs:
 
       - name: Create tag
         run: |
-          git tag dev-release --force
-          git push --tags --force
+          git tag ${{ steps.set_tag_name.outputs.tag_name }}
+          git push --tags
 
       - uses: ncipollo/release-action@v1
         with:
-          name: 'dev-release'
-          tag: 'dev-release'
+          tag: ${{ steps.set_tag_name.outputs.tag_name }}
+          skipIfReleaseExists: true
           prerelease: true
           artifactErrorsFailBuild: true
           artifacts: artifacts/**/*
