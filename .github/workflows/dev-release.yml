@@ -77,4 +77,4 @@ jobs:
           skipIfReleaseExists: true
           prerelease: true
           artifactErrorsFailBuild: true
-          artifacts: artifacts/**/*
+          artifacts: artifacts/**/*/*
