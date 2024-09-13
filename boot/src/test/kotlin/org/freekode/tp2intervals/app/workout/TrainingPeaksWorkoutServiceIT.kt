@@ -9,11 +9,11 @@ import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.workout.structure.StepModifier
 import org.freekode.tp2intervals.rest.workout.DeleteWorkoutRequestDTO
 import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import java.time.LocalDate
 import java.time.LocalDateTime
+
 
 class TrainingPeaksWorkoutServiceIT : BaseSpringITConfig() {
     @Autowired
@@ -23,14 +23,6 @@ class TrainingPeaksWorkoutServiceIT : BaseSpringITConfig() {
     lateinit var workoutService: WorkoutService
 
     private val platform = Platform.TRAINING_PEAKS
-
-    companion object {
-        @JvmStatic
-        @BeforeAll
-        fun beforeAll() {
-            Thread.sleep(1000)
-        }
-    }
 
     @Test
     fun `should sync planned workouts`() {

@@ -8,12 +8,12 @@ import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.TrainingType
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import java.time.LocalDate
 import java.time.LocalDateTime
+
 
 class TrainerRoadWorkoutServiceIT : BaseSpringITConfig() {
     @Autowired
@@ -23,14 +23,6 @@ class TrainerRoadWorkoutServiceIT : BaseSpringITConfig() {
     lateinit var workoutService: WorkoutService
 
     private val platform = Platform.TRAINER_ROAD
-
-    companion object {
-        @JvmStatic
-        @BeforeAll
-        fun beforeAll() {
-            Thread.sleep(1000)
-        }
-    }
 
     @Test
     fun `should copy workouts from library to library`() {
