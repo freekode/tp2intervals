@@ -16,7 +16,7 @@ class LibraryService(
     private val workoutRepositoryMap = workoutRepositories.associateBy { it.platform() }
     private val planRepositoryMap = planRepositories.associateBy { it.platform() }
 
-    fun getLibraryContainers(platform: Platform): List<LibraryContainer> {
+    fun findByPlatform(platform: Platform): List<LibraryContainer> {
         val repository = planRepositoryMap[platform]!!
         return repository.getLibraryContainers()
     }
@@ -30,8 +30,8 @@ class LibraryService(
             .map { it.addWorkoutStepModifier(request.stepModifier) }
         val newPlan = targetPlanRepository.createLibraryContainer(
             request.newName,
-            workouts.first().date,
-            request.libraryContainer.isPlan
+            request.libraryContainer.isPlan,
+            workouts.first().date
         )
         targetWorkoutRepository.saveWorkoutsToLibrary(newPlan, workouts)
         return CopyPlanResponse(newPlan.name, workouts.size, newPlan.externalData)
@@ -40,6 +40,11 @@ class LibraryService(
     fun deleteLibrary(request: DeleteLibraryRequest) {
         val planRepository = planRepositoryMap[request.platform]!!
         planRepository.deleteLibraryContainer(request.externalData)
+    }
+
+    fun create(request: CreateLibraryContainerRequest): LibraryContainer {
+        val planRepository = planRepositoryMap[request.platform]!!
+        return planRepository.createLibraryContainer(request.name, false, null)
     }
 
     private fun Workout.addWorkoutStepModifier(stepModifier: StepModifier): Workout =

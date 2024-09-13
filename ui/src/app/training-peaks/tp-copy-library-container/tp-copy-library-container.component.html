@@ -24,14 +24,14 @@
 
   <div class="row">
     <mat-form-field class="form-field">
-      <mat-label>Intervals name</mat-label>
+      <mat-label>My new library name</mat-label>
       <input matInput placeholder="My New Library" formControlName="newName">
     </mat-form-field>
   </div>
 
-  <div class="row" *ngIf="config?.['generic.beta-features-enabled']">
+  <div class="row">
     <mat-form-field class="form-field">
-      <mat-label>Intervals step modifier</mat-label>
+      <mat-label>Step modifier in Intervals.icu</mat-label>
       <mat-select formControlName="stepModifier" panelWidth="null">
         @for (item of stepModifiers; track item) {
           <mat-option [value]="item">

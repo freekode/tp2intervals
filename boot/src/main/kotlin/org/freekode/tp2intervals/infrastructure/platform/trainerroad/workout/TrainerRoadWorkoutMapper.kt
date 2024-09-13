@@ -1,6 +1,5 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainerroad.workout
 
-import java.time.Duration
 import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.workout.Workout
@@ -9,35 +8,28 @@ import org.freekode.tp2intervals.domain.workout.structure.WorkoutSingleStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStepTarget
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
+import java.time.Duration
+import kotlin.text.replace
 
-class TrainerRoadWorkoutConverter {
+class TrainerRoadWorkoutMapper {
     fun toWorkout(trWorkoutResponseDTO: TRWorkoutResponseDTO, removeHtmlTags: Boolean): Workout {
         val trWorkout: TRWorkoutResponseDTO.TRWorkout = trWorkoutResponseDTO.workout
-
         val steps = convertSteps(trWorkout.intervalData)
-
         return Workout(
-            WorkoutDetails(
-                if (trWorkout.details.isOutside) TrainingType.BIKE else TrainingType.VIRTUAL_BIKE,
-                trWorkout.details.workoutName,
-                if (removeHtmlTags) trWorkout.details.workoutDescription.removeHtmlTags() else trWorkout.details.workoutDescription,
-                Duration.ofMinutes(trWorkout.details.duration.toLong()),
-                trWorkout.details.tss,
-                ExternalData.empty().withTrainerRoad(trWorkout.details.id)
-            ),
+            toWorkoutDetails(trWorkout.details, removeHtmlTags),
             null,
             WorkoutStructure(WorkoutStructure.TargetUnit.FTP_PERCENTAGE, steps),
         )
     }
 
-    fun toWorkoutDetails(trWorkout: TRFindWorkoutsResponseDTO.TRWorkout, removeHtmlTags: Boolean): WorkoutDetails {
+    fun toWorkoutDetails(detailsDTO: TrainerRoadWorkoutDetailsDTO, removeHtmlTags: Boolean): WorkoutDetails {
         return WorkoutDetails(
-            if (trWorkout.isOutside) TrainingType.BIKE else TrainingType.VIRTUAL_BIKE,
-            trWorkout.workoutName,
-            if (removeHtmlTags) trWorkout.workoutDescription.removeHtmlTags() else trWorkout.workoutDescription,
-            Duration.ofMinutes(trWorkout.duration.toLong()),
-            trWorkout.tss,
-            ExternalData.empty().withTrainerRoad(trWorkout.id)
+            if (detailsDTO.isOutside) TrainingType.BIKE else TrainingType.VIRTUAL_BIKE,
+            detailsDTO.workoutName,
+            getDescription(detailsDTO.workoutDescription, removeHtmlTags),
+            Duration.ofMinutes(detailsDTO.duration.toLong()),
+            detailsDTO.tss,
+            ExternalData.empty().withTrainerRoad(detailsDTO.id)
         )
     }
 
@@ -60,6 +52,10 @@ class TrainerRoadWorkoutConverter {
         return steps
     }
 
-    private fun String.removeHtmlTags() =
-        toString().replace("<[^>]*>".toRegex(), " ").replace("\\s+".toRegex(), " ")
+    private fun getDescription(description: String, removeHtmlTags: Boolean): String =
+        if (removeHtmlTags) {
+            description.replace("<[^>]*>".toRegex(), " ").replace("\\s+".toRegex(), " ")
+        } else {
+            description
+        }.trim()
 }

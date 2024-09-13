@@ -49,7 +49,7 @@ class WorkoutService(
         val allWorkouts = sourceWorkoutRepository.getWorkoutsFromCalendar(request.startDate, request.endDate)
         val filteredWorkouts = allWorkouts.filter { request.types.contains(it.details.type) }
 
-        val newPlan = targetPlanRepository.createLibraryContainer(request.name, request.startDate, request.isPlan)
+        val newPlan = targetPlanRepository.createLibraryContainer(request.name, request.isPlan, request.startDate)
         targetWorkoutRepository.saveWorkoutsToLibrary(newPlan, filteredWorkouts)
         return CopyWorkoutsResponse(
             filteredWorkouts.size,
@@ -64,7 +64,7 @@ class WorkoutService(
         val sourceWorkoutRepository = workoutRepositoryMap[request.sourcePlatform]!!
         val targetWorkoutRepository = workoutRepositoryMap[request.targetPlatform]!!
 
-        val workout = sourceWorkoutRepository.getWorkoutFromLibrary(request.workoutDetails.externalData)
+        val workout = sourceWorkoutRepository.getWorkoutFromLibrary(request.workoutExternalData)
         targetWorkoutRepository.saveWorkoutsToLibrary(request.targetLibraryContainer, listOf(workout))
         return CopyWorkoutsResponse(1, 0, LocalDate.now(), LocalDate.now(), request.targetLibraryContainer.externalData)
     }

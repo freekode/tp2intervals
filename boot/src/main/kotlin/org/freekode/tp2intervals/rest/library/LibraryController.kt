@@ -18,7 +18,7 @@ class LibraryController(
 
     @GetMapping("/api/library-container")
     fun getLibraryContainers(@RequestParam platform: Platform): List<LibraryContainer> {
-        return libraryService.getLibraryContainers(platform)
+        return libraryService.findByPlatform(platform)
     }
 
     @PostMapping("/api/library-container/copy")

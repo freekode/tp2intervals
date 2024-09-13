@@ -1,0 +1,76 @@
+{
+  "request": {
+    "method": "POST",
+    "urlPattern": "/trainer-road/app/api/workouts"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "Workouts": [
+        {
+          "Id": "simple",
+          "MemberId": 1,
+          "Duration": 25,
+          "FirstPublishDate": "2018-03-19T13:42:55.787",
+          "GoalDescription": "\u003Cp\u003EBy following a convenient, tightly structured assessment protocol, riders can assess changes in fitness at any time of their training season. This short test estimates FTP from an athlete\u2019s ability to sustain a gradually increasing but minimally fatiguing effort.\u003C/p\u003E\u003Cp\u003EThis test shouldn\u0027t require full recovery ahead of testing, but you should be well-rested and properly motivated enough to go truly all-out during the last few crucial minutes.\u003C/p\u003E",
+          "AverageFtpPercent": 109.091034,
+          "IntensityFactor": 91,
+          "ExternalProviderType": null,
+          "Kj": 250,
+          "PicUrl": "https://trainrdtrprod01un1hot01.blob.core.windows.net/member-public/8299afad-6265-4d8a-a69b-91aff5e37491/workouts/385142/636721871074288011chart.svg",
+          "Tss": 34,
+          "WorkoutDescription": "\u003Cp\u003EThe Ramp Test is a fitness assessment that uses gradual increases in power to estimate your FTP. The process is simple: follow the target power as closely as possible until you can\u2019t sustain the effort. Once you stop pedaling, your FTP will be automatically calculated and you can choose to accept or reject it.\u003C/p\u003E\u003Cp\u003EStay in the saddle for the entire test, which usually takes about 25 minutes and starts with a short, easy warmup. Once the warmup is complete the target power will slightly increase each minute until it becomes very difficult to sustain. This is when you need to push yourself, turning the pedals and trying to maintain the target power until you\u2019re no longer capable of doing so. This challenging period only lasts a few minutes, but for the test to be accurate, it\u2019s important to give it everything you\u2019ve got.\u003C/p\u003E\u003Cp\u003EThe test will continue as long as you can match the target power, but once your power drops there\u2019s no reason to keep going. Stop pedaling, and a window will appear asking if you\u2019re finished; click \u201CEnd Test\u201D and your FTP will be calculated and displayed. If you accept it, your new FTP will automatically be used to set the intensity of your future workouts.\u003Cbr\u003E\u003C/p\u003E\u003Cp\u003E\u003Cb\u003ETips and Hints:\u003C/b\u003E\u003C/p\u003E\u003Cp\u003E- Follow the target power as closely as you can throughout the entire test. Small variations are normal, but surging above or below target for extended periods can affect the results.\u0026nbsp;\u003C/p\u003E\u003Cp\u003E- For the best results, do the Ramp Test when you\u2019re fueled, motivated, and well rested.\u003C/p\u003E\u003Cp\u003E- Smart Trainers and ERG mode work great for the Ramp Test but are not required. Use whatever trainer mode you typically use when training.\u0026nbsp;\u003C/p\u003E\u003Cp\u003E- Use whatever cadence feels most comfortable. A steady cadence may help you sustain a steady power output when things get tough.\u003C/p\u003E\u003Cp\u003E- Once you reach your limit and your power begins to drop, there\u2019s no reason to keep going. Stop pedaling and recover as your result is calculated.\u003C/p\u003E\u003Cp\u003E-If you\u2019re a triathlete or time trialist and you plan to do most of your training in aero position, we recommend taking the Ramp Test in this position.\u003C/p\u003E",
+          "WorkoutAlternateDescription": null,
+          "WorkoutName": "complex",
+          "WorkoutTypeId": 776,
+          "WorkoutLabelId": 13,
+          "IsOutside": false,
+          "IndoorAlternativeId": null,
+          "Progression": null,
+          "ProgressionId": null,
+          "ProgressionLevel": null,
+          "WorkoutStartTick": 300,
+          "WorkoutEndTick": 1170,
+          "WorkoutDifficultyRating": 0,
+          "PowerZones": [],
+          "Tags": [],
+          "ProfileId": null,
+          "ProfileName": null,
+          "HasInstructions": true
+        },
+        {
+          "Id": "complex",
+          "MemberId": 1,
+          "Duration": 60,
+          "FirstPublishDate": "2022-04-14T23:29:37.063",
+          "GoalDescription": "The primary aim here is to\u0026nbsp;improve aerobic fitness via Tempo \u0026amp; Sweet Spot power levels while targeting muscle control and improved movement patterns via slow-cadence work. \u003Cbr\u003E\u003Cbr\u003EAt the same time, another goal is to stress and strengthen the connective tissues in order to prevent joint injury when workout intensities increase.\u003Cbr\u003E\u003Cbr\u003ECadence can range widely - as low as 50rpm but ideally no higher than 70rpm - depending on leg strength and joint integrity, knees especially.\u003Cdiv\u003E\u003C/div\u003E",
+          "AverageFtpPercent": 226.47708,
+          "IntensityFactor": 71,
+          "ExternalProviderType": null,
+          "Kj": 519,
+          "PicUrl": "https://trainrdtrprod01un1hot01.blob.core.windows.net/member-public/8299afad-6265-4d8a-a69b-91aff5e37491/workouts/1249/637855757983837531chart.svg",
+          "Tss": 50,
+          "WorkoutDescription": "\u003Cdiv\u003E\u003Cp\u003EAbney is 3x9-minute sets of ascending force intervals ranging from 80-90%FTP.\u003Cbr\u003E\u003Cbr\u003E\u003C/p\u003E\u003Cp\u003EEach set consists of 3x3-minute repeats with 1 minute of recovery between intervals and 5 minutes of recovery between each set of intervals.\u003C/p\u003E\u003C/div\u003E",
+          "WorkoutAlternateDescription": null,
+          "WorkoutName": "simple",
+          "WorkoutTypeId": 809,
+          "WorkoutLabelId": 18,
+          "IsOutside": false,
+          "IndoorAlternativeId": null,
+          "ProgressionId": 84,
+          "ProgressionLevel": 1,
+          "WorkoutStartTick": 940,
+          "WorkoutEndTick": 3480,
+          "WorkoutDifficultyRating": 5,
+          "Tags": [],
+          "ProfileId": 5,
+          "ProfileName": "Intervals",
+          "HasInstructions": true
+        }
+      ]
+    }
+  }
+}

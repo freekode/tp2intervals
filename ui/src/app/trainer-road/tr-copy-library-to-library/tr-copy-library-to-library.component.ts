@@ -1,23 +1,23 @@
-import { Component, OnInit } from '@angular/core';
-import { MatGridListModule } from "@angular/material/grid-list";
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
-import { MatButtonModule } from "@angular/material/button";
-import { MatFormFieldModule } from "@angular/material/form-field";
-import { MatInputModule } from "@angular/material/input";
-import { MatProgressBarModule } from "@angular/material/progress-bar";
-import { AsyncPipe, NgIf } from "@angular/common";
-import { MatDatepickerModule } from "@angular/material/datepicker";
-import { MatNativeDateModule } from "@angular/material/core";
-import { MatSnackBarModule } from "@angular/material/snack-bar";
-import { MatSelectModule } from "@angular/material/select";
-import { MatCheckboxModule } from "@angular/material/checkbox";
-import { WorkoutClient } from "infrastructure/client/workout.client";
-import { ConfigurationClient } from "infrastructure/client/configuration.client";
-import { NotificationService } from "infrastructure/notification.service";
-import { debounceTime, filter, finalize, map, Observable, switchMap, tap } from "rxjs";
-import { LibraryClient } from "infrastructure/client/library-client.service";
-import { Platform } from "infrastructure/platform";
-import { MatAutocompleteModule } from "@angular/material/autocomplete";
+import {Component, OnInit} from '@angular/core';
+import {MatGridListModule} from "@angular/material/grid-list";
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
+import {MatButtonModule} from "@angular/material/button";
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {MatInputModule} from "@angular/material/input";
+import {MatProgressBarModule} from "@angular/material/progress-bar";
+import {AsyncPipe, NgIf} from "@angular/common";
+import {MatDatepickerModule} from "@angular/material/datepicker";
+import {MatNativeDateModule} from "@angular/material/core";
+import {MatSnackBarModule} from "@angular/material/snack-bar";
+import {MatSelectModule} from "@angular/material/select";
+import {MatCheckboxModule} from "@angular/material/checkbox";
+import {WorkoutClient} from "infrastructure/client/workout.client";
+import {ConfigurationClient} from "infrastructure/client/configuration.client";
+import {NotificationService} from "infrastructure/notification.service";
+import {debounceTime, filter, finalize, map, Observable, switchMap, tap} from "rxjs";
+import {LibraryClient} from "infrastructure/client/library-client.service";
+import {Platform} from "infrastructure/platform";
+import {MatAutocompleteModule} from "@angular/material/autocomplete";
 
 @Component({
   selector: 'tr-copy-library-to-library',
@@ -76,11 +76,10 @@ export class TrCopyLibraryToLibraryComponent implements OnInit {
     let workoutDetails = this.formGroup.value.trWorkoutDetails
     let intervalsPlan = this.formGroup.value.intervalsPlan
     console.log(this.formGroup.getRawValue())
-    this.workoutClient.copyLibraryToLibrary(workoutDetails, intervalsPlan, this.direction).pipe(
+    this.workoutClient.copyLibraryToLibrary(workoutDetails.externalData, intervalsPlan, this.direction).pipe(
       finalize(() => this.submitInProgress = false)
     ).subscribe((response) => {
-      this.notificationService.success(
-        `Copied successfully`)
+      this.notificationService.success(`Copied successfully`)
     })
   }
 

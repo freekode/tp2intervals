@@ -53,6 +53,6 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: tp2intervals-${{ runner.os }}
+          name: tp2intervals-${{ matrix.os }}
           path: electron/dist/tp2intervals*
           if-no-files-found: error

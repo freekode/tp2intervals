@@ -7,6 +7,7 @@ import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutDetails
 import org.freekode.tp2intervals.domain.workout.WorkoutRepository
 import org.freekode.tp2intervals.infrastructure.PlatformException
+import org.freekode.tp2intervals.infrastructure.platform.trainerroad.TrainerRoadApiClientService
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.member.TRUsernameRepository
 import org.springframework.stereotype.Repository
 import java.time.LocalDate

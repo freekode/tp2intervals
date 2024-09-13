@@ -22,6 +22,7 @@ import {
 import {
   TrCopyLibraryToLibraryComponent
 } from "app/trainer-road/tr-copy-library-to-library/tr-copy-library-to-library.component";
+import {MatTooltipModule} from "@angular/material/tooltip";
 
 @Component({
   selector: 'app-configuration',
@@ -40,7 +41,8 @@ import {
     MatSelectModule,
     MatExpansionModule,
     TrCopyCalendarToLibraryComponent,
-    TrCopyLibraryToLibraryComponent
+    TrCopyLibraryToLibraryComponent,
+    MatTooltipModule
   ],
   templateUrl: './configuration.component.html',
   styleUrl: './configuration.component.scss'
@@ -56,7 +58,6 @@ export class ConfigurationComponent implements OnInit {
     'intervals.hr-range': [null, [Validators.required, Validators.min(0), Validators.max(100)]],
     'intervals.pace-range': [null, [Validators.required, Validators.min(0), Validators.max(100)]],
     'generic.log-level': [null, [Validators.required]],
-    'generic.beta-features-enabled': [null, [Validators.required]],
   });
 
   inProgress = false;

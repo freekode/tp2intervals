@@ -15,6 +15,7 @@ import org.mockito.Mockito.mock
 import org.springframework.cache.CacheManager
 
 // TODO fix tests
+@Disabled
 class ConfigurationServiceTest {
     private val appConfigurationRepository = AppConfigurationRepositoryImpl(mock(ConfigurationCrudRepository::class.java))
 
@@ -32,7 +33,6 @@ class ConfigurationServiceTest {
     )
 
     @Test
-    @Disabled
     fun `should set and update required configuration`() {
         // given
         val apiKey = "my-api"
@@ -67,7 +67,6 @@ class ConfigurationServiceTest {
     }
 
     @Test
-    @Disabled
     fun `should throw exception when remove required configuration`() {
         // given
         val athleteId = "-1"
@@ -86,7 +85,6 @@ class ConfigurationServiceTest {
     }
 
     @Test
-    @Disabled
     fun `should set and remove optional configuration`() {
         // given
         val authCookie = "my-tp-auth-cookie"

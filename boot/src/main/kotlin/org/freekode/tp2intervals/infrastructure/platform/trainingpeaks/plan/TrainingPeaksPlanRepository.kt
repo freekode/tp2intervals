@@ -21,7 +21,7 @@ class TrainingPeaksPlanRepository(
 ) : LibraryContainerRepository {
     override fun platform() = Platform.TRAINING_PEAKS
 
-    override fun createLibraryContainer(name: String, startDate: LocalDate?, isPlan: Boolean): LibraryContainer {
+    override fun createLibraryContainer(name: String, isPlan: Boolean, startDate: LocalDate?): LibraryContainer {
         throw PlatformException(platform(), "Doesn't support plan creation")
     }
 
