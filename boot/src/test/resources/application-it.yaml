@@ -3,13 +3,8 @@ app:
     'intervals.api-key': my-api-key
     'intervals.athlete-id': i112233
     'training-peaks.auth-cookie': Production_tpAuth=tp-auth-cookie
-    'trainer-road.auth-cookie': TrainerRoadAuth=tr-auth-cookie
-
-logging:
-  level:
-    org.freekode.tp2intervals.infrastructure: debug
-  file:
-    name:
+    'trainer-road.auth-cookie': SharedTrainerRoadAuth=my-fav-cookie
+    'trainer-road.remove-html-tags': true
 
 spring:
   main:
@@ -24,3 +19,9 @@ spring:
     show-sql: true
   datasource:
     url: 'jdbc:sqlite::memory:'
+
+logging:
+  level:
+    org.freekode.tp2intervals.infrastructure: debug
+  file:
+    name:

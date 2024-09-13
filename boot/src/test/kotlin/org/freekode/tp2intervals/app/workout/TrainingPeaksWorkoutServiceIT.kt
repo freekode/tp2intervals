@@ -1,14 +1,9 @@
-package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout
+package org.freekode.tp2intervals.app.workout
 
-import config.SpringITConfig
-import java.time.LocalDate
-import java.time.LocalDateTime
+import config.BaseSpringITConfig
 import org.freekode.tp2intervals.app.plan.CopyLibraryRequest
 import org.freekode.tp2intervals.app.plan.DeleteLibraryRequest
 import org.freekode.tp2intervals.app.plan.LibraryService
-import org.freekode.tp2intervals.app.workout.CopyFromCalendarToCalendarRequest
-import org.freekode.tp2intervals.app.workout.CopyFromCalendarToLibraryRequest
-import org.freekode.tp2intervals.app.workout.WorkoutService
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.workout.structure.StepModifier
@@ -17,18 +12,22 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import java.time.LocalDate
+import java.time.LocalDateTime
 
-class TrainingPeaksWorkoutRepositoryIT : SpringITConfig() {
+class TrainingPeaksWorkoutServiceIT : BaseSpringITConfig() {
     @Autowired
     lateinit var libraryService: LibraryService
 
     @Autowired
     lateinit var workoutService: WorkoutService
 
+    private val platform = Platform.TRAINING_PEAKS
+
     companion object {
         @JvmStatic
         @BeforeAll
-        fun setup() {
+        fun beforeAll() {
             Thread.sleep(1000)
         }
     }
@@ -37,15 +36,15 @@ class TrainingPeaksWorkoutRepositoryIT : SpringITConfig() {
     fun `should sync planned workouts`() {
         val startDate = LocalDate.parse("2024-03-11")
         val endDate = LocalDate.parse("2024-03-17")
-        val deleteRequest = DeleteWorkoutRequestDTO(startDate, endDate, Platform.TRAINING_PEAKS)
+        val deleteRequest = DeleteWorkoutRequestDTO(startDate, endDate, platform)
         workoutService.deleteWorkoutsFromCalendar(deleteRequest)
 
         val copyRequest = CopyFromCalendarToCalendarRequest(
             startDate, endDate,
-            TrainingType.DEFAULT_LIST,
+            TrainingType.Companion.DEFAULT_LIST,
             true,
             Platform.INTERVALS,
-            Platform.TRAINING_PEAKS
+            platform
         )
         val response = workoutService.copyWorkoutsFromCalendarToCalendar(copyRequest)
 
@@ -57,14 +56,14 @@ class TrainingPeaksWorkoutRepositoryIT : SpringITConfig() {
 
     @Test
     fun `should copy plan`() {
-        val plan = libraryService.getLibraryContainers(Platform.TRAINING_PEAKS)
+        val plan = libraryService.findByPlatform(platform)
             .find { it.name == "Welcome Plan for Cyclists" }
         val response = libraryService.copyLibrary(
             CopyLibraryRequest(
                 plan!!,
                 "${plan.name} ${LocalDateTime.now()}",
                 StepModifier.NONE,
-                Platform.TRAINING_PEAKS,
+                platform,
                 Platform.INTERVALS
             )
         )
@@ -81,8 +80,8 @@ class TrainingPeaksWorkoutRepositoryIT : SpringITConfig() {
                 LocalDate.parse("2024-03-10"),
                 "My Test Library ${LocalDateTime.now()}",
                 true,
-                TrainingType.DEFAULT_LIST,
-                Platform.TRAINING_PEAKS,
+                TrainingType.Companion.DEFAULT_LIST,
+                platform,
                 Platform.INTERVALS
             )
         )

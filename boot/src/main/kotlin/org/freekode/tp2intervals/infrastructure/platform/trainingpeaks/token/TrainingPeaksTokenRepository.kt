@@ -16,7 +16,7 @@ class TrainingPeaksTokenRepository(
     @Cacheable(key = "'singleton'")
     fun getToken(): String {
         val authCookie = trainingPeaksConfigurationRepository.getConfiguration().authCookie
-            ?: throw PlatformException(Platform.TRAINING_PEAKS, "Wrong configuration")
+            ?: throw PlatformException(Platform.TRAINING_PEAKS, "Access to the platform is not configured")
         val token = trainingPeaksTokenApiClient.getToken(authCookie)
         return token.accessToken!!
     }

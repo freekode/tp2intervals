@@ -1,12 +1,12 @@
 package org.freekode.tp2intervals
 
-import config.SpringITConfig
+import config.BaseSpringITConfig
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationContext
 
-class ApplicationContextIT : SpringITConfig() {
+class ApplicationContextIT : BaseSpringITConfig() {
     @Autowired
     lateinit var context: ApplicationContext
 

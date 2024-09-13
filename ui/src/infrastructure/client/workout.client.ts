@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from "@angular/common/http";
-import { Observable } from 'rxjs';
+import {Injectable} from '@angular/core';
+import {HttpClient} from "@angular/common/http";
+import {Observable} from 'rxjs';
 
 
 @Injectable({
@@ -21,9 +21,12 @@ export class WorkoutClient {
       .post(`/api/workout/copy-calendar-to-library`, {name, startDate, endDate, types, ...platformDirection, isPlan})
   }
 
-  copyLibraryToLibrary(workoutDetails, targetLibraryContainer, platformDirection): Observable<any> {
+  copyLibraryToLibrary(externalData, targetLibraryContainer, platformDirection): Observable<any> {
     return this.httpClient
-      .post(`/api/workout/copy-library-to-library`, {workoutDetails, targetLibraryContainer, ...platformDirection})
+      .post(`/api/workout/copy-library-to-library`, {
+        workoutExternalData: externalData,
+        targetLibraryContainer, ...platformDirection
+      })
   }
 
   findWorkoutsByName(platform, name): Observable<any> {

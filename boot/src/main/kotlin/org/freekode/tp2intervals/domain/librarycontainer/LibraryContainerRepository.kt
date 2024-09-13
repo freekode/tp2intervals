@@ -7,7 +7,7 @@ import org.freekode.tp2intervals.domain.ExternalData
 interface LibraryContainerRepository {
     fun platform(): Platform
 
-    fun createLibraryContainer(name: String, startDate: LocalDate?, isPlan: Boolean): LibraryContainer
+    fun createLibraryContainer(name: String, isPlan: Boolean, startDate: LocalDate?): LibraryContainer
 
     fun getLibraryContainers(): List<LibraryContainer>
 

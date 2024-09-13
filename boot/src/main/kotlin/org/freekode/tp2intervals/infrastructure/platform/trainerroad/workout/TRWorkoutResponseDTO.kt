@@ -8,24 +8,9 @@ class TRWorkoutResponseDTO(
 ) {
     class TRWorkout(
         @JsonProperty("Details")
-        val details: DetailsDTO,
+        val details: TrainerRoadWorkoutDetailsDTO,
         @JsonProperty("IntervalData")
         val intervalData: List<IntervalsDataDTO>,
-    )
-
-    class DetailsDTO(
-        @JsonProperty("Id")
-        val id: String,
-        @JsonProperty("WorkoutName")
-        val workoutName: String,
-        @JsonProperty("WorkoutDescription")
-        val workoutDescription: String,
-        @JsonProperty("IsOutside")
-        val isOutside: Boolean,
-        @JsonProperty("TSS")
-        val tss: Int,
-        @JsonProperty("Duration")
-        val duration: Int,
     )
 
     class IntervalsDataDTO(

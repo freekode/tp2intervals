@@ -6,9 +6,11 @@ import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutSingleStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
+import org.freekode.tp2intervals.infrastructure.platform.trainerroad.TrainerRoadApiClientService
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.configuration.TrainerRoadConfiguration
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.configuration.TrainerRoadConfigurationRepository
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.member.TRUsernameRepository
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
@@ -27,12 +29,6 @@ class TrainerRoadWorkoutRepositoryTest {
     )
 
     private val trainerRoadConfigurationRepository = trainerRoadConfigurationRepository()
-
-    private fun trainerRoadConfigurationRepository(): TrainerRoadConfigurationRepository {
-        val mock = mock(TrainerRoadConfigurationRepository::class.java)
-        `when`(mock.getConfiguration()).thenReturn(TrainerRoadConfiguration(null, true))
-        return mock
-    }
 
     private val trainerRoadApiClientService = TrainerRoadApiClientService(trainerRoadApiClient, trainerRoadConfigurationRepository)
 
@@ -90,5 +86,22 @@ class TrainerRoadWorkoutRepositoryTest {
         assertTrue(workout.details.type == TrainingType.VIRTUAL_BIKE)
         assertTrue(workout.structure!!.target == WorkoutStructure.TargetUnit.FTP_PERCENTAGE)
         assertTrue(workout.structure!!.steps.isNotEmpty())
+    }
+
+    @Test
+    fun `should exclude html tags from description`() {
+        val data = ExternalData(null, null, "simple")
+        val workout = trainerRoadWorkoutRepository.getWorkoutFromLibrary(data)
+        assertEquals(
+            "simple is 4x3-minute intervals of leg-speed drills at a very low 60% FTP with 3 minutes of rest between intervals. " +
+                "Keep the pressure on the pedals light and your intensity low to moderate regardless of your cadence.",
+            workout.details.description
+        )
+    }
+
+    private fun trainerRoadConfigurationRepository(): TrainerRoadConfigurationRepository {
+        val mock = mock(TrainerRoadConfigurationRepository::class.java)
+        `when`(mock.getConfiguration()).thenReturn(TrainerRoadConfiguration(null, true))
+        return mock
     }
 }

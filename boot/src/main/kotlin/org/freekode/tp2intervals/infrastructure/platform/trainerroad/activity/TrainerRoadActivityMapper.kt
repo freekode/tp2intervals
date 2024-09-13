@@ -7,8 +7,7 @@ import org.freekode.tp2intervals.infrastructure.utils.Base64
 import org.springframework.core.io.Resource
 import org.springframework.stereotype.Component
 
-@Component
-class TRActivityMapper {
+class TrainerRoadActivityMapper {
     fun mapToActivity(dto: TrainerRoadActivityDTO, resource: Resource): Activity {
         val type = if (dto.completedRide!!.IsOutside) TrainingType.BIKE else TrainingType.VIRTUAL_BIKE
 

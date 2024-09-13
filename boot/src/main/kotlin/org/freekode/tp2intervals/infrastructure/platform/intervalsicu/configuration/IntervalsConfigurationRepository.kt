@@ -66,7 +66,7 @@ class IntervalsConfigurationRepository(
         try {
             intervalsConfig = IntervalsConfiguration(newConfig)
         } catch (e: NullPointerException) {
-            throw PlatformException(platform(), "Wrong configuration")
+            throw PlatformException(platform(), "Access to the platform is not configured")
         }
 
         intervalsAthleteApiClient.getAthlete(

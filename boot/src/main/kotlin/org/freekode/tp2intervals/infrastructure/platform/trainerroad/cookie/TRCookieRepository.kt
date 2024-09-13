@@ -17,7 +17,7 @@ class TRCookieRepository(
     @Cacheable(key = "'singleton'")
     fun getCookies(): String {
         val cookie = trainerRoadConfigurationRepository.getConfiguration().authCookie
-            ?: throw PlatformException(Platform.TRAINER_ROAD, "Wrong configuration")
+            ?: throw PlatformException(Platform.TRAINER_ROAD, "Access to the platform is not configured")
 //        val response = trCookieApiClient.getCookies(cookie)
 //        return response.headers()[HttpHeaders.SET_COOKIE]!!
 //            .map { it.split(";") }
