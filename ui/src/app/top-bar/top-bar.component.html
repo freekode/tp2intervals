@@ -18,8 +18,24 @@
     }
   }
   <span class="spacer"></span>
-  <div>v{{ appVersion }}</div>
-  <a mat-icon-button href="https://github.com/freekode/tp2intervals" target="_blank" class="github-link">
+  <a mat-button
+     [matBadgeHidden]="updateVersionBadgeHidden"
+     matBadge="1"
+     matBadgeSize="small"
+     matBadgePosition="before"
+     matBadgeColor="accent"
+     [href]="githubLink" target="_blank"
+     class="github-link"
+  >
+    <span>v{{ appVersion }}</span>
     <i class="bi bi-github"></i>
+  </a>
+  <a mat-button href="https://ko-fi.com/freekode" target="_blank" class="external-link">
+    <img src="assets/kofi.webp" alt="kofi" class="kofi-icon"/>
+  </a>
+  <a mat-icon-button
+     href="https://forum.intervals.icu/t/tp2intervals-copy-trainingpeaks-and-trainerroad-workouts-plans-to-intervals/63375"
+     target="_blank" class="external-link">
+    <i class="bi bi-activity"></i>
   </a>
 </mat-toolbar>

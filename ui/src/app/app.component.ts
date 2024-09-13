@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { UpdateService } from "infrastructure/update";
 import { TopBarComponent } from "app/top-bar/top-bar.component";
 
 
@@ -17,11 +16,9 @@ import { TopBarComponent } from "app/top-bar/top-bar.component";
 export class AppComponent implements OnInit {
 
   constructor(
-    private updateService: UpdateService,
   ) {
   }
 
   ngOnInit(): void {
-    this.updateService.init()
   }
 }
