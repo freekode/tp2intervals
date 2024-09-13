@@ -46,6 +46,8 @@ jobs:
           APP_DEFAULT_CONFIG_INTERVALS_API_KEY: ${{ secrets.INTERVALS_API_KEY }}
           APP_DEFAULT_CONFIG_INTERVALS_ATHLETE_ID: ${{ secrets.INTERVALS_ATHLETE_ID }}
           APP_DEFAULT_CONFIG_TRAINING_PEAKS_AUTH_COOKIE: ${{ secrets.TRAINING_PEAKS_AUTH_COOKIE }}
+          APP_DEFAULT_CONFIG_TRAINER_ROAD_AUTH_COOKIE: my-fav-cookie
+          APP_DEFAULT_CONFIG_TRAINER_ROAD_REMOVE_HTML_TAGS: true
         run: |
           cd ./boot
           ./gradlew build
