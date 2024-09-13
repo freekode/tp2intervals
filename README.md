@@ -37,7 +37,8 @@ To fix issues I can only relay on logs and HAR files from you.
 
 Beta features can be enabled in Configuration
 
-* Step Modifier. Based on selecton `power=1s`, `power=3s` will be added for each step on Intervals.
+* Step Modifier (TrainingPeaks). Based on selecton `power=1s`, `power=3s` will be added for each step on Intervals.
+* Remove HTML tags from description (TrainerRoad). Cleans up workouts descriptions from HTML tags.
 
 <img src="https://github.com/freekode/tp2intervals/blob/main/docs/tp.png?raw=true" width="30%"><img src="https://github.com/freekode/tp2intervals/blob/main/docs/tr.png?raw=true" width="30%">
 
