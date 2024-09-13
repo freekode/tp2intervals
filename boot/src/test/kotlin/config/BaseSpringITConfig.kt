@@ -1,6 +1,5 @@
 package config
 
-import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension
 import org.junit.jupiter.api.BeforeAll
@@ -18,21 +17,20 @@ abstract class BaseSpringITConfig {
     companion object {
         @JvmStatic
         @RegisterExtension
-        protected var wireMockRule: WireMockExtension = WireMockExtension.newInstance()
-            .options(WireMockConfiguration.wireMockConfig().dynamicPort())
+        protected var wireMockServer = WireMockExtension.newInstance()
+            .options(WireMockConfiguration.wireMockConfig().port(34567))
             .build()
 
         @JvmStatic
         @DynamicPropertySource
         fun dynamicProperties(registry: DynamicPropertyRegistry) {
-            registry.add("app.trainer-road.api-url") { "http://localhost:${wireMockRule.port}/trainer-road" }
+            registry.add("app.trainer-road.api-url") { "http://localhost:${34567}/trainer-road" }
         }
 
         @JvmStatic
         @BeforeAll
         fun beforeAll() {
-            WireMock.configureFor("localhost", wireMockRule.port)
-            Thread.sleep(1000)
+            Thread.sleep(1000) // wait for default properties to save
         }
     }
 }

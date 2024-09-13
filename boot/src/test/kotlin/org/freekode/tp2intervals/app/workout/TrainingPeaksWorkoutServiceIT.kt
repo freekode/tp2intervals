@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-
 class TrainingPeaksWorkoutServiceIT : BaseSpringITConfig() {
     @Autowired
     lateinit var libraryService: LibraryService

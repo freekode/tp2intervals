@@ -50,6 +50,6 @@ class StructureToIntervalsConverter(
             }
         } ?: ""
 
-        return "- $name $duration $target$targetUnitStr ${structure.modifier?.value} $cadence"
+        return "- $name $duration $target$targetUnitStr ${structure.modifier.value} $cadence"
     }
 }
