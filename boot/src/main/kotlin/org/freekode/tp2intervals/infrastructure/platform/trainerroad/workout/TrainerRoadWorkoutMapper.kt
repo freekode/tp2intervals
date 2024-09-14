@@ -54,7 +54,7 @@ class TrainerRoadWorkoutMapper {
 
     private fun getDescription(description: String, removeHtmlTags: Boolean): String =
         if (removeHtmlTags) {
-            description.replace("<[^>]*>".toRegex(), " ").replace("\\s+".toRegex(), " ")
+            description.replace("<[^>]*>".toRegex(), " ").replace("\u00a0"," ").replace("\\s+".toRegex(), " ")
         } else {
             description
         }.trim()
