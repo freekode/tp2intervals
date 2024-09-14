@@ -19,7 +19,9 @@
   }
   <span class="spacer"></span>
   <a mat-button
-     [matBadgeHidden]="updateVersionBadgeHidden"
+     [matBadgeHidden]="updateAvailableBadgeHidden"
+     [matTooltipDisabled]="updateAvailableBadgeHidden"
+     matTooltip="Update available"
      matBadge="1"
      matBadgeSize="small"
      matBadgePosition="before"

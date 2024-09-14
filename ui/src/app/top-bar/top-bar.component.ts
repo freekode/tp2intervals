@@ -7,6 +7,7 @@ import {MatBadgeModule} from "@angular/material/badge";
 import {forkJoin} from "rxjs";
 import {GitHubClient} from "infrastructure/client/github.client";
 import * as semver from "semver";
+import {MatTooltipModule} from "@angular/material/tooltip";
 
 @Component({
   selector: 'app-top-bar',
@@ -15,14 +16,15 @@ import * as semver from "semver";
     MatButtonModule,
     MatToolbarModule,
     RouterLink,
-    MatBadgeModule
+    MatBadgeModule,
+    MatTooltipModule
   ],
   templateUrl: './top-bar.component.html',
   styleUrl: './top-bar.component.scss'
 })
 export class TopBarComponent implements OnInit {
   appVersion: string
-  updateVersionBadgeHidden = true;
+  updateAvailableBadgeHidden = true;
   githubLink = 'https://github.com/freekode/tp2intervals'
 
   menuButtons = [
@@ -47,7 +49,7 @@ export class TopBarComponent implements OnInit {
       this.appVersion = result[1]
       let latestRelease = result[0]
       if (semver.gt(latestRelease.version, this.appVersion)) {
-        this.updateVersionBadgeHidden = false;
+        this.updateAvailableBadgeHidden = false;
         this.githubLink = latestRelease.url
       }
       console.log(result);
