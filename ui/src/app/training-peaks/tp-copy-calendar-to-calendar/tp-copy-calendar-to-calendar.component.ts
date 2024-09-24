@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { MatGridListModule } from "@angular/material/grid-list";
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
 import { MatButtonModule } from "@angular/material/button";
 import { MatFormFieldModule } from "@angular/material/form-field";
@@ -11,9 +10,6 @@ import { MatNativeDateModule } from "@angular/material/core";
 import { MatSnackBarModule } from "@angular/material/snack-bar";
 import { MatSelectModule } from "@angular/material/select";
 import { MatCheckboxModule } from "@angular/material/checkbox";
-import {
-  TpCopyLibraryContainerComponent
-} from "app/training-peaks/tp-copy-library-container/tp-copy-library-container.component";
 import { WorkoutClient } from "infrastructure/client/workout.client";
 import { ConfigurationClient } from "infrastructure/client/configuration.client";
 import { NotificationService } from "infrastructure/notification.service";
@@ -25,7 +21,6 @@ import { formatDate } from "utils/date-formatter";
   selector: 'tp-copy-calendar-to-calendar',
   standalone: true,
   imports: [
-    MatGridListModule,
     FormsModule,
     MatButtonModule,
     MatFormFieldModule,
@@ -38,7 +33,6 @@ import { formatDate } from "utils/date-formatter";
     MatSnackBarModule,
     MatSelectModule,
     MatCheckboxModule,
-    TpCopyLibraryContainerComponent
   ],
   templateUrl: './tp-copy-calendar-to-calendar.component.html',
   styleUrl: './tp-copy-calendar-to-calendar.component.scss'
