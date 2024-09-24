@@ -105,6 +105,16 @@ If everything is fine, you will be redirected to the home page.
 If your configuration is wrong. You will see an error that there is no access to particular platform.
 Check all your values and save configuration again.
 
+### Sync automatically planned workouts to TrainingPeaks
+
+If you are using app in docker container, you can set up automatic sync of planned workouts for TrainingPeaks.
+
+Run command on your machine:
+```sh
+docker exec -it <container name> ln -s /scripts/sync-planned-to-tp.sh /etc/periodic/daily/
+```
+Script `sync-planned-to-tp.sh` will be executed at 02:00 everyday.
+You can also edit crontab configuration manually and set your own schedule. 
 
 ## FAQ
 
@@ -117,7 +127,7 @@ Check all your values and save configuration again.
   or write directly to me iam@freekode.org. Add logs from your app, it can help a lot to resolve the issue. Or in case of TrainerRoad create HAR file
 * More info you can find on the forum https://forum.intervals.icu/t/tp2intervals-copy-trainingpeaks-and-trainerroad-workouts-plans-to-intervals/63375
 
-### Scheduling for the next day with TrainingPeaks free account
+### Info regarding scheduling for the next day with TrainingPeaks free account
 Officially you can't plan workouts for future dates, but practically you can plan workout for tomorrow with free TP account.
 You can plan workout for the next day relative to TP server local time. TP server local time is in UTC-6 time zone.
 
