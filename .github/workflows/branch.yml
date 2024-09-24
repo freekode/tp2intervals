@@ -16,17 +16,12 @@ jobs:
   extract_branch_name:
     runs-on: ubuntu-latest
     outputs:
-      branch_name: ${{ steps.extract_branch.outputs.branch_name }}  # Define the job output
+      branch_name: ${{ steps.extract_branch.outputs.branch_name }}
 
     steps:
       - name: Extract Branch Name
         id: extract_branch
-        run: |
-          echo "branch_name=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
-
-      - name: Use the Branch Name
-        run: |
-          echo "The branch name is ${{ steps.extract_branch.outputs.branch_name }}"      
+        run: echo "branch_name=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
 
   jar:
     uses: ./.github/workflows/workflow-jar.yml
@@ -38,12 +33,13 @@ jobs:
   docker-image:
     needs:
       - jar
+      - extract_branch_name
     uses: ./.github/workflows/workflow-docker-image.yml
     with:
       jar-name: tp2intervals
       jar-artifact-name: tp2intervals-jar
       image-name: tp2intervals
-      image-tag: ${{ github.ref }}
+      image-tag: ${{ needs.extract_branch_name.outputs.branch_name }}
       dry-run: false
 
   electron:
