@@ -22,16 +22,7 @@ jobs:
       - name: Extract Branch Name
         id: extract_branch
         run: |
-          # Extract the branch name from github.ref
-          BRANCH_NAME="${{ github.ref }}"
-          
-          # Remove 'refs/heads/' prefix to get the branch name
-          if [[ "$BRANCH_NAME" == refs/heads/* ]]; then
-            BRANCH_NAME="${BRANCH_NAME#refs/heads/}"
-          fi
-          
-          # Output the branch name to the output file
-          echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+          echo "branch_name=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
 
       - name: Use the Branch Name
         run: |
