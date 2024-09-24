@@ -28,6 +28,8 @@ jobs:
       jar-name: tp2intervals
       jar-artifact-name: tp2intervals-jar
       image-name: tp2intervals
+      image-tag: ${{ github.ref }}
+      dry-run: false
 
   electron:
     needs:

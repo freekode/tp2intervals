@@ -12,6 +12,10 @@ on:
       image-name:
         required: true
         type: string
+      image-tag:
+        required: false
+        type: string
+        default: latest
       dry-run:
         required: false
         type: boolean
@@ -44,5 +48,5 @@ jobs:
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
 
           echo IMAGE_ID=$IMAGE_ID
-          docker tag ${{ inputs.image-name }} $IMAGE_ID:latest
-          docker push $IMAGE_ID:latest
+          docker tag ${{ inputs.image-name }} $IMAGE_ID:${{ inputs.image-tag }}
+          docker push $IMAGE_ID:${{ inputs.image-tag }}
