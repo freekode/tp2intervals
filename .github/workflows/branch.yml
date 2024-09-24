@@ -13,6 +13,30 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  extract_branch_name:
+    runs-on: ubuntu-latest
+    outputs:
+      branch_name: ${{ steps.extract_branch.outputs.branch_name }}  # Define the job output
+
+    steps:
+      - name: Extract Branch Name
+        id: extract_branch
+        run: |
+          # Extract the branch name from github.ref
+          BRANCH_NAME="${{ github.ref }}"
+          
+          # Remove 'refs/heads/' prefix to get the branch name
+          if [[ "$BRANCH_NAME" == refs/heads/* ]]; then
+            BRANCH_NAME="${BRANCH_NAME#refs/heads/}"
+          fi
+          
+          # Output the branch name to the output file
+          echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+
+      - name: Use the Branch Name
+        run: |
+          echo "The branch name is ${{ steps.extract_branch.outputs.branch_name }}"      
+
   jar:
     uses: ./.github/workflows/workflow-jar.yml
     secrets: inherit
@@ -28,7 +52,7 @@ jobs:
       jar-name: tp2intervals
       jar-artifact-name: tp2intervals-jar
       image-name: tp2intervals
-      image-tag: ${{ github.ref }}
+      image-tag: ${{ github.ref#fwsef }}
       dry-run: false
 
   electron:
