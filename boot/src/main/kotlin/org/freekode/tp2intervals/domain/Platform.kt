@@ -8,4 +8,5 @@ enum class Platform(
     INTERVALS("Intervals.icu", "intervals"),
     TRAINING_PEAKS("TrainingPeaks", "training-peaks"),
     TRAINER_ROAD("TrainerRoad", "trainer-road"),
+    STRAVA("Strava", "strava"),
 }

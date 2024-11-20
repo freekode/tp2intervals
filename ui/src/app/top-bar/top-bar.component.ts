@@ -31,6 +31,7 @@ export class TopBarComponent implements OnInit {
     {name: 'Home', url: '/home'},
     {name: 'TrainingPeaks', url: '/training-peaks'},
     {name: 'TrainerRoad', url: '/trainer-road'},
+    {name: 'Strava', url: '/strava'},
     {name: 'Configuration', url: '/config'},
   ]
 

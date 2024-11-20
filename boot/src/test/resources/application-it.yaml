@@ -5,6 +5,7 @@ app:
     'training-peaks.auth-cookie': Production_tpAuth=tp-auth-cookie
     'trainer-road.auth-cookie': SharedTrainerRoadAuth=my-fav-cookie
     'trainer-road.remove-html-tags': true
+    'strava.cookie': 'xp_session_identifier=divkuu33nyt; _strava4_session=ssdjuskle7bo1l8vofi8c9p5cete7410; _currentH=d3d3LnN0cmF2YS5jb20='
 
 spring:
   main:

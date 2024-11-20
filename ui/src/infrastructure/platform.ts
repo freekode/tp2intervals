@@ -4,6 +4,7 @@ export class Platform {
   static INTERVALS = {key: 'INTERVALS', title: 'Intervals.icu'}
   static TRAINING_PEAKS = {key: 'TRAINING_PEAKS', title: 'TrainingPeaks'}
   static TRAINER_ROAD = {key: 'TRAINER_ROAD', title: 'TrainerRoad'}
+  static STRAVA = {key: 'STRAVA', title: 'Strava'}
 
 
   static DIRECTION_TP_INT = {

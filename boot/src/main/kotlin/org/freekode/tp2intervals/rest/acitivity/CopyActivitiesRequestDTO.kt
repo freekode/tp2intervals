@@ -1,12 +1,11 @@
-package org.freekode.tp2intervals.app.activity
+package org.freekode.tp2intervals.rest.acitivity
 
-import java.time.LocalDate
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.TrainingType
 
-data class SyncActivitiesRequest(
-    val startDate: LocalDate,
-    val endDate: LocalDate,
+class CopyActivitiesRequestDTO(
+    val startDate: String,
+    val endDate: String,
     val types: List<TrainingType>,
     val sourcePlatform: Platform,
     val targetPlatform: Platform

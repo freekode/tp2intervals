@@ -13,20 +13,13 @@ class ActivityService(
 
     private val repositoryMap = repositories.associateBy { it.platform() }
 
-    fun syncActivities(request: SyncActivitiesRequest) {
+    fun syncActivities(request: CopyActivitiesRequest) {
         log.info("Sync activities by request $request")
         val sourceActivityRepository = getRepository(request.sourcePlatform)
         val targetActivityRepository = getRepository(request.targetPlatform)
 
-        val targetActivities = targetActivityRepository.getActivities(request.startDate, request.endDate)
-            .filter { request.types.contains(it.type) }
-
-        val sourceActivities = sourceActivityRepository.getActivities(request.startDate, request.endDate)
-            .filter { request.types.contains(it.type) }
-            .filter { !targetActivities.contains(it) }
-
-        sourceActivities
-            .forEach { targetActivityRepository.createActivity(it) }
+        val sourceActivities = sourceActivityRepository.getActivities(request.startDate, request.endDate, request.types)
+//        targetActivityRepository.saveActivities(sourceActivities)
     }
 
     private fun getRepository(platform: Platform) = repositoryMap[platform]!!

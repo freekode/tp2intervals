@@ -1,0 +1,40 @@
+<form [formGroup]="formGroup" novalidate (ngSubmit)="copyWorkoutsSubmit()">
+
+  <div class="row">
+    <mat-form-field class="form-field">
+      <mat-label>Workout Types</mat-label>
+      <mat-select formControlName="trainingTypes" multiple>
+        @for (type of trainingTypes; track type) {
+          <mat-option [value]="type.value">{{ type.title }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div class="row">
+    <mat-form-field class="form-field">
+      <mat-label>Date Range</mat-label>
+      <mat-date-range-input
+        [rangePicker]="copyPlanDatePicker">
+        <input matStartDate placeholder="Start Date" formControlName="startDate">
+        <input matEndDate placeholder="End Date" formControlName="endDate">
+      </mat-date-range-input>
+      <mat-datepicker-toggle matIconSuffix [for]="copyPlanDatePicker"></mat-datepicker-toggle>
+      <mat-date-range-picker #copyPlanDatePicker></mat-date-range-picker>
+    </mat-form-field>
+  </div>
+
+  <div class="action-button-section">
+    <button
+      mat-raised-button
+      id="btn-confirm"
+      color="primary"
+      type="submit"
+      [disabled]="formGroup.invalid || inProgress"
+    >
+      Confirm
+    </button>
+  </div>
+
+  <mat-progress-bar *ngIf="inProgress" mode="query"></mat-progress-bar>
+</form>

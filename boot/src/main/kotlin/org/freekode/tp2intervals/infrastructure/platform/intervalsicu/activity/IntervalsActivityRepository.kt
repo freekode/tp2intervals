@@ -1,13 +1,14 @@
 package org.freekode.tp2intervals.infrastructure.platform.intervalsicu.activity
 
-import java.time.LocalDate
 import org.freekode.tp2intervals.domain.Platform
+import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.activity.Activity
 import org.freekode.tp2intervals.domain.activity.ActivityRepository
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsApiClient
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfigurationRepository
 import org.freekode.tp2intervals.infrastructure.utils.MyMultipartFile
 import org.springframework.stereotype.Repository
+import java.time.LocalDate
 
 @Repository
 class IntervalsActivityRepository(
@@ -16,7 +17,16 @@ class IntervalsActivityRepository(
 ) : ActivityRepository {
     override fun platform() = Platform.INTERVALS
 
-    override fun getActivities(startDate: LocalDate, endDate: LocalDate): List<Activity> {
+    override fun saveActivities(activities: List<Activity>) {
+        activities.forEach { activity ->
+            intervalsApiClient.createActivity(
+                intervalsConfigurationRepository.getConfiguration().athleteId,
+                MyMultipartFile("file", activity.resource!!)
+            )
+        }
+    }
+
+    override fun getActivities(startDate: LocalDate, endDate: LocalDate, types: List<TrainingType>): List<Activity> {
         val activities =
             intervalsApiClient.getActivities(
                 intervalsConfigurationRepository.getConfiguration().athleteId,
@@ -25,12 +35,5 @@ class IntervalsActivityRepository(
             )
         return activities
             .map { IntervalsToActivityMapper(it).mapToActivity() }
-    }
-
-    override fun createActivity(activity: Activity) {
-        intervalsApiClient.createActivity(
-            intervalsConfigurationRepository.getConfiguration().athleteId,
-            MyMultipartFile("file", activity.resource!!)
-        )
     }
 }

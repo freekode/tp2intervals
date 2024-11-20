@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from "@angular/common/http";
-import { Observable } from 'rxjs';
+import {Injectable} from '@angular/core';
+import {HttpClient} from "@angular/common/http";
+import {Observable} from 'rxjs';
 
 
 @Injectable({
@@ -11,8 +11,8 @@ export class ActivityClient {
   constructor(private httpClient: HttpClient) {
   }
 
-  syncActivities(startDate, endDate, types): Observable<any> {
+  copyActivities(startDate, endDate, types, platformDirection): Observable<any> {
     return this.httpClient
-      .post(`/api/activity/sync/TRAINER_ROAD/INTERVALS`, {startDate, endDate, types})
+      .post(`/api/activities/copy`, {startDate, endDate, types, ...platformDirection})
   }
 }
