@@ -139,9 +139,25 @@ Example with [worldtimebuddy](https://www.worldtimebuddy.com/?pl=1&lid=206,100,7
 
 ### How to export HAR file
 
-[Wiki page](https://github.com/freekode/tp2intervals/wiki/How-to-export-HAR-file)
+1. Open new tab in your browser
+2. Open dev tools, check Preserve log (Firefox Cog -> Persist Logs)
+
+   <img src="https://github.com/freekode/tp2intervals/blob/main/docs/har-1.png?raw=true" width="70%">
+3. Next steps are very important, as they simulate what the app does.
+   Open TrainerRoad page, open workout library, find any workout, open workout page (the page where you have chart with workout steps, description, alternatives, etc.)
+4. In dev tools, click Export HAR (Firefox - Cog -> Save All as HAR), save the file and send it to me
+
+   <img src="https://github.com/freekode/tp2intervals/blob/main/docs/har-2.png?raw=true" width="70%">
 
 
 ### How to get logs for your issue
 
-[Wiki page](https://github.com/freekode/tp2intervals/wiki/How-to-get-logs-for-your-issue)
+1. Go to Configuration, check Show advanced configuration
+2. Set Log Level to DEBUG, click Confirm
+3. Reproduce your issue
+4. Find log file according to your system
+
+* Linux: ~/.config/tp2intervals/logs/main.log
+* MacOS: ~/Library/Logs/tp2intervals/main.log
+* Windows: %USERPROFILE%\AppData\Roaming\tp2intervals\logs\main.log
+* JAR: ./tp2intervals.log

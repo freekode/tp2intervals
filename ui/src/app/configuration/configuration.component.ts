@@ -1,27 +1,20 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ConfigData } from 'infrastructure/config-data';
-import { Router } from '@angular/router';
-import { MatCardModule } from "@angular/material/card";
-import { MatFormFieldModule } from "@angular/material/form-field";
-import { MatInputModule } from "@angular/material/input";
-import { MatButtonModule } from "@angular/material/button";
-import { finalize } from "rxjs";
-import { MatProgressBarModule } from "@angular/material/progress-bar";
-import { NgIf } from "@angular/common";
-import { MatSnackBarModule } from "@angular/material/snack-bar";
-import { NotificationService } from "infrastructure/notification.service";
-import { MatCheckboxChange, MatCheckboxModule } from "@angular/material/checkbox";
-import { ConfigurationClient } from "infrastructure/client/configuration.client";
-import { MatOptionModule } from "@angular/material/core";
-import { MatSelectModule } from "@angular/material/select";
+import {Component, OnInit} from '@angular/core';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {ConfigData} from 'infrastructure/config-data';
+import {Router} from '@angular/router';
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {MatInputModule} from "@angular/material/input";
+import {MatButtonModule} from "@angular/material/button";
+import {finalize} from "rxjs";
+import {MatProgressBarModule} from "@angular/material/progress-bar";
+import {NgIf} from "@angular/common";
+import {MatSnackBarModule} from "@angular/material/snack-bar";
+import {NotificationService} from "infrastructure/notification.service";
+import {MatCheckboxModule} from "@angular/material/checkbox";
+import {ConfigurationClient} from "infrastructure/client/configuration.client";
+import {MatOptionModule} from "@angular/material/core";
+import {MatSelectModule} from "@angular/material/select";
 import {MatExpansionModule} from "@angular/material/expansion";
-import {
-  TrCopyCalendarToLibraryComponent
-} from "app/trainer-road/tr-copy-calendar-to-library/tr-copy-calendar-to-library.component";
-import {
-  TrCopyLibraryToLibraryComponent
-} from "app/trainer-road/tr-copy-library-to-library/tr-copy-library-to-library.component";
 import {MatTooltipModule} from "@angular/material/tooltip";
 
 @Component({
@@ -29,7 +22,6 @@ import {MatTooltipModule} from "@angular/material/tooltip";
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    MatCardModule,
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
@@ -40,8 +32,6 @@ import {MatTooltipModule} from "@angular/material/tooltip";
     MatOptionModule,
     MatSelectModule,
     MatExpansionModule,
-    TrCopyCalendarToLibraryComponent,
-    TrCopyLibraryToLibraryComponent,
     MatTooltipModule
   ],
   templateUrl: './configuration.component.html',

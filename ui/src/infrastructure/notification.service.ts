@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
-import {MatSnackBar} from "@angular/material/snack-bar";
-import { ToastrService } from 'ngx-toastr';
+import {ToastrService} from 'ngx-toastr';
 
 
 @Injectable({
@@ -10,7 +9,6 @@ export class NotificationService {
   private static readonly duration = 20 * 1000
 
   constructor(
-    private snackBar: MatSnackBar,
     private toastr: ToastrService
   ) {
   }
