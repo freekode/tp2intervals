@@ -5,7 +5,7 @@
 
 # Third Party to Intervals.icu
 
-App to sync workouts between TrainingPeaks, TrainerRoad and Intervals.icu.
+App to sync workouts between TrainingPeaks, TrainerRoad, Strava (activities only) and Intervals.icu.
 
 Runs on MacOS (DMG), Windows (EXE installer), Linux (AppImage). Alternatively there is Docker image and executable JAR.
 
@@ -32,6 +32,10 @@ To fix issues I can only relay on logs and HAR files from you.
 
 * Copy workouts from TrainerRoad library to Intervals
 * Copy planned workouts for date range from TrainerRoad to Intervals.icu training plan or workout folder
+
+### Strava features
+
+* Copy activities. It will export original file from Strava and uploads to Intervals.icu.
 
 ### Beta features
 
@@ -105,6 +109,10 @@ If everything is fine, you will be redirected to the home page.
 If your configuration is wrong. You will see an error that there is no access to particular platform.
 Check all your values and save configuration again.
 
+### Strava Cookie
+
+For using Strava just copy all your cookies from browser for Strava. It should be enough.
+
 ### Sync automatically planned workouts to TrainingPeaks
 
 If you are using app in docker container, you can set up automatic sync of planned workouts for TrainingPeaks.
@@ -114,7 +122,7 @@ Run command on your machine:
 docker exec -it <container name> ln -s /scripts/sync-planned-to-tp.sh /etc/periodic/daily/
 ```
 Script `sync-planned-to-tp.sh` will be executed at 02:00 everyday.
-You can also edit crontab configuration manually and set your own schedule. 
+You can also edit crontab configuration manually and set your own schedule.
 
 ## FAQ
 
