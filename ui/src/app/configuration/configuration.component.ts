@@ -39,14 +39,15 @@ import {MatTooltipModule} from "@angular/material/tooltip";
 })
 export class ConfigurationComponent implements OnInit {
   formGroup: FormGroup = this.formBuilder.group({
-    'training-peaks.auth-cookie': [null, [Validators.pattern('^Production_tpAuth=[a-zA-Z0-9-_]*$')]],
-    'trainer-road.auth-cookie': [null, [Validators.pattern('^SharedTrainerRoadAuth=.*$')]],
-    'trainer-road.remove-html-tags': [null, Validators.required],
     'intervals.api-key': [null, Validators.required],
     'intervals.athlete-id': [null, Validators.required],
     'intervals.power-range': [null, [Validators.required, Validators.min(0), Validators.max(100)]],
     'intervals.hr-range': [null, [Validators.required, Validators.min(0), Validators.max(100)]],
     'intervals.pace-range': [null, [Validators.required, Validators.min(0), Validators.max(100)]],
+    'training-peaks.auth-cookie': [null, [Validators.pattern('^Production_tpAuth=[a-zA-Z0-9-_]*$')]],
+    'trainer-road.auth-cookie': [null, [Validators.pattern('^SharedTrainerRoadAuth=.*$')]],
+    'trainer-road.remove-html-tags': [null, Validators.required],
+    'strava.cookie': [null, []],
     'generic.log-level': [null, [Validators.required]],
   });
 

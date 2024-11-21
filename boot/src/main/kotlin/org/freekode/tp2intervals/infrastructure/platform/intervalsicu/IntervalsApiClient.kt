@@ -59,9 +59,10 @@ interface IntervalsApiClient {
         @PathVariable("endDate") endDate: String,
     ): List<IntervalsActivityDTO>
 
-    @PostMapping("/api/v1/athlete/{athleteId}/activities", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    @PostMapping("/api/v1/athlete/{athleteId}/activities?name={name}", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun createActivity(
         @PathVariable athleteId: String,
+        @PathVariable name: String,
         @RequestPart("file") file: MultipartFile
     ): CreateActivityResponseDTO
 }

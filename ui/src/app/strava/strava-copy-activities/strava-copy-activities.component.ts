@@ -3,17 +3,18 @@ import {MatButtonModule} from "@angular/material/button";
 import {MatDatepickerModule} from "@angular/material/datepicker";
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatInputModule} from "@angular/material/input";
-import {MatOptionModule} from "@angular/material/core";
+import {MatNativeDateModule, MatOptionModule} from "@angular/material/core";
 import {MatProgressBarModule} from "@angular/material/progress-bar";
 import {MatSelectModule} from "@angular/material/select";
 import {NgIf} from "@angular/common";
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {Platform} from "infrastructure/platform";
-import {ConfigurationClient} from "infrastructure/client/configuration.client";
 import {NotificationService} from "infrastructure/notification.service";
 import {formatDate} from "utils/date-formatter";
 import {finalize} from "rxjs";
 import {ActivityClient} from "infrastructure/client/activity.client";
+import {StravaTrainingTypes} from "app/strava/strava-training-types";
+import {MatTooltipModule} from "@angular/material/tooltip";
 
 @Component({
   selector: 'app-strava-copy-activities',
@@ -21,13 +22,15 @@ import {ActivityClient} from "infrastructure/client/activity.client";
   imports: [
     MatButtonModule,
     MatDatepickerModule,
+    MatNativeDateModule,
     MatFormFieldModule,
     MatInputModule,
     MatOptionModule,
     MatProgressBarModule,
     MatSelectModule,
     NgIf,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatTooltipModule
   ],
   templateUrl: './strava-copy-activities.component.html',
   styleUrl: './strava-copy-activities.component.scss'
@@ -46,23 +49,19 @@ export class StravaCopyActivitiesComponent implements OnInit {
 
   inProgress = false
 
-  trainingTypes: any[];
+  trainingTypes = StravaTrainingTypes.trainingTypes;
 
   constructor(
     private formBuilder: FormBuilder,
     private activityClient: ActivityClient,
-    private configurationClient: ConfigurationClient,
     private notificationService: NotificationService
   ) {
   }
 
   ngOnInit(): void {
-    this.configurationClient.getTrainingTypes().subscribe(types => {
-      this.trainingTypes = types
-    })
   }
 
-  copyWorkoutsSubmit() {
+  copyActivitiesSubmit() {
     this.inProgress = true
     let trainingTypes = this.formGroup.value.trainingTypes
     let startDate = formatDate(this.formGroup.value.startDate)

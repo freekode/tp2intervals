@@ -21,6 +21,7 @@ class IntervalsActivityRepository(
         activities.forEach { activity ->
             intervalsApiClient.createActivity(
                 intervalsConfigurationRepository.getConfiguration().athleteId,
+                activity.title,
                 MyMultipartFile("file", activity.resource!!)
             )
         }

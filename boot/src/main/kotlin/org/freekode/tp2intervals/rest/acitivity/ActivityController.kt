@@ -12,7 +12,6 @@ class ActivityController(
 ) {
 
     @PostMapping("/api/activities/copy")
-    fun syncActivities(@RequestBody request: CopyActivitiesRequest) {
+    fun syncActivities(@RequestBody request: CopyActivitiesRequest) =
         activityService.syncActivities(request)
-    }
 }

@@ -1,4 +1,4 @@
-<form [formGroup]="formGroup" novalidate (ngSubmit)="copyWorkoutsSubmit()">
+<form [formGroup]="formGroup" novalidate (ngSubmit)="copyActivitiesSubmit()">
 
   <div class="row">
     <mat-form-field class="form-field">
@@ -32,8 +32,11 @@
       type="submit"
       [disabled]="formGroup.invalid || inProgress"
     >
-      Confirm
+      Copy
     </button>
+    <i class="bi bi-exclamation-circle beta-icon"
+       matTooltip="Be aware, this operation can take a lot of time"
+       matTooltipPosition="right"></i>
   </div>
 
   <mat-progress-bar *ngIf="inProgress" mode="query"></mat-progress-bar>

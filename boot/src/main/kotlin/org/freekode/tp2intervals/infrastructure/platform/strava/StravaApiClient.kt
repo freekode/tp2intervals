@@ -3,6 +3,7 @@ package org.freekode.tp2intervals.infrastructure.platform.strava
 import org.freekode.tp2intervals.infrastructure.platform.strava.activity.StravaGetActivitiesResponseDTO
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.core.io.Resource
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -20,6 +21,6 @@ interface StravaApiClient {
         @PathVariable page: Int,
     ): StravaGetActivitiesResponseDTO
 
-    @PostMapping("/activities/{activityId}/export_original")
-    fun exportOriginal(@PathVariable activityId: String): Resource
+    @GetMapping("/activities/{activityId}/export_original")
+    fun exportOriginal(@PathVariable activityId: String): ResponseEntity<Resource>
 }

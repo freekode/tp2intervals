@@ -41,7 +41,7 @@ class IntervalsApiClientMock(
         TODO("Not yet implemented")
     }
 
-    override fun createActivity(athleteId: String, file: MultipartFile): CreateActivityResponseDTO {
+    override fun createActivity(athleteId: String, name: String, file: MultipartFile): CreateActivityResponseDTO {
         TODO("Not yet implemented")
     }
 }

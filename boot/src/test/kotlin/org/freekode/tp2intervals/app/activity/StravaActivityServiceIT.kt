@@ -14,8 +14,8 @@ class StravaActivityServiceIT : BaseSpringITConfig() {
     @Test
     fun go() {
         activityService.syncActivities(CopyActivitiesRequest(
-            LocalDate.of(2024, 1, 1),
-            LocalDate.of(2024, 4, 1),
+            LocalDate.of(2024, 8, 20),
+            LocalDate.of(2024, 8, 30),
             listOf(TrainingType.BIKE),
             Platform.STRAVA,
             Platform.INTERVALS

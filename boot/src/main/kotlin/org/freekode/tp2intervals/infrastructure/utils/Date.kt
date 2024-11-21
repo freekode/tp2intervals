@@ -15,5 +15,10 @@ class Date {
         fun thisMonday(): LocalDate {
             return LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
         }
+
+        fun getDatesBetween(startDate: LocalDate, endDate: LocalDate) =
+            generateSequence(startDate) { it.plusDays(1) }
+                .takeWhile { !it.isAfter(endDate) }
+                .toList()
     }
 }
