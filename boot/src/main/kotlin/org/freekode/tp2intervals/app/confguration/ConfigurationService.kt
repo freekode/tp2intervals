@@ -1,13 +1,7 @@
 package org.freekode.tp2intervals.app.confguration
 
 import org.freekode.tp2intervals.domain.Platform
-import org.freekode.tp2intervals.domain.config.AppConfiguration
-import org.freekode.tp2intervals.domain.config.AppConfigurationRepository
-import org.freekode.tp2intervals.domain.config.LogLevelService
-import org.freekode.tp2intervals.domain.config.PlatformConfigurationRepository
-import org.freekode.tp2intervals.domain.config.PlatformInfo
-import org.freekode.tp2intervals.domain.config.PlatformInfoRepository
-import org.freekode.tp2intervals.domain.config.UpdateConfigurationRequest
+import org.freekode.tp2intervals.domain.config.*
 import org.freekode.tp2intervals.infrastructure.PlatformException
 import org.springframework.boot.logging.LogLevel
 import org.springframework.stereotype.Service

@@ -23,7 +23,7 @@ class ActivityService(
         val activitiesToSave = mutableListOf<Activity>()
         var filteredOut = 0
         for (activity in sourceActivities) {
-            if (activity.resource == null ) {
+            if (activity.resource == null) {
                 filteredOut++
                 continue
             }

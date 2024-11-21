@@ -1,6 +1,5 @@
 package org.freekode.tp2intervals.app.workout
 
-import java.time.LocalDate
 import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.librarycontainer.LibraryContainerRepository
@@ -8,6 +7,7 @@ import org.freekode.tp2intervals.domain.workout.WorkoutDetails
 import org.freekode.tp2intervals.domain.workout.WorkoutRepository
 import org.freekode.tp2intervals.rest.workout.DeleteWorkoutRequestDTO
 import org.springframework.stereotype.Service
+import java.time.LocalDate
 
 @Service
 class WorkoutService(

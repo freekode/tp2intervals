@@ -1,7 +1,7 @@
 package org.freekode.tp2intervals.app.workout
 
-import java.time.LocalDate
 import org.freekode.tp2intervals.domain.ExternalData
+import java.time.LocalDate
 
 data class CopyWorkoutsResponse(
     val copied: Int,

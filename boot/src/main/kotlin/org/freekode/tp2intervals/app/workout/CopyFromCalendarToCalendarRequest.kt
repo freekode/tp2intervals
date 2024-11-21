@@ -1,8 +1,8 @@
 package org.freekode.tp2intervals.app.workout
 
-import java.time.LocalDate
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.TrainingType
+import java.time.LocalDate
 
 class CopyFromCalendarToCalendarRequest(
     val startDate: LocalDate,
