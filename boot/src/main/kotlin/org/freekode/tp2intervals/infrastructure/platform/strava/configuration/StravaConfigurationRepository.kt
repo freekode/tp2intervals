@@ -1,11 +1,7 @@
 package org.freekode.tp2intervals.infrastructure.platform.strava.configuration
 
 import org.freekode.tp2intervals.domain.Platform
-import org.freekode.tp2intervals.domain.config.AppConfigurationRepository
-import org.freekode.tp2intervals.domain.config.PlatformConfigurationRepository
-import org.freekode.tp2intervals.domain.config.PlatformInfo
-import org.freekode.tp2intervals.domain.config.PlatformInfoRepository
-import org.freekode.tp2intervals.domain.config.UpdateConfigurationRequest
+import org.freekode.tp2intervals.domain.config.*
 import org.freekode.tp2intervals.infrastructure.CatchFeignException
 import org.freekode.tp2intervals.infrastructure.PlatformException
 import org.springframework.cache.CacheManager
@@ -65,7 +61,7 @@ class StravaConfigurationRepository(
         if (!config.canValidate() && ignoreEmpty) {
             return
         }
-        if (stravaValidationApiClient.getAthlete().id == null) {
+        if (stravaValidationApiClient.getAthlete(config.cookie ?: "").id == null) {
             throw PlatformException(Platform.STRAVA, "Access Denied")
         }
     }

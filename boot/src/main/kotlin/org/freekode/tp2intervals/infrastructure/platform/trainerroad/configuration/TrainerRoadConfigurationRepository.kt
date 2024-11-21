@@ -65,7 +65,8 @@ class TrainerRoadConfigurationRepository(
         if (!config.canValidate() && ignoreEmpty) {
             return
         }
-        if (trainerRoadValidationApiClient.getMember(config.authCookie ?: "").MemberId == -1L) {
+        val member = trainerRoadValidationApiClient.getMember(config.authCookie ?: "")
+        if (member == null || member.MemberId == -1L) {
             throw PlatformException(Platform.TRAINER_ROAD, "Access Denied")
         }
     }

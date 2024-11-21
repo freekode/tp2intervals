@@ -13,5 +13,5 @@ import org.springframework.web.bind.annotation.RequestHeader
 )
 interface TrainerRoadValidationApiClient {
     @GetMapping("/app/api/member-info")
-    fun getMember(@RequestHeader(HttpHeaders.COOKIE) cookie: String): TrainerRoadMemberDTO
+    fun getMember(@RequestHeader(HttpHeaders.COOKIE) cookie: String): TrainerRoadMemberDTO?
 }
