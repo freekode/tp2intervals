@@ -31,11 +31,11 @@
 
   <div class="row">
     <mat-form-field class="form-field">
-      <mat-label>Step modifier in Intervals.icu</mat-label>
+      <mat-label>Step target (Garmin only) in Intervals.icu</mat-label>
       <mat-select formControlName="stepModifier" panelWidth="null">
         @for (item of stepModifiers; track item) {
-          <mat-option [value]="item">
-            {{ item }}
+          <mat-option [value]="item.value">
+            {{ item.title }}
           </mat-option>
         }
       </mat-select>

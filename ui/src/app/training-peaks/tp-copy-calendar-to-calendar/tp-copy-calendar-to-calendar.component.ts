@@ -40,10 +40,14 @@ import {TrainingPeaksTrainingTypes} from "app/training-peaks/training-peaks-trai
 export class TpCopyCalendarToCalendarComponent implements OnInit {
   private readonly todayDate = new Date()
   readonly tomorrowDate = new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
+  readonly directions = [
+    {title: "Intervals.icu -> TP", value: Platform.DIRECTION_INT_TP},
+    {title: "TP -> Intervals.icu", value: Platform.DIRECTION_TP_INT},
+  ]
   private readonly selectedTrainingTypes = ['BIKE', 'VIRTUAL_BIKE', 'MTB', 'RUN'];
-  private readonly direction = Platform.DIRECTION_INT_TP
 
   formGroup: FormGroup = this.formBuilder.group({
+    direction: [this.directions[0].value, Validators.required],
     trainingTypes: [this.selectedTrainingTypes, Validators.required],
     startDate: [this.todayDate, Validators.required],
     endDate: [this.tomorrowDate, Validators.required],
@@ -84,9 +88,10 @@ export class TpCopyCalendarToCalendarComponent implements OnInit {
 
   private copyWorkouts(startDate, endDate) {
     this.inProgress = true
+    let direction = this.formGroup.value.direction
     let trainingTypes = this.formGroup.value.trainingTypes
     let skipSynced = this.formGroup.value.skipSynced
-    this.workoutClient.copyCalendarToCalendar(startDate, endDate, trainingTypes, skipSynced, this.direction).pipe(
+    this.workoutClient.copyCalendarToCalendar(startDate, endDate, trainingTypes, skipSynced, direction).pipe(
       finalize(() => this.inProgress = false)
     ).subscribe((response) => {
       this.notificationService.success(
