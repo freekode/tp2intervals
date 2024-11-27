@@ -1,29 +1,28 @@
-import { Component, OnInit } from '@angular/core';
-import { MatGridListModule } from "@angular/material/grid-list";
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
-import { MatButtonModule } from "@angular/material/button";
-import { MatFormFieldModule } from "@angular/material/form-field";
-import { MatInputModule } from "@angular/material/input";
-import { MatProgressBarModule } from "@angular/material/progress-bar";
-import { AsyncPipe, NgIf } from "@angular/common";
-import { MatDatepickerModule } from "@angular/material/datepicker";
-import { MatNativeDateModule } from "@angular/material/core";
-import { MatSnackBarModule } from "@angular/material/snack-bar";
-import { MatSelectModule } from "@angular/material/select";
-import { MatCheckboxModule } from "@angular/material/checkbox";
-import { WorkoutClient } from "infrastructure/client/workout.client";
-import { ConfigurationClient } from "infrastructure/client/configuration.client";
-import { NotificationService } from "infrastructure/notification.service";
-import { filter, finalize, map, of } from "rxjs";
-import { LibraryClient } from "infrastructure/client/library-client.service";
-import { Platform } from "infrastructure/platform";
-import { MatDialog } from "@angular/material/dialog";
+import {Component, OnInit} from '@angular/core';
+import {MatGridListModule} from "@angular/material/grid-list";
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
+import {MatButtonModule} from "@angular/material/button";
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {MatInputModule} from "@angular/material/input";
+import {MatProgressBarModule} from "@angular/material/progress-bar";
+import {AsyncPipe, NgIf} from "@angular/common";
+import {MatDatepickerModule} from "@angular/material/datepicker";
+import {MatNativeDateModule} from "@angular/material/core";
+import {MatSnackBarModule} from "@angular/material/snack-bar";
+import {MatSelectModule} from "@angular/material/select";
+import {MatCheckboxModule} from "@angular/material/checkbox";
+import {ConfigurationClient} from "infrastructure/client/configuration.client";
+import {NotificationService} from "infrastructure/notification.service";
+import {filter, finalize, map, of} from "rxjs";
+import {LibraryClient} from "infrastructure/client/library-client.service";
+import {Platform} from "infrastructure/platform";
+import {MatDialog} from "@angular/material/dialog";
 import {
   TpCopyPlanWarningDialogComponent
 } from "app/training-peaks/tp-copy-library-container/tp-copy-plan-warning-dialog/tp-copy-plan-warning-dialog.component";
-import { formatDate } from "utils/date-formatter";
-import { ConfigData } from "infrastructure/config-data";
-import { MatTooltip, MatTooltipModule } from "@angular/material/tooltip";
+import {formatDate} from "utils/date-formatter";
+import {MatTooltipModule} from "@angular/material/tooltip";
+import {StepModifier} from "app/training-peaks/tp-copy-library-container/step-modifier";
 
 @Component({
   selector: 'tp-copy-library-container',
@@ -63,14 +62,13 @@ export class TpCopyLibraryContainerComponent implements OnInit {
   submitInProgress = false
   loadingInProgress = false
 
+  stepModifiers = StepModifier.stepModifiers;
   plans: any[];
-  stepModifiers: any[];
   config: any;
 
   constructor(
     private formBuilder: FormBuilder,
     public dialog: MatDialog,
-    private workoutClient: WorkoutClient,
     private planClient: LibraryClient,
     private configurationClient: ConfigurationClient,
     private notificationService: NotificationService,
@@ -81,7 +79,6 @@ export class TpCopyLibraryContainerComponent implements OnInit {
     this.formGroup.disable()
     this.loadingInProgress = true
     this.getConfig();
-    this.getStepModifiers();
     this.getPlans();
     this.onPlanChange();
   }
@@ -132,12 +129,6 @@ export class TpCopyLibraryContainerComponent implements OnInit {
   private getConfig() {
     this.configurationClient.getConfig().subscribe(config => {
       this.config = config.config
-    })
-  }
-
-  private getStepModifiers() {
-    this.configurationClient.getIntervalsStepModifiers().subscribe(values => {
-      this.stepModifiers = values
     })
   }
 

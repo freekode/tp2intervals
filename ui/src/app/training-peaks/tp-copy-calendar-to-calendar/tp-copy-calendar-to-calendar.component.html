@@ -1,6 +1,17 @@
 <form [formGroup]="formGroup" novalidate>
   <div class="row">
     <mat-form-field class="form-field">
+      <mat-label>Direction</mat-label>
+      <mat-select formControlName="direction">
+        @for (item of directions; track item) {
+          <mat-option [value]="item.value">{{ item.title }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div class="row">
+    <mat-form-field class="form-field">
       <mat-label>Workout Types</mat-label>
       <mat-select formControlName="trainingTypes" multiple>
         @for (type of trainingTypes; track type) {
