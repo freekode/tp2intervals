@@ -28,6 +28,7 @@ class StravaActivityMapper {
             "VirtualRide" -> TrainingType.VIRTUAL_BIKE
             "Run" -> TrainingType.RUN
             "Swim" -> TrainingType.SWIM
+            "Walk" -> TrainingType.WALK
             "WeightTraining" -> TrainingType.WEIGHT
             else -> TrainingType.UNKNOWN
         }

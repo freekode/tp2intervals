@@ -1,21 +1,21 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
-import { MatButtonModule } from "@angular/material/button";
-import { MatFormFieldModule } from "@angular/material/form-field";
-import { MatInputModule } from "@angular/material/input";
-import { MatProgressBarModule } from "@angular/material/progress-bar";
-import { NgIf } from "@angular/common";
-import { MatDatepickerModule } from "@angular/material/datepicker";
-import { MatNativeDateModule } from "@angular/material/core";
-import { MatSnackBarModule } from "@angular/material/snack-bar";
-import { MatSelectModule } from "@angular/material/select";
-import { MatCheckboxModule } from "@angular/material/checkbox";
-import { WorkoutClient } from "infrastructure/client/workout.client";
-import { ConfigurationClient } from "infrastructure/client/configuration.client";
-import { NotificationService } from "infrastructure/notification.service";
-import { finalize } from "rxjs";
-import { Platform } from "infrastructure/platform";
-import { formatDate } from "utils/date-formatter";
+import {Component, OnInit} from '@angular/core';
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
+import {MatButtonModule} from "@angular/material/button";
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {MatInputModule} from "@angular/material/input";
+import {MatProgressBarModule} from "@angular/material/progress-bar";
+import {NgIf} from "@angular/common";
+import {MatDatepickerModule} from "@angular/material/datepicker";
+import {MatNativeDateModule} from "@angular/material/core";
+import {MatSnackBarModule} from "@angular/material/snack-bar";
+import {MatSelectModule} from "@angular/material/select";
+import {MatCheckboxModule} from "@angular/material/checkbox";
+import {WorkoutClient} from "infrastructure/client/workout.client";
+import {NotificationService} from "infrastructure/notification.service";
+import {finalize} from "rxjs";
+import {Platform} from "infrastructure/platform";
+import {formatDate} from "utils/date-formatter";
+import {TrainingPeaksTrainingTypes} from "app/training-peaks/training-peaks-training-types";
 
 @Component({
   selector: 'tp-copy-calendar-to-calendar',
@@ -50,22 +50,18 @@ export class TpCopyCalendarToCalendarComponent implements OnInit {
     skipSynced: [true, Validators.required],
   });
 
-  trainingTypes: any[];
+  trainingTypes = TrainingPeaksTrainingTypes.trainingTypes;
 
   inProgress = false
 
   constructor(
     private formBuilder: FormBuilder,
     private workoutClient: WorkoutClient,
-    private configurationClient: ConfigurationClient,
     private notificationService: NotificationService
   ) {
   }
 
   ngOnInit(): void {
-    this.configurationClient.getTrainingTypes().subscribe(types => {
-      this.trainingTypes = types
-    })
   }
 
   submit() {

@@ -1,22 +1,22 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
-import { formatDate } from "utils/date-formatter";
-import { WorkoutClient } from "infrastructure/client/workout.client";
-import { ConfigurationClient } from "infrastructure/client/configuration.client";
-import { NotificationService } from "infrastructure/notification.service";
-import { finalize } from "rxjs";
-import { MatGridListModule } from "@angular/material/grid-list";
-import { MatButtonModule } from "@angular/material/button";
-import { MatFormFieldModule } from "@angular/material/form-field";
-import { MatInputModule } from "@angular/material/input";
-import { MatProgressBarModule } from "@angular/material/progress-bar";
-import { NgIf } from "@angular/common";
-import { MatDatepickerModule } from "@angular/material/datepicker";
-import { MatNativeDateModule } from "@angular/material/core";
-import { MatSnackBarModule } from "@angular/material/snack-bar";
-import { MatSelectModule } from "@angular/material/select";
-import { MatCheckboxModule } from "@angular/material/checkbox";
-import { Platform } from "infrastructure/platform";
+import {Component, OnInit} from '@angular/core';
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
+import {formatDate} from "utils/date-formatter";
+import {WorkoutClient} from "infrastructure/client/workout.client";
+import {NotificationService} from "infrastructure/notification.service";
+import {finalize} from "rxjs";
+import {MatGridListModule} from "@angular/material/grid-list";
+import {MatButtonModule} from "@angular/material/button";
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {MatInputModule} from "@angular/material/input";
+import {MatProgressBarModule} from "@angular/material/progress-bar";
+import {NgIf} from "@angular/common";
+import {MatDatepickerModule} from "@angular/material/datepicker";
+import {MatNativeDateModule} from "@angular/material/core";
+import {MatSnackBarModule} from "@angular/material/snack-bar";
+import {MatSelectModule} from "@angular/material/select";
+import {MatCheckboxModule} from "@angular/material/checkbox";
+import {Platform} from "infrastructure/platform";
+import {TrainerRoadTrainingTypes} from "app/trainer-road/trainer-road-training-types";
 
 @Component({
   selector: 'tr-copy-calendar-to-library',
@@ -53,7 +53,8 @@ export class TrCopyCalendarToLibraryComponent implements OnInit {
 
   inProgress = false
 
-  trainingTypes: any[];
+  trainingTypes = TrainerRoadTrainingTypes.trainingTypes;
+
   readonly planType = [
     {name: 'Plan', value: true},
     {name: 'Folder', value: false}
@@ -62,15 +63,11 @@ export class TrCopyCalendarToLibraryComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private workoutClient: WorkoutClient,
-    private configurationClient: ConfigurationClient,
     private notificationService: NotificationService
   ) {
   }
 
   ngOnInit(): void {
-    this.configurationClient.getTrainingTypes().subscribe(types => {
-      this.trainingTypes = types
-    })
   }
 
   copyWorkoutsSubmit() {
