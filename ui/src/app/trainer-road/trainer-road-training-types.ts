@@ -1,4 +1,4 @@
-export class StravaTrainingTypes {
+export class TrainerRoadTrainingTypes {
   static trainingTypes = [
     {"title": "Ride", "value": "BIKE"},
     {"title": "MTB", "value": "MTB"},
@@ -7,6 +7,7 @@ export class StravaTrainingTypes {
     {"title": "Swim", "value": "SWIM"},
     {"title": "Walk", "value": "WALK"},
     {"title": "Weight Training", "value": "WEIGHT"},
-    {"title": "Any other", "value": "UNKNOWN"},
+    {"title": "Note", "value": "NOTE"},
+    {"title": "Unknown", "value": "UNKNOWN"},
   ]
 }

@@ -34,6 +34,7 @@ class ConfigurationController(
         return ResponseEntity.ok().build()
     }
 
+    @Deprecated("all config on ui")
     @GetMapping("/api/configuration/training-types")
     fun getTrainingTypes(): List<TrainingTypeDTO> {
         return TrainingType.entries.map { TrainingTypeDTO(it) }
