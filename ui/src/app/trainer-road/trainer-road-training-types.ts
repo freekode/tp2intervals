@@ -7,6 +7,7 @@ export class TrainerRoadTrainingTypes {
     {"title": "Swim", "value": "SWIM"},
     {"title": "Walk", "value": "WALK"},
     {"title": "Weight Training", "value": "WEIGHT"},
-    {"title": "Any other", "value": "UNKNOWN"},
+    {"title": "Note", "value": "NOTE"},
+    {"title": "Unknown", "value": "UNKNOWN"},
   ]
 }
