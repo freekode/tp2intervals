@@ -35,7 +35,7 @@ To fix issues I can only relay on logs and HAR files from you.
 
 ### Strava features
 
-* Copy activities. App exports original file from Strava and uploads it to Intervals.icu. Only recorded activities are supported. 
+* Sync activities. App exports original file from Strava and uploads it to Intervals.icu. Only recorded activities are supported. 
 
 ### Beta features
 
