@@ -2,6 +2,7 @@ package org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout
 
 import org.freekode.tp2intervals.domain.workout.structure.*
 import org.freekode.tp2intervals.domain.workout.structure.StepLength.LengthUnit
+import java.time.Duration
 
 class StructureToIntervalsConverter(
     private val structure: WorkoutStructure,
@@ -49,10 +50,8 @@ class StructureToIntervalsConverter(
         return "- $name $length $target$targetUnitStr ${structure.modifier.value} $cadence"
     }
 
-    private fun toStepLength(length: StepLength): String {
-        return when (length.unit) {
-            LengthUnit.SECONDS -> length.value.toString().substring(2).lowercase()
-            LengthUnit.METERS -> length.value.toString().substring(2).lowercase()
-        }
+    private fun toStepLength(length: StepLength) = when (length.unit) {
+        LengthUnit.SECONDS -> Duration.ofSeconds(length.value).toString().substring(2).lowercase()
+        LengthUnit.METERS -> (length.value / 1000.0).toString() + "km"
     }
 }
