@@ -1,9 +1,7 @@
 package org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout
 
-import org.freekode.tp2intervals.domain.workout.structure.WorkoutMultiStep
-import org.freekode.tp2intervals.domain.workout.structure.WorkoutSingleStep
-import org.freekode.tp2intervals.domain.workout.structure.WorkoutStep
-import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
+import org.freekode.tp2intervals.domain.workout.structure.*
+import org.freekode.tp2intervals.domain.workout.structure.StepLength.LengthUnit
 
 class StructureToIntervalsConverter(
     private val structure: WorkoutStructure,
@@ -33,9 +31,7 @@ class StructureToIntervalsConverter(
 
     private fun getStepString(workoutStep: WorkoutSingleStep): String {
         val name = workoutStep.name.orEmpty().replace("\\", "/")
-        val duration = workoutStep.duration.toString()
-            .substring(2)
-            .lowercase()
+        val length = toStepLength(workoutStep.length)
         val targetUnitStr = targetTypeMap[structure.target]!!
         val target: String = if (workoutStep.target.isSingleValue()) {
             "${workoutStep.target.start}"
@@ -50,6 +46,13 @@ class StructureToIntervalsConverter(
             }
         } ?: ""
 
-        return "- $name $duration $target$targetUnitStr ${structure.modifier.value} $cadence"
+        return "- $name $length $target$targetUnitStr ${structure.modifier.value} $cadence"
+    }
+
+    private fun toStepLength(length: StepLength): String {
+        return when (length.unit) {
+            LengthUnit.SECONDS -> length.value.toString().substring(2).lowercase()
+            LengthUnit.METERS -> length.value.toString().substring(2).lowercase()
+        }
     }
 }

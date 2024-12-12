@@ -2,7 +2,7 @@ package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.plan
 
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.TrainingPeaksApiClientConfig
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.TPNoteResponseDTO
-import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.TPWorkoutResponseDTO
+import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.TPWorkoutCalendarResponseDTO
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -20,7 +20,7 @@ interface TrainingPeaksPlanCoachApiClient {
         @PathVariable planId: String,
         @PathVariable startDate: String,
         @PathVariable endDate: String,
-    ): List<TPWorkoutResponseDTO>
+    ): List<TPWorkoutCalendarResponseDTO>
 
     @GetMapping("/plans/v1/plans/{planId}/calendarNote/{startDate}/{endDate}")
     fun getPlanNotes(

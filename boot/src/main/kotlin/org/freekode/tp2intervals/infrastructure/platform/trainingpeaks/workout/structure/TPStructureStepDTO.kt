@@ -11,12 +11,5 @@ class TPStructureStepDTO(
 
         fun multiStep(repetitions: Int, stepDTOs: List<TPStepDTO>): TPStructureStepDTO =
             TPStructureStepDTO("repetition", TPLengthDTO.repetitions(repetitions.toLong()), stepDTOs)
-
-        fun rampUp(stepDTOs: List<TPStepDTO>): TPStructureStepDTO =
-            TPStructureStepDTO("rampUp", TPLengthDTO.single(), stepDTOs)
-
-        fun rampDown(stepDTOs: List<TPStepDTO>): TPStructureStepDTO =
-            TPStructureStepDTO("rampDown", TPLengthDTO.single(), stepDTOs)
-
     }
 }

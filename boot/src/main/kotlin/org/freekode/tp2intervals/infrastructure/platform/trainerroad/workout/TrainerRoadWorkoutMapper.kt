@@ -4,12 +4,8 @@ import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutDetails
-import org.freekode.tp2intervals.domain.workout.structure.WorkoutSingleStep
-import org.freekode.tp2intervals.domain.workout.structure.WorkoutStep
-import org.freekode.tp2intervals.domain.workout.structure.WorkoutStepTarget
-import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
+import org.freekode.tp2intervals.domain.workout.structure.*
 import java.time.Duration
-import kotlin.text.replace
 
 class TrainerRoadWorkoutMapper {
     fun toWorkout(trWorkoutResponseDTO: TRWorkoutResponseDTO, removeHtmlTags: Boolean): Workout {
@@ -40,13 +36,13 @@ class TrainerRoadWorkoutMapper {
             if (interval.name == "Workout") {
                 continue
             }
-            val duration = Duration.ofSeconds((interval.end - interval.start).toLong())
+            val stepLength = StepLength.seconds((interval.end - interval.start).toLong())
             val ftpPercent = interval.startTargetPowerPercent
 
             val name = if (interval.name == "Fake") "Step" else interval.name
 
             val workoutSingleStep =
-                WorkoutSingleStep(name, duration, WorkoutStepTarget(ftpPercent, ftpPercent), null, false)
+                WorkoutSingleStep(name, stepLength, StepTarget(ftpPercent, ftpPercent), null, false)
             steps.add(workoutSingleStep)
         }
         return steps
