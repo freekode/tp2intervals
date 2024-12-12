@@ -16,7 +16,6 @@ import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
 import org.springframework.util.ResourceUtils
-import java.time.Duration
 
 class TrainerRoadWorkoutRepositoryTest {
     private val objectMapper = ObjectMapperFactory.objectMapper()
@@ -30,9 +29,11 @@ class TrainerRoadWorkoutRepositoryTest {
 
     private val trainerRoadConfigurationRepository = trainerRoadConfigurationRepository()
 
-    private val trainerRoadApiClientService = TrainerRoadApiClientService(trainerRoadApiClient, trainerRoadConfigurationRepository)
+    private val trainerRoadApiClientService =
+        TrainerRoadApiClientService(trainerRoadApiClient, trainerRoadConfigurationRepository)
 
-    private val trainerRoadWorkoutRepository = TrainerRoadWorkoutRepository(mock(TRUsernameRepository::class.java), trainerRoadApiClientService)
+    private val trainerRoadWorkoutRepository =
+        TrainerRoadWorkoutRepository(mock(TRUsernameRepository::class.java), trainerRoadApiClientService)
 
     @Test
     fun `should parse simple workout`() {
@@ -41,18 +42,18 @@ class TrainerRoadWorkoutRepositoryTest {
         val workout = trainerRoadWorkoutRepository.getWorkoutFromLibrary(data)
 
         // then
-        assertTrue(workout.details.type == TrainingType.VIRTUAL_BIKE)
-        assertTrue(workout.structure!!.target == WorkoutStructure.TargetUnit.FTP_PERCENTAGE)
-        assertTrue(workout.structure!!.steps.size == 11)
-        assertTrue((workout.structure!!.steps[0] as WorkoutSingleStep).duration == Duration.ofMinutes(5))
-        assertTrue((workout.structure!!.steps[0] as WorkoutSingleStep).target.start == 50)
-        assertTrue((workout.structure!!.steps[0] as WorkoutSingleStep).target.end == 50)
-        assertTrue((workout.structure!!.steps[1] as WorkoutSingleStep).duration == Duration.ofMinutes(3))
-        assertTrue((workout.structure!!.steps[1] as WorkoutSingleStep).target.start == 60)
-        assertTrue((workout.structure!!.steps[1] as WorkoutSingleStep).target.end == 60)
-        assertTrue((workout.structure!!.steps[2] as WorkoutSingleStep).duration == Duration.ofMinutes(13))
-        assertTrue((workout.structure!!.steps[2] as WorkoutSingleStep).target.start == 50)
-        assertTrue((workout.structure!!.steps[2] as WorkoutSingleStep).target.end == 50)
+        assertEquals(TrainingType.VIRTUAL_BIKE, workout.details.type)
+        assertEquals(WorkoutStructure.TargetUnit.FTP_PERCENTAGE, workout.structure!!.target)
+        assertEquals(11, workout.structure!!.steps.size)
+        assertEquals(5 * 60.toLong(), (workout.structure!!.steps[0] as WorkoutSingleStep).length.value)
+        assertEquals(50, (workout.structure!!.steps[0] as WorkoutSingleStep).target.start)
+        assertEquals(50, (workout.structure!!.steps[0] as WorkoutSingleStep).target.end)
+        assertEquals(3 * 60.toLong(), (workout.structure!!.steps[1] as WorkoutSingleStep).length.value)
+        assertEquals(60, (workout.structure!!.steps[1] as WorkoutSingleStep).target.start)
+        assertEquals(60, (workout.structure!!.steps[1] as WorkoutSingleStep).target.end)
+        assertEquals(13 * 60.toLong(), (workout.structure!!.steps[2] as WorkoutSingleStep).length.value)
+        assertEquals(50, (workout.structure!!.steps[2] as WorkoutSingleStep).target.start)
+        assertEquals(50, (workout.structure!!.steps[2] as WorkoutSingleStep).target.end)
     }
 
     @Test
@@ -62,18 +63,18 @@ class TrainerRoadWorkoutRepositoryTest {
         val workout = trainerRoadWorkoutRepository.getWorkoutFromLibrary(data)
 
         // then
-        assertTrue(workout.details.type == TrainingType.VIRTUAL_BIKE)
-        assertTrue(workout.structure!!.target == WorkoutStructure.TargetUnit.FTP_PERCENTAGE)
-        assertTrue(workout.structure!!.steps.size == 23)
-        assertTrue((workout.structure!!.steps[0] as WorkoutSingleStep).duration == Duration.ofMinutes(4))
-        assertTrue((workout.structure!!.steps[0] as WorkoutSingleStep).target.start == 50)
-        assertTrue((workout.structure!!.steps[0] as WorkoutSingleStep).target.end == 50)
-        assertTrue((workout.structure!!.steps[1] as WorkoutSingleStep).duration == Duration.ofMinutes(2))
-        assertTrue((workout.structure!!.steps[1] as WorkoutSingleStep).target.start == 55)
-        assertTrue((workout.structure!!.steps[1] as WorkoutSingleStep).target.end == 55)
-        assertTrue((workout.structure!!.steps[2] as WorkoutSingleStep).duration == Duration.ofMinutes(2))
-        assertTrue((workout.structure!!.steps[2] as WorkoutSingleStep).target.start == 60)
-        assertTrue((workout.structure!!.steps[2] as WorkoutSingleStep).target.end == 60)
+        assertEquals(TrainingType.VIRTUAL_BIKE, workout.details.type)
+        assertEquals(WorkoutStructure.TargetUnit.FTP_PERCENTAGE, workout.structure!!.target)
+        assertEquals(23, workout.structure!!.steps.size)
+        assertEquals(4 * 60.toLong(), (workout.structure!!.steps[0] as WorkoutSingleStep).length.value)
+        assertEquals(50, (workout.structure!!.steps[0] as WorkoutSingleStep).target.start)
+        assertEquals(50, (workout.structure!!.steps[0] as WorkoutSingleStep).target.end)
+        assertEquals(2 * 60.toLong(), (workout.structure!!.steps[1] as WorkoutSingleStep).length.value)
+        assertEquals(55, (workout.structure!!.steps[1] as WorkoutSingleStep).target.start)
+        assertEquals(55, (workout.structure!!.steps[1] as WorkoutSingleStep).target.end)
+        assertEquals(2 * 60.toLong(), (workout.structure!!.steps[2] as WorkoutSingleStep).length.value)
+        assertEquals(60, (workout.structure!!.steps[2] as WorkoutSingleStep).target.start)
+        assertEquals(60, (workout.structure!!.steps[2] as WorkoutSingleStep).target.end)
     }
 
     @Test
@@ -83,8 +84,8 @@ class TrainerRoadWorkoutRepositoryTest {
         val workout = trainerRoadWorkoutRepository.getWorkoutFromLibrary(data)
 
         // then
-        assertTrue(workout.details.type == TrainingType.VIRTUAL_BIKE)
-        assertTrue(workout.structure!!.target == WorkoutStructure.TargetUnit.FTP_PERCENTAGE)
+        assertEquals(TrainingType.VIRTUAL_BIKE, workout.details.type)
+        assertEquals(WorkoutStructure.TargetUnit.FTP_PERCENTAGE, workout.structure!!.target)
         assertTrue(workout.structure!!.steps.isNotEmpty())
     }
 
@@ -94,7 +95,7 @@ class TrainerRoadWorkoutRepositoryTest {
         val workout = trainerRoadWorkoutRepository.getWorkoutFromLibrary(data)
         assertEquals(
             "simple is 4x3-minute intervals of leg-speed drills at a very low 60% FTP with 3 minutes of rest between intervals. " +
-                "Keep the pressure on the pedals light and your intensity low to moderate regardless of your cadence.",
+                    "Keep the pressure on the pedals light and your intensity low to moderate regardless of your cadence.",
             workout.details.description
         )
     }

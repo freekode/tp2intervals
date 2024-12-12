@@ -2,8 +2,6 @@ package org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout
 
 import config.mock.IntervalsApiClientMock
 import config.mock.ObjectMapperFactory
-import java.time.Duration
-import java.time.LocalDate
 import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutSingleStep
@@ -12,10 +10,13 @@ import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsA
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfiguration
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfigurationRepository
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
 import org.springframework.util.ResourceUtils
+import java.time.Duration
+import java.time.LocalDate
 
 class IntervalsWorkoutRepositoryTest {
     private val objectMapper = ObjectMapperFactory.objectMapper()
@@ -40,26 +41,26 @@ class IntervalsWorkoutRepositoryTest {
         Assertions.assertTrue(workouts.size == 5)
 
         val workout = findWorkoutWithName("hr test", workouts)
-        Assertions.assertTrue(workout.details.type == TrainingType.BIKE)
-        Assertions.assertTrue(workout.structure!!.target == WorkoutStructure.TargetUnit.LTHR_PERCENTAGE)
-        Assertions.assertTrue(workout.structure!!.steps.size == 5)
+        assertEquals(TrainingType.BIKE, workout.details.type)
+        assertEquals(WorkoutStructure.TargetUnit.LTHR_PERCENTAGE, workout.structure!!.target)
+        assertEquals(5, workout.structure!!.steps.size)
         // 10m 50-70% LTHR
-        Assertions.assertTrue((workout.structure!!.steps[0] as WorkoutSingleStep).duration == Duration.ofMinutes(10))
-        Assertions.assertTrue((workout.structure!!.steps[0] as WorkoutSingleStep).target.start == 50)
-        Assertions.assertTrue((workout.structure!!.steps[0] as WorkoutSingleStep).target.end == 70)
+        assertEquals(600.toLong(), (workout.structure!!.steps[0] as WorkoutSingleStep).length.value)
+        assertEquals(50, (workout.structure!!.steps[0] as WorkoutSingleStep).target.start)
+        assertEquals(70, (workout.structure!!.steps[0] as WorkoutSingleStep).target.end)
         // 10m 80% LTHR
-        Assertions.assertTrue((workout.structure!!.steps[1] as WorkoutSingleStep).target.start == 78)
-        Assertions.assertTrue((workout.structure!!.steps[1] as WorkoutSingleStep).target.end == 82)
+        assertEquals(78, (workout.structure!!.steps[1] as WorkoutSingleStep).target.start)
+        assertEquals(82, (workout.structure!!.steps[1] as WorkoutSingleStep).target.end)
         // 10m ramp 45-60% LTHR
-        Assertions.assertTrue((workout.structure!!.steps[2] as WorkoutSingleStep).target.start == 45)
-        Assertions.assertTrue((workout.structure!!.steps[2] as WorkoutSingleStep).target.end == 60)
+        assertEquals(45, (workout.structure!!.steps[2] as WorkoutSingleStep).target.start)
+        assertEquals(60, (workout.structure!!.steps[2] as WorkoutSingleStep).target.end)
         (workout.structure!!.steps[2] as WorkoutSingleStep).ramp
         // 10m Z2 HR
-        Assertions.assertTrue((workout.structure!!.steps[3] as WorkoutSingleStep).target.start == 68)
-        Assertions.assertTrue((workout.structure!!.steps[3] as WorkoutSingleStep).target.end == 82)
+        assertEquals(68, (workout.structure!!.steps[3] as WorkoutSingleStep).target.start)
+        assertEquals(82, (workout.structure!!.steps[3] as WorkoutSingleStep).target.end)
         // 10m Z3-Z4 HR
-        Assertions.assertTrue((workout.structure!!.steps[4] as WorkoutSingleStep).target.start == 83)
-        Assertions.assertTrue((workout.structure!!.steps[4] as WorkoutSingleStep).target.end == 105)
+        assertEquals(83, (workout.structure!!.steps[4] as WorkoutSingleStep).target.start)
+        assertEquals(105, (workout.structure!!.steps[4] as WorkoutSingleStep).target.end)
     }
 
     @Test
@@ -68,33 +69,33 @@ class IntervalsWorkoutRepositoryTest {
         val workouts = intervalsWorkoutRepository.getWorkoutsFromCalendar(LocalDate.now(), LocalDate.now())
 
         // then
-        Assertions.assertTrue(workouts.size == 5)
+        assertEquals(5, workouts.size)
 
         val workout = findWorkoutWithName("power test", workouts)
-        Assertions.assertTrue(workout.details.type == TrainingType.BIKE)
-        Assertions.assertTrue(workout.structure!!.target == WorkoutStructure.TargetUnit.FTP_PERCENTAGE)
-        Assertions.assertTrue(workout.structure!!.steps.size == 5)
+        assertEquals(TrainingType.BIKE, workout.details.type)
+        assertEquals(WorkoutStructure.TargetUnit.FTP_PERCENTAGE, workout.structure!!.target)
+        assertEquals(5, workout.structure!!.steps.size)
         // 10m 10-30%
-        Assertions.assertTrue((workout.structure!!.steps[0] as WorkoutSingleStep).duration == Duration.ofMinutes(10))
-        Assertions.assertTrue((workout.structure!!.steps[0] as WorkoutSingleStep).target.start == 10)
-        Assertions.assertTrue((workout.structure!!.steps[0] as WorkoutSingleStep).target.end == 30)
+        assertEquals(600.toLong(), (workout.structure!!.steps[0] as WorkoutSingleStep).length.value)
+        assertEquals(10, (workout.structure!!.steps[0] as WorkoutSingleStep).target.start)
+        assertEquals(30, (workout.structure!!.steps[0] as WorkoutSingleStep).target.end)
         // 10m 40% 30-90rpm
-        Assertions.assertTrue((workout.structure!!.steps[1] as WorkoutSingleStep).target.start == 39)
-        Assertions.assertTrue((workout.structure!!.steps[1] as WorkoutSingleStep).target.end == 41)
-        Assertions.assertTrue((workout.structure!!.steps[1] as WorkoutSingleStep).cadence!!.start == 30)
-        Assertions.assertTrue((workout.structure!!.steps[1] as WorkoutSingleStep).cadence!!.end == 90)
+        assertEquals(39, (workout.structure!!.steps[1] as WorkoutSingleStep).target.start)
+        assertEquals(41, (workout.structure!!.steps[1] as WorkoutSingleStep).target.end)
+        assertEquals(30, (workout.structure!!.steps[1] as WorkoutSingleStep).cadence!!.start)
+        assertEquals(90, (workout.structure!!.steps[1] as WorkoutSingleStep).cadence!!.end)
         // 10m ramp 10-60%
-        Assertions.assertTrue((workout.structure!!.steps[2] as WorkoutSingleStep).target.start == 10)
-        Assertions.assertTrue((workout.structure!!.steps[2] as WorkoutSingleStep).target.end == 60)
+        assertEquals(10, (workout.structure!!.steps[2] as WorkoutSingleStep).target.start)
+        assertEquals(60, (workout.structure!!.steps[2] as WorkoutSingleStep).target.end)
         (workout.structure!!.steps[2] as WorkoutSingleStep).ramp
         // 10m Z2 85rpm
-        Assertions.assertTrue((workout.structure!!.steps[3] as WorkoutSingleStep).target.start == 56)
-        Assertions.assertTrue((workout.structure!!.steps[3] as WorkoutSingleStep).target.end == 75)
-        Assertions.assertTrue((workout.structure!!.steps[3] as WorkoutSingleStep).cadence!!.start == 85)
-        Assertions.assertTrue((workout.structure!!.steps[3] as WorkoutSingleStep).cadence!!.end == 85)
+        assertEquals(56, (workout.structure!!.steps[3] as WorkoutSingleStep).target.start)
+        assertEquals(75, (workout.structure!!.steps[3] as WorkoutSingleStep).target.end)
+        assertEquals(85, (workout.structure!!.steps[3] as WorkoutSingleStep).cadence!!.start)
+        assertEquals(85, (workout.structure!!.steps[3] as WorkoutSingleStep).cadence!!.end)
         // 10m Z3-Z4
-        Assertions.assertTrue((workout.structure!!.steps[4] as WorkoutSingleStep).target.start == 76)
-        Assertions.assertTrue((workout.structure!!.steps[4] as WorkoutSingleStep).target.end == 105)
+        assertEquals(76, (workout.structure!!.steps[4] as WorkoutSingleStep).target.start)
+        assertEquals(105, (workout.structure!!.steps[4] as WorkoutSingleStep).target.end)
     }
 
     @Test
@@ -103,25 +104,25 @@ class IntervalsWorkoutRepositoryTest {
         val workouts = intervalsWorkoutRepository.getWorkoutsFromCalendar(LocalDate.now(), LocalDate.now())
 
         // then
-        Assertions.assertTrue(workouts.size == 5)
+        assertEquals(5, workouts.size)
 
         val workout = findWorkoutWithName("pace test", workouts)
-        Assertions.assertTrue(workout.details.type == TrainingType.RUN)
-        Assertions.assertTrue(workout.structure!!.target == WorkoutStructure.TargetUnit.PACE_PERCENTAGE)
-        Assertions.assertTrue(workout.structure!!.steps.size == 4)
+        assertEquals(TrainingType.RUN, workout.details.type)
+        assertEquals(WorkoutStructure.TargetUnit.PACE_PERCENTAGE, workout.structure!!.target)
+        assertEquals(4, workout.structure!!.steps.size)
         // 10m 70% Pace
-        Assertions.assertTrue((workout.structure!!.steps[0] as WorkoutSingleStep).duration == Duration.ofMinutes(10))
-        Assertions.assertTrue((workout.structure!!.steps[0] as WorkoutSingleStep).target.start == 68)
-        Assertions.assertTrue((workout.structure!!.steps[0] as WorkoutSingleStep).target.end == 72)
+        assertEquals(600.toLong(), (workout.structure!!.steps[0] as WorkoutSingleStep).length.value)
+        assertEquals(68, (workout.structure!!.steps[0] as WorkoutSingleStep).target.start)
+        assertEquals(72, (workout.structure!!.steps[0] as WorkoutSingleStep).target.end)
         // 10m 80-110% Pace
-        Assertions.assertTrue((workout.structure!!.steps[1] as WorkoutSingleStep).target.start == 80)
-        Assertions.assertTrue((workout.structure!!.steps[1] as WorkoutSingleStep).target.end == 110)
+        assertEquals(80, (workout.structure!!.steps[1] as WorkoutSingleStep).target.start)
+        assertEquals(110, (workout.structure!!.steps[1] as WorkoutSingleStep).target.end)
         // 10m Z2 Pace
-        Assertions.assertTrue((workout.structure!!.steps[2] as WorkoutSingleStep).target.start == 79)
-        Assertions.assertTrue((workout.structure!!.steps[2] as WorkoutSingleStep).target.end == 88)
+        assertEquals(79, (workout.structure!!.steps[2] as WorkoutSingleStep).target.start)
+        assertEquals(88, (workout.structure!!.steps[2] as WorkoutSingleStep).target.end)
         // 10m Z3-Z5 Pace
-        Assertions.assertTrue((workout.structure!!.steps[3] as WorkoutSingleStep).target.start == 89)
-        Assertions.assertTrue((workout.structure!!.steps[3] as WorkoutSingleStep).target.end == 103)
+        assertEquals(89, (workout.structure!!.steps[3] as WorkoutSingleStep).target.start)
+        assertEquals(103, (workout.structure!!.steps[3] as WorkoutSingleStep).target.end)
     }
 
     @Test
@@ -130,12 +131,12 @@ class IntervalsWorkoutRepositoryTest {
         val workouts = intervalsWorkoutRepository.getWorkoutsFromCalendar(LocalDate.now(), LocalDate.now())
 
         // then
-        Assertions.assertTrue(workouts.size == 5)
+        assertEquals(5, workouts.size)
 
         val workout = findWorkoutWithName("virtual ride test", workouts)
-        Assertions.assertTrue(workout.details.type == TrainingType.VIRTUAL_BIKE)
-        Assertions.assertTrue(workout.structure!!.target == WorkoutStructure.TargetUnit.FTP_PERCENTAGE)
-        Assertions.assertTrue(workout.structure!!.steps.size == 5)
+        assertEquals(TrainingType.VIRTUAL_BIKE, workout.details.type)
+        assertEquals(WorkoutStructure.TargetUnit.FTP_PERCENTAGE, workout.structure!!.target)
+        assertEquals(5, workout.structure!!.steps.size)
     }
 
     @Test
@@ -144,13 +145,13 @@ class IntervalsWorkoutRepositoryTest {
         val workouts = intervalsWorkoutRepository.getWorkoutsFromCalendar(LocalDate.now(), LocalDate.now())
 
         // then
-        Assertions.assertTrue(workouts.size == 5)
+        assertEquals(5, workouts.size)
 
         val workout = findWorkoutWithName("other test", workouts)
-        Assertions.assertTrue(workout.details.type == TrainingType.UNKNOWN)
-        Assertions.assertTrue(workout.details.duration == Duration.ofMinutes(45))
-        Assertions.assertTrue(workout.details.load == 32)
-        Assertions.assertTrue(workout.structure == null)
+        assertEquals(TrainingType.UNKNOWN, workout.details.type)
+        assertEquals(Duration.ofMinutes(45), workout.details.duration)
+        assertEquals(32, workout.details.load)
+        assertEquals(null, workout.structure)
     }
 
     private fun findWorkoutWithName(name: String, workouts: List<Workout>): Workout {
