@@ -26,21 +26,21 @@ class IntervalsWorkoutRepository(
 
     override fun saveWorkoutsToCalendar(workouts: List<Workout>) {
         workouts.forEach {
-            val workoutToIntervalsConverter = WorkoutToIntervalsConverter()
-            val request = workoutToIntervalsConverter.createEventRequestDTO(it)
+            val toIntervalsWorkoutConverter = ToIntervalsWorkoutConverter()
+            val request = toIntervalsWorkoutConverter.createEventRequestDTO(it)
             intervalsApiClient.createEvent(intervalsConfigurationRepository.getConfiguration().athleteId, request)
         }
     }
 
     override fun saveWorkoutsToLibrary(libraryContainer: LibraryContainer, workouts: List<Workout>) {
-        val workoutToIntervalsConverter = WorkoutToIntervalsConverter()
+        val toIntervalsWorkoutConverter = ToIntervalsWorkoutConverter()
         for (fromIndex in workouts.indices step maxWorkoutsToSave) {
             val toIndex =
                 if (fromIndex + maxWorkoutsToSave >= workouts.size) workouts.size else fromIndex + maxWorkoutsToSave
 
             val workoutsToSave = workouts.subList(fromIndex, toIndex)
             val requests =
-                workoutsToSave.map { workoutToIntervalsConverter.createWorkoutRequestDTO(libraryContainer, it) }
+                workoutsToSave.map { toIntervalsWorkoutConverter.createWorkoutRequestDTO(libraryContainer, it) }
             intervalsApiClient.createWorkouts(intervalsConfigurationRepository.getConfiguration().athleteId, requests)
         }
     }
@@ -78,7 +78,7 @@ class IntervalsWorkoutRepository(
 
     private fun toWorkout(eventDTO: IntervalsEventDTO): Workout? {
         return try {
-            IntervalsToWorkoutConverter(eventDTO).toWorkout()
+            FromIntervalsWorkoutConverter(eventDTO).toWorkout()
         } catch (e: PlatformException) {
             log.warn("Can't convert a workout ${eventDTO.name} on ${eventDTO.start_date_local}, skipping...", e)
             return null

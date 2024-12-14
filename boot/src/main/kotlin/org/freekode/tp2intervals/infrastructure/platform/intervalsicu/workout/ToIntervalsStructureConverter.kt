@@ -1,11 +1,10 @@
 package org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout
 
-import org.freekode.tp2intervals.domain.workout.structure.WorkoutMultiStep
-import org.freekode.tp2intervals.domain.workout.structure.WorkoutSingleStep
-import org.freekode.tp2intervals.domain.workout.structure.WorkoutStep
-import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
+import org.freekode.tp2intervals.domain.workout.structure.*
+import org.freekode.tp2intervals.domain.workout.structure.StepLength.LengthUnit
+import java.time.Duration
 
-class StructureToIntervalsConverter(
+class ToIntervalsStructureConverter(
     private val structure: WorkoutStructure,
 ) {
     private val targetTypeMap = mapOf(
@@ -20,22 +19,20 @@ class StructureToIntervalsConverter(
 
     private fun toIntervalsStep(workoutStep: WorkoutStep): String {
         return if (workoutStep.isSingleStep()) {
-            getStepString(workoutStep as WorkoutSingleStep)
+            getStepString(workoutStep as SingleStep)
         } else {
-            "\n" + mapMultiStep(workoutStep as WorkoutMultiStep) + "\n"
+            "\n" + mapMultiStep(workoutStep as MultiStep) + "\n"
         }
     }
 
-    private fun mapMultiStep(workoutMultiStep: WorkoutMultiStep): String {
-        val steps = listOf("${workoutMultiStep.repetitions}x") + workoutMultiStep.steps.map { toIntervalsStep(it) }
+    private fun mapMultiStep(multiStep: MultiStep): String {
+        val steps = listOf("${multiStep.repetitions}x") + multiStep.steps.map { toIntervalsStep(it) }
         return steps.joinToString(separator = "\n")
     }
 
-    private fun getStepString(workoutStep: WorkoutSingleStep): String {
+    private fun getStepString(workoutStep: SingleStep): String {
         val name = workoutStep.name.orEmpty().replace("\\", "/")
-        val duration = workoutStep.duration.toString()
-            .substring(2)
-            .lowercase()
+        val length = toStepLength(workoutStep.length)
         val targetUnitStr = targetTypeMap[structure.target]!!
         val target: String = if (workoutStep.target.isSingleValue()) {
             "${workoutStep.target.start}"
@@ -50,6 +47,11 @@ class StructureToIntervalsConverter(
             }
         } ?: ""
 
-        return "- $name $duration $target$targetUnitStr ${structure.modifier.value} $cadence"
+        return "- $name $length $target$targetUnitStr ${structure.modifier.value} $cadence"
+    }
+
+    private fun toStepLength(length: StepLength) = when (length.unit) {
+        LengthUnit.SECONDS -> Duration.ofSeconds(length.value).toString().substring(2).lowercase()
+        LengthUnit.METERS -> (length.value / 1000.0).toString() + "km"
     }
 }

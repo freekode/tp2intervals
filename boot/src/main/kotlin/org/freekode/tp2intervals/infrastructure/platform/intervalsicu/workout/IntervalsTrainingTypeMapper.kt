@@ -13,7 +13,7 @@ class IntervalsTrainingTypeMapper {
             TrainingType.WEIGHT to "WeightTraining",
             TrainingType.NOTE to "NOTE",
             TrainingType.UNKNOWN to "Other",
-//            TrainingType.WALK to "Walk",
+            TrainingType.WALK to "Walk",
         )
 
         fun getByIntervalsType(intervalsType: String): TrainingType =

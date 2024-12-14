@@ -1,7 +1,6 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import java.time.LocalDate
 import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.librarycontainer.LibraryContainer
@@ -12,15 +11,16 @@ import org.freekode.tp2intervals.infrastructure.PlatformException
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.TrainingPeaksApiClient
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.configuration.TrainingPeaksConfigurationRepository
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.library.TPWorkoutLibraryRepository
-import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.plan.TrainingPeaksPlanRepository
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.plan.TrainingPeaksPlanCoachApiClient
+import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.plan.TrainingPeaksPlanRepository
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.user.TrainingPeaksUserRepository
-import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.StructureToTPConverter
+import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.ToTPStructureConverter
 import org.freekode.tp2intervals.infrastructure.utils.Date
 import org.slf4j.LoggerFactory
 import org.springframework.cache.annotation.CacheConfig
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Repository
+import java.time.LocalDate
 
 
 @CacheConfig(cacheNames = ["tpWorkoutsCache"])
@@ -114,10 +114,10 @@ class TrainingPeaksWorkoutRepository(
     }
 
     private fun saveWorkoutToCalendar(workout: Workout) {
-        val createRequest: CreateTPWorkoutDTO
-        val structureStr = StructureToTPConverter.toStructureString(objectMapper, workout)
+        val createRequest: CreateTPWorkoutRequestDTO
+        val structureStr = if (workout.structure != null) ToTPStructureConverter.toStructureString(objectMapper, workout.structure) else null
         val athleteId = trainingPeaksUserRepository.getUser().userId
-        createRequest = CreateTPWorkoutDTO.planWorkout(
+        createRequest = CreateTPWorkoutRequestDTO.planWorkout(
             athleteId, workout, structureStr
         )
         trainingPeaksApiClient.createAndPlanWorkout(athleteId, createRequest)

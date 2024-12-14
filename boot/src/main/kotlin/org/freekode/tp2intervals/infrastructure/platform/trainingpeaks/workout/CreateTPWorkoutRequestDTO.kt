@@ -4,7 +4,7 @@ import java.time.LocalDate
 import org.freekode.tp2intervals.domain.activity.Activity
 import org.freekode.tp2intervals.domain.workout.Workout
 
-class CreateTPWorkoutDTO(
+class CreateTPWorkoutRequestDTO(
     var athleteId: String,
     var workoutDay: LocalDate,
     var workoutTypeValueId: Int,
@@ -21,8 +21,8 @@ class CreateTPWorkoutDTO(
 
         fun planWorkout(
             athleteId: String, workout: Workout, structureStr: String?
-        ): CreateTPWorkoutDTO {
-            return CreateTPWorkoutDTO(
+        ): CreateTPWorkoutRequestDTO {
+            return CreateTPWorkoutRequestDTO(
                 athleteId,
                 workout.date ?: LocalDate.now(),
                 TPTrainingTypeMapper.getByType(workout.details.type),
@@ -36,7 +36,7 @@ class CreateTPWorkoutDTO(
             )
         }
 
-        fun createActivity(athleteId: String, activity: Activity): CreateTPWorkoutDTO {
+        fun createActivity(athleteId: String, activity: Activity): CreateTPWorkoutRequestDTO {
             TODO("Not yet implemented")
         }
 
