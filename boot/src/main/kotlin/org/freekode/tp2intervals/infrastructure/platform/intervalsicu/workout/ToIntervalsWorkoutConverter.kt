@@ -6,7 +6,7 @@ import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.infrastructure.Signature
 import org.freekode.tp2intervals.infrastructure.utils.Date
 
-class WorkoutToIntervalsConverter {
+class ToIntervalsWorkoutConverter {
     private val unwantedStepRegex = "^[-*]".toRegex(RegexOption.MULTILINE)
 
     fun createWorkoutRequestDTO(libraryContainer: LibraryContainer, workout: Workout): CreateWorkoutRequestDTO {
@@ -58,7 +58,7 @@ class WorkoutToIntervalsConverter {
 
     private fun getWorkoutString(workout: Workout) =
         if (workout.structure != null) {
-            StructureToIntervalsConverter(workout.structure).toIntervalsStructureStr()
+            ToIntervalsStructureConverter(workout.structure).toIntervalsStructureStr()
         } else {
             null
         }

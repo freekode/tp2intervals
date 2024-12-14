@@ -5,7 +5,7 @@ import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutDetails
 import org.freekode.tp2intervals.domain.workout.structure.*
 
-class IntervalsToWorkoutConverter(
+class FromIntervalsWorkoutConverter(
     private val eventDTO: IntervalsEventDTO
 ) {
     private val workoutDoc: IntervalsWorkoutDocDTO? by lazy { eventDTO.workout_doc }
@@ -73,10 +73,17 @@ class IntervalsToWorkoutConverter(
 
         return SingleStep(
             stepDTO.text,
-            StepLength.seconds(stepDTO.duration ?: 600),
+            getStepLength(stepDTO),
             mainTarget,
             cadenceTarget,
             stepDTO.ramp == true
         )
     }
+
+    private fun getStepLength(stepDTO: IntervalsWorkoutDocDTO.WorkoutStepDTO) =
+        if (stepDTO.distance != null) {
+            StepLength(stepDTO.distance, StepLength.LengthUnit.METERS)
+        } else {
+            StepLength(stepDTO.duration ?: 600, StepLength.LengthUnit.SECONDS)
+        }
 }

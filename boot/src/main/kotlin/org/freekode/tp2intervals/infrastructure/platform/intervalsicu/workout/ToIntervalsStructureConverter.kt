@@ -4,7 +4,7 @@ import org.freekode.tp2intervals.domain.workout.structure.*
 import org.freekode.tp2intervals.domain.workout.structure.StepLength.LengthUnit
 import java.time.Duration
 
-class StructureToIntervalsConverter(
+class ToIntervalsStructureConverter(
     private val structure: WorkoutStructure,
 ) {
     private val targetTypeMap = mapOf(

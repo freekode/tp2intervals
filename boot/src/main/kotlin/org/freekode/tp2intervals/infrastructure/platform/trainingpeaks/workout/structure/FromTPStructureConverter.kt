@@ -2,12 +2,12 @@ package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.
 
 import org.freekode.tp2intervals.domain.workout.structure.*
 
-class ConverterFromTPStructure(
+class FromTPStructureConverter(
     private val structureDTO: TPWorkoutStructureDTO
 ) {
     companion object {
         fun toWorkoutStructure(structure: TPWorkoutStructureDTO): WorkoutStructure {
-            val steps = ConverterFromTPStructure(structure).mapToWorkoutSteps()
+            val steps = FromTPStructureConverter(structure).mapToWorkoutSteps()
             return WorkoutStructure(structure.toTargetUnit(), steps)
         }
     }

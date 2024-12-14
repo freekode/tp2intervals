@@ -8,13 +8,13 @@ import org.freekode.tp2intervals.domain.workout.structure.WorkoutStep
 import org.freekode.tp2intervals.domain.workout.structure.StepTarget
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
 
-class ConverterToTPStructure(
+class ToTPStructureConverter(
     private val objectMapper: ObjectMapper,
     private val structure: WorkoutStructure,
 ) {
     companion object {
         fun toStructureString(objectMapper: ObjectMapper, structure: WorkoutStructure) =
-            ConverterToTPStructure(objectMapper, structure).toTPStructureStr()
+            ToTPStructureConverter(objectMapper, structure).toTPStructureStr()
     }
 
     fun toTPStructureStr(): String {

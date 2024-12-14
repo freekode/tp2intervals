@@ -14,7 +14,7 @@ import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.library.T
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.plan.TrainingPeaksPlanCoachApiClient
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.plan.TrainingPeaksPlanRepository
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.user.TrainingPeaksUserRepository
-import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.ConverterToTPStructure
+import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.ToTPStructureConverter
 import org.freekode.tp2intervals.infrastructure.utils.Date
 import org.slf4j.LoggerFactory
 import org.springframework.cache.annotation.CacheConfig
@@ -115,7 +115,7 @@ class TrainingPeaksWorkoutRepository(
 
     private fun saveWorkoutToCalendar(workout: Workout) {
         val createRequest: CreateTPWorkoutRequestDTO
-        val structureStr = if (workout.structure != null) ConverterToTPStructure.toStructureString(objectMapper, workout.structure) else null
+        val structureStr = if (workout.structure != null) ToTPStructureConverter.toStructureString(objectMapper, workout.structure) else null
         val athleteId = trainingPeaksUserRepository.getUser().userId
         createRequest = CreateTPWorkoutRequestDTO.planWorkout(
             athleteId, workout, structureStr

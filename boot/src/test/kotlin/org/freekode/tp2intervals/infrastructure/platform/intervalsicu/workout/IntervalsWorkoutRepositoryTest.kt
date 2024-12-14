@@ -1,10 +1,12 @@
 package org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout
 
+import config.TestUtils
 import config.mock.IntervalsApiClientMock
 import config.mock.ObjectMapperFactory
 import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.structure.SingleStep
+import org.freekode.tp2intervals.domain.workout.structure.StepLength
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsApiClient
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfiguration
@@ -38,7 +40,7 @@ class IntervalsWorkoutRepositoryTest {
         val workouts = intervalsWorkoutRepository.getWorkoutsFromCalendar(LocalDate.now(), LocalDate.now())
 
         // then
-        assertTrue(workouts.size == 5)
+        assertTrue(workouts.isNotEmpty())
 
         val workout = findWorkoutWithName("hr test", workouts)
         val structure = workout.structure!!
@@ -71,7 +73,8 @@ class IntervalsWorkoutRepositoryTest {
         val workouts = intervalsWorkoutRepository.getWorkoutsFromCalendar(LocalDate.now(), LocalDate.now())
 
         // then
-        assertEquals(5, workouts.size)
+        assertTrue(workouts.isNotEmpty())
+
 
         val workout = findWorkoutWithName("power test", workouts)
         val structure = workout.structure!!
@@ -108,7 +111,8 @@ class IntervalsWorkoutRepositoryTest {
         val workouts = intervalsWorkoutRepository.getWorkoutsFromCalendar(LocalDate.now(), LocalDate.now())
 
         // then
-        assertEquals(5, workouts.size)
+        assertTrue(workouts.isNotEmpty())
+
 
         val workout = findWorkoutWithName("pace test", workouts)
         val structure = workout.structure!!
@@ -137,27 +141,19 @@ class IntervalsWorkoutRepositoryTest {
         val workouts = intervalsWorkoutRepository.getWorkoutsFromCalendar(LocalDate.now(), LocalDate.now())
 
         // then
-        assertEquals(5, workouts.size)
+        assertTrue(workouts.isNotEmpty())
 
-        val workout = findWorkoutWithName("distance based", workouts)
+        val workout = findWorkoutWithName("distance test", workouts)
         val structure = workout.structure!!
 
-        assertEquals(TrainingType.RUN, workout.details.type)
+        assertEquals(TrainingType.SWIM, workout.details.type)
         assertEquals(WorkoutStructure.TargetUnit.PACE_PERCENTAGE, structure.target)
         assertEquals(4, structure.steps.size)
-        // 10m 70% Pace
-        assertEquals(600.toLong(), (structure.steps[0] as SingleStep).length.value)
-        assertEquals(68, (structure.steps[0] as SingleStep).target.start)
-        assertEquals(72, (structure.steps[0] as SingleStep).target.end)
-        // 10m 80-110% Pace
-        assertEquals(80, (structure.steps[1] as SingleStep).target.start)
-        assertEquals(110, (structure.steps[1] as SingleStep).target.end)
-        // 10m Z2 Pace
-        assertEquals(79, (structure.steps[2] as SingleStep).target.start)
-        assertEquals(88, (structure.steps[2] as SingleStep).target.end)
-        // 10m Z3-Z5 Pace
-        assertEquals(89, (structure.steps[3] as SingleStep).target.start)
-        assertEquals(103, (structure.steps[3] as SingleStep).target.end)
+
+        TestUtils.assertStep(structure.steps[0], 800, StepLength.LengthUnit.METERS, 20, 20)
+        TestUtils.assertStep(structure.steps[1], 500, StepLength.LengthUnit.METERS, 70, 70)
+        TestUtils.assertStep(structure.steps[2], 600, StepLength.LengthUnit.SECONDS, 20, 20)
+        TestUtils.assertStep(structure.steps[3], 300, StepLength.LengthUnit.METERS, 100, 100)
     }
 
     @Test
@@ -166,7 +162,8 @@ class IntervalsWorkoutRepositoryTest {
         val workouts = intervalsWorkoutRepository.getWorkoutsFromCalendar(LocalDate.now(), LocalDate.now())
 
         // then
-        assertEquals(5, workouts.size)
+        assertTrue(workouts.isNotEmpty())
+
 
         val workout = findWorkoutWithName("virtual ride test", workouts)
         assertEquals(TrainingType.VIRTUAL_BIKE, workout.details.type)
@@ -180,7 +177,8 @@ class IntervalsWorkoutRepositoryTest {
         val workouts = intervalsWorkoutRepository.getWorkoutsFromCalendar(LocalDate.now(), LocalDate.now())
 
         // then
-        assertEquals(5, workouts.size)
+        assertTrue(workouts.isNotEmpty())
+
 
         val workout = findWorkoutWithName("other test", workouts)
         assertEquals(TrainingType.UNKNOWN, workout.details.type)

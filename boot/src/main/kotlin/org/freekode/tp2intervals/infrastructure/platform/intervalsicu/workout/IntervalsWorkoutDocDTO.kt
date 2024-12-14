@@ -27,6 +27,7 @@ class IntervalsWorkoutDocDTO(
         val text: String?,
         val reps: Int?,
         val duration: Long?,
+        val distance: Long?,
         val power: StepValueDTO?,
         val _power: ResolvedStepValueDTO?,
         val hr: StepValueDTO?,

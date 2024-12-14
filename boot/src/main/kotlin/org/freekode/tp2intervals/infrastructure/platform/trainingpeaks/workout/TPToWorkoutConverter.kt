@@ -4,7 +4,7 @@ import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutDetails
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.library.TPWorkoutLibraryItemDTO
-import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.ConverterFromTPStructure
+import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.FromTPStructureConverter
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.time.Duration
@@ -56,7 +56,7 @@ class TPToWorkoutConverter {
             if (tpWorkout.structure == null || tpWorkout.structure.structure.isEmpty()) {
                 throw IllegalArgumentException("There is no structure")
             }
-            ConverterFromTPStructure.toWorkoutStructure(tpWorkout.structure)
+            FromTPStructureConverter.toWorkoutStructure(tpWorkout.structure)
         } catch (e: IllegalArgumentException) {
             log.warn("Can't convert workout - ${tpWorkout.title}, error - ${e.message}'")
             null
