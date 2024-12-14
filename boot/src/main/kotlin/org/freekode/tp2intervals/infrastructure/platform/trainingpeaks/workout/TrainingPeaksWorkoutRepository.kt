@@ -114,10 +114,10 @@ class TrainingPeaksWorkoutRepository(
     }
 
     private fun saveWorkoutToCalendar(workout: Workout) {
-        val createRequest: CreateTPWorkoutDTO
+        val createRequest: CreateTPWorkoutRequestDTO
         val structureStr = if (workout.structure != null) ConverterToTPStructure.toStructureString(objectMapper, workout.structure) else null
         val athleteId = trainingPeaksUserRepository.getUser().userId
-        createRequest = CreateTPWorkoutDTO.planWorkout(
+        createRequest = CreateTPWorkoutRequestDTO.planWorkout(
             athleteId, workout, structureStr
         )
         trainingPeaksApiClient.createAndPlanWorkout(athleteId, createRequest)

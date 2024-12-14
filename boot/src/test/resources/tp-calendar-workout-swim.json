@@ -1,0 +1,360 @@
+{
+  "workoutId": 2585450727,
+  "athleteId": 123,
+  "athleteId": 123,
+  "title": "100 reps + TT (Structured)",
+  "workoutTypeValueId": 1,
+  "code": null,
+  "workoutDay": "2024-03-08T00:00:00",
+  "startTime": null,
+  "startTimePlanned": null,
+  "isItAnOr": false,
+  "isHidden": null,
+  "completed": null,
+  "description": "WU:\n2 x 150 easy each done as 50 pull, 50 kick, 50 swim.\n200 kick easy.\n2 x 50 (10”) moderate.\nMS:\n4 x 100 at T-pace (10”).\n300 time trial.\nCD: 200 pull easy.\nTotal: 1500",
+  "userTags": null,
+  "coachComments": null,
+  "workoutComments": [],
+  "newComment": null,
+  "publicSettingValue": 2,
+  "sharedWorkoutInformationKey": "3VMK2GJQ52W2F4I4KKPTGRPJYM",
+  "sharedWorkoutInformationExpireKey": "HK6WQRQSWPFTJ2E3A5IFCIWT7GV7Y3AW36FIFXY",
+  "distance": null,
+  "distancePlanned": null,
+  "distanceCustomized": null,
+  "distanceUnitsCustomized": null,
+  "totalTime": null,
+  "totalTimePlanned": null,
+  "heartRateMinimum": null,
+  "heartRateMaximum": null,
+  "heartRateAverage": null,
+  "calories": null,
+  "caloriesPlanned": null,
+  "tssActual": null,
+  "tssPlanned": null,
+  "tssSource": 0,
+  "if": null,
+  "ifPlanned": null,
+  "velocityAverage": null,
+  "velocityPlanned": null,
+  "velocityMaximum": null,
+  "normalizedSpeedActual": null,
+  "normalizedPowerActual": null,
+  "powerAverage": null,
+  "powerMaximum": null,
+  "energy": null,
+  "energyPlanned": null,
+  "elevationGain": null,
+  "elevationGainPlanned": null,
+  "elevationLoss": null,
+  "elevationMinimum": null,
+  "elevationAverage": null,
+  "elevationMaximum": null,
+  "torqueAverage": null,
+  "torqueMaximum": null,
+  "tempMin": null,
+  "tempAvg": null,
+  "tempMax": null,
+  "cadenceAverage": null,
+  "cadenceMaximum": null,
+  "lastModifiedDate": "2024-04-10T13:13:11.127",
+  "equipmentBikeId": null,
+  "equipmentShoeId": null,
+  "isLocked": null,
+  "complianceDurationPercent": null,
+  "complianceDistancePercent": null,
+  "complianceTssPercent": null,
+  "rpe": null,
+  "feeling": null,
+  "structure": {
+    "structure": [
+      {
+        "type": "repetition",
+        "length": {
+          "value": 1,
+          "unit": "repetition"
+        },
+        "steps": [
+          {
+            "type": "step",
+            "name": "Pull",
+            "length": {
+              "unit": "meter",
+              "value": 50
+            },
+            "targets": [
+              {
+                "minValue": 75
+              }
+            ],
+            "intensityClass": "active"
+          },
+          {
+            "type": "step",
+            "name": "Kick",
+            "length": {
+              "unit": "meter",
+              "value": 50
+            },
+            "targets": [
+              {
+                "minValue": 75
+              }
+            ],
+            "intensityClass": "active"
+          },
+          {
+            "type": "step",
+            "name": "Swim",
+            "length": {
+              "unit": "meter",
+              "value": 50
+            },
+            "targets": [
+              {
+                "minValue": 75
+              }
+            ],
+            "intensityClass": "rest"
+          }
+        ],
+        "begin": 0,
+        "end": 150
+      },
+      {
+        "type": "step",
+        "length": {
+          "value": 1,
+          "unit": "repetition"
+        },
+        "steps": [
+          {
+            "name": "Recovery",
+            "length": {
+              "value": 10,
+              "unit": "second"
+            },
+            "targets": [
+              {
+                "minValue": 0
+              }
+            ],
+            "intensityClass": "rest"
+          }
+        ],
+        "begin": 150,
+        "end": 396.42857142857144
+      },
+      {
+        "type": "repetition",
+        "length": {
+          "value": 1,
+          "unit": "repetition"
+        },
+        "steps": [
+          {
+            "type": "step",
+            "name": "Pull",
+            "length": {
+              "unit": "meter",
+              "value": 50
+            },
+            "targets": [
+              {
+                "minValue": 75
+              }
+            ],
+            "intensityClass": "active"
+          },
+          {
+            "type": "step",
+            "name": "Kick",
+            "length": {
+              "unit": "meter",
+              "value": 50
+            },
+            "targets": [
+              {
+                "minValue": 75
+              }
+            ],
+            "intensityClass": "active"
+          },
+          {
+            "type": "step",
+            "name": "Swim",
+            "length": {
+              "unit": "meter",
+              "value": 50
+            },
+            "targets": [
+              {
+                "minValue": 75
+              }
+            ],
+            "intensityClass": "rest"
+          }
+        ],
+        "begin": 396.42857142857144,
+        "end": 546.4285714285714
+      },
+      {
+        "type": "step",
+        "length": {
+          "value": 1,
+          "unit": "repetition"
+        },
+        "steps": [
+          {
+            "name": "Kick",
+            "length": {
+              "value": 200,
+              "unit": "meter"
+            },
+            "targets": [
+              {
+                "minValue": 75
+              }
+            ],
+            "intensityClass": "rest"
+          }
+        ],
+        "begin": 546.4285714285714,
+        "end": 746.4285714285714
+      },
+      {
+        "type": "repetition",
+        "length": {
+          "value": 2,
+          "unit": "repetition"
+        },
+        "steps": [
+          {
+            "type": "step",
+            "name": "Hard",
+            "length": {
+              "unit": "meter",
+              "value": 50
+            },
+            "targets": [
+              {
+                "minValue": 90
+              }
+            ],
+            "intensityClass": "active"
+          },
+          {
+            "type": "step",
+            "name": "Rest",
+            "length": {
+              "unit": "second",
+              "value": 10
+            },
+            "targets": [
+              {
+                "minValue": 0
+              }
+            ],
+            "intensityClass": "rest"
+          }
+        ],
+        "begin": 746.4285714285714,
+        "end": 1339.2857142857142
+      },
+      {
+        "type": "repetition",
+        "length": {
+          "value": 4,
+          "unit": "repetition"
+        },
+        "steps": [
+          {
+            "type": "step",
+            "name": "Hard",
+            "length": {
+              "unit": "meter",
+              "value": 100
+            },
+            "targets": [
+              {
+                "minValue": 100
+              }
+            ],
+            "intensityClass": "active"
+          },
+          {
+            "type": "step",
+            "name": "Rest",
+            "length": {
+              "unit": "second",
+              "value": 10
+            },
+            "targets": [
+              {
+                "minValue": 0
+              }
+            ],
+            "intensityClass": "rest"
+          }
+        ],
+        "begin": 1339.2857142857142,
+        "end": 2725
+      },
+      {
+        "type": "step",
+        "length": {
+          "value": 1,
+          "unit": "repetition"
+        },
+        "steps": [
+          {
+            "name": "Time Trial",
+            "length": {
+              "value": 300,
+              "unit": "meter"
+            },
+            "targets": [
+              {
+                "minValue": 110
+              }
+            ],
+            "intensityClass": "active"
+          }
+        ],
+        "begin": 2725,
+        "end": 3025
+      },
+      {
+        "type": "step",
+        "length": {
+          "value": 1,
+          "unit": "repetition"
+        },
+        "steps": [
+          {
+            "name": "Cool Down",
+            "length": {
+              "value": 200,
+              "unit": "meter"
+            },
+            "targets": [
+              {
+                "minValue": 75
+              }
+            ],
+            "intensityClass": "coolDown"
+          }
+        ],
+        "begin": 3025,
+        "end": 3225
+      }
+    ],
+    "primaryLengthMetric": "distance",
+    "primaryIntensityMetric": "percentOfThresholdPace",
+    "visualizationDistanceUnit": "meter"
+  },
+  "orderOnDay": 1,
+  "personalRecordCount": 0,
+  "syncedTo": null,
+  "poolLengthOptionId": null
+}

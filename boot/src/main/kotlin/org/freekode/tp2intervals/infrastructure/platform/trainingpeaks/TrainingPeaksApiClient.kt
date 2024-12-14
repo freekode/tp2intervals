@@ -1,6 +1,6 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks
 
-import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.CreateTPWorkoutDTO
+import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.CreateTPWorkoutRequestDTO
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.TPNoteResponseDTO
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.TPWorkoutCalendarResponseDTO
 import org.springframework.cloud.openfeign.FeignClient
@@ -42,7 +42,7 @@ interface TrainingPeaksApiClient {
     @PostMapping("/fitness/v6/athletes/{userId}/workouts")
     fun createAndPlanWorkout(
         @PathVariable("userId") userId: String,
-        @RequestBody createTPWorkoutDTO: CreateTPWorkoutDTO
+        @RequestBody requestDTO: CreateTPWorkoutRequestDTO
     )
 
     @DeleteMapping("/fitness/v6/athletes/{userId}/workouts/{workoutId}")
