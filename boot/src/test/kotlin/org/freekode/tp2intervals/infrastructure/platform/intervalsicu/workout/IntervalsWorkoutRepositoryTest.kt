@@ -4,13 +4,13 @@ import config.mock.IntervalsApiClientMock
 import config.mock.ObjectMapperFactory
 import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.workout.Workout
-import org.freekode.tp2intervals.domain.workout.structure.WorkoutSingleStep
+import org.freekode.tp2intervals.domain.workout.structure.SingleStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsApiClient
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfiguration
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfigurationRepository
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
@@ -38,29 +38,31 @@ class IntervalsWorkoutRepositoryTest {
         val workouts = intervalsWorkoutRepository.getWorkoutsFromCalendar(LocalDate.now(), LocalDate.now())
 
         // then
-        Assertions.assertTrue(workouts.size == 5)
+        assertTrue(workouts.size == 5)
 
         val workout = findWorkoutWithName("hr test", workouts)
+        val structure = workout.structure!!
+
         assertEquals(TrainingType.BIKE, workout.details.type)
-        assertEquals(WorkoutStructure.TargetUnit.LTHR_PERCENTAGE, workout.structure!!.target)
-        assertEquals(5, workout.structure!!.steps.size)
+        assertEquals(WorkoutStructure.TargetUnit.LTHR_PERCENTAGE, structure.target)
+        assertEquals(5, structure.steps.size)
         // 10m 50-70% LTHR
-        assertEquals(600.toLong(), (workout.structure!!.steps[0] as WorkoutSingleStep).length.value)
-        assertEquals(50, (workout.structure!!.steps[0] as WorkoutSingleStep).target.start)
-        assertEquals(70, (workout.structure!!.steps[0] as WorkoutSingleStep).target.end)
+        assertEquals(600.toLong(), (structure.steps[0] as SingleStep).length.value)
+        assertEquals(50, (structure.steps[0] as SingleStep).target.start)
+        assertEquals(70, (structure.steps[0] as SingleStep).target.end)
         // 10m 80% LTHR
-        assertEquals(78, (workout.structure!!.steps[1] as WorkoutSingleStep).target.start)
-        assertEquals(82, (workout.structure!!.steps[1] as WorkoutSingleStep).target.end)
+        assertEquals(78, (structure.steps[1] as SingleStep).target.start)
+        assertEquals(82, (structure.steps[1] as SingleStep).target.end)
         // 10m ramp 45-60% LTHR
-        assertEquals(45, (workout.structure!!.steps[2] as WorkoutSingleStep).target.start)
-        assertEquals(60, (workout.structure!!.steps[2] as WorkoutSingleStep).target.end)
-        (workout.structure!!.steps[2] as WorkoutSingleStep).ramp
+        assertEquals(45, (structure.steps[2] as SingleStep).target.start)
+        assertEquals(60, (structure.steps[2] as SingleStep).target.end)
+        (structure.steps[2] as SingleStep).ramp
         // 10m Z2 HR
-        assertEquals(68, (workout.structure!!.steps[3] as WorkoutSingleStep).target.start)
-        assertEquals(82, (workout.structure!!.steps[3] as WorkoutSingleStep).target.end)
+        assertEquals(68, (structure.steps[3] as SingleStep).target.start)
+        assertEquals(82, (structure.steps[3] as SingleStep).target.end)
         // 10m Z3-Z4 HR
-        assertEquals(83, (workout.structure!!.steps[4] as WorkoutSingleStep).target.start)
-        assertEquals(105, (workout.structure!!.steps[4] as WorkoutSingleStep).target.end)
+        assertEquals(83, (structure.steps[4] as SingleStep).target.start)
+        assertEquals(105, (structure.steps[4] as SingleStep).target.end)
     }
 
     @Test
@@ -72,30 +74,32 @@ class IntervalsWorkoutRepositoryTest {
         assertEquals(5, workouts.size)
 
         val workout = findWorkoutWithName("power test", workouts)
+        val structure = workout.structure!!
+
         assertEquals(TrainingType.BIKE, workout.details.type)
-        assertEquals(WorkoutStructure.TargetUnit.FTP_PERCENTAGE, workout.structure!!.target)
-        assertEquals(5, workout.structure!!.steps.size)
+        assertEquals(WorkoutStructure.TargetUnit.FTP_PERCENTAGE, structure.target)
+        assertEquals(5, structure.steps.size)
         // 10m 10-30%
-        assertEquals(600.toLong(), (workout.structure!!.steps[0] as WorkoutSingleStep).length.value)
-        assertEquals(10, (workout.structure!!.steps[0] as WorkoutSingleStep).target.start)
-        assertEquals(30, (workout.structure!!.steps[0] as WorkoutSingleStep).target.end)
+        assertEquals(600.toLong(), (structure.steps[0] as SingleStep).length.value)
+        assertEquals(10, (structure.steps[0] as SingleStep).target.start)
+        assertEquals(30, (structure.steps[0] as SingleStep).target.end)
         // 10m 40% 30-90rpm
-        assertEquals(39, (workout.structure!!.steps[1] as WorkoutSingleStep).target.start)
-        assertEquals(41, (workout.structure!!.steps[1] as WorkoutSingleStep).target.end)
-        assertEquals(30, (workout.structure!!.steps[1] as WorkoutSingleStep).cadence!!.start)
-        assertEquals(90, (workout.structure!!.steps[1] as WorkoutSingleStep).cadence!!.end)
+        assertEquals(39, (structure.steps[1] as SingleStep).target.start)
+        assertEquals(41, (structure.steps[1] as SingleStep).target.end)
+        assertEquals(30, (structure.steps[1] as SingleStep).cadence!!.start)
+        assertEquals(90, (structure.steps[1] as SingleStep).cadence!!.end)
         // 10m ramp 10-60%
-        assertEquals(10, (workout.structure!!.steps[2] as WorkoutSingleStep).target.start)
-        assertEquals(60, (workout.structure!!.steps[2] as WorkoutSingleStep).target.end)
-        (workout.structure!!.steps[2] as WorkoutSingleStep).ramp
+        assertEquals(10, (structure.steps[2] as SingleStep).target.start)
+        assertEquals(60, (structure.steps[2] as SingleStep).target.end)
+        (structure.steps[2] as SingleStep).ramp
         // 10m Z2 85rpm
-        assertEquals(56, (workout.structure!!.steps[3] as WorkoutSingleStep).target.start)
-        assertEquals(75, (workout.structure!!.steps[3] as WorkoutSingleStep).target.end)
-        assertEquals(85, (workout.structure!!.steps[3] as WorkoutSingleStep).cadence!!.start)
-        assertEquals(85, (workout.structure!!.steps[3] as WorkoutSingleStep).cadence!!.end)
+        assertEquals(56, (structure.steps[3] as SingleStep).target.start)
+        assertEquals(75, (structure.steps[3] as SingleStep).target.end)
+        assertEquals(85, (structure.steps[3] as SingleStep).cadence!!.start)
+        assertEquals(85, (structure.steps[3] as SingleStep).cadence!!.end)
         // 10m Z3-Z4
-        assertEquals(76, (workout.structure!!.steps[4] as WorkoutSingleStep).target.start)
-        assertEquals(105, (workout.structure!!.steps[4] as WorkoutSingleStep).target.end)
+        assertEquals(76, (structure.steps[4] as SingleStep).target.start)
+        assertEquals(105, (structure.steps[4] as SingleStep).target.end)
     }
 
     @Test
@@ -107,22 +111,53 @@ class IntervalsWorkoutRepositoryTest {
         assertEquals(5, workouts.size)
 
         val workout = findWorkoutWithName("pace test", workouts)
+        val structure = workout.structure!!
+
         assertEquals(TrainingType.RUN, workout.details.type)
-        assertEquals(WorkoutStructure.TargetUnit.PACE_PERCENTAGE, workout.structure!!.target)
-        assertEquals(4, workout.structure!!.steps.size)
+        assertEquals(WorkoutStructure.TargetUnit.PACE_PERCENTAGE, structure.target)
+        assertEquals(4, structure.steps.size)
         // 10m 70% Pace
-        assertEquals(600.toLong(), (workout.structure!!.steps[0] as WorkoutSingleStep).length.value)
-        assertEquals(68, (workout.structure!!.steps[0] as WorkoutSingleStep).target.start)
-        assertEquals(72, (workout.structure!!.steps[0] as WorkoutSingleStep).target.end)
+        assertEquals(600.toLong(), (structure.steps[0] as SingleStep).length.value)
+        assertEquals(68, (structure.steps[0] as SingleStep).target.start)
+        assertEquals(72, (structure.steps[0] as SingleStep).target.end)
         // 10m 80-110% Pace
-        assertEquals(80, (workout.structure!!.steps[1] as WorkoutSingleStep).target.start)
-        assertEquals(110, (workout.structure!!.steps[1] as WorkoutSingleStep).target.end)
+        assertEquals(80, (structure.steps[1] as SingleStep).target.start)
+        assertEquals(110, (structure.steps[1] as SingleStep).target.end)
         // 10m Z2 Pace
-        assertEquals(79, (workout.structure!!.steps[2] as WorkoutSingleStep).target.start)
-        assertEquals(88, (workout.structure!!.steps[2] as WorkoutSingleStep).target.end)
+        assertEquals(79, (structure.steps[2] as SingleStep).target.start)
+        assertEquals(88, (structure.steps[2] as SingleStep).target.end)
         // 10m Z3-Z5 Pace
-        assertEquals(89, (workout.structure!!.steps[3] as WorkoutSingleStep).target.start)
-        assertEquals(103, (workout.structure!!.steps[3] as WorkoutSingleStep).target.end)
+        assertEquals(89, (structure.steps[3] as SingleStep).target.start)
+        assertEquals(103, (structure.steps[3] as SingleStep).target.end)
+    }
+
+    @Test
+    fun `should parse pace workout with distance based steps`() {
+        // when
+        val workouts = intervalsWorkoutRepository.getWorkoutsFromCalendar(LocalDate.now(), LocalDate.now())
+
+        // then
+        assertEquals(5, workouts.size)
+
+        val workout = findWorkoutWithName("distance based", workouts)
+        val structure = workout.structure!!
+
+        assertEquals(TrainingType.RUN, workout.details.type)
+        assertEquals(WorkoutStructure.TargetUnit.PACE_PERCENTAGE, structure.target)
+        assertEquals(4, structure.steps.size)
+        // 10m 70% Pace
+        assertEquals(600.toLong(), (structure.steps[0] as SingleStep).length.value)
+        assertEquals(68, (structure.steps[0] as SingleStep).target.start)
+        assertEquals(72, (structure.steps[0] as SingleStep).target.end)
+        // 10m 80-110% Pace
+        assertEquals(80, (structure.steps[1] as SingleStep).target.start)
+        assertEquals(110, (structure.steps[1] as SingleStep).target.end)
+        // 10m Z2 Pace
+        assertEquals(79, (structure.steps[2] as SingleStep).target.start)
+        assertEquals(88, (structure.steps[2] as SingleStep).target.end)
+        // 10m Z3-Z5 Pace
+        assertEquals(89, (structure.steps[3] as SingleStep).target.start)
+        assertEquals(103, (structure.steps[3] as SingleStep).target.end)
     }
 
     @Test

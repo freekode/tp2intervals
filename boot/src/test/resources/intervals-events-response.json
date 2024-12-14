@@ -835,5 +835,57 @@
     "distance": null,
     "icu_intensity": null,
     "plan_name": null
+  },
+  {
+    "icu_training_load": 35,
+    "icu_atl": 52.201942,
+    "icu_ctl": 25.24677,
+    "category": "WORKOUT",
+    "name": "distance based",
+    "start_date_local": "2024-12-11T00:00:00",
+    "end_date_local": null,
+    "description": "\n- 1km 40% Pace\n- 8m 50% Pace\n- 5km 90% Pace",
+    "type": "Swim",
+    "moving_time": 10140,
+    "attachments": [],
+    "joules": 0,
+    "joules_above_ftp": 0,
+    "workout_doc": {
+      "duration": 10147,
+      "distance": 6199.999992,
+      "locales": [],
+      "steps": [
+        {
+          "distance": 1000,
+          "pace": {
+            "value": 40,
+            "units": "%pace"
+          },
+          "duration": 3000
+        },
+        {
+          "duration": 480,
+          "pace": {
+            "value": 50,
+            "units": "%pace"
+          }
+        },
+        {
+          "distance": 5000,
+          "pace": {
+            "value": 90,
+            "units": "%pace"
+          },
+          "duration": 6667
+        }
+      ],
+      "options": {},
+      "polarization_index": null,
+      "average_watts": 0,
+      "normalized_power": 0,
+      "variability_index": null
+    },
+    "indoor": false,
+    "color": null
   }
 ]

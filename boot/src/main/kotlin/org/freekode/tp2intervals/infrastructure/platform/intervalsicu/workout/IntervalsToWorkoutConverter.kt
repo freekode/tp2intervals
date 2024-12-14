@@ -52,8 +52,8 @@ class IntervalsToWorkoutConverter(
 
     private fun mapMultiStep(
         stepDTO: IntervalsWorkoutDocDTO.WorkoutStepDTO
-    ): WorkoutMultiStep {
-        return WorkoutMultiStep(
+    ): MultiStep {
+        return MultiStep(
             stepDTO.text,
             stepDTO.reps!!,
             stepDTO.steps!!.map { mapSingleStep(it) }
@@ -62,7 +62,7 @@ class IntervalsToWorkoutConverter(
 
     private fun mapSingleStep(
         stepDTO: IntervalsWorkoutDocDTO.WorkoutStepDTO
-    ): WorkoutSingleStep {
+    ): SingleStep {
         val targetMapper = IntervalsToTargetConverter(
             workoutDoc!!.ftp?.toDouble(),
             workoutDoc!!.lthr?.toDouble(),
@@ -71,7 +71,7 @@ class IntervalsToWorkoutConverter(
         val mainTarget = targetMapper.toMainTarget(stepDTO)
         val cadenceTarget = stepDTO.cadence?.let { targetMapper.toCadenceTarget(it) }
 
-        return WorkoutSingleStep(
+        return SingleStep(
             stepDTO.text,
             StepLength.seconds(stepDTO.duration ?: 600),
             mainTarget,

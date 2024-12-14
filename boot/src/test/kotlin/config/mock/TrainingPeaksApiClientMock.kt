@@ -1,7 +1,6 @@
 package config.mock
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.freekode.tp2intervals.infrastructure.platform.trainerroad.workout.TRWorkoutResponseDTO
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.TrainingPeaksApiClient
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.CreateTPWorkoutRequestDTO
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.TPNoteResponseDTO
@@ -11,14 +10,13 @@ import java.io.InputStream
 
 class TrainingPeaksApiClientMock(
     objectMapper: ObjectMapper,
-    swimWorkoutResponse: InputStream,
+    workoutResponses: List<InputStream>,
 ) : TrainingPeaksApiClient {
-    private val swimWorkout: TPWorkoutCalendarResponseDTO = objectMapper.readValue(
-        swimWorkoutResponse, TPWorkoutCalendarResponseDTO::class.java
-    )
+    private val workouts: List<TPWorkoutCalendarResponseDTO> = workoutResponses.map {
+        objectMapper.readValue(it, TPWorkoutCalendarResponseDTO::class.java)
+    }
 
-    override fun getWorkouts(userId: String, startDate: String, endDate: String) =
-        listOf(swimWorkout)
+    override fun getWorkouts(userId: String, startDate: String, endDate: String) = workouts
 
     override fun getNotes(userId: String, startDate: String, endDate: String) =
         listOf<TPNoteResponseDTO>()

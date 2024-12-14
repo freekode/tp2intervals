@@ -41,9 +41,9 @@ class TrainerRoadWorkoutMapper {
 
             val name = if (interval.name == "Fake") "Step" else interval.name
 
-            val workoutSingleStep =
-                WorkoutSingleStep(name, stepLength, StepTarget(ftpPercent, ftpPercent), null, false)
-            steps.add(workoutSingleStep)
+            val singleStep =
+                SingleStep(name, stepLength, StepTarget(ftpPercent, ftpPercent), null, false)
+            steps.add(singleStep)
         }
         return steps
     }

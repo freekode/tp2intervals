@@ -24,8 +24,8 @@ class ConverterFromTPStructure(
         }
     }
 
-    private fun mapSingleStep(tPStepDTO: TPStepDTO): WorkoutSingleStep {
-        return WorkoutSingleStep(
+    private fun mapSingleStep(tPStepDTO: TPStepDTO): SingleStep {
+        return SingleStep(
             tPStepDTO.name,
             tPStepDTO.length!!.toStepLength(),
             tPStepDTO.toMainTarget(),
@@ -35,7 +35,7 @@ class ConverterFromTPStructure(
     }
 
     private fun mapMultiStep(tPStructureStepDTO: TPStructureStepDTO): WorkoutStep {
-        return WorkoutMultiStep(
+        return MultiStep(
             null,
             tPStructureStepDTO.length!!.reps().toInt(),
             tPStructureStepDTO.steps.map { mapSingleStep(it) },

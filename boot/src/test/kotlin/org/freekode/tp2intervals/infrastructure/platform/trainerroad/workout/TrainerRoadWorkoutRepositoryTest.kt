@@ -4,7 +4,7 @@ import config.mock.ObjectMapperFactory
 import config.mock.TrainerRoadApiClientMock
 import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.TrainingType
-import org.freekode.tp2intervals.domain.workout.structure.WorkoutSingleStep
+import org.freekode.tp2intervals.domain.workout.structure.SingleStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.TrainerRoadApiClientService
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.configuration.TrainerRoadConfiguration
@@ -42,18 +42,20 @@ class TrainerRoadWorkoutRepositoryTest {
         val workout = trainerRoadWorkoutRepository.getWorkoutFromLibrary(data)
 
         // then
+        val structure = workout.structure!!
+
         assertEquals(TrainingType.VIRTUAL_BIKE, workout.details.type)
-        assertEquals(WorkoutStructure.TargetUnit.FTP_PERCENTAGE, workout.structure!!.target)
-        assertEquals(11, workout.structure!!.steps.size)
-        assertEquals(5 * 60.toLong(), (workout.structure!!.steps[0] as WorkoutSingleStep).length.value)
-        assertEquals(50, (workout.structure!!.steps[0] as WorkoutSingleStep).target.start)
-        assertEquals(50, (workout.structure!!.steps[0] as WorkoutSingleStep).target.end)
-        assertEquals(3 * 60.toLong(), (workout.structure!!.steps[1] as WorkoutSingleStep).length.value)
-        assertEquals(60, (workout.structure!!.steps[1] as WorkoutSingleStep).target.start)
-        assertEquals(60, (workout.structure!!.steps[1] as WorkoutSingleStep).target.end)
-        assertEquals(13 * 60.toLong(), (workout.structure!!.steps[2] as WorkoutSingleStep).length.value)
-        assertEquals(50, (workout.structure!!.steps[2] as WorkoutSingleStep).target.start)
-        assertEquals(50, (workout.structure!!.steps[2] as WorkoutSingleStep).target.end)
+        assertEquals(WorkoutStructure.TargetUnit.FTP_PERCENTAGE, structure.target)
+        assertEquals(11, structure.steps.size)
+        assertEquals(5 * 60.toLong(), (structure.steps[0] as SingleStep).length.value)
+        assertEquals(50, (structure.steps[0] as SingleStep).target.start)
+        assertEquals(50, (structure.steps[0] as SingleStep).target.end)
+        assertEquals(3 * 60.toLong(), (structure.steps[1] as SingleStep).length.value)
+        assertEquals(60, (structure.steps[1] as SingleStep).target.start)
+        assertEquals(60, (structure.steps[1] as SingleStep).target.end)
+        assertEquals(13 * 60.toLong(), (structure.steps[2] as SingleStep).length.value)
+        assertEquals(50, (structure.steps[2] as SingleStep).target.start)
+        assertEquals(50, (structure.steps[2] as SingleStep).target.end)
     }
 
     @Test
@@ -63,18 +65,20 @@ class TrainerRoadWorkoutRepositoryTest {
         val workout = trainerRoadWorkoutRepository.getWorkoutFromLibrary(data)
 
         // then
+        val structure = workout.structure!!
+
         assertEquals(TrainingType.VIRTUAL_BIKE, workout.details.type)
-        assertEquals(WorkoutStructure.TargetUnit.FTP_PERCENTAGE, workout.structure!!.target)
-        assertEquals(23, workout.structure!!.steps.size)
-        assertEquals(4 * 60.toLong(), (workout.structure!!.steps[0] as WorkoutSingleStep).length.value)
-        assertEquals(50, (workout.structure!!.steps[0] as WorkoutSingleStep).target.start)
-        assertEquals(50, (workout.structure!!.steps[0] as WorkoutSingleStep).target.end)
-        assertEquals(2 * 60.toLong(), (workout.structure!!.steps[1] as WorkoutSingleStep).length.value)
-        assertEquals(55, (workout.structure!!.steps[1] as WorkoutSingleStep).target.start)
-        assertEquals(55, (workout.structure!!.steps[1] as WorkoutSingleStep).target.end)
-        assertEquals(2 * 60.toLong(), (workout.structure!!.steps[2] as WorkoutSingleStep).length.value)
-        assertEquals(60, (workout.structure!!.steps[2] as WorkoutSingleStep).target.start)
-        assertEquals(60, (workout.structure!!.steps[2] as WorkoutSingleStep).target.end)
+        assertEquals(WorkoutStructure.TargetUnit.FTP_PERCENTAGE, structure.target)
+        assertEquals(23, structure.steps.size)
+        assertEquals(4 * 60.toLong(), (structure.steps[0] as SingleStep).length.value)
+        assertEquals(50, (structure.steps[0] as SingleStep).target.start)
+        assertEquals(50, (structure.steps[0] as SingleStep).target.end)
+        assertEquals(2 * 60.toLong(), (structure.steps[1] as SingleStep).length.value)
+        assertEquals(55, (structure.steps[1] as SingleStep).target.start)
+        assertEquals(55, (structure.steps[1] as SingleStep).target.end)
+        assertEquals(2 * 60.toLong(), (structure.steps[2] as SingleStep).length.value)
+        assertEquals(60, (structure.steps[2] as SingleStep).target.start)
+        assertEquals(60, (structure.steps[2] as SingleStep).target.end)
     }
 
     @Test

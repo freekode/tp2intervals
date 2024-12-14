@@ -19,18 +19,18 @@ class StructureToIntervalsConverter(
 
     private fun toIntervalsStep(workoutStep: WorkoutStep): String {
         return if (workoutStep.isSingleStep()) {
-            getStepString(workoutStep as WorkoutSingleStep)
+            getStepString(workoutStep as SingleStep)
         } else {
-            "\n" + mapMultiStep(workoutStep as WorkoutMultiStep) + "\n"
+            "\n" + mapMultiStep(workoutStep as MultiStep) + "\n"
         }
     }
 
-    private fun mapMultiStep(workoutMultiStep: WorkoutMultiStep): String {
-        val steps = listOf("${workoutMultiStep.repetitions}x") + workoutMultiStep.steps.map { toIntervalsStep(it) }
+    private fun mapMultiStep(multiStep: MultiStep): String {
+        val steps = listOf("${multiStep.repetitions}x") + multiStep.steps.map { toIntervalsStep(it) }
         return steps.joinToString(separator = "\n")
     }
 
-    private fun getStepString(workoutStep: WorkoutSingleStep): String {
+    private fun getStepString(workoutStep: SingleStep): String {
         val name = workoutStep.name.orEmpty().replace("\\", "/")
         val length = toStepLength(workoutStep.length)
         val targetUnitStr = targetTypeMap[structure.target]!!

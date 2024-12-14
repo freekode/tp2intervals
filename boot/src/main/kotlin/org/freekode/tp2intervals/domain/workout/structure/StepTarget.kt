@@ -4,7 +4,7 @@ import java.io.Serializable
 
 data class StepTarget(
     val start: Int,
-    val end: Int
-): Serializable {
+    val end: Int,
+) : Serializable {
     fun isSingleValue(): Boolean = start == end
 }
