@@ -72,6 +72,5 @@ jobs:
         if: ${{ inputs.dry-run == false }}
         with:
           draft: true
-          generateReleaseNotes: true
           artifactErrorsFailBuild: true
           artifacts: boot/build/libs/${{ inputs.jar-name }}.jar
