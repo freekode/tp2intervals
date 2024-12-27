@@ -115,6 +115,8 @@ Check all your values and save configuration again.
 
 For using Strava just copy all your cookies from browser for Strava. It should be enough.
 
+<img src="https://github.com/freekode/tp2intervals/blob/main/docs/strava.jpg?raw=true">
+
 ### Sync automatically planned workouts to TrainingPeaks
 
 If you are using app in docker container, you can set up automatic sync of planned workouts for TrainingPeaks.
