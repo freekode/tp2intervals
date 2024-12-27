@@ -1,9 +1,9 @@
 package org.freekode.tp2intervals.domain.workout.structure
 
-class WorkoutMultiStep(
+class MultiStep(
     val name: String?,
     val repetitions: Int,
-    val steps: List<WorkoutSingleStep>
+    val steps: List<SingleStep>
 ) : WorkoutStep {
     override fun isSingleStep() = false
 }

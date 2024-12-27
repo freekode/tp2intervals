@@ -835,5 +835,151 @@
     "distance": null,
     "icu_intensity": null,
     "plan_name": null
+  },
+  {
+    "id": 48925011,
+    "start_date_local": "2024-12-13T00:00:00",
+    "icu_training_load": 5,
+    "icu_atl": null,
+    "icu_ctl": null,
+    "type": "Swim",
+    "carbs_used": null,
+    "calendar_id": 1,
+    "uid": "0acaa6ec-3e50-4312-99ac-9bd5f0490f1c",
+    "athlete_id": "i207965",
+    "category": "WORKOUT",
+    "end_date_local": "2024-12-14T00:00:00",
+    "name": "distance test",
+    "description": "\n- 0.8km 20% Pace\n- 0.5km 70% Pace\n- 10m 20% Pace\n- 0.3km 100% Pace\n",
+    "indoor": false,
+    "color": null,
+    "moving_time": 6617,
+    "icu_ftp": null,
+    "atl_days": null,
+    "ctl_days": null,
+    "updated": "2024-12-14T14:25:06.408+00:00",
+    "not_on_fitness_chart": false,
+    "show_as_note": false,
+    "show_on_ctl_line": false,
+    "target": null,
+    "joules": 0,
+    "joules_above_ftp": 0,
+    "workout_doc": {
+      "duration": 6617,
+      "distance": 1700.0,
+      "lthr": 181,
+      "threshold_pace": 0.8333333,
+      "pace_units": "SECS_100M",
+      "target": "PACE",
+      "steps": [
+        {
+          "duration": 4800,
+          "distance": 800.0,
+          "pace": {
+            "value": 20.0,
+            "units": "%pace"
+          },
+          "_pace": {
+            "value": 0.1666666567325592,
+            "start": 0.1666666567325592,
+            "end": 0.1666666567325592
+          }
+        },
+        {
+          "duration": 857,
+          "distance": 500.0,
+          "pace": {
+            "value": 70.0,
+            "units": "%pace"
+          },
+          "_pace": {
+            "value": 0.5833333134651184,
+            "start": 0.5833333134651184,
+            "end": 0.5833333134651184
+          }
+        },
+        {
+          "duration": 600,
+          "pace": {
+            "value": 20.0,
+            "units": "%pace"
+          },
+          "_pace": {
+            "value": 0.1666666567325592,
+            "start": 0.1666666567325592,
+            "end": 0.1666666567325592
+          },
+          "_distance": 99.99999
+        },
+        {
+          "duration": 360,
+          "distance": 300.0,
+          "pace": {
+            "value": 100.0,
+            "units": "%pace"
+          },
+          "_pace": {
+            "value": 0.8333333134651184,
+            "start": 0.8333333134651184,
+            "end": 0.8333333134651184
+          }
+        }
+      ],
+      "zoneTimes": [
+        {
+          "id": "Z1",
+          "secs": 6257
+        },
+        {
+          "id": "Z2",
+          "secs": 0
+        },
+        {
+          "id": "Z3",
+          "secs": 0
+        },
+        {
+          "id": "Z4",
+          "secs": 360
+        },
+        {
+          "id": "Z5",
+          "secs": 0
+        },
+        {
+          "id": "Z6",
+          "secs": 0
+        },
+        {
+          "id": "Z7",
+          "secs": 0
+        }
+      ],
+      "options": {},
+      "locales": []
+    },
+    "push_errors": null,
+    "athlete_cannot_edit": false,
+    "hide_from_athlete": false,
+    "structure_read_only": false,
+    "created_by_id": "i207965",
+    "shared_event_id": null,
+    "entered": false,
+    "carbs_per_hour": null,
+    "tags": null,
+    "attachments": null,
+    "oauth_client_id": null,
+    "external_id": null,
+    "load_target": null,
+    "time_target": null,
+    "distance_target": null,
+    "plan_athlete_id": null,
+    "plan_folder_id": null,
+    "plan_workout_id": null,
+    "plan_applied": null,
+    "distance": 1700.0,
+    "icu_intensity": 16.493229,
+    "plan_name": null,
+    "paired_activity_id": null
   }
 ]
