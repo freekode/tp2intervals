@@ -82,8 +82,8 @@ class FromIntervalsWorkoutConverter(
 
     private fun getStepLength(stepDTO: IntervalsWorkoutDocDTO.WorkoutStepDTO) =
         if (stepDTO.distance != null) {
-            StepLength(stepDTO.distance, StepLength.LengthUnit.METERS)
+            StepLength.meters(stepDTO.distance)
         } else {
-            StepLength(stepDTO.duration ?: 600, StepLength.LengthUnit.SECONDS)
+            StepLength.seconds(stepDTO.duration ?: 600)
         }
 }

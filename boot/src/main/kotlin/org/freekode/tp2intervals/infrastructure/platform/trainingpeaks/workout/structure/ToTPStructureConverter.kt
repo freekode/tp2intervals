@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.freekode.tp2intervals.domain.workout.structure.MultiStep
 import org.freekode.tp2intervals.domain.workout.structure.SingleStep
+import org.freekode.tp2intervals.domain.workout.structure.StepLength
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStep
 import org.freekode.tp2intervals.domain.workout.structure.StepTarget
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
@@ -27,11 +28,30 @@ class ToTPStructureConverter(
     private fun mapToWorkoutStructure(steps: List<WorkoutStep>): TPWorkoutStructureDTO {
         val stepDTOs = steps.map { mapToStructureStep(it) }
 
+        val distanceBased = isDistanceBased(steps)
+
         return TPWorkoutStructureDTO(
             stepDTOs,
-            "duration",
+            if (distanceBased) "distance" else "duration",
             TPTargetMapper.getByTargetUnit(structure.target),
+            if (distanceBased) "meter" else null,
         )
+    }
+
+    private fun isDistanceBased(steps: List<WorkoutStep>): Boolean {
+        for (step in steps) {
+            if (!step.isSingleStep()) {
+                val distanceBased = isDistanceBased((step as MultiStep).steps)
+                if (distanceBased) {
+                    return true
+                }
+                continue
+            }
+            if ((step as SingleStep).length.unit == StepLength.LengthUnit.METERS) {
+                return true
+            }
+        }
+        return false
     }
 
     private fun mapToStructureStep(workoutStep: WorkoutStep): TPStructureStepDTO {
@@ -64,7 +84,7 @@ class ToTPStructureConverter(
 
         return TPStepDTO(
             workoutStep.name,
-            TPLengthDTO.seconds(workoutStep.length.value),
+            TPLengthDTO.fromStepLength(workoutStep.length),
             targetList,
         )
     }

@@ -7,8 +7,12 @@ class TPLengthDTO(
     var unit: String,
 ) {
     companion object {
-        fun seconds(value: Long) = TPLengthDTO(value, "second")
-        fun meters(value: Long) = TPLengthDTO(value, "meter")
+        fun fromStepLength(stepLength: StepLength): TPLengthDTO =
+            when (stepLength.unit) {
+                StepLength.LengthUnit.SECONDS -> TPLengthDTO(stepLength.value, "second")
+                StepLength.LengthUnit.METERS -> TPLengthDTO(stepLength.value, "meter")
+            }
+
         fun repetitions(value: Long) = TPLengthDTO(value, "repetition")
         fun single() = repetitions(1)
     }
