@@ -1,15 +1,11 @@
 package org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout
 
-import java.time.Duration
 import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutDetails
-import org.freekode.tp2intervals.domain.workout.structure.WorkoutMultiStep
-import org.freekode.tp2intervals.domain.workout.structure.WorkoutSingleStep
-import org.freekode.tp2intervals.domain.workout.structure.WorkoutStep
-import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
+import org.freekode.tp2intervals.domain.workout.structure.*
 
-class IntervalsToWorkoutConverter(
+class FromIntervalsWorkoutConverter(
     private val eventDTO: IntervalsEventDTO
 ) {
     private val workoutDoc: IntervalsWorkoutDocDTO? by lazy { eventDTO.workout_doc }
@@ -56,8 +52,8 @@ class IntervalsToWorkoutConverter(
 
     private fun mapMultiStep(
         stepDTO: IntervalsWorkoutDocDTO.WorkoutStepDTO
-    ): WorkoutMultiStep {
-        return WorkoutMultiStep(
+    ): MultiStep {
+        return MultiStep(
             stepDTO.text,
             stepDTO.reps!!,
             stepDTO.steps!!.map { mapSingleStep(it) }
@@ -66,7 +62,7 @@ class IntervalsToWorkoutConverter(
 
     private fun mapSingleStep(
         stepDTO: IntervalsWorkoutDocDTO.WorkoutStepDTO
-    ): WorkoutSingleStep {
+    ): SingleStep {
         val targetMapper = IntervalsToTargetConverter(
             workoutDoc!!.ftp?.toDouble(),
             workoutDoc!!.lthr?.toDouble(),
@@ -75,12 +71,19 @@ class IntervalsToWorkoutConverter(
         val mainTarget = targetMapper.toMainTarget(stepDTO)
         val cadenceTarget = stepDTO.cadence?.let { targetMapper.toCadenceTarget(it) }
 
-        return WorkoutSingleStep(
+        return SingleStep(
             stepDTO.text,
-            stepDTO.duration?.let { Duration.ofSeconds(it) } ?: Duration.ofMinutes(10),
+            getStepLength(stepDTO),
             mainTarget,
             cadenceTarget,
             stepDTO.ramp == true
         )
     }
+
+    private fun getStepLength(stepDTO: IntervalsWorkoutDocDTO.WorkoutStepDTO) =
+        if (stepDTO.distance != null) {
+            StepLength.meters(stepDTO.distance)
+        } else {
+            StepLength.seconds(stepDTO.duration ?: 600)
+        }
 }

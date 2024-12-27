@@ -2,25 +2,20 @@ package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.freekode.tp2intervals.domain.workout.Workout
-import org.freekode.tp2intervals.domain.workout.structure.WorkoutMultiStep
-import org.freekode.tp2intervals.domain.workout.structure.WorkoutSingleStep
+import org.freekode.tp2intervals.domain.workout.structure.MultiStep
+import org.freekode.tp2intervals.domain.workout.structure.SingleStep
+import org.freekode.tp2intervals.domain.workout.structure.StepLength
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStep
-import org.freekode.tp2intervals.domain.workout.structure.WorkoutStepTarget
+import org.freekode.tp2intervals.domain.workout.structure.StepTarget
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
 
-class StructureToTPConverter(
+class ToTPStructureConverter(
     private val objectMapper: ObjectMapper,
     private val structure: WorkoutStructure,
 ) {
     companion object {
-        fun toStructureString(objectMapper: ObjectMapper, workout: Workout): String? {
-            return if (workout.structure != null) {
-                StructureToTPConverter(objectMapper, workout.structure).toTPStructureStr()
-            } else {
-                null
-            }
-        }
+        fun toStructureString(objectMapper: ObjectMapper, structure: WorkoutStructure) =
+            ToTPStructureConverter(objectMapper, structure).toTPStructureStr()
     }
 
     fun toTPStructureStr(): String {
@@ -33,50 +28,68 @@ class StructureToTPConverter(
     private fun mapToWorkoutStructure(steps: List<WorkoutStep>): TPWorkoutStructureDTO {
         val stepDTOs = steps.map { mapToStructureStep(it) }
 
+        val distanceBased = isDistanceBased(steps)
+
         return TPWorkoutStructureDTO(
             stepDTOs,
-            "duration",
+            if (distanceBased) "distance" else "duration",
             TPTargetMapper.getByTargetUnit(structure.target),
-//            "range",
+            if (distanceBased) "meter" else null,
         )
+    }
+
+    private fun isDistanceBased(steps: List<WorkoutStep>): Boolean {
+        for (step in steps) {
+            if (!step.isSingleStep()) {
+                val distanceBased = isDistanceBased((step as MultiStep).steps)
+                if (distanceBased) {
+                    return true
+                }
+                continue
+            }
+            if ((step as SingleStep).length.unit == StepLength.LengthUnit.METERS) {
+                return true
+            }
+        }
+        return false
     }
 
     private fun mapToStructureStep(workoutStep: WorkoutStep): TPStructureStepDTO {
         return if (workoutStep.isSingleStep()) {
-            val singleStep = workoutStep as WorkoutSingleStep
+            val singleStep = workoutStep as SingleStep
             if (singleStep.ramp) {
                 mapMultiStep(workoutStep.convertRampToMultiStep())
             } else {
                 mapSingleStep(singleStep)
             }
         } else {
-            mapMultiStep(workoutStep as WorkoutMultiStep)
+            mapMultiStep(workoutStep as MultiStep)
         }
     }
 
-    private fun mapSingleStep(singleStep: WorkoutSingleStep): TPStructureStepDTO {
+    private fun mapSingleStep(singleStep: SingleStep): TPStructureStepDTO {
         val singleStepDTO = mapToStepDTO(singleStep)
         return TPStructureStepDTO.singleStep(singleStepDTO)
     }
 
-    private fun mapMultiStep(workoutStep: WorkoutMultiStep): TPStructureStepDTO {
+    private fun mapMultiStep(workoutStep: MultiStep): TPStructureStepDTO {
         val stepDTOs = workoutStep.steps.map { mapToStepDTO(it) }
         return TPStructureStepDTO.multiStep(workoutStep.repetitions, stepDTOs)
     }
 
-    private fun mapToStepDTO(workoutStep: WorkoutSingleStep): TPStepDTO {
+    private fun mapToStepDTO(workoutStep: SingleStep): TPStepDTO {
         val mainTarget = toMainTarget(workoutStep.target)
         val cadenceTarget = workoutStep.cadence?.let { TPTargetDTO.cadenceTarget(it.start, it.end) }
         val targetList = mutableListOf(mainTarget, cadenceTarget).filterNotNull()
 
         return TPStepDTO(
             workoutStep.name,
-            TPLengthDTO.seconds(workoutStep.duration.seconds),
+            TPLengthDTO.fromStepLength(workoutStep.length),
             targetList,
         )
     }
 
-    private fun toMainTarget(target: WorkoutStepTarget) =
+    private fun toMainTarget(target: StepTarget) =
         if (target.isSingleValue()) {
             TPTargetDTO.mainTarget(target.start)
         } else {
