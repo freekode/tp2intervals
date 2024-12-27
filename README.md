@@ -98,6 +98,8 @@ These values available on [Settings page](https://intervals.icu/settings) in Dev
 If you want ot use TrainingPeaks you need to configure it. Copy cookie `Production_tpAuth` (key and value, smth
 like `Production_tpAuth=very_long_string`) from the browser on TrainingPeaks page.
 
+<img src="https://github.com/freekode/tp2intervals/blob/main/docs/tp_guide.jpg?raw=true">
+
 ### TrainerRoad Auth Cookie
 
 If you want to use TrainerRoad you need to configure it. Very similar to TrainingPeaks. Copy cookie `SharedTrainerRoadAuth` (key
