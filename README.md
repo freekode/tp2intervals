@@ -164,10 +164,10 @@ Example with [worldtimebuddy](https://www.worldtimebuddy.com/?pl=1&lid=206,100,7
 
 ### How to get logs for your issue
 
-1. Go to Configuration, check Show advanced configuration
-2. Set Log Level to DEBUG, click Confirm
-3. Reproduce your issue
-4. Find log file according to your system
+1. Go to Configuration
+2. In Generic section set Log Level to DEBUG, click Confirm
+4. Reproduce your issue
+5. Find log file according to your system
 
 * Linux: ~/.config/tp2intervals/logs/main.log
 * MacOS: ~/Library/Logs/tp2intervals/main.log
