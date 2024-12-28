@@ -7,6 +7,7 @@ import org.freekode.tp2intervals.domain.config.PlatformInfo
 import org.freekode.tp2intervals.domain.config.UpdateConfigurationRequest
 import org.freekode.tp2intervals.domain.workout.structure.StepModifier
 import org.freekode.tp2intervals.rest.ErrorResponseDTO
+import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -18,15 +19,18 @@ import org.springframework.web.bind.annotation.RestController
 class ConfigurationController(
     private val configurationService: ConfigurationService,
 ) {
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
     @GetMapping("/api/configuration")
     fun getConfigurations(): AppConfigurationDTO {
+        log.info("Received request for getting all configurations")
         val configurations = configurationService.getConfigurations()
         return AppConfigurationDTO(configurations.configMap)
     }
 
     @PutMapping("/api/configuration")
     fun updateConfiguration(@RequestBody requestDTO: UpdateConfigurationRequestDTO): ResponseEntity<ErrorResponseDTO> {
+        log.info("Received request for updating configuration: $requestDTO")
         val errors = configurationService.updateConfiguration(UpdateConfigurationRequest(requestDTO.config))
         if (errors.isNotEmpty()) {
             return ResponseEntity.badRequest().body(ErrorResponseDTO(errors.joinToString()))
@@ -47,6 +51,7 @@ class ConfigurationController(
 
     @GetMapping("/api/configuration/{platform}")
     fun getConfigurations(@PathVariable platform: Platform): PlatformInfo {
+        log.info("Received request for getting configurations for platform: $platform")
         return configurationService.platformInfo(platform)
     }
 }
