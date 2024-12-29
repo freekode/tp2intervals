@@ -28,10 +28,7 @@ class TrainingPeaksWorkoutRepositoryTest {
 
     private val trainingPeaksApiClient = TrainingPeaksApiClientMock(
         objectMapper,
-        listOf(
-            ResourceUtils.getFile("classpath:tp-calendar-workout-swim.json").inputStream(),
-            ResourceUtils.getFile("classpath:tp-calendar-workout-bike.json").inputStream(),
-        )
+        ResourceUtils.getFile("classpath:tp-calendar-workouts.json").inputStream(),
     )
 
     private val trainingPeaksUserRepository = getTrainingPeaksUserRepository()
@@ -56,7 +53,7 @@ class TrainingPeaksWorkoutRepositoryTest {
         // then
         assertTrue(workouts.isNotEmpty())
 
-        val workout = workouts[0]
+        val workout = workouts[1]
         val structure = workout.structure!!
 
         assertEquals(TrainingType.SWIM, workout.details.type)

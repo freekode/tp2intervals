@@ -40,7 +40,7 @@ class TPToWorkoutConverter {
         return Workout(
             WorkoutDetails(
                 tpWorkout.getWorkoutType()!!,
-                tpWorkout.title.ifBlank { "Workout" },
+                if (tpWorkout.title.isNullOrBlank()) "Workout" else tpWorkout.title,
                 description,
                 tpWorkout.totalTimePlanned?.let { Duration.ofMinutes((it * 60).toLong()) },
                 tpWorkout.tssPlanned,
@@ -58,7 +58,7 @@ class TPToWorkoutConverter {
             }
             FromTPStructureConverter.toWorkoutStructure(tpWorkout.structure)
         } catch (e: IllegalArgumentException) {
-            log.warn("Can't convert workout - ${tpWorkout.title}, error - ${e.message}'")
+            log.warn("Error during TP Workout conversion, skipping, id: ${tpWorkout.id}, name: ${tpWorkout.title}, error - ${e.message}'")
             null
         }
 

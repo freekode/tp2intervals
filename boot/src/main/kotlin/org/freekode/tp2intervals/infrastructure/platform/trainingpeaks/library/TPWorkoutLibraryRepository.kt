@@ -37,7 +37,7 @@ class TPWorkoutLibraryRepository(
             try {
                 tpToWorkoutConverter.toWorkout(it)
             } catch (e: Exception) {
-                log.warn("Can't convert workout - ${it.title}, error - ${e.message}'", e)
+                log.warn("Can't convert workout, ${it.id} - ${it.title}, error - ${e.message}'", e)
                 null
             }
         }
