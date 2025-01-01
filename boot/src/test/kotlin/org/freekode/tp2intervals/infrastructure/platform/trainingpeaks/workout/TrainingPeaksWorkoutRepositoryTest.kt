@@ -8,6 +8,7 @@ import org.freekode.tp2intervals.domain.workout.structure.StepLength
 import org.freekode.tp2intervals.domain.workout.structure.MultiStep
 import org.freekode.tp2intervals.domain.workout.structure.SingleStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
+import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.TrainingPeaksApiClient
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.configuration.TrainingPeaksConfigurationRepository
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.library.TPWorkoutLibraryRepository
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.plan.TrainingPeaksPlanCoachApiClient
@@ -26,34 +27,23 @@ import java.time.LocalDate
 class TrainingPeaksWorkoutRepositoryTest {
     private val objectMapper = ObjectMapperFactory.objectMapper()
 
-    private val trainingPeaksApiClient = TrainingPeaksApiClientMock(
-        objectMapper,
-        ResourceUtils.getFile("classpath:tp-calendar-workouts.json").inputStream(),
-    )
-
-    private val trainingPeaksUserRepository = getTrainingPeaksUserRepository()
-
-    private val trainingPeaksWorkoutRepository = TrainingPeaksWorkoutRepository(
-        trainingPeaksApiClient,
-        mock(TrainingPeaksPlanCoachApiClient::class.java),
-        TPToWorkoutConverter(),
-        mock(TrainingPeaksPlanRepository::class.java),
-        trainingPeaksUserRepository,
-        mock(TPWorkoutLibraryRepository::class.java),
-        mock(TrainingPeaksConfigurationRepository::class.java),
-        objectMapper
-    )
+    private val trainingPeaksUserRepository = trainingPeaksUserRepository()
 
     @Test
     fun `should parse swim workout with distance based steps`() {
         // when
+        val trainingPeaksApiClient = TrainingPeaksApiClientMock(
+            objectMapper,
+            ResourceUtils.getFile("classpath:tp-calendar-workout-distant-steps.json").inputStream()
+        )
+        val trainingPeaksWorkoutRepository = trainingPeaksWorkoutRepository(trainingPeaksApiClient)
         val workouts =
             trainingPeaksWorkoutRepository.getWorkoutsFromCalendar(LocalDate.of(2020, 1, 1), LocalDate.of(2020, 1, 1))
 
         // then
         assertTrue(workouts.isNotEmpty())
 
-        val workout = workouts[1]
+        val workout = workouts[0]
         val structure = workout.structure!!
 
         assertEquals(TrainingType.SWIM, workout.details.type)
@@ -73,9 +63,43 @@ class TrainingPeaksWorkoutRepositoryTest {
         TestUtils.assertStep(multiStep2.steps[1], 10, StepLength.LengthUnit.SECONDS, 0, 0)
     }
 
-    private fun getTrainingPeaksUserRepository(): TrainingPeaksUserRepository {
+    @Test
+    fun `should parse workout with null title`() {
+        // when
+        val trainingPeaksApiClient = TrainingPeaksApiClientMock(
+            objectMapper,
+            ResourceUtils.getFile("classpath:tp-calendar-workout-null-title.json").inputStream()
+        )
+        val trainingPeaksWorkoutRepository = trainingPeaksWorkoutRepository(trainingPeaksApiClient)
+        val workouts =
+            trainingPeaksWorkoutRepository.getWorkoutsFromCalendar(LocalDate.of(2020, 1, 1), LocalDate.of(2020, 1, 1))
+
+        // then
+        assertTrue(workouts.isNotEmpty())
+
+        val workout = workouts[0]
+        val structure = workout.structure!!
+
+        assertEquals(TrainingType.BIKE, workout.details.type)
+        assertEquals(WorkoutStructure.TargetUnit.FTP_PERCENTAGE, structure.target)
+        assertEquals(10, structure.steps.size)
+    }
+
+    private fun trainingPeaksUserRepository(): TrainingPeaksUserRepository {
         val mock = mock(TrainingPeaksUserRepository::class.java)
         `when`(mock.getUser()).thenReturn(TrainingPeaksUser("123", true))
         return mock
     }
+
+    private fun trainingPeaksWorkoutRepository(trainingPeaksApiClient: TrainingPeaksApiClient) =
+        TrainingPeaksWorkoutRepository(
+            trainingPeaksApiClient,
+            mock(TrainingPeaksPlanCoachApiClient::class.java),
+            TPToWorkoutConverter(),
+            mock(TrainingPeaksPlanRepository::class.java),
+            trainingPeaksUserRepository,
+            mock(TPWorkoutLibraryRepository::class.java),
+            mock(TrainingPeaksConfigurationRepository::class.java),
+            objectMapper
+        )
 }
