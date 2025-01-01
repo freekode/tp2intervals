@@ -6,7 +6,7 @@ import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.s
 abstract class TPBaseWorkoutResponseDTO(
     val id: String,
     val workoutTypeValueId: Int?,
-    val title: String,
+    val title: String?,
     val totalTimePlanned: Double?,
     val tssPlanned: Int?,
     val description: String?,
