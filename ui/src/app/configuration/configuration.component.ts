@@ -47,7 +47,6 @@ export class ConfigurationComponent implements OnInit {
     'training-peaks.auth-cookie': [null, [Validators.pattern('^Production_tpAuth=[a-zA-Z0-9-_]*$')]],
     'trainer-road.auth-cookie': [null, [Validators.pattern('^SharedTrainerRoadAuth=.*$')]],
     'trainer-road.remove-html-tags': [null, Validators.required],
-    'strava.cookie': [null, []],
     'generic.log-level': [null, [Validators.required]],
   });
 
