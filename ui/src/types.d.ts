@@ -5,10 +5,6 @@ declare global {
       bootHealthy: () => boolean;
       appVersion: string;
       appPlatform: string;
-      subscriptions: {
-        'appUpdateAvailable',
-        'appUpdateDownloaded'
-      };
     }
   }
 }
