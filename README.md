@@ -5,7 +5,7 @@
 
 # Third Party to Intervals.icu
 
-App to sync workouts between TrainingPeaks, TrainerRoad, Strava (activities only) and Intervals.icu.
+App to sync workouts between TrainingPeaks, TrainerRoad and Intervals.icu.
 
 Runs on MacOS (DMG), Windows (EXE installer), Linux (AppImage). Alternatively there is Docker image and executable JAR.
 
@@ -15,7 +15,6 @@ All files are available for download on [Release page](https://github.com/freeko
 * [List of features](#list-of-features)
     + [TrainingPeaks features](#trainingpeaks-features)
     + [TrainerRoad features](#trainerroad-features)
-    + [Strava features](#strava-features)
 * [Configuration](#configuration)
     + [Intervals.icu](#config-intervalsicu)
     + [TrainingPeaks](#trainingpeaks)
@@ -51,9 +50,6 @@ To fix issues I can only relay on logs and HAR files from you.
 ### TrainerRoad features
 * Copy workouts from TrainerRoad library to Intervals
 * Create training plan or workout folder on Intervals from planned workouts on TrainerRoad
-
-### Strava features
-* Sync activities. App exports original file from Strava and uploads it to Intervals.icu. Only recorded activities are supported.
 
 <img src="https://github.com/freekode/tp2intervals/blob/main/docs/tp.png?raw=true" width="30%"><img src="https://github.com/freekode/tp2intervals/blob/main/docs/tr.png?raw=true" width="30%">
 
