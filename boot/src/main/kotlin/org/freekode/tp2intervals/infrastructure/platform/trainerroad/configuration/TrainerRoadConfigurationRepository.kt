@@ -39,7 +39,7 @@ class TrainerRoadConfigurationRepository(
     @Cacheable(key = "'trainer-road'")
     override fun platformInfo(): PlatformInfo {
         val infoMap = mapOf(
-            "isValid" to true,
+            "isValid" to isValid(),
         )
         return PlatformInfo(infoMap)
     }
