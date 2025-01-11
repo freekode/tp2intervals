@@ -65,6 +65,8 @@ export class ConfigurationComponent implements OnInit {
     this.configClient.getConfig().subscribe(config => {
       this.formGroup.patchValue(config.config);
       this.inProgress = false
+      this.listenTrainingPeaksCookie()
+      this.listenTrainerRoadCookie()
     });
   }
 
@@ -79,5 +81,35 @@ export class ConfigurationComponent implements OnInit {
       this.notificationService.success('Configuration successfully saved')
       this.router.navigate(['/home']);
     });
+  }
+
+  listenTrainerRoadCookie() {
+    this.formGroup.controls['trainer-road.auth-cookie'].valueChanges.subscribe(value => {
+      let split = value.split('SharedTrainerRoadAuth=');
+      if (split.length != 2) {
+        return
+      }
+      let splitValue = split[1].split(';')[0]
+      let newValue = `SharedTrainerRoadAuth=${splitValue}`
+      if (value === newValue) {
+        return;
+      }
+      this.formGroup.controls['trainer-road.auth-cookie'].setValue(newValue)
+    })
+  }
+
+  listenTrainingPeaksCookie() {
+    this.formGroup.controls['training-peaks.auth-cookie'].valueChanges.subscribe(value => {
+      let split = value.split('Production_tpAuth=');
+      if (split.length != 2) {
+        return
+      }
+      let splitValue = split[1].split(';')[0]
+      let newValue = `Production_tpAuth=${splitValue}`
+      if (value === newValue) {
+        return;
+      }
+      this.formGroup.controls['training-peaks.auth-cookie'].setValue(newValue)
+    })
   }
 }

@@ -21,18 +21,16 @@ data class WorkoutDetails(
 
         other as WorkoutDetails
 
-        if (type != other.type) return false
         if (name != other.name) return false
-        if (load != other.load) return false
+        if (duration != other.duration) return false
         if (externalData != other.externalData) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        var result = type.hashCode()
-        result = 31 * result + name.hashCode()
-        result = 31 * result + (load ?: 0)
+        var result = name.hashCode()
+        result = 31 * result + (duration?.hashCode() ?: 0)
         result = 31 * result + externalData.hashCode()
         return result
     }

@@ -42,8 +42,8 @@ export class TrCopyCalendarToCalendarComponent implements OnInit {
   readonly todayDate = new Date()
   readonly tomorrowDate = new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
   readonly directions = [
-    {title: "TrainerRoad -> Intervals.icu", value: Platform.DIRECTION_TR_INT},
     {title: "TrainerRoad -> TrainingPeaks", value: Platform.DIRECTION_TR_TP},
+    {title: "TrainerRoad -> Intervals.icu", value: Platform.DIRECTION_TR_INT},
   ]
   readonly selectedTrainingTypes = ['BIKE', 'VIRTUAL_BIKE'];
 
@@ -71,8 +71,12 @@ export class TrCopyCalendarToCalendarComponent implements OnInit {
     this.formGroup.controls['direction'].valueChanges.subscribe(value => {
       if (value === Platform.DIRECTION_TR_INT) {
         this.maxDate = null
+        this.formGroup.controls['skipSynced'].disable()
+        this.formGroup.controls['skipSynced'].setValue(false)
       } else {
         this.maxDate = this.tomorrowDate
+        this.formGroup.controls['skipSynced'].enable()
+        this.formGroup.controls['skipSynced'].setValue(true)
       }
     })
   }
