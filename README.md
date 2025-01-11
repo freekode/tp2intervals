@@ -16,7 +16,7 @@ All files are available for download on [Release page](https://github.com/freeko
     + [TrainingPeaks features](#trainingpeaks-features)
     + [TrainerRoad features](#trainerroad-features)
 * [Configuration](#configuration)
-    + [Intervals.icu](#config-intervalsicu)
+    + [Intervals.icu](#intervalsicu)
     + [TrainingPeaks](#trainingpeaks)
     + [TrainerRoad](#trainerroad)
 * [Other ways to run the app](#other-ways-to-run-the-app)
@@ -66,16 +66,16 @@ If everything is fine, you will be redirected to the home page.
 If your configuration is wrong. You will see an error that there is no access to particular platform.
 Check all your values and save configuration again.
 
-<h3 id="config-intervalsicu">Intervals.icu</h3>
+### Intervals.icu
 Copy API key and Athlete Id from [Settings page](https://intervals.icu/settings) in Developer Settings section on Intervals.icu web page.
 
-<h3 id="config-trainingpeaks">TrainingPeaks</h3>
+### TrainingPeaks
 To use TrainingPeaks Copy cookie `Production_tpAuth` (key and value, smth like `Production_tpAuth=very_long_string`) from the browser on TrainingPeaks page.
 Another guide is available here https://forum.intervals.icu/t/implemented-push-workout-to-wahoo/783/87
 
 <img src="https://github.com/freekode/tp2intervals/blob/main/docs/tp_guide.jpg?raw=true">
 
-<h3 id="config-trainerroad">TrainerRoad</h3>
+### TrainerRoad
 Configuration is very similar to TrainingPeaks. Copy cookie `SharedTrainerRoadAuth` (key
 and value, smth like `SharedTrainerRoadAuth=very_long_string`) from the browser on TrainerRoad page.
 
