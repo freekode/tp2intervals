@@ -95,14 +95,11 @@
   <div>
     <h2>General</h2>
 
-    <mat-form-field class="full-width">
-      <mat-label>Log Level (saved only for current session)</mat-label>
-      <mat-select formControlName="generic.log-level">
-        <mat-option [value]="'WARN'">WARN</mat-option>
-        <mat-option [value]="'INFO'">INFO</mat-option>
-        <mat-option [value]="'DEBUG'">DEBUG</mat-option>
-      </mat-select>
-    </mat-form-field>
+    <div class="row">
+      <mat-checkbox class="form-checkbox" formControlName="general.debug-mode">
+        Debug Mode
+      </mat-checkbox>
+    </div>
   </div>
 
   <div class="row action-button-section">
