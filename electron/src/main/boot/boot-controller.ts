@@ -25,10 +25,6 @@ export class BootController {
     });
   }
 
-  getProcessAddress(): string {
-    return this.process.getAddress();
-  }
-
   async start() {
     log.info('Starting boot process...');
     await this.process.start();

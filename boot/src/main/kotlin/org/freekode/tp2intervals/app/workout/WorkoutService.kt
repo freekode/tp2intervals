@@ -25,8 +25,6 @@ class WorkoutService(
         var filteredWorkoutsToSync = allWorkoutsToSync.filter { request.types.contains(it.details.type) }
         if (request.skipSynced) {
             val plannedWorkouts = targetWorkoutRepository.getWorkoutsFromCalendar(request.startDate, request.endDate)
-                .filter { request.types.contains(it.details.type) }
-
             filteredWorkoutsToSync = filteredWorkoutsToSync.filter { !plannedWorkouts.contains(it) }
         }
 

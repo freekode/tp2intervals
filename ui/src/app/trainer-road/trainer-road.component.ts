@@ -10,16 +10,21 @@ import {
 } from "app/trainer-road/tr-copy-calendar-to-library/tr-copy-calendar-to-library.component";
 import {Platform} from "infrastructure/platform";
 import {ConfigurationClient} from "infrastructure/client/configuration.client";
+import {MatTooltipModule} from "@angular/material/tooltip";
+import {
+  TrCopyCalendarToCalendarComponent
+} from "app/trainer-road/tr-copy-calendar-to-calendar/tr-copy-calendar-to-calendar.component";
 
 @Component({
   selector: 'app-trainer-road',
   standalone: true,
   imports: [
-    TrCopyLibraryToLibraryComponent,
-    MatExpansionModule,
-    TrCopyCalendarToLibraryComponent,
     NgIf,
-    MatProgressBarModule
+    MatExpansionModule,
+    MatProgressBarModule,
+    TrCopyLibraryToLibraryComponent,
+    TrCopyCalendarToLibraryComponent,
+    TrCopyCalendarToCalendarComponent
   ],
   templateUrl: './trainer-road.component.html',
   styleUrl: './trainer-road.component.scss'

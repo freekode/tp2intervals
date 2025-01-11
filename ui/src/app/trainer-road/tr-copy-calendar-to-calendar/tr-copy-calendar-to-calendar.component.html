@@ -1,0 +1,78 @@
+<form [formGroup]="formGroup" novalidate>
+  <div class="row">
+    <mat-form-field class="form-field">
+      <mat-label>Direction</mat-label>
+      <mat-select formControlName="direction">
+        @for (item of directions; track item) {
+          <mat-option [value]="item.value">{{ item.title }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div class="row">
+    <mat-form-field class="form-field">
+      <mat-label>Workout Types</mat-label>
+      <mat-select formControlName="trainingTypes" multiple>
+        @for (type of trainingTypes; track type) {
+          <mat-option [value]="type.value">{{ type.title }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div class="row">
+    <mat-form-field class="form-field">
+      <mat-label>Date Range</mat-label>
+      <mat-date-range-input
+        [max]="maxDate"
+        [rangePicker]="copyPlanDatePicker">
+        <input matStartDate placeholder="Start Date" formControlName="startDate">
+        <input matEndDate placeholder="End Date" formControlName="endDate">
+      </mat-date-range-input>
+      <mat-datepicker-toggle matIconSuffix [for]="copyPlanDatePicker"></mat-datepicker-toggle>
+      <mat-date-range-picker #copyPlanDatePicker></mat-date-range-picker>
+    </mat-form-field>
+  </div>
+
+  <div class="row">
+    <mat-checkbox formControlName="skipSynced" style="padding-bottom: 10px">
+      Skip already synced workouts
+    </mat-checkbox>
+  </div>
+
+  <div class="action-button-section">
+    <button
+      mat-raised-button
+      id="btn-confirm"
+      color="primary"
+      type="button"
+      [disabled]="formGroup.invalid || inProgress"
+      (click)="submit()"
+    >
+      Confirm
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      type="button"
+      style="margin-left: 10px"
+      [disabled]="formGroup.invalid || inProgress"
+      (click)="today()"
+    >
+      Only today
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      type="button"
+      style="margin-left: 10px"
+      [disabled]="formGroup.invalid || inProgress"
+      (click)="tomorrow()"
+    >
+      Only tomorrow
+    </button>
+  </div>
+
+  <mat-progress-bar *ngIf="inProgress" mode="query"></mat-progress-bar>
+</form>

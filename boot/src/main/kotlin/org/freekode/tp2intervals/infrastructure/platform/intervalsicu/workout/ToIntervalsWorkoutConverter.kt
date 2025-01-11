@@ -38,7 +38,7 @@ class ToIntervalsWorkoutConverter {
         return CreateEventRequestDTO(
             (workout.date ?: LocalDate.now()).atStartOfDay().toString(),
             workout.details.name,
-            workout.details.type.title,
+            IntervalsTrainingTypeMapper.getByTrainingType(workout.details.type),
             "WORKOUT",
             description
         )

@@ -14,4 +14,7 @@ export class Platform {
   static DIRECTION_TR_INT = {
     sourcePlatform: this.TRAINER_ROAD.key, targetPlatform: this.INTERVALS.key
   }
+  static DIRECTION_TR_TP = {
+    sourcePlatform: this.TRAINER_ROAD.key, targetPlatform: this.TRAINING_PEAKS.key
+  }
 }

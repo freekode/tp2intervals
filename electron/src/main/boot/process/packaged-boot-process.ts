@@ -1,24 +1,18 @@
-import { ActuatorProcess } from './actuator-process';
+import {ActuatorProcess} from './actuator-process';
 import path from 'path';
-import { app } from 'electron';
-import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
+import {app} from 'electron';
+import {ChildProcessWithoutNullStreams, spawn} from 'child_process';
 import log from 'electron-log';
-import { isWindows } from "../../environment";
+import {isWindows} from "../../environment";
 
 export class PackagedBootProcess extends ActuatorProcess {
   private readonly bootJarPath = path.join(process.resourcesPath, 'boot.jar');
   private readonly jdkPath = path.join(process.resourcesPath, 'jdk', 'bin', isWindows ? 'java.exe' : 'java');
   private readonly bootDbPath = path.join(app.getPath('userData'), 'tp2intervals.sqlite');
-  private readonly port: number;
-  private readonly address: string;
+  private readonly port = 44864;
+  private readonly address = `http://localhost:${this.port}`;
 
   private childProcess?: ChildProcessWithoutNullStreams = undefined;
-
-  constructor() {
-    super();
-    this.port = Math.floor(Math.random() * 10000) + 10000;
-    this.address = `http://localhost:${this.port}`;
-  }
 
   getAddress(): string {
     return this.address;
@@ -33,7 +27,6 @@ export class PackagedBootProcess extends ActuatorProcess {
     log.info('boot db location', this.bootDbPath);
 
     const env = {
-      SERVER_PORT: String(this.port),
       SPRING_DATASOURCE_URL: `jdbc:sqlite:${this.bootDbPath}`,
       SPRING_PROFILES_ACTIVE: `electron`,
     };

@@ -16,9 +16,10 @@ import {finalize} from "rxjs";
 import {Platform} from "infrastructure/platform";
 import {formatDate} from "utils/date-formatter";
 import {TrainingPeaksTrainingTypes} from "app/training-peaks/training-peaks-training-types";
+import {TrainerRoadTrainingTypes} from "app/trainer-road/trainer-road-training-types";
 
 @Component({
-  selector: 'tp-copy-calendar-to-calendar',
+  selector: 'tr-copy-calendar-to-calendar',
   standalone: true,
   imports: [
     FormsModule,
@@ -34,17 +35,17 @@ import {TrainingPeaksTrainingTypes} from "app/training-peaks/training-peaks-trai
     MatSelectModule,
     MatCheckboxModule,
   ],
-  templateUrl: './tp-copy-calendar-to-calendar.component.html',
-  styleUrl: './tp-copy-calendar-to-calendar.component.scss'
+  templateUrl: './tr-copy-calendar-to-calendar.component.html',
+  styleUrl: './tr-copy-calendar-to-calendar.component.scss'
 })
-export class TpCopyCalendarToCalendarComponent implements OnInit {
-  private readonly todayDate = new Date()
+export class TrCopyCalendarToCalendarComponent implements OnInit {
+  readonly todayDate = new Date()
   readonly tomorrowDate = new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
   readonly directions = [
-    {title: "Intervals.icu -> TrainingPeaks", value: Platform.DIRECTION_INT_TP},
-    {title: "TrainingPeaks -> Intervals.icu", value: Platform.DIRECTION_TP_INT},
+    {title: "TrainerRoad -> TrainingPeaks", value: Platform.DIRECTION_TR_TP},
+    {title: "TrainerRoad -> Intervals.icu", value: Platform.DIRECTION_TR_INT},
   ]
-  private readonly selectedTrainingTypes = ['BIKE', 'VIRTUAL_BIKE', 'MTB', 'RUN'];
+  readonly selectedTrainingTypes = ['BIKE', 'VIRTUAL_BIKE'];
 
   formGroup: FormGroup = this.formBuilder.group({
     direction: [this.directions[0].value, Validators.required],
@@ -54,7 +55,8 @@ export class TpCopyCalendarToCalendarComponent implements OnInit {
     skipSynced: [true, Validators.required],
   });
 
-  trainingTypes = TrainingPeaksTrainingTypes.trainingTypes;
+  trainingTypes = TrainerRoadTrainingTypes.trainingTypes;
+  maxDate: Date | null = null
 
   inProgress = false
 
@@ -66,6 +68,17 @@ export class TpCopyCalendarToCalendarComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.formGroup.controls['direction'].valueChanges.subscribe(value => {
+      if (value === Platform.DIRECTION_TR_INT) {
+        this.maxDate = null
+        this.formGroup.controls['skipSynced'].disable()
+        this.formGroup.controls['skipSynced'].setValue(false)
+      } else {
+        this.maxDate = this.tomorrowDate
+        this.formGroup.controls['skipSynced'].enable()
+        this.formGroup.controls['skipSynced'].setValue(true)
+      }
+    })
   }
 
   submit() {
