@@ -7,10 +7,15 @@ import {map, Observable} from 'rxjs';
   providedIn: 'root'
 })
 export class EnvironmentService {
-  readonly port = 44864;
-  readonly address = `http://localhost:${this.port}`;
+  readonly defaultPort = 8080;
+  readonly electronPort = 44864;
 
   constructor(private httpClient: HttpClient) {
+  }
+
+  getAddress() {
+    let port = window.electron ? this.electronPort : this.defaultPort
+    return `http://localhost:${port}`
   }
 
   getVersion(): Observable<string> {

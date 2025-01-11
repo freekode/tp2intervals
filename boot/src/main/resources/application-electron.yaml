@@ -1,3 +1,6 @@
+server:
+  port: 44864
+
 spring:
   main:
     banner-mode: off

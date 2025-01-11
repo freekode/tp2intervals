@@ -28,7 +28,6 @@ spring:
       config: classpath:ehcache.xml
 
 server:
-  port: 44864
   error:
     include-message: always
 

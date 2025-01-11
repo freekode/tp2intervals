@@ -32,7 +32,7 @@ export const httpHostInterceptor: HttpInterceptorFn = (
   next: HttpHandlerFn,
 ) => {
   let environmentService = inject(EnvironmentService)
-  let host = environmentService.address
+  let host = environmentService.getAddress()
 
   let url = req.url.replace(/^\/|\/$/g, '')
   if (!!host && !url.startsWith('http')) {
