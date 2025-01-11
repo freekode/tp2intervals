@@ -71,14 +71,19 @@ Check all your values and save configuration again.
 Copy API key and Athlete Id from [Settings page](https://intervals.icu/settings) in Developer Settings section on Intervals.icu web page.
 
 ### TrainingPeaks
-To use TrainingPeaks Copy cookie `Production_tpAuth` (key and value, smth like `Production_tpAuth=very_long_string`) from the browser on TrainingPeaks page.
-Another guide is available here https://forum.intervals.icu/t/implemented-push-workout-to-wahoo/783/87
+To use TrainingPeaks copy all cookies from request `https://tpapi.trainingpeaks.com/users/v3/token` and put it on Configuration page.
+The app automatically will remove redundant parts and only require cookie will remain. Follow guide below how to do that.
+
+The app require `Production_tpAuth` cookie (key and value, smth like `Production_tpAuth=very_long_string`).
+Another guide is [available here](https://forum.intervals.icu/t/implemented-push-workout-to-wahoo/783/87)
 
 <img src="https://github.com/freekode/tp2intervals/blob/main/docs/tp_guide.png?raw=true">
 
 ### TrainerRoad
-Configuration is very similar to TrainingPeaks. Copy cookie `SharedTrainerRoadAuth` (key
-and value, smth like `SharedTrainerRoadAuth=very_long_string`) from the browser on TrainerRoad page.
+Configuration is very similar to TrainingPeaks.  Copy all cookies from request `https://tpapi.trainingpeaks.com/users/v3/token` and put it on Configuration page.
+The app automatically will remove redundant parts and only require cookie will remain. Follow guide below how to do that.
+
+Cookie `SharedTrainerRoadAuth` (key and value, smth like `SharedTrainerRoadAuth=very_long_string`) is required for the app.
 
 <img src="https://github.com/freekode/tp2intervals/blob/main/docs/tr_guide.png?raw=true">
 
