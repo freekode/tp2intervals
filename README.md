@@ -116,7 +116,6 @@ services:
 ## FAQ
 
 ### General
-* Only duration based steps in workouts are supported, the app can't work with distance based steps
 * Ramp steps in TrainerRoad are not supported
 * **MacOS** app is not signed. Usually you need to open it twice. After opening it, be patient, it takes some time to
   start
