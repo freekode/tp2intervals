@@ -100,6 +100,14 @@
         Debug Mode
       </mat-checkbox>
     </div>
+
+    <div *ngIf="formGroup.controls['general.debug-mode'].value" class="row" style="margin-bottom: 20px">
+      Log location:<br>
+      Linux: ~/.config/tp2intervals/logs/main.log<br>
+      MacOS: ~/Library/Logs/tp2intervals/main.log<br>
+      Windows: %USERPROFILE%\AppData\Roaming\tp2intervals\logs\main.log<br>
+      JAR: ./tp2intervals.log<br>
+    </div>
   </div>
 
   <div class="row action-button-section">
