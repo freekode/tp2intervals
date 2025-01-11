@@ -135,14 +135,15 @@ Script `sync-planned-to-tp.sh` will be executed at 02:00 everyday.
 You can also edit crontab configuration manually and set your own schedule.
 
 ### Info regarding scheduling for the next day with TrainingPeaks free account
-Officially you can't plan workouts for future dates, but practically you can plan workout for tomorrow with free TP account.
-You can plan workout for the next day relative to TP server local time. The server is in UTC-6 time zone.
+Officially if you have a free TP account, you can't plan workouts for future dates, but practically you can.
+You can plan a workout for the next day relative to TrainingPeaks server local time. The server is in UTC-6 time zone. Let's check some examples:
 
-E.g your TZ is UTC+2, current local datetime 20.05.2024 06:00. TP server local datetime is 19.05.2024 22:00. You can plan workouts for 20.05.2024, you can't plan workouts for 21.05.2024, you can do it in 2 hours.
+Example 1. Your TZ is UTC+2 and current local date time 20.05.2024 06:00. It means at this moment TP server local date time is 19.05.2024 22:00.
+Therefore, you can plan workouts for 20.05.2024. But you can't plan workouts for 21.05.2024, you can do it in 2 hours, because in 2 hours server local time will be 20.05.2024 00:00.
 
-E.g your TZ is UTC+12, current local datetime 20.05.2024 18:00. TP server local datetime is 20.05.2024 00:00. You can plan workouts for 21.05.2024.
+Example 2. Your TZ is UTC+12, current local date time 20.05.2024 18:00. TP server local date time is 20.05.2024 00:00. At this moment, you can plan workouts for 21.05.2024.
 
-Example with [worldtimebuddy](https://www.worldtimebuddy.com/?pl=1&lid=206,100,756135,2193733&h=206&hf=0)
+Visible time difference with [worldtimebuddy](https://www.worldtimebuddy.com/?pl=1&lid=206,100,756135,2193733&h=206&hf=0)
 
 ### How to export HAR file
 1. Open new tab in your browser
