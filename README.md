@@ -159,7 +159,7 @@ Example with [worldtimebuddy](https://www.worldtimebuddy.com/?pl=1&lid=206,100,7
 
 ### How to get logs for your issue
 1. Go to Configuration
-2. In General section set Log Level to DEBUG, click Confirm
+2. In General section check Debug Mode, click Confirm
 3. Reproduce your issue
 4. Find log file according to your system
 

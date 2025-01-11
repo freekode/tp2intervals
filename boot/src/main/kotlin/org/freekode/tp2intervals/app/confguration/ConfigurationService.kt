@@ -1,17 +1,23 @@
 package org.freekode.tp2intervals.app.confguration
 
 import org.freekode.tp2intervals.domain.Platform
-import org.freekode.tp2intervals.domain.config.*
+import org.freekode.tp2intervals.domain.config.AppConfiguration
+import org.freekode.tp2intervals.domain.config.AppConfigurationRepository
+import org.freekode.tp2intervals.domain.config.DebugModeService
+import org.freekode.tp2intervals.domain.config.PlatformConfigurationRepository
+import org.freekode.tp2intervals.domain.config.PlatformInfo
+import org.freekode.tp2intervals.domain.config.PlatformInfoRepository
+import org.freekode.tp2intervals.domain.config.UpdateConfigurationRequest
 import org.freekode.tp2intervals.infrastructure.PlatformException
-import org.springframework.boot.logging.LogLevel
 import org.springframework.stereotype.Service
+
 
 @Service
 class ConfigurationService(
     private val platformConfigurationRepositories: List<PlatformConfigurationRepository>,
     platformInfoRepositories: List<PlatformInfoRepository>,
     private val appConfigurationRepository: AppConfigurationRepository,
-    private val logLevelService: LogLevelService,
+    private val debugModeService: DebugModeService,
 ) {
     private val platformInfoRepositoryMap = platformInfoRepositories.associateBy { it.platform() }
 
@@ -21,7 +27,7 @@ class ConfigurationService(
 
     fun updateConfiguration(request: UpdateConfigurationRequest): List<String> {
         val errors = platformConfigurationRepositories.mapNotNull { updateConfiguration(request, it) }
-        updateLogLevelIfNecessary(request)
+        handleDebugModeIfNecessary(request)
         return errors
     }
 
@@ -29,10 +35,8 @@ class ConfigurationService(
         return platformInfoRepositoryMap[platform]!!.platformInfo()
     }
 
-    private fun updateLogLevelIfNecessary(request: UpdateConfigurationRequest) {
-        if (request.configMap.contains("generic.log-level")) {
-            logLevelService.setLogLevel(LogLevel.valueOf(request.configMap["generic.log-level"]!!))
-        }
+    private fun handleDebugModeIfNecessary(request: UpdateConfigurationRequest) {
+        debugModeService.handleDebugMode(request.configMap)
     }
 
     private fun updateConfiguration(

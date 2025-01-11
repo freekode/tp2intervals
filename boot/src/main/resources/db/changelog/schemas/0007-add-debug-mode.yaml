@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: _
+      author: _
+      changes:
+        - insert:
+            tableName: config
+            columns:
+              - column:
+                  name: key
+                  value: 'general.debug-mode'
+
+              - column:
+                  name: value
+                  value: 'false'

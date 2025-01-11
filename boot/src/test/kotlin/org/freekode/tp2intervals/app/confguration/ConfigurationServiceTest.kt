@@ -1,6 +1,6 @@
 package org.freekode.tp2intervals.app.confguration
 
-import org.freekode.tp2intervals.domain.config.LogLevelService
+import org.freekode.tp2intervals.domain.config.DebugModeService
 import org.freekode.tp2intervals.domain.config.UpdateConfigurationRequest
 import org.freekode.tp2intervals.infrastructure.configuration.AppConfigurationRepositoryImpl
 import org.freekode.tp2intervals.infrastructure.configuration.ConfigurationCrudRepository
@@ -29,7 +29,7 @@ class ConfigurationServiceTest {
         ),
         listOf(),
         appConfigurationRepository,
-        mock(LogLevelService::class.java)
+        mock(DebugModeService::class.java)
     )
 
     @Test
