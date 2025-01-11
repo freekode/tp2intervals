@@ -11,7 +11,7 @@ class TrainerRoadWorkoutDetailsDTO(
     val workoutDescription: String,
     @JsonProperty("IsOutside")
     val isOutside: Boolean,
-    @JsonProperty("TSS")
+    @JsonProperty("Tss")
     val tss: Int,
     @JsonProperty("Duration")
     val duration: Int,
