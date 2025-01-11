@@ -40,7 +40,7 @@ To fix issues I can only relay on logs and HAR files from you.
 
 ### TrainingPeaks features
 **Athlete account**
-* Sync planned workouts from Intervals to TrainingPeaks for today and tomorrow (free TP account)
+* Sync planned workouts in calendar between Intervals and TrainingPeaks for today and tomorrow (free TP account)
 * Copy whole training plan from TrainingPeaks
 * Create training plan or workout folder on Intervals from planned workouts on TrainingPeaks
 
@@ -48,6 +48,7 @@ To fix issues I can only relay on logs and HAR files from you.
 * Copy whole training plan and workout library from TrainingPeaks
 
 ### TrainerRoad features
+* Sync planned workouts in calendar between TrainerRoad, TrainingPeaks and Intervals
 * Copy workouts from TrainerRoad library to Intervals
 * Create training plan or workout folder on Intervals from planned workouts on TrainerRoad
 
