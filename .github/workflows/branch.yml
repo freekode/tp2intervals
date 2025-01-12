@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main, dev ]
     paths-ignore:
-      - 'README.md'
+      - '**/*.md'
       - 'LICENSE'
   workflow_dispatch:
 
