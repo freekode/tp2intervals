@@ -87,6 +87,8 @@ Cookie `SharedTrainerRoadAuth` (key and value, smth like `SharedTrainerRoadAuth=
 
 <img src="https://github.com/freekode/tp2intervals/blob/main/docs/tr_guide.png?raw=true">
 
+Be aware, Firefox cuts long strings in Dev Tool window. Copy cookie value with right click -> Copy Value.
+
 ## Other ways to run the app
 
 ### Executable JAR
