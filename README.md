@@ -125,12 +125,10 @@ services:
 ## FAQ
 
 ### General
-* Ramp steps in TrainerRoad are not supported
+* Ramp steps in TrainerRoad are not supported 
 * **MacOS** app is not signed. Usually you need to open it twice. After opening it, be patient, it takes some time to
   start
 * **Windows** The app will ask to access local network and Internet, you need to allow it. After all it makes HTTP requests
-* In case of any problems. You can create an issue on [GitHub](https://github.com/freekode/tp2intervals/issues)
-  or write directly to me iam@freekode.org. Add logs from your app, it can help a lot to resolve the issue. Or in case of TrainerRoad create HAR file
 * More info you can find on the forum https://forum.intervals.icu/t/tp2intervals-copy-trainingpeaks-and-trainerroad-workouts-plans-to-intervals/63375
 
 ### Sync automatically planned workouts to TrainingPeaks
@@ -154,7 +152,23 @@ Example 2. Your TZ is UTC+12, current local date time 20.05.2024 18:00. TP serve
 
 Visible time difference with [worldtimebuddy](https://www.worldtimebuddy.com/?pl=1&lid=206,100,756135,2193733&h=206&hf=0)
 
-### How to export HAR file
+### Troubleshooting
+To identify the problems with any platform, logs from the users helps very much.
+
+Gather logs from [guide below](#how-to-get-logs). And in case of TrainerRoad platform try to [record HAR file](how-to-record-har-file). Send the files directly to me.
+
+#### How to get logs
+1. Go to Configuration
+2. In General section check Debug Mode, click Confirm
+3. Reproduce your issue
+4. Find log file according to your system
+
+* Linux: ~/.config/tp2intervals/logs/main.log
+* MacOS: ~/Library/Logs/tp2intervals/main.log
+* Windows: %USERPROFILE%\AppData\Roaming\tp2intervals\logs\main.log
+* JAR: ./tp2intervals.log
+
+#### How to record HAR file
 1. Open new tab in your browser
 2. Open dev tools, check Preserve log (Firefox Cog -> Persist Logs)
 
@@ -165,14 +179,3 @@ Visible time difference with [worldtimebuddy](https://www.worldtimebuddy.com/?pl
 
    <img src="https://github.com/freekode/tp2intervals/blob/main/docs/har-2.png?raw=true" width="70%">
 
-
-### How to get logs for your issue
-1. Go to Configuration
-2. In General section check Debug Mode, click Confirm
-3. Reproduce your issue
-4. Find log file according to your system
-
-* Linux: ~/.config/tp2intervals/logs/main.log
-* MacOS: ~/Library/Logs/tp2intervals/main.log
-* Windows: %USERPROFILE%\AppData\Roaming\tp2intervals\logs\main.log
-* JAR: ./tp2intervals.log
