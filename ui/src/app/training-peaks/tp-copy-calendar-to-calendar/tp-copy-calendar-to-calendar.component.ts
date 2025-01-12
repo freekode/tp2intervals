@@ -46,7 +46,7 @@ export class TpCopyCalendarToCalendarComponent implements OnInit {
     {title: "Intervals.icu -> TrainingPeaks", value: Platform.DIRECTION_INT_TP},
     {title: "TrainingPeaks -> Intervals.icu", value: Platform.DIRECTION_TP_INT},
   ]
-  private readonly selectedTrainingTypes = ['BIKE', 'VIRTUAL_BIKE', 'MTB', 'RUN'];
+  readonly selectedTrainingTypes = ['BIKE', 'VIRTUAL_BIKE', 'MTB', 'RUN'];
 
   formGroup: FormGroup = this.formBuilder.group({
     direction: [this.directions[0].value, Validators.required],

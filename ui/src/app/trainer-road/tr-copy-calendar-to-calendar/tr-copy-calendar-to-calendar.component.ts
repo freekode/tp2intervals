@@ -17,6 +17,7 @@ import {Platform} from "infrastructure/platform";
 import {formatDate} from "utils/date-formatter";
 import {TrainingPeaksTrainingTypes} from "app/training-peaks/training-peaks-training-types";
 import {TrainerRoadTrainingTypes} from "app/trainer-road/trainer-road-training-types";
+import {ConfigurationClient} from "infrastructure/client/configuration.client";
 
 @Component({
   selector: 'tr-copy-calendar-to-calendar',
@@ -39,6 +40,7 @@ import {TrainerRoadTrainingTypes} from "app/trainer-road/trainer-road-training-t
   styleUrl: './tr-copy-calendar-to-calendar.component.scss'
 })
 export class TrCopyCalendarToCalendarComponent implements OnInit {
+  readonly trainingTypes = TrainerRoadTrainingTypes.trainingTypes;
   readonly todayDate = new Date()
   readonly tomorrowDate = new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
   readonly directions = [
@@ -55,19 +57,21 @@ export class TrCopyCalendarToCalendarComponent implements OnInit {
     skipSynced: [true, Validators.required],
   });
 
-  trainingTypes = TrainerRoadTrainingTypes.trainingTypes;
-  maxDate: Date | null = null
-
   inProgress = false
+  tpPlatformInfo: any = null
 
   constructor(
     private formBuilder: FormBuilder,
     private workoutClient: WorkoutClient,
+    private configurationClient: ConfigurationClient,
     private notificationService: NotificationService
   ) {
   }
 
   ngOnInit(): void {
+    this.configurationClient.platformInfo(Platform.TRAINING_PEAKS.key).subscribe(value => {
+      this.tpPlatformInfo = value
+    })
     this.listenDirectionChange();
   }
 
@@ -105,14 +109,14 @@ export class TrCopyCalendarToCalendarComponent implements OnInit {
   private listenDirectionChange() {
     this.formGroup.controls['direction'].valueChanges.subscribe(value => {
       if (value === Platform.DIRECTION_TR_INT) {
-        this.maxDate = null
         this.formGroup.controls['skipSynced'].disable()
         this.formGroup.controls['skipSynced'].setValue(false)
       } else {
-        this.maxDate = this.tomorrowDate
         this.formGroup.controls['skipSynced'].enable()
         this.formGroup.controls['skipSynced'].setValue(true)
       }
     })
   }
+
+  protected readonly Platform = Platform;
 }

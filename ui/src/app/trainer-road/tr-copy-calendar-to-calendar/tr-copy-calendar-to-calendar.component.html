@@ -2,7 +2,7 @@
   <div class="row">
     <mat-form-field class="form-field">
       <mat-label>Direction</mat-label>
-      <mat-select formControlName="direction">
+      <mat-select formControlName="direction" #direction>
         @for (item of directions; track item) {
           <mat-option [value]="item.value">{{ item.title }}</mat-option>
         }
@@ -25,7 +25,7 @@
     <mat-form-field class="form-field">
       <mat-label>Date Range</mat-label>
       <mat-date-range-input
-        [max]="maxDate"
+        [max]="(tpPlatformInfo?.isPremium || direction.value === Platform.DIRECTION_TR_INT) ? null : tomorrowDate"
         [rangePicker]="copyPlanDatePicker">
         <input matStartDate placeholder="Start Date" formControlName="startDate">
         <input matEndDate placeholder="End Date" formControlName="endDate">
