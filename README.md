@@ -152,7 +152,7 @@ Visible time difference with [worldtimebuddy](https://www.worldtimebuddy.com/?pl
 ## Troubleshooting
 To identify the problems with any platform, logs from the users helps very much.
 
-Gather logs from [guide below](#how-to-get-logs). And in case of TrainerRoad platform try to [record HAR file](how-to-record-har-file). Send the files directly to me.
+Gather logs from [guide below](#how-to-get-logs). And in case of TrainerRoad platform try to [record HAR file](#how-to-record-har-file). Send the files directly to me.
 
 #### How to get logs
 1. Go to Configuration
