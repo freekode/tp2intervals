@@ -1,12 +1,10 @@
 #!/bin/sh
 
 # How to run
-# ./sync-planned-workouts.sh (tomorrow|2025-01-01) (INTERVALS|TRAINING_PEAKS|TRAINER_ROAD) (INTERVALS|TRAINING_PEAKS|TRAINER_ROAD) [standalone]
+# ./sync-planned-workouts.sh (tomorrow|<date e.g. 2025-01-01>) (INTERVALS|TRAINING_PEAKS|TRAINER_ROAD) (INTERVALS|TRAINING_PEAKS|TRAINER_ROAD) [standalone]
 #
-# Example, sync planned workouts from TrainerRoad to TrainingPeaks for tomorrow when running standalone app
+# Examples:
 # ./sync-planned-workouts.sh tomorrow TRAINER_ROAD TRAINING_PEAKS standalone
-#
-# Example, sync planned workouts from Intervals to TrainingPeaks for January 5th when running in docker or JAR
 # ./sync-planned-workouts.sh 2025-01-05 INTERVALS TRAINING_PEAKS
 
 

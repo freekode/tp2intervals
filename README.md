@@ -128,15 +128,26 @@ services:
 * **Windows** The app will ask to access local network and Internet, you need to allow it. After all it makes HTTP requests
 * More info you can find on the forum https://forum.intervals.icu/t/tp2intervals-copy-trainingpeaks-and-trainerroad-workouts-plans-to-intervals/63375
 
-### Sync automatically planned workouts to TrainingPeaks
-If you are using app in docker container, you can set up automatic sync of planned workouts for TrainingPeaks.
 
-Run command on your machine:
+### Bash script to sync planned workouts
+To sync workouts without clicking buttons on UI there is a script [sync-planned-workouts.sh](scripts/sync-planned-workouts.sh).
+
 ```sh
-docker exec -it <container name> ln -s /scripts/sync-planned-to-tp.sh /etc/periodic/daily/
+./sync-planned-workouts.sh <sync date or just tomorrow> <source platform> <target platform> <is standalone app>
 ```
-Script `sync-planned-to-tp.sh` will be executed at 02:00 everyday.
-You can also edit crontab configuration manually and set your own schedule.
+
+Example, sync workouts from TrainerRoad to TrainingPeaks for tomorrow in standalone app:
+```sh
+./sync-planned-workouts.sh tomorrow TRAINER_ROAD TRAINING_PEAKS standalone
+```
+
+Example, sync workouts from Intervals.icu to TrainingPeaks for 2025-01-05 in docker:
+```sh
+./sync-planned-workouts.sh 2025-01-05 INTERVALS TRAINING_PEAKS
+```
+
+Docker image has build in cron, you can edit its configuration and add script to run it on schedule
+
 
 ### Info regarding scheduling for the next day with TrainingPeaks free account
 Officially if you have a free TP account, you can't plan workouts for future dates, but practically you can.
