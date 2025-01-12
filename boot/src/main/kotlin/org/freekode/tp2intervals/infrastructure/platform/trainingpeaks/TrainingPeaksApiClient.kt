@@ -40,7 +40,7 @@ interface TrainingPeaksApiClient {
         @PathVariable("workoutId") workoutId: String,
     ): Resource
 
-    @GetMapping("/fitness/v1/athletes/{userId}/workouts/{workoutId}/details")
+    @GetMapping("/fitness/v6/athletes/{userId}/workouts/{workoutId}/details")
     fun getWorkoutDetails(
         @PathVariable userId: String,
         @PathVariable workoutId: String,
