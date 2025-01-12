@@ -68,17 +68,7 @@ export class TrCopyCalendarToCalendarComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.formGroup.controls['direction'].valueChanges.subscribe(value => {
-      if (value === Platform.DIRECTION_TR_INT) {
-        this.maxDate = null
-        this.formGroup.controls['skipSynced'].disable()
-        this.formGroup.controls['skipSynced'].setValue(false)
-      } else {
-        this.maxDate = this.tomorrowDate
-        this.formGroup.controls['skipSynced'].enable()
-        this.formGroup.controls['skipSynced'].setValue(true)
-      }
-    })
+    this.listenDirectionChange();
   }
 
   submit() {
@@ -109,6 +99,20 @@ export class TrCopyCalendarToCalendarComponent implements OnInit {
     ).subscribe((response) => {
       this.notificationService.success(
         `Planned: ${response.copied}\n Filtered out: ${response.filteredOut}\n From ${response.startDate} to ${response.endDate}`)
+    })
+  }
+
+  private listenDirectionChange() {
+    this.formGroup.controls['direction'].valueChanges.subscribe(value => {
+      if (value === Platform.DIRECTION_TR_INT) {
+        this.maxDate = null
+        this.formGroup.controls['skipSynced'].disable()
+        this.formGroup.controls['skipSynced'].setValue(false)
+      } else {
+        this.maxDate = this.tomorrowDate
+        this.formGroup.controls['skipSynced'].enable()
+        this.formGroup.controls['skipSynced'].setValue(true)
+      }
     })
   }
 }

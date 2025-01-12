@@ -13,6 +13,6 @@ class TrainingPeaksUserDTO(
 
     class TPUserAccountStatusDTO(
         val isAthlete: Boolean,
-        val isCoach: Boolean,
+        val isPremium: Boolean,
     )
 }

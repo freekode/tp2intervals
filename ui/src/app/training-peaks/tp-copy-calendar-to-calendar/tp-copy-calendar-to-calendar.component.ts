@@ -16,6 +16,7 @@ import {finalize} from "rxjs";
 import {Platform} from "infrastructure/platform";
 import {formatDate} from "utils/date-formatter";
 import {TrainingPeaksTrainingTypes} from "app/training-peaks/training-peaks-training-types";
+import {ConfigurationClient} from "infrastructure/client/configuration.client";
 
 @Component({
   selector: 'tp-copy-calendar-to-calendar',
@@ -38,7 +39,8 @@ import {TrainingPeaksTrainingTypes} from "app/training-peaks/training-peaks-trai
   styleUrl: './tp-copy-calendar-to-calendar.component.scss'
 })
 export class TpCopyCalendarToCalendarComponent implements OnInit {
-  private readonly todayDate = new Date()
+  readonly trainingTypes = TrainingPeaksTrainingTypes.trainingTypes;
+  readonly todayDate = new Date()
   readonly tomorrowDate = new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
   readonly directions = [
     {title: "Intervals.icu -> TrainingPeaks", value: Platform.DIRECTION_INT_TP},
@@ -54,18 +56,22 @@ export class TpCopyCalendarToCalendarComponent implements OnInit {
     skipSynced: [true, Validators.required],
   });
 
-  trainingTypes = TrainingPeaksTrainingTypes.trainingTypes;
-
   inProgress = false
+  platformInfo: any = null
 
   constructor(
     private formBuilder: FormBuilder,
     private workoutClient: WorkoutClient,
+    private configurationClient: ConfigurationClient,
     private notificationService: NotificationService
   ) {
   }
 
   ngOnInit(): void {
+    this.configurationClient.platformInfo(Platform.TRAINING_PEAKS.key).subscribe(value => {
+      this.platformInfo = value
+    })
+    this.listenDirectionChange()
   }
 
   submit() {
@@ -98,4 +104,18 @@ export class TpCopyCalendarToCalendarComponent implements OnInit {
         `Planned: ${response.copied}\n Filtered out: ${response.filteredOut}\n From ${response.startDate} to ${response.endDate}`)
     })
   }
+
+  private listenDirectionChange() {
+    this.formGroup.controls['direction'].valueChanges.subscribe(value => {
+      if (value === Platform.DIRECTION_INT_TP) {
+        this.formGroup.controls['skipSynced'].enable()
+        this.formGroup.controls['skipSynced'].setValue(true)
+      } else {
+        this.formGroup.controls['skipSynced'].disable()
+        this.formGroup.controls['skipSynced'].setValue(false)
+      }
+    })
+  }
+
+  protected readonly Platform = Platform;
 }

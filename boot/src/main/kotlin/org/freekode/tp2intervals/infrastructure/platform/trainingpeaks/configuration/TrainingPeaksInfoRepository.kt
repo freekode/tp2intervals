@@ -19,10 +19,15 @@ class TrainingPeaksInfoRepository(
     @Cacheable(key = "'training-peaks'")
     override fun platformInfo(): PlatformInfo {
         val isValid = trainingPeaksConfigurationRepository.isValid()
-        val isAthlete = if (isValid) trainingPeaksUserRepository.getUser().isAthlete else false
+        if (!isValid) {
+            return PlatformInfo(mapOf("isValid" to false))
+        }
+
+        val user = trainingPeaksUserRepository.getUser()
         val infoMap = mapOf(
-            "isValid" to isValid,
-            "isAthlete" to isAthlete
+            "isValid" to true,
+            "isAthlete" to user.isAthlete,
+            "isPremium" to user.isPremium
         )
         return PlatformInfo(infoMap)
     }
