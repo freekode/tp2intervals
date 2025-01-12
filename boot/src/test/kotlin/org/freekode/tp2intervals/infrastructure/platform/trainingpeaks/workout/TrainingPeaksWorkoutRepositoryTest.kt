@@ -87,7 +87,7 @@ class TrainingPeaksWorkoutRepositoryTest {
 
     private fun trainingPeaksUserRepository(): TrainingPeaksUserRepository {
         val mock = mock(TrainingPeaksUserRepository::class.java)
-        `when`(mock.getUser()).thenReturn(TrainingPeaksUser("123", true))
+        `when`(mock.getUser()).thenReturn(TrainingPeaksUser("123", true, false))
         return mock
     }
 
