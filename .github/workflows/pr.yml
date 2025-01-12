@@ -32,7 +32,6 @@ jobs:
       matrix:
         environment:
           - os: ubuntu-latest
-          - os: macos-latest
 
     uses: ./.github/workflows/workflow-electron.yml
     with:
