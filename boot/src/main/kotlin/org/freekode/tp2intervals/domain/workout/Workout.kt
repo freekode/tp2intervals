@@ -1,11 +1,10 @@
 package org.freekode.tp2intervals.domain.workout
 
-import java.io.Serializable
-import java.time.Duration
-import java.time.LocalDate
 import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
+import java.io.Serializable
+import java.time.LocalDate
 
 data class Workout(
     val details: WorkoutDetails,

@@ -32,6 +32,7 @@ class TrainingPeaksWorkoutRepository(
     private val trainingPeaksPlanRepository: TrainingPeaksPlanRepository,
     private val trainingPeaksUserRepository: TrainingPeaksUserRepository,
     private val tpWorkoutLibraryRepository: TPWorkoutLibraryRepository,
+    private val tpAttachmentService: TPAttachmentService,
     private val trainingPeaksConfigurationRepository: TrainingPeaksConfigurationRepository,
     private val objectMapper: ObjectMapper,
 ) : WorkoutRepository {
@@ -84,7 +85,8 @@ class TrainingPeaksWorkoutRepository(
         val noteEndDate = getNoteEndDateForFilter(startDate, endDate)
         val tpNotes = trainingPeaksApiClient.getNotes(userId, startDate.toString(), noteEndDate.toString())
         val workouts = tpWorkouts.map {
-            tpToWorkoutConverter.toWorkout(it)
+            val attachments = tpAttachmentService.getAttachments(userId, it.id)
+            tpToWorkoutConverter.toWorkout(it, attachments)
         }
 
         val notes = tpNotes.map { tpToWorkoutConverter.toWorkout(it) }

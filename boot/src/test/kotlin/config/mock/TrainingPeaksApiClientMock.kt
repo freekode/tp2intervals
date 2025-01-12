@@ -7,6 +7,7 @@ import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.TrainingP
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.CreateTPWorkoutRequestDTO
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.TPNoteResponseDTO
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.TPWorkoutCalendarResponseDTO
+import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.TPWorkoutDetailsResponseDTO
 import org.springframework.core.io.Resource
 import java.io.InputStream
 
@@ -25,6 +26,14 @@ class TrainingPeaksApiClientMock(
 
 
     override fun downloadWorkoutFit(userId: String, workoutId: String): Resource {
+        TODO("Not yet implemented")
+    }
+
+    override fun getWorkoutDetails(userId: String, workoutId: String): TPWorkoutDetailsResponseDTO {
+        TODO("Not yet implemented")
+    }
+
+    override fun downloadWorkoutAttachment(userId: String, workoutId: String, attachmentId: String): Resource {
         TODO("Not yet implemented")
     }
 

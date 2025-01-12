@@ -5,6 +5,8 @@ app:
     api-url: https://intervals.icu
   trainer-road:
     api-url: https://www.trainerroad.com
+  attachments:
+    enabled: false
 
 spring:
   cloud:

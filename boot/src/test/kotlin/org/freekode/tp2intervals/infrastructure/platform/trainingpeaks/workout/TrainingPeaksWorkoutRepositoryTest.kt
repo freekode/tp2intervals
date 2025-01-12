@@ -99,6 +99,7 @@ class TrainingPeaksWorkoutRepositoryTest {
             mock(TrainingPeaksPlanRepository::class.java),
             trainingPeaksUserRepository,
             mock(TPWorkoutLibraryRepository::class.java),
+            mock(TPAttachmentService::class.java),
             mock(TrainingPeaksConfigurationRepository::class.java),
             objectMapper
         )
