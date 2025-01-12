@@ -11,10 +11,9 @@ Runs on MacOS (DMG), Windows (EXE installer), Linux (AppImage). Alternatively th
 
 All files are available for download on [Release page](https://github.com/freekode/tp2intervals/releases/latest).
 
+<img src="https://github.com/freekode/tp2intervals/blob/main/docs/tp.png?raw=true" width="25%"><img src="https://github.com/freekode/tp2intervals/blob/main/docs/tr.png?raw=true" width="25%">
 
 * [List of features](#list-of-features)
-    + [TrainingPeaks features](#trainingpeaks-features)
-    + [TrainerRoad features](#trainerroad-features)
 * [Configuration](#configuration)
     + [Intervals.icu](#intervalsicu)
     + [TrainingPeaks](#trainingpeaks)
@@ -26,9 +25,9 @@ All files are available for download on [Release page](https://github.com/freeko
     + [General](#general)
     + [Sync automatically planned workouts to TrainingPeaks](#sync-automatically-planned-workouts-to-trainingpeaks)
     + [Info regarding scheduling for the next day with TrainingPeaks free account](#info-regarding-scheduling-for-the-next-day-with-trainingpeaks-free-account)
-    + [How to export HAR file](#how-to-export-har-file)
-    + [How to get logs for your issue](#how-to-get-logs-for-your-issue)
-
+* [Troubleshooting](#troubleshooting)
+    + [How to get logs](#how-to-get-logs)
+    + [How to record HAR file](#how-to-record-har-file)
 
 
 **TrainerRoad Updates ⚠️**
@@ -51,8 +50,6 @@ To fix issues I can only relay on logs and HAR files from you.
 * Sync planned workouts in calendar between TrainerRoad, TrainingPeaks and Intervals
 * Copy workouts from TrainerRoad library to Intervals
 * Create training plan or workout folder on Intervals from planned workouts on TrainerRoad
-
-<img src="https://github.com/freekode/tp2intervals/blob/main/docs/tp.png?raw=true" width="30%"><img src="https://github.com/freekode/tp2intervals/blob/main/docs/tr.png?raw=true" width="30%">
 
 **Only for educational purposes**
 
@@ -152,7 +149,7 @@ Example 2. Your TZ is UTC+12, current local date time 20.05.2024 18:00. TP serve
 
 Visible time difference with [worldtimebuddy](https://www.worldtimebuddy.com/?pl=1&lid=206,100,756135,2193733&h=206&hf=0)
 
-### Troubleshooting
+## Troubleshooting
 To identify the problems with any platform, logs from the users helps very much.
 
 Gather logs from [guide below](#how-to-get-logs). And in case of TrainerRoad platform try to [record HAR file](how-to-record-har-file). Send the files directly to me.
