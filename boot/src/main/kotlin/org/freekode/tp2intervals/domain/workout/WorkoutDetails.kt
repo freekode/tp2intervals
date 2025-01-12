@@ -13,6 +13,7 @@ data class WorkoutDetails(
     val duration: Duration?,
     val load: Int?,
     val externalData: ExternalData,
+    val attachments: List<Attachment> = listOf(),
 ) : Serializable {
 
     override fun equals(other: Any?): Boolean {

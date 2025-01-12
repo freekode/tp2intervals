@@ -12,5 +12,5 @@ data class Activity(
     val resource: String?
 ) {
     fun withResource(resource: Resource) =
-        Activity(startedAt, type, title, Base64.toString(resource))
+        Activity(startedAt, type, title, Base64.encodeToString(resource))
 }

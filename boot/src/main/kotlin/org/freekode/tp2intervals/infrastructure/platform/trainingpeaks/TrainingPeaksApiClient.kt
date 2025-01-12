@@ -34,19 +34,24 @@ interface TrainingPeaksApiClient {
         @PathVariable("endDate") endDate: String
     ): List<TPNoteResponseDTO>
 
-    @GetMapping("/fitness/v1/athletes/{userId}/workouts/{workoutId}/details")
-    fun getWorkoutDetails(
-        @PathVariable("userId") userId: String,
-        @PathVariable("workoutId") workoutId: String,
-    ): TPWorkoutDetailsResponseDTO
-
     @GetMapping("/fitness/v6/athletes/{userId}/workouts/{workoutId}/fordevice/fit")
     fun downloadWorkoutFit(
         @PathVariable("userId") userId: String,
         @PathVariable("workoutId") workoutId: String,
     ): Resource
 
+    @GetMapping("/fitness/v1/athletes/{userId}/workouts/{workoutId}/details")
+    fun getWorkoutDetails(
+        @PathVariable userId: String,
+        @PathVariable workoutId: String,
+    ): TPWorkoutDetailsResponseDTO
 
+    @GetMapping("/fitness/v6/athletes/{userId}/workouts/{workoutId}/attachments/{attachmentId}/raw")
+    fun downloadWorkoutAttachment(
+        @PathVariable userId: String,
+        @PathVariable workoutId: String,
+        @PathVariable attachmentId: String,
+    ): Resource
 
     @PostMapping("/fitness/v6/athletes/{userId}/workouts")
     fun createAndPlanWorkout(
