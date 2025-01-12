@@ -11,10 +11,9 @@ Runs on MacOS (DMG), Windows (EXE installer), Linux (AppImage). Alternatively th
 
 All files are available for download on [Release page](https://github.com/freekode/tp2intervals/releases/latest).
 
+<img src="https://github.com/freekode/tp2intervals/blob/main/docs/tp.png?raw=true" width="25%"><img src="https://github.com/freekode/tp2intervals/blob/main/docs/tr.png?raw=true" width="25%">
 
 * [List of features](#list-of-features)
-    + [TrainingPeaks features](#trainingpeaks-features)
-    + [TrainerRoad features](#trainerroad-features)
 * [Configuration](#configuration)
     + [Intervals.icu](#intervalsicu)
     + [TrainingPeaks](#trainingpeaks)
@@ -26,9 +25,9 @@ All files are available for download on [Release page](https://github.com/freeko
     + [General](#general)
     + [Sync automatically planned workouts to TrainingPeaks](#sync-automatically-planned-workouts-to-trainingpeaks)
     + [Info regarding scheduling for the next day with TrainingPeaks free account](#info-regarding-scheduling-for-the-next-day-with-trainingpeaks-free-account)
-    + [How to export HAR file](#how-to-export-har-file)
-    + [How to get logs for your issue](#how-to-get-logs-for-your-issue)
-
+* [Troubleshooting](#troubleshooting)
+    + [How to get logs](#how-to-get-logs)
+    + [How to record HAR file](#how-to-record-har-file)
 
 
 **TrainerRoad Updates ⚠️**
@@ -52,8 +51,6 @@ To fix issues I can only relay on logs and HAR files from you.
 * Copy workouts from TrainerRoad library to Intervals
 * Create training plan or workout folder on Intervals from planned workouts on TrainerRoad
 
-<img src="https://github.com/freekode/tp2intervals/blob/main/docs/tp.png?raw=true" width="30%"><img src="https://github.com/freekode/tp2intervals/blob/main/docs/tr.png?raw=true" width="30%">
-
 **Only for educational purposes**
 
 ## Configuration
@@ -74,13 +71,13 @@ Copy API key and Athlete Id from [Settings page](https://intervals.icu/settings)
 To use TrainingPeaks copy all cookies from request `https://tpapi.trainingpeaks.com/users/v3/token` and put it on Configuration page.
 The app automatically will remove redundant parts and only require cookie will remain. Follow guide below how to do that.
 
-The app require `Production_tpAuth` cookie (key and value, smth like `Production_tpAuth=very_long_string`).
+The app requires `Production_tpAuth` cookie (key and value, smth like `Production_tpAuth=very_long_string`).
 Another guide is [available here](https://forum.intervals.icu/t/implemented-push-workout-to-wahoo/783/87)
 
 <img src="https://github.com/freekode/tp2intervals/blob/main/docs/tp_guide.png?raw=true">
 
 ### TrainerRoad
-Configuration is very similar to TrainingPeaks.  Copy all cookies from request `https://tpapi.trainingpeaks.com/users/v3/token` and put it on Configuration page.
+Configuration is very similar to TrainingPeaks. Copy all cookies from request `https://tpapi.trainingpeaks.com/users/v3/token` and put it on Configuration page.
 The app automatically will remove redundant parts and only require cookie will remain. Follow guide below how to do that.
 
 Cookie `SharedTrainerRoadAuth` (key and value, smth like `SharedTrainerRoadAuth=very_long_string`) is required for the app.
@@ -125,12 +122,10 @@ services:
 ## FAQ
 
 ### General
-* Ramp steps in TrainerRoad are not supported
+* Ramp steps in TrainerRoad are not supported 
 * **MacOS** app is not signed. Usually you need to open it twice. After opening it, be patient, it takes some time to
   start
 * **Windows** The app will ask to access local network and Internet, you need to allow it. After all it makes HTTP requests
-* In case of any problems. You can create an issue on [GitHub](https://github.com/freekode/tp2intervals/issues)
-  or write directly to me iam@freekode.org. Add logs from your app, it can help a lot to resolve the issue. Or in case of TrainerRoad create HAR file
 * More info you can find on the forum https://forum.intervals.icu/t/tp2intervals-copy-trainingpeaks-and-trainerroad-workouts-plans-to-intervals/63375
 
 ### Sync automatically planned workouts to TrainingPeaks
@@ -154,7 +149,23 @@ Example 2. Your TZ is UTC+12, current local date time 20.05.2024 18:00. TP serve
 
 Visible time difference with [worldtimebuddy](https://www.worldtimebuddy.com/?pl=1&lid=206,100,756135,2193733&h=206&hf=0)
 
-### How to export HAR file
+## Troubleshooting
+To identify the problems with any platform, logs from the users helps very much.
+
+Gather logs from [guide below](#how-to-get-logs). And in case of TrainerRoad platform try to [record HAR file](#how-to-record-har-file). Send the files directly to me.
+
+#### How to get logs
+1. Go to Configuration
+2. In General section check Debug Mode, click Confirm
+3. Reproduce your issue
+4. Find log file according to your system
+
+* Linux: ~/.config/tp2intervals/logs/main.log
+* MacOS: ~/Library/Logs/tp2intervals/main.log
+* Windows: %USERPROFILE%\AppData\Roaming\tp2intervals\logs\main.log
+* JAR: ./tp2intervals.log
+
+#### How to record HAR file
 1. Open new tab in your browser
 2. Open dev tools, check Preserve log (Firefox Cog -> Persist Logs)
 
@@ -165,14 +176,3 @@ Visible time difference with [worldtimebuddy](https://www.worldtimebuddy.com/?pl
 
    <img src="https://github.com/freekode/tp2intervals/blob/main/docs/har-2.png?raw=true" width="70%">
 
-
-### How to get logs for your issue
-1. Go to Configuration
-2. In General section check Debug Mode, click Confirm
-3. Reproduce your issue
-4. Find log file according to your system
-
-* Linux: ~/.config/tp2intervals/logs/main.log
-* MacOS: ~/Library/Logs/tp2intervals/main.log
-* Windows: %USERPROFILE%\AppData\Roaming\tp2intervals\logs\main.log
-* JAR: ./tp2intervals.log
