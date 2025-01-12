@@ -74,13 +74,13 @@ Copy API key and Athlete Id from [Settings page](https://intervals.icu/settings)
 To use TrainingPeaks copy all cookies from request `https://tpapi.trainingpeaks.com/users/v3/token` and put it on Configuration page.
 The app automatically will remove redundant parts and only require cookie will remain. Follow guide below how to do that.
 
-The app require `Production_tpAuth` cookie (key and value, smth like `Production_tpAuth=very_long_string`).
+The app requires `Production_tpAuth` cookie (key and value, smth like `Production_tpAuth=very_long_string`).
 Another guide is [available here](https://forum.intervals.icu/t/implemented-push-workout-to-wahoo/783/87)
 
 <img src="https://github.com/freekode/tp2intervals/blob/main/docs/tp_guide.png?raw=true">
 
 ### TrainerRoad
-Configuration is very similar to TrainingPeaks.  Copy all cookies from request `https://tpapi.trainingpeaks.com/users/v3/token` and put it on Configuration page.
+Configuration is very similar to TrainingPeaks. Copy all cookies from request `https://tpapi.trainingpeaks.com/users/v3/token` and put it on Configuration page.
 The app automatically will remove redundant parts and only require cookie will remain. Follow guide below how to do that.
 
 Cookie `SharedTrainerRoadAuth` (key and value, smth like `SharedTrainerRoadAuth=very_long_string`) is required for the app.
