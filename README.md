@@ -122,9 +122,10 @@ services:
 ## FAQ
 
 ### General
-* Ramp steps in TrainerRoad are not supported 
-* **MacOS** app is not signed. Usually you need to open it twice. After opening it, be patient, it takes some time to
-  start
+* Ramp steps in TrainerRoad are not supported
+* **MacOS arm64** Error: `"tp2intervals" is damaged and can’t be opened.`
+  Run command in terminal `xattr -d com.apple.quarantine /Applications/tp2intervals.app` and then open app again
+* **MacOS** app is not signed. Usually you need to open it twice
 * **Windows** The app will ask to access local network and Internet, you need to allow it. After all it makes HTTP requests
 * More info you can find on the forum https://forum.intervals.icu/t/tp2intervals-copy-trainingpeaks-and-trainerroad-workouts-plans-to-intervals/63375
 
