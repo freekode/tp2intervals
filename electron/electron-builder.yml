@@ -21,11 +21,10 @@ nsis:
   createDesktopShortcut: always
 
 mac:
-  target:
-    target: default
-    arch:
-      - x64
-      - arm64
+  target: dmg
+  arch:
+    - x64
+    - arm64
   entitlementsInherit: build/entitlements.mac.plist
   notarize: false
 dmg:
