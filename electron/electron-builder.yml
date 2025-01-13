@@ -22,7 +22,7 @@ nsis:
 
 mac:
   target:
-    target: default
+    target: dmg
     arch:
       - x64
       - arm64
@@ -30,6 +30,7 @@ mac:
   notarize: false
 dmg:
   artifactName: ${name}-${version}-${arch}.${ext}
+  sign: false
 
 linux:
   target:
