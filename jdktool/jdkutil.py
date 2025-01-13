@@ -100,12 +100,10 @@ if __name__ == "__main__":
     if "download" in args.action:
         print("Downloading jdks...")
         for jdk in filtered_jdks:
-            if jdk.variant == args.variant:
-                jdk.download()
+            jdk.download()
 
     if "unzip" in args.action:
         print("Unzipping jdks...")
         for jdk in filtered_jdks:
-            if jdk.variant == args.variant:
-                jdk.unzip()
-                jdk.fix_permissions()
+            jdk.unzip()
+            jdk.fix_permissions()
