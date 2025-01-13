@@ -122,7 +122,9 @@ services:
 ## FAQ
 
 ### General
-* Ramp steps in TrainerRoad are not supported 
+* Ramp steps in TrainerRoad are not supported
+* **MacOS arm64** Error: `"tp2intervals" is damaged and can’t be opened.`
+  Run command in terminal `xattr -d com.apple.quarantine /Applications/tp2intervals.app` and then open app again
 * **MacOS** app is not signed. Usually you need to open it twice. After opening it, be patient, it takes some time to
   start
 * **Windows** The app will ask to access local network and Internet, you need to allow it. After all it makes HTTP requests
