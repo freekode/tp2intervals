@@ -22,14 +22,13 @@ nsis:
 
 mac:
   target:
-    target: dmg
-    arch:
-      - x64
-      - arm64
+    - target: dmg
+      arch: universal
   entitlementsInherit: build/entitlements.mac.plist
   notarize: false
 dmg:
   artifactName: ${name}-${version}-${arch}.${ext}
+  sign: false
 
 linux:
   target:
