@@ -78,31 +78,34 @@ with open(path.join(path.dirname(__file__), 'jdks.csv'), 'r') as csv_file:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("action", help="Action to perform", choices=["clean", "clean:jdks", "clean:zips", "download", "unzip"], nargs='+')
-    parser.add_argument("-t", "--variant", help="Variant to use", choices=["jre", "jdk"], default="jre")
+    parser.add_argument("action", help="Action to perform", choices=["clean", "download", "unzip"], nargs='+')
+    parser.add_argument("-o", "--os", help="OS", choices=["mac", "linux", "win"], nargs='+', required=True)
+    parser.add_argument("-a", "--arch", help="Architectures", choices=["x64", "arm64"], nargs='+', required=True)
     args = parser.parse_args()
+
+    filtered_jdks = [jdk for jdk in jdks if jdk.arch in args.arch and jdk.os in args.os]
+
     print("Running: {}".format(",".join(args.action)))
-    if "clean" in args.action or "clean:jdks" in args.action:
-        print("Cleaning jdks...")
+    if "clean" in args.action:
+        print("Cleaning jdks and zips...")
         if not path.exists(path.join(path.dirname(__file__), "jdks")):
             print("No jdks to clean")
         else:
             shutil.rmtree(path.join(path.dirname(__file__), "jdks"))
-
-    if "clean" in args.action or "clean:zips" in args.action:
-        print("Cleaning jdk zips...")
         if not path.exists(path.join(path.dirname(__file__), "jdk_zips")):
             print("No jdk zips to clean")
         else:
             shutil.rmtree(path.join(path.dirname(__file__), "jdk_zips"))
+
     if "download" in args.action:
         print("Downloading jdks...")
-        for jdk in jdks:
+        for jdk in filtered_jdks:
             if jdk.variant == args.variant:
                 jdk.download()
+
     if "unzip" in args.action:
         print("Unzipping jdks...")
-        for jdk in jdks:
+        for jdk in filtered_jdks:
             if jdk.variant == args.variant:
                 jdk.unzip()
                 jdk.fix_permissions()
