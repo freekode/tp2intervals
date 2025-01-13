@@ -22,8 +22,10 @@ nsis:
 
 mac:
   target:
-    - target: dmg
-      arch: universal
+    target: dmg
+    arch:
+      - x86
+      - arm64
   entitlementsInherit: build/entitlements.mac.plist
   notarize: false
 dmg:
