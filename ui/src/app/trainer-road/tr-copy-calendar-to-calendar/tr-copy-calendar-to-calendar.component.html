@@ -49,7 +49,7 @@
       <mat-divider></mat-divider>
       @for (job of scheduledJobs; track job) {
         <mat-list-item>
-          {{ job.types }}, {{ job.skipSynced }}, source: {{ job.sourcePlatform }}, target: {{ job.targetPlatform }}
+          Types: {{ mapTrainingTypesToTitles(job.types) }}, Skip synced: {{ job.skipSynced }}, {{ Platform.getTitle(job.sourcePlatform) }} -> {{ Platform.getTitle(job.targetPlatform) }}
         </mat-list-item>
       }
     </mat-list>

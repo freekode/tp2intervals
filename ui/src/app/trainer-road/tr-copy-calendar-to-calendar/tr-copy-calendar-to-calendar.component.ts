@@ -15,7 +15,6 @@ import {NotificationService} from "infrastructure/notification.service";
 import {finalize, switchMap, tap} from "rxjs";
 import {Platform} from "infrastructure/platform";
 import {formatDate} from "utils/date-formatter";
-import {TrainingPeaksTrainingTypes} from "app/training-peaks/training-peaks-training-types";
 import {TrainerRoadTrainingTypes} from "app/trainer-road/trainer-road-training-types";
 import {ConfigurationClient} from "infrastructure/client/configuration.client";
 import {MatDividerModule} from "@angular/material/divider";
@@ -110,11 +109,16 @@ export class TrCopyCalendarToCalendarComponent implements OnInit {
     })
   }
 
+  mapTrainingTypesToTitles(values) {
+    return values.map(value => TrainerRoadTrainingTypes.getTitle(value))
+  }
+
   private loadScheduledJobs() {
     return this.workoutClient.getScheduledJobsCopyCalendarToCalendar().pipe(
       tap(values => {
         this.scheduledJobs = values
-      }))
+      })
+    )
   }
 
   private copyWorkoutsForOneDay(date) {
