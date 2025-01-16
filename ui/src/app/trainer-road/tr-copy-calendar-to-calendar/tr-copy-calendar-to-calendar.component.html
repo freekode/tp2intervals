@@ -41,12 +41,13 @@
     </mat-checkbox>
   </div>
 
-  <div *ngIf="scheduledJobs.length > 0" class="row" style="margin-bottom: 10px">
-    @for (job of scheduledJobs; track job) {
-      <div>
-        {{ job.types }}, {{ job.skipSynced }}, source: {{ job.sourcePlatform }}, target: {{ job.targetPlatform }}
-      </div>
-    }
+  <div *ngIf="scheduledJobs.length > 0" style="margin-bottom: 10px">
+    Scheduled jobs
+    <div>
+      @for (job of scheduledJobs; track job) {
+        * {{ job.types }}, {{ job.skipSynced }}, source: {{ job.sourcePlatform }}, target: {{ job.targetPlatform }}<br>
+      }
+    </div>
   </div>
 
   <div class="action-button-section">

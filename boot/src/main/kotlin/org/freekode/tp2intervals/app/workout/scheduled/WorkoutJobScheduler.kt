@@ -1,6 +1,6 @@
 package org.freekode.tp2intervals.app.workout.scheduled
 
-import com.fasterxml.jackson.databind.ObjectMapper
+import org.freekode.tp2intervals.app.workout.CopyFromCalendarToCalendarRequest
 import org.freekode.tp2intervals.app.workout.WorkoutService
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
@@ -9,11 +9,10 @@ import java.util.concurrent.TimeUnit
 
 @Service
 class WorkoutJobScheduler(
-    private val objectMapper: ObjectMapper,
     private val workoutService: WorkoutService
 ) {
     private val log = LoggerFactory.getLogger(this.javaClass)
-    private val scheduledRequests = mutableSetOf<String>()
+    private val scheduledRequests = mutableSetOf<Schedulable>()
 
     @Scheduled(fixedRate = 20, timeUnit = TimeUnit.SECONDS)
     fun job() {
@@ -21,20 +20,23 @@ class WorkoutJobScheduler(
         log.info("Starting processing scheduled requests. There are ${requests.size} requests")
 
         for (request in requests) {
-            if (request is CopyFromCalendarToCalendarScheduledRequest) {
-                workoutService.copyWorkoutsFromCalendarToCalendar(request.toRequest())
+            if (request is CopyFromCalendarToCalendarRequest) {
+                handleCopyCalendartoCalendarRequest(request)
             }
         }
 
         log.info("Finished processing scheduled requests");
     }
 
+    private fun handleCopyCalendartoCalendarRequest(request: CopyFromCalendarToCalendarRequest) {
+        workoutService.copyWorkoutsFromCalendarToCalendar(request.forToday())
+    }
+
     fun addRequest(schedulable: Schedulable) {
-        val value = objectMapper.writeValueAsString(schedulable)
-        scheduledRequests.add(value)
+        scheduledRequests.add(schedulable)
     }
 
     fun getRequests(): List<Schedulable> =
-        scheduledRequests.map { objectMapper.readValue(it, Schedulable::class.java) }
+        scheduledRequests.toList()
 
 }

@@ -1,7 +1,6 @@
 package org.freekode.tp2intervals.rest.workout
 
 import org.freekode.tp2intervals.app.workout.CopyFromCalendarToCalendarRequest
-import org.freekode.tp2intervals.app.workout.scheduled.CopyFromCalendarToCalendarScheduledRequest
 import org.freekode.tp2intervals.app.workout.scheduled.WorkoutJobScheduler
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -14,7 +13,7 @@ class WorkoutJobSchedulerController(
 ) {
     @PostMapping("/api/workout/copy-calendar-to-calendar/schedule")
     fun scheduleCopyWorkoutsFromCalendarToCalendar(@RequestBody request: CopyFromCalendarToCalendarRequest) {
-        return workoutJobScheduler.addRequest(CopyFromCalendarToCalendarScheduledRequest(request))
+        return workoutJobScheduler.addRequest(request)
     }
 
     @GetMapping("/api/workout/copy-calendar-to-calendar/schedule")
