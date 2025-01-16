@@ -36,18 +36,23 @@
   </div>
 
   <div class="row">
-    <mat-checkbox formControlName="skipSynced" style="padding-bottom: 10px">
+    <mat-checkbox formControlName="skipSynced">
       Skip already synced workouts
     </mat-checkbox>
   </div>
 
   <div *ngIf="scheduledJobs.length > 0" style="margin-bottom: 10px">
-    Scheduled jobs
-    <div>
+    <mat-list>
+      <mat-list-item>
+        Scheduled jobs
+      </mat-list-item>
+      <mat-divider></mat-divider>
       @for (job of scheduledJobs; track job) {
-        * {{ job.types }}, {{ job.skipSynced }}, source: {{ job.sourcePlatform }}, target: {{ job.targetPlatform }}<br>
+        <mat-list-item>
+          {{ job.types }}, {{ job.skipSynced }}, source: {{ job.sourcePlatform }}, target: {{ job.targetPlatform }}
+        </mat-list-item>
       }
-    </div>
+    </mat-list>
   </div>
 
   <div class="action-button-section">

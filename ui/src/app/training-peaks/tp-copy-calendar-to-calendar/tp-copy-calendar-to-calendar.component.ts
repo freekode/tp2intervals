@@ -17,6 +17,7 @@ import {Platform} from "infrastructure/platform";
 import {formatDate} from "utils/date-formatter";
 import {TrainingPeaksTrainingTypes} from "app/training-peaks/training-peaks-training-types";
 import {ConfigurationClient} from "infrastructure/client/configuration.client";
+import {MatListModule} from "@angular/material/list";
 
 @Component({
   selector: 'tp-copy-calendar-to-calendar',
@@ -34,6 +35,7 @@ import {ConfigurationClient} from "infrastructure/client/configuration.client";
     MatSnackBarModule,
     MatSelectModule,
     MatCheckboxModule,
+    MatListModule,
   ],
   templateUrl: './tp-copy-calendar-to-calendar.component.html',
   styleUrl: './tp-copy-calendar-to-calendar.component.scss'

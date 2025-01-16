@@ -18,6 +18,8 @@ import {formatDate} from "utils/date-formatter";
 import {TrainingPeaksTrainingTypes} from "app/training-peaks/training-peaks-training-types";
 import {TrainerRoadTrainingTypes} from "app/trainer-road/trainer-road-training-types";
 import {ConfigurationClient} from "infrastructure/client/configuration.client";
+import {MatDividerModule} from "@angular/material/divider";
+import {MatListModule} from "@angular/material/list";
 
 @Component({
   selector: 'tr-copy-calendar-to-calendar',
@@ -35,6 +37,8 @@ import {ConfigurationClient} from "infrastructure/client/configuration.client";
     MatSnackBarModule,
     MatSelectModule,
     MatCheckboxModule,
+    MatDividerModule,
+    MatListModule,
   ],
   templateUrl: './tr-copy-calendar-to-calendar.component.html',
   styleUrl: './tr-copy-calendar-to-calendar.component.scss'
