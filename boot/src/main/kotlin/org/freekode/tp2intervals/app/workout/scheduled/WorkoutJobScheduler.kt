@@ -14,7 +14,7 @@ class WorkoutJobScheduler(
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val scheduledRequests = mutableSetOf<Schedulable>()
 
-    @Scheduled(fixedRate = 20, timeUnit = TimeUnit.SECONDS)
+    @Scheduled(fixedRate = 20, timeUnit = TimeUnit.MINUTES)
     fun job() {
         val requests = getRequests()
         log.info("Starting processing scheduled requests. There are ${requests.size} requests")
