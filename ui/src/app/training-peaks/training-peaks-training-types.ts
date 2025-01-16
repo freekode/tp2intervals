@@ -9,4 +9,8 @@ export class TrainingPeaksTrainingTypes {
     {"title": "Weight Training", "value": "WEIGHT"},
     {"title": "Any other", "value": "UNKNOWN"},
   ]
+
+  static getTitle(value: string) {
+    return this.trainingTypes.filter(type => type.value === value)
+  }
 }

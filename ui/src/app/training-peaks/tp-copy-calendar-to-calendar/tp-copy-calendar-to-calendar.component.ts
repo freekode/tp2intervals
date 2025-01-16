@@ -12,7 +12,7 @@ import {MatSelectModule} from "@angular/material/select";
 import {MatCheckboxModule} from "@angular/material/checkbox";
 import {WorkoutClient} from "infrastructure/client/workout.client";
 import {NotificationService} from "infrastructure/notification.service";
-import {finalize} from "rxjs";
+import {finalize, switchMap, tap} from "rxjs";
 import {Platform} from "infrastructure/platform";
 import {formatDate} from "utils/date-formatter";
 import {TrainingPeaksTrainingTypes} from "app/training-peaks/training-peaks-training-types";
@@ -58,6 +58,7 @@ export class TpCopyCalendarToCalendarComponent implements OnInit {
 
   inProgress = false
   platformInfo: any = null
+  scheduledJobs: any[] = []
 
   constructor(
     private formBuilder: FormBuilder,
@@ -72,6 +73,7 @@ export class TpCopyCalendarToCalendarComponent implements OnInit {
       this.platformInfo = value
     })
     this.listenDirectionChange()
+    this.loadScheduledJobs().subscribe()
   }
 
   submit() {
@@ -88,6 +90,28 @@ export class TpCopyCalendarToCalendarComponent implements OnInit {
     this.copyWorkoutsForOneDay(formatDate(this.tomorrowDate));
   }
 
+  schedule() {
+    this.inProgress = true
+    let startDate = formatDate(this.formGroup.controls['startDate'].value)
+    let endDate = formatDate(this.formGroup.controls['endDate'].value)
+    let direction = this.formGroup.value.direction
+    let trainingTypes = this.formGroup.value.trainingTypes
+    let skipSynced = this.formGroup.value.skipSynced
+    this.workoutClient.scheduleCopyCalendarToCalendar(startDate, endDate, trainingTypes, skipSynced, direction).pipe(
+      switchMap(() => this.loadScheduledJobs()),
+      finalize(() => this.inProgress = false)
+    ).subscribe(() => {
+      this.notificationService.success(`Scheduled sync job`)
+    })
+  }
+
+  private loadScheduledJobs() {
+    return this.workoutClient.getScheduledJobsCopyCalendarToCalendar().pipe(
+      tap(values => {
+        this.scheduledJobs = values
+      }))
+  }
+
   private copyWorkoutsForOneDay(date) {
     this.copyWorkouts(date, date)
   }
@@ -99,7 +123,7 @@ export class TpCopyCalendarToCalendarComponent implements OnInit {
     let skipSynced = this.formGroup.value.skipSynced
     this.workoutClient.copyCalendarToCalendar(startDate, endDate, trainingTypes, skipSynced, direction).pipe(
       finalize(() => this.inProgress = false)
-    ).subscribe((response) => {
+    ).subscribe(response => {
       this.notificationService.success(
         `Planned: ${response.copied}\n Filtered out: ${response.filteredOut}\n From ${response.startDate} to ${response.endDate}`)
     })

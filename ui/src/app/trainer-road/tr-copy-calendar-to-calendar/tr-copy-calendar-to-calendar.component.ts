@@ -12,7 +12,7 @@ import {MatSelectModule} from "@angular/material/select";
 import {MatCheckboxModule} from "@angular/material/checkbox";
 import {WorkoutClient} from "infrastructure/client/workout.client";
 import {NotificationService} from "infrastructure/notification.service";
-import {finalize} from "rxjs";
+import {finalize, switchMap, tap} from "rxjs";
 import {Platform} from "infrastructure/platform";
 import {formatDate} from "utils/date-formatter";
 import {TrainingPeaksTrainingTypes} from "app/training-peaks/training-peaks-training-types";
@@ -59,6 +59,7 @@ export class TrCopyCalendarToCalendarComponent implements OnInit {
 
   inProgress = false
   tpPlatformInfo: any = null
+  scheduledJobs: any[] = []
 
   constructor(
     private formBuilder: FormBuilder,
@@ -73,6 +74,7 @@ export class TrCopyCalendarToCalendarComponent implements OnInit {
       this.tpPlatformInfo = value
     })
     this.listenDirectionChange();
+    this.loadScheduledJobs().subscribe()
   }
 
   submit() {
@@ -87,6 +89,28 @@ export class TrCopyCalendarToCalendarComponent implements OnInit {
 
   tomorrow() {
     this.copyWorkoutsForOneDay(formatDate(this.tomorrowDate));
+  }
+
+  schedule() {
+    this.inProgress = true
+    let startDate = formatDate(this.formGroup.controls['startDate'].value)
+    let endDate = formatDate(this.formGroup.controls['endDate'].value)
+    let direction = this.formGroup.value.direction
+    let trainingTypes = this.formGroup.value.trainingTypes
+    let skipSynced = this.formGroup.value.skipSynced
+    this.workoutClient.scheduleCopyCalendarToCalendar(startDate, endDate, trainingTypes, skipSynced, direction).pipe(
+      switchMap(() => this.loadScheduledJobs()),
+      finalize(() => this.inProgress = false)
+    ).subscribe(() => {
+      this.notificationService.success(`Scheduled sync job`)
+    })
+  }
+
+  private loadScheduledJobs() {
+    return this.workoutClient.getScheduledJobsCopyCalendarToCalendar().pipe(
+      tap(values => {
+        this.scheduledJobs = values
+      }))
   }
 
   private copyWorkoutsForOneDay(date) {
