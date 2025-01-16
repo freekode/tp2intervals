@@ -12,9 +12,8 @@ class WorkoutJobSchedulerController(
     private val workoutJobScheduler: WorkoutJobScheduler
 ) {
     @PostMapping("/api/workout/copy-calendar-to-calendar/schedule")
-    fun scheduleCopyWorkoutsFromCalendarToCalendar(@RequestBody request: CopyFromCalendarToCalendarRequest) {
-        return workoutJobScheduler.addRequest(request)
-    }
+    fun scheduleCopyWorkoutsFromCalendarToCalendar(@RequestBody request: CopyFromCalendarToCalendarRequest) =
+        workoutJobScheduler.addRequest(request)
 
     @GetMapping("/api/workout/copy-calendar-to-calendar/schedule")
     fun getScheduledJobsCopyWorkoutsFromCalendarToCalendar() =

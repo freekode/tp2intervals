@@ -21,20 +21,19 @@ class WorkoutJobScheduler(
 
         for (request in requests) {
             if (request is CopyFromCalendarToCalendarRequest) {
-                handleCopyCalendartoCalendarRequest(request)
+                handleCopyCalendarToCalendarRequest(request)
             }
         }
 
         log.info("Finished processing scheduled requests");
     }
 
-    private fun handleCopyCalendartoCalendarRequest(request: CopyFromCalendarToCalendarRequest) {
+    private fun handleCopyCalendarToCalendarRequest(request: CopyFromCalendarToCalendarRequest) {
         workoutService.copyWorkoutsFromCalendarToCalendar(request.forToday())
     }
 
-    fun addRequest(schedulable: Schedulable) {
+    fun addRequest(schedulable: Schedulable) =
         scheduledRequests.add(schedulable)
-    }
 
     fun getRequests(): List<Schedulable> =
         scheduledRequests.toList()
