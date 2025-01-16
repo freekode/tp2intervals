@@ -13,7 +13,7 @@ class TrainerRoadActivityMapper {
             dto.completedRide.Date,
             type,
             dto.completedRide.Name,
-            Base64.toString(resource)
+            Base64.encodeToString(resource)
         )
     }
 }

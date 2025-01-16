@@ -11,6 +11,7 @@ files:
   - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
 asarUnpack:
   - resources/**
+
 win:
   executableName: tp2intervals
 nsis:
@@ -18,15 +19,19 @@ nsis:
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
+
 mac:
   target:
-    target: default
+    target: dmg
     arch:
       - x64
+      - arm64
   entitlementsInherit: build/entitlements.mac.plist
   notarize: false
 dmg:
   artifactName: ${name}-${version}-${arch}.${ext}
+  sign: false
+
 linux:
   target:
     - AppImage
@@ -34,6 +39,7 @@ linux:
   category: Utility
 appImage:
   artifactName: ${name}-${version}.${ext}
+
 npmRebuild: false
 extraResources:
   - from: 'artifact/boot.jar'
