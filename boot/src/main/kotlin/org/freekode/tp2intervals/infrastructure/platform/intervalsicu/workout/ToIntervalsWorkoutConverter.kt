@@ -1,10 +1,10 @@
 package org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout
 
-import java.time.LocalDate
 import org.freekode.tp2intervals.domain.librarycontainer.LibraryContainer
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.infrastructure.Signature
 import org.freekode.tp2intervals.infrastructure.utils.Date
+import java.time.LocalDate
 
 class ToIntervalsWorkoutConverter {
     private val unwantedStepRegex = "^[-*]".toRegex(RegexOption.MULTILINE)
@@ -53,6 +53,7 @@ class ToIntervalsWorkoutConverter {
         description += workoutString
             ?.let { "\n\n- - - -\n$it" }
             .orEmpty()
+        description += "\n\n${workout.details.externalData.toSimpleString()}"
         return description
     }
 

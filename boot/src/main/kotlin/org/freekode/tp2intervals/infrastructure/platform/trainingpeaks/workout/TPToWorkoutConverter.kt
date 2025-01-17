@@ -65,6 +65,6 @@ class TPToWorkoutConverter {
         }
 
     private fun getWorkoutExternalData(tpWorkout: TPBaseWorkoutResponseDTO): ExternalData {
-        return ExternalData.empty().withTrainingPeaks(tpWorkout.id).withSimpleString(tpWorkout.description ?: "")
+        return ExternalData.empty().withTrainingPeaks(tpWorkout.id).fromSimpleString(tpWorkout.description ?: "")
     }
 }
