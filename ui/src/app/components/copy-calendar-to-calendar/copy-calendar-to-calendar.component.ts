@@ -87,7 +87,7 @@ export class CopyCalendarToCalendarComponent implements OnInit {
     this.copyWorkoutsForOneDay(formatDate(this.tomorrowDate));
   }
 
-  schedule() {
+  scheduleToday() {
     let startDate = formatDate(this.formGroup.controls['startDate'].value)
     let endDate = formatDate(this.formGroup.controls['endDate'].value)
     let direction = this.formGroup.value.direction
