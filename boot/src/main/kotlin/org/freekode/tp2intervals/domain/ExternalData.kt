@@ -19,7 +19,7 @@ data class ExternalData(
 
     fun withTrainerRoad(trainerRoadId: String) = ExternalData(trainingPeaksId, intervalsId, trainerRoadId)
 
-    fun withSimpleString(string: String): ExternalData {
+    fun fromSimpleString(string: String): ExternalData {
         val split = string.split(externalDataDescriptionSeparator)
         if (split.size != 2) {
             return this

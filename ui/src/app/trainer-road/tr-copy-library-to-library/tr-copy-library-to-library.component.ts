@@ -12,7 +12,6 @@ import {MatSnackBarModule} from "@angular/material/snack-bar";
 import {MatSelectModule} from "@angular/material/select";
 import {MatCheckboxModule} from "@angular/material/checkbox";
 import {WorkoutClient} from "infrastructure/client/workout.client";
-import {ConfigurationClient} from "infrastructure/client/configuration.client";
 import {NotificationService} from "infrastructure/notification.service";
 import {debounceTime, filter, finalize, map, Observable, switchMap, tap} from "rxjs";
 import {LibraryClient} from "infrastructure/client/library-client.service";
@@ -61,7 +60,6 @@ export class TrCopyLibraryToLibraryComponent implements OnInit {
     private formBuilder: FormBuilder,
     private workoutClient: WorkoutClient,
     private planClient: LibraryClient,
-    private configurationClient: ConfigurationClient,
     private notificationService: NotificationService
   ) {
   }

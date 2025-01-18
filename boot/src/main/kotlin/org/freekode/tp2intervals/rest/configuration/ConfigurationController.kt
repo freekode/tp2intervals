@@ -23,25 +23,19 @@ class ConfigurationController(
 
     @GetMapping("/api/configuration")
     fun getConfigurations(): AppConfigurationDTO {
-        log.info("Received request for getting all configurations")
+        log.debug("Received request for getting all configurations")
         val configurations = configurationService.getConfigurations()
         return AppConfigurationDTO(configurations.configMap)
     }
 
     @PutMapping("/api/configuration")
     fun updateConfiguration(@RequestBody requestDTO: UpdateConfigurationRequestDTO): ResponseEntity<ErrorResponseDTO> {
-        log.info("Received request for updating configuration: $requestDTO")
+        log.debug("Received request for updating configuration: {}", requestDTO)
         val errors = configurationService.updateConfiguration(UpdateConfigurationRequest(requestDTO.config))
         if (errors.isNotEmpty()) {
             return ResponseEntity.badRequest().body(ErrorResponseDTO(errors.joinToString()))
         }
         return ResponseEntity.ok().build()
-    }
-
-    @Deprecated("all config on ui")
-    @GetMapping("/api/configuration/training-types")
-    fun getTrainingTypes(): List<TrainingTypeDTO> {
-        return TrainingType.entries.map { TrainingTypeDTO(it) }
     }
 
     @GetMapping("/api/configuration/intervals-step-modifiers")
@@ -51,7 +45,7 @@ class ConfigurationController(
 
     @GetMapping("/api/configuration/{platform}")
     fun getConfigurations(@PathVariable platform: Platform): PlatformInfo {
-        log.info("Received request for getting configurations for platform: $platform")
+        log.debug("Received request for getting configurations for platform: {}", platform)
         return configurationService.platformInfo(platform)
     }
 }

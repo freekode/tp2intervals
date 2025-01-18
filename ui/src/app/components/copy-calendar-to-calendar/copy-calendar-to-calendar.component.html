@@ -1,0 +1,109 @@
+<form [formGroup]="formGroup" novalidate>
+  <div class="row">
+    <mat-form-field class="form-field">
+      <mat-label>Direction</mat-label>
+      <mat-select formControlName="direction" #direction>
+        @for (item of directions; track item) {
+          <mat-option [value]="item.value">{{ item.title }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div class="row">
+    <mat-form-field class="form-field">
+      <mat-label>Workout Types</mat-label>
+      <mat-select formControlName="trainingTypes" multiple>
+        @for (type of trainingTypes; track type) {
+          <mat-option [value]="type.value">{{ type.title }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div class="row">
+    <mat-form-field class="form-field">
+      <mat-label>Date Range</mat-label>
+      <mat-date-range-input
+        [max]="(platformInfo?.isPremium || direction.value.targetPlatform === Platform.INTERVALS.key) ? null : tomorrowDate"
+        [rangePicker]="copyPlanDatePicker">
+        <input matStartDate placeholder="Start Date" formControlName="startDate">
+        <input matEndDate placeholder="End Date" formControlName="endDate">
+      </mat-date-range-input>
+      <mat-datepicker-toggle matIconSuffix [for]="copyPlanDatePicker"></mat-datepicker-toggle>
+      <mat-date-range-picker #copyPlanDatePicker></mat-date-range-picker>
+    </mat-form-field>
+  </div>
+
+  <div class="row" style="margin-bottom: 10px">
+    <mat-checkbox formControlName="skipSynced">
+      Skip already synced workouts
+    </mat-checkbox>
+  </div>
+
+  <div class="action-button-section">
+    <button
+      mat-raised-button
+      id="btn-confirm"
+      color="primary"
+      type="button"
+      [disabled]="formGroup.invalid || inProgress"
+      (click)="submit()"
+    >
+      Confirm
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      type="button"
+      style="margin-left: 10px"
+      [disabled]="formGroup.invalid || inProgress"
+      (click)="today()"
+    >
+      Only today
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      type="button"
+      style="margin-left: 10px"
+      [disabled]="formGroup.invalid || inProgress"
+      (click)="tomorrow()"
+    >
+      Only tomorrow
+    </button>
+  </div>
+
+  <div *ngIf="scheduledJobs.length > 0" style="margin-bottom: 10px">
+    <mat-list>
+      <mat-list-item>
+        Scheduled jobs
+      </mat-list-item>
+      <mat-divider></mat-divider>
+      @for (job of scheduledJobs; track job) {
+        <mat-list-item>
+          Types: {{ mapTrainingTypesToTitles(job.types) }},
+          Skip synced: {{ job.skipSynced }},
+          {{ Platform.getTitle(job.sourcePlatform) }} -> {{ Platform.getTitle(job.targetPlatform) }}
+        </mat-list-item>
+      }
+    </mat-list>
+  </div>
+
+  <div class="action-button-section">
+    <button
+      mat-raised-button
+      color="primary"
+      type="button"
+      [disabled]="formGroup.invalid || inProgress"
+      (click)="scheduleToday()"
+    >
+      Schedule for today
+      <i class="bi bi-question-circle"
+         matTooltip="Scheduled job runs every 20 minutes and will sync workouts for today"
+         matTooltipPosition="right"></i>
+    </button>
+  </div>
+
+  <mat-progress-bar *ngIf="inProgress" mode="query"></mat-progress-bar>
+</form>

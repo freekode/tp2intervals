@@ -11,7 +11,7 @@ class ExternalDataTest {
 
         // when
         var data = ExternalData(null, null, null)
-        data = data.withSimpleString(string)
+        data = data.fromSimpleString(string)
 
         // then
         Assertions.assertNotNull(data)
@@ -28,9 +28,9 @@ class ExternalDataTest {
 
         // when
         var data = ExternalData(null, null, null)
-        data = data.withSimpleString(string)
+        data = data.fromSimpleString(string)
         var data1 = ExternalData(null, null, null)
-        data1 = data1.withSimpleString(string1)
+        data1 = data1.fromSimpleString(string1)
 
         // then
         Assertions.assertNull(data.trainingPeaksId)

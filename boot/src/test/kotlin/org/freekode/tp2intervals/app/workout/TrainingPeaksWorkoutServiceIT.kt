@@ -4,6 +4,7 @@ import config.BaseSpringITConfig
 import org.freekode.tp2intervals.app.plan.CopyLibraryRequest
 import org.freekode.tp2intervals.app.plan.DeleteLibraryRequest
 import org.freekode.tp2intervals.app.plan.LibraryService
+import org.freekode.tp2intervals.app.workout.scheduled.CopyFromCalendarToCalendarScheduledRequest
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.workout.structure.StepModifier
@@ -30,9 +31,9 @@ class TrainingPeaksWorkoutServiceIT : BaseSpringITConfig() {
         val deleteRequest = DeleteWorkoutRequestDTO(startDate, endDate, platform)
         workoutService.deleteWorkoutsFromCalendar(deleteRequest)
 
-        val copyRequest = CopyFromCalendarToCalendarRequest(
+        val copyRequest = CopyFromCalendarToCalendarScheduledRequest(
             startDate, endDate,
-            TrainingType.Companion.DEFAULT_LIST,
+            TrainingType.DEFAULT_LIST,
             true,
             Platform.INTERVALS,
             platform
