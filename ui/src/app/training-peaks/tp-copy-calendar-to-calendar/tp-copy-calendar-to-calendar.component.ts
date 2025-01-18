@@ -10,7 +10,6 @@ import {MatSnackBarModule} from "@angular/material/snack-bar";
 import {MatSelectModule} from "@angular/material/select";
 import {MatCheckboxModule} from "@angular/material/checkbox";
 import {Platform} from "infrastructure/platform";
-import {TrainingPeaksTrainingTypes} from "app/training-peaks/training-peaks-training-types";
 import {MatListModule} from "@angular/material/list";
 import {
   CopyCalendarToCalendarComponent
@@ -43,7 +42,16 @@ export class TpCopyCalendarToCalendarComponent implements OnInit {
     {title: "Intervals.icu -> TrainingPeaks", value: Platform.DIRECTION_INT_TP},
     {title: "TrainingPeaks -> Intervals.icu", value: Platform.DIRECTION_TP_INT},
   ]
-  readonly trainingTypes = TrainingPeaksTrainingTypes.trainingTypes;
+  readonly trainingTypes = [
+    {title: "Ride", value: "BIKE"},
+    {title: "MTB", value: "MTB"},
+    {title: "Virtual Ride", value: "VIRTUAL_BIKE"},
+    {title: "Run", value: "RUN"},
+    {title: "Swim", value: "SWIM"},
+    {title: "Walk", value: "WALK"},
+    {title: "Weight Training", value: "WEIGHT"},
+    {title: "Any other", value: "UNKNOWN"},
+  ]
   readonly selectedTrainingTypes = ['BIKE', 'VIRTUAL_BIKE', 'MTB', 'RUN'];
 
   constructor() {

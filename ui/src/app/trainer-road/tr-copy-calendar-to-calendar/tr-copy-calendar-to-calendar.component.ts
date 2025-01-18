@@ -10,7 +10,6 @@ import {MatSnackBarModule} from "@angular/material/snack-bar";
 import {MatSelectModule} from "@angular/material/select";
 import {MatCheckboxModule} from "@angular/material/checkbox";
 import {Platform} from "infrastructure/platform";
-import {TrainerRoadTrainingTypes} from "app/trainer-road/trainer-road-training-types";
 import {MatDividerModule} from "@angular/material/divider";
 import {MatListModule} from "@angular/material/list";
 import {
@@ -45,7 +44,11 @@ export class TrCopyCalendarToCalendarComponent implements OnInit {
     {title: "TrainerRoad -> TrainingPeaks", value: Platform.DIRECTION_TR_TP},
     {title: "TrainerRoad -> Intervals.icu", value: Platform.DIRECTION_TR_INT},
   ]
-  readonly trainingTypes = TrainerRoadTrainingTypes.trainingTypes;
+  readonly trainingTypes = [
+    {title: "Ride", value: "BIKE"},
+    {title: "Virtual Ride", value: "VIRTUAL_BIKE"},
+    {title: "Unknown", value: "UNKNOWN"},
+  ];
 
   constructor() {
   }

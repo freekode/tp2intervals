@@ -1,6 +1,5 @@
 package org.freekode.tp2intervals.app.workout.scheduled
 
-import org.freekode.tp2intervals.app.workout.CopyFromCalendarToCalendarRequest
 import org.freekode.tp2intervals.app.workout.WorkoutService
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
@@ -12,7 +11,13 @@ class WorkoutJobScheduler(
     private val workoutService: WorkoutService
 ) {
     private val log = LoggerFactory.getLogger(this.javaClass)
-    private val scheduledRequests = mutableSetOf<Schedulable>()
+    private val scheduledRequests = mutableListOf<Schedulable>()
+
+    fun addRequest(schedulable: Schedulable) =
+        scheduledRequests.add(schedulable)
+
+    fun getRequests() =
+        scheduledRequests.toList()
 
     @Scheduled(fixedRate = 20, timeUnit = TimeUnit.MINUTES)
     fun job() {
@@ -20,7 +25,7 @@ class WorkoutJobScheduler(
         log.info("Starting processing scheduled requests. There are ${requests.size} requests")
 
         for (request in requests) {
-            if (request is CopyFromCalendarToCalendarRequest) {
+            if (request is CopyFromCalendarToCalendarScheduledRequest) {
                 handleCopyCalendarToCalendarRequest(request)
             }
         }
@@ -28,14 +33,7 @@ class WorkoutJobScheduler(
         log.info("Finished processing scheduled requests");
     }
 
-    private fun handleCopyCalendarToCalendarRequest(request: CopyFromCalendarToCalendarRequest) {
+    private fun handleCopyCalendarToCalendarRequest(request: CopyFromCalendarToCalendarScheduledRequest) {
         workoutService.copyWorkoutsFromCalendarToCalendar(request.forToday())
     }
-
-    fun addRequest(schedulable: Schedulable) =
-        scheduledRequests.add(schedulable)
-
-    fun getRequests(): List<Schedulable> =
-        scheduledRequests.toList()
-
 }

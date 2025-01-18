@@ -20,13 +20,13 @@ class LibraryController(
 
     @GetMapping("/api/library-container")
     fun getLibraryContainers(@RequestParam platform: Platform): List<LibraryContainer> {
-        log.info("Received request for getting library containers: $platform")
+        log.debug("Received request for getting library containers: {}", platform)
         return libraryService.findByPlatform(platform)
     }
 
     @PostMapping("/api/library-container/copy")
     fun copyLibraryContainer(@RequestBody request: CopyLibraryRequest): CopyPlanResponse {
-        log.info("Received request to copy the library container: $request")
+        log.debug("Received request to copy the library container: {}", request)
         return libraryService.copyLibrary(request)
     }
 }

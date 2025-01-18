@@ -1,6 +1,6 @@
 package org.freekode.tp2intervals.rest.workout
 
-import org.freekode.tp2intervals.app.workout.CopyFromCalendarToCalendarRequest
+import org.freekode.tp2intervals.app.workout.scheduled.CopyFromCalendarToCalendarScheduledRequest
 import org.freekode.tp2intervals.app.workout.CopyFromCalendarToLibraryRequest
 import org.freekode.tp2intervals.app.workout.CopyFromLibraryToLibraryRequest
 import org.freekode.tp2intervals.app.workout.CopyWorkoutsResponse
@@ -18,7 +18,7 @@ class WorkoutController(
     private val workoutService: WorkoutService,
 ) {
     @PostMapping("/api/workout/copy-calendar-to-calendar")
-    fun copyWorkoutsFromCalendarToCalendar(@RequestBody request: CopyFromCalendarToCalendarRequest): CopyWorkoutsResponse {
+    fun copyWorkoutsFromCalendarToCalendar(@RequestBody request: CopyFromCalendarToCalendarScheduledRequest): CopyWorkoutsResponse {
         return workoutService.copyWorkoutsFromCalendarToCalendar(request)
     }
 

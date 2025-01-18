@@ -1,4 +1,4 @@
-export class TrainingPeaksTrainingTypes {
+export class TrainingTypes {
   static trainingTypes = [
     {title: "Ride", value: "BIKE"},
     {title: "MTB", value: "MTB"},
@@ -11,6 +11,6 @@ export class TrainingPeaksTrainingTypes {
   ]
 
   static getTitle(value: string) {
-    return this.trainingTypes.filter(type => type.value === value)
+    return this.trainingTypes.find(type => type.value === value)?.title
   }
 }

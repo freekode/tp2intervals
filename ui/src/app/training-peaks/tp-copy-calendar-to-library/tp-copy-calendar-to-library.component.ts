@@ -16,7 +16,6 @@ import {MatSnackBarModule} from "@angular/material/snack-bar";
 import {MatSelectModule} from "@angular/material/select";
 import {MatCheckboxModule} from "@angular/material/checkbox";
 import {Platform} from "infrastructure/platform";
-import {TrainingPeaksTrainingTypes} from "app/training-peaks/training-peaks-training-types";
 
 @Component({
   selector: 'tp-copy-calendar-to-library',
@@ -40,8 +39,23 @@ import {TrainingPeaksTrainingTypes} from "app/training-peaks/training-peaks-trai
   styleUrl: './tp-copy-calendar-to-library.component.scss'
 })
 export class TpCopyCalendarToLibraryComponent implements OnInit {
-  private readonly selectedTrainingTypes = ['BIKE', 'VIRTUAL_BIKE', 'MTB', 'RUN'];
-  private readonly direction = Platform.DIRECTION_TP_INT
+  readonly selectedTrainingTypes = ['BIKE', 'VIRTUAL_BIKE', 'MTB', 'RUN'];
+  readonly direction = Platform.DIRECTION_TP_INT
+  readonly planType = [
+    {name: 'Plan', value: true},
+    {name: 'Folder', value: false}
+  ]
+
+  trainingTypes = [
+    {title: "Ride", value: "BIKE"},
+    {title: "MTB", value: "MTB"},
+    {title: "Virtual Ride", value: "VIRTUAL_BIKE"},
+    {title: "Run", value: "RUN"},
+    {title: "Swim", value: "SWIM"},
+    {title: "Walk", value: "WALK"},
+    {title: "Weight Training", value: "WEIGHT"},
+    {title: "Any other", value: "UNKNOWN"},
+  ]
 
   formGroup: FormGroup = this.formBuilder.group({
     name: ['My New Library', Validators.required],
@@ -50,14 +64,7 @@ export class TpCopyCalendarToLibraryComponent implements OnInit {
     endDate: [null, Validators.required],
     isPlan: [true, Validators.required],
   });
-
   inProgress = false
-
-  trainingTypes = TrainingPeaksTrainingTypes.trainingTypes;
-  readonly planType = [
-    {name: 'Plan', value: true},
-    {name: 'Folder', value: false}
-  ]
 
   constructor(
     private formBuilder: FormBuilder,

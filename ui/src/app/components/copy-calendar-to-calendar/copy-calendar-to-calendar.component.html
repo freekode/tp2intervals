@@ -41,22 +41,6 @@
     </mat-checkbox>
   </div>
 
-  <div *ngIf="scheduledJobs.length > 0" style="margin-bottom: 10px">
-    <mat-list>
-      <mat-list-item>
-        Scheduled jobs
-      </mat-list-item>
-      <mat-divider></mat-divider>
-      @for (job of scheduledJobs; track job) {
-        <mat-list-item>
-          Types:{{ mapTrainingTypesToTitles(job.types) }},
-          Skip synced: {{ job.skipSynced }},
-          {{ Platform.getTitle(job.sourcePlatform) }} -> {{ Platform.getTitle(job.targetPlatform) }}
-        </mat-list-item>
-      }
-    </mat-list>
-  </div>
-
   <div class="action-button-section">
     <button
       mat-raised-button
@@ -88,15 +72,36 @@
     >
       Only tomorrow
     </button>
+  </div>
+
+  <div *ngIf="scheduledJobs.length > 0" style="margin-bottom: 10px">
+    <mat-list>
+      <mat-list-item>
+        Scheduled jobs
+      </mat-list-item>
+      <mat-divider></mat-divider>
+      @for (job of scheduledJobs; track job) {
+        <mat-list-item>
+          Types: {{ mapTrainingTypesToTitles(job.types) }},
+          Skip synced: {{ job.skipSynced }},
+          {{ Platform.getTitle(job.sourcePlatform) }} -> {{ Platform.getTitle(job.targetPlatform) }}
+        </mat-list-item>
+      }
+    </mat-list>
+  </div>
+
+  <div class="action-button-section">
     <button
       mat-raised-button
       color="primary"
       type="button"
-      style="margin-left: 10px"
       [disabled]="formGroup.invalid || inProgress"
       (click)="scheduleToday()"
     >
       Schedule for today
+      <i class="bi bi-question-circle"
+         matTooltip="Scheduled job runs every 20 minutes and will sync workouts for today"
+         matTooltipPosition="right"></i>
     </button>
   </div>
 

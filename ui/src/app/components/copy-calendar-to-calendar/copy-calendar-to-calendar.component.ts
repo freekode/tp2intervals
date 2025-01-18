@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {MatButtonModule} from "@angular/material/button";
 import {MatFormFieldModule} from "@angular/material/form-field";
@@ -11,7 +11,6 @@ import {MatSelectModule} from "@angular/material/select";
 import {MatCheckboxModule} from "@angular/material/checkbox";
 import {Platform} from "infrastructure/platform";
 import {formatDate} from "utils/date-formatter";
-import {TrainerRoadTrainingTypes} from "app/trainer-road/trainer-road-training-types";
 import {MatDividerModule} from "@angular/material/divider";
 import {MatListModule} from "@angular/material/list";
 import {NgIf} from "@angular/common";
@@ -19,6 +18,8 @@ import {ConfigurationClient} from "infrastructure/client/configuration.client";
 import {finalize, switchMap, tap} from "rxjs";
 import {WorkoutClient} from "infrastructure/client/workout.client";
 import {NotificationService} from "infrastructure/notification.service";
+import {MatTooltipModule} from "@angular/material/tooltip";
+import {TrainingTypes} from "app/training-types";
 
 @Component({
   selector: 'copy-calendar-to-calendar',
@@ -38,6 +39,7 @@ import {NotificationService} from "infrastructure/notification.service";
     MatDividerModule,
     MatListModule,
     NgIf,
+    MatTooltipModule,
   ],
   templateUrl: './copy-calendar-to-calendar.component.html',
   styleUrl: './copy-calendar-to-calendar.component.scss'
@@ -104,7 +106,7 @@ export class CopyCalendarToCalendarComponent implements OnInit {
   }
 
   mapTrainingTypesToTitles(values) {
-    return values.map(value => TrainerRoadTrainingTypes.getTitle(value))
+    return values.map(value => TrainingTypes.getTitle(value))
   }
 
   private copyWorkoutsForOneDay(date) {

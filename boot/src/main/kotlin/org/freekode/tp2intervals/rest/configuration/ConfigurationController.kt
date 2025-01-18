@@ -45,7 +45,7 @@ class ConfigurationController(
 
     @GetMapping("/api/configuration/{platform}")
     fun getConfigurations(@PathVariable platform: Platform): PlatformInfo {
-        log.info("Received request for getting configurations for platform: $platform")
+        log.debug("Received request for getting configurations for platform: {}", platform)
         return configurationService.platformInfo(platform)
     }
 }
