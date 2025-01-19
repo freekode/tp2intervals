@@ -25,7 +25,7 @@
     <mat-form-field class="form-field">
       <mat-label>Date Range</mat-label>
       <mat-date-range-input
-        [max]="(platformInfo?.isPremium || direction.value.targetPlatform === Platform.INTERVALS.key) ? null : tomorrowDate"
+        [max]="(platformsInfo?.TRAINING_PEAKS.isPremium || direction.value.targetPlatform === Platform.INTERVALS.key) ? null : tomorrowDate"
         [rangePicker]="copyPlanDatePicker">
         <input matStartDate placeholder="Start Date" formControlName="startDate">
         <input matEndDate placeholder="End Date" formControlName="endDate">
