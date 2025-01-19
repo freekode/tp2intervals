@@ -11,6 +11,8 @@ Runs on MacOS (DMG), Windows (EXE installer), Linux (AppImage). Alternatively th
 
 All files are available for download on [Release page](https://github.com/freekode/tp2intervals/releases/latest).
 
+**Only for educational purposes**
+
 <img src="https://github.com/freekode/tp2intervals/blob/main/docs/tp.png?raw=true" width="25%"><img src="https://github.com/freekode/tp2intervals/blob/main/docs/tr.png?raw=true" width="25%">
 
 * [List of features](#list-of-features)
@@ -37,7 +39,7 @@ To fix issues I can only relay on logs and HAR files from you.
 
 ## List of features
 
-### TrainingPeaks features
+### TrainingPeaks
 **Athlete account**
 * Sync planned workouts in calendar between Intervals.icu and TrainingPeaks (for today and tomorrow with free TP account)
 * Copy whole training plan from TrainingPeaks
@@ -46,12 +48,13 @@ To fix issues I can only relay on logs and HAR files from you.
 **Coach account**
 * Copy whole training plan and workout library from TrainingPeaks
 
-### TrainerRoad features
+### TrainerRoad
 * Sync planned workouts in calendar from TrainerRoad to TrainingPeaks or Intervals.icu
 * Copy workouts from TrainerRoad library to Intervals
 * Create training plan or workout folder on Intervals.icu from planned workouts on TrainerRoad
 
-**Only for educational purposes**
+Automatically schedule workouts for today, by checking your calendar every 20 minutes.
+
 
 ## Configuration
 
