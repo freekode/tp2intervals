@@ -31,6 +31,9 @@ class ConfigurationService(
         return errors
     }
 
+    fun platformInfo() =
+        platformInfoRepositoryMap.entries.associate { it.key to it.value.platformInfo() }
+
     fun platformInfo(platform: Platform): PlatformInfo {
         return platformInfoRepositoryMap[platform]!!.platformInfo()
     }

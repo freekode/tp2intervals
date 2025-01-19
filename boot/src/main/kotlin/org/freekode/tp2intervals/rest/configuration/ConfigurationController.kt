@@ -2,8 +2,6 @@ package org.freekode.tp2intervals.rest.configuration
 
 import org.freekode.tp2intervals.app.confguration.ConfigurationService
 import org.freekode.tp2intervals.domain.Platform
-import org.freekode.tp2intervals.domain.TrainingType
-import org.freekode.tp2intervals.domain.config.PlatformInfo
 import org.freekode.tp2intervals.domain.config.UpdateConfigurationRequest
 import org.freekode.tp2intervals.domain.workout.structure.StepModifier
 import org.freekode.tp2intervals.rest.ErrorResponseDTO
@@ -43,9 +41,11 @@ class ConfigurationController(
         return StepModifier.entries
     }
 
+    @GetMapping("/api/configuration/platform")
+    fun getAllPlatformInfo() =
+        configurationService.platformInfo()
+
     @GetMapping("/api/configuration/{platform}")
-    fun getConfigurations(@PathVariable platform: Platform): PlatformInfo {
-        log.debug("Received request for getting configurations for platform: {}", platform)
-        return configurationService.platformInfo(platform)
-    }
+    fun getConfigurations(@PathVariable platform: Platform) =
+        configurationService.platformInfo(platform)
 }

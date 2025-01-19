@@ -24,6 +24,15 @@ export class ConfigurationClient {
       .put(`/api/configuration`, configData)
   }
 
+  getAllPlatformInfo(): Observable<any> {
+    return this.httpClient.get(`/api/configuration/platform`).pipe(
+      map(response => {
+        Object.keys(response).forEach(key => response[key] = response[key].infoMap)
+        return response
+      })
+    )
+  }
+
   platformInfo(platform): Observable<any> {
     return this.httpClient.get(`/api/configuration/${platform}`).pipe(
       map(response => (<any>response).infoMap)

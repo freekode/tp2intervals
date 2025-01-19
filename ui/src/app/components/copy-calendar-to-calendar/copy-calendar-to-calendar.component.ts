@@ -19,7 +19,7 @@ import {finalize, switchMap, tap} from "rxjs";
 import {WorkoutClient} from "infrastructure/client/workout.client";
 import {NotificationService} from "infrastructure/notification.service";
 import {MatTooltipModule} from "@angular/material/tooltip";
-import {TrainingTypes} from "app/training-types";
+import {TrainingTypes} from "infrastructure/training-types";
 
 @Component({
   selector: 'copy-calendar-to-calendar',
@@ -49,14 +49,13 @@ export class CopyCalendarToCalendarComponent implements OnInit {
   readonly todayDate = new Date()
   readonly tomorrowDate = new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
 
-  @Input() platform: any
   @Input() trainingTypes: any[] = []
   @Input() selectedTrainingTypes = ['BIKE', 'VIRTUAL_BIKE']
   @Input() directions: any[] = []
   @Input() inProgress = false
 
   formGroup: FormGroup
-  platformInfo: any
+  platformsInfo: any
   scheduledJobs: any[] = []
 
   constructor(
@@ -68,8 +67,8 @@ export class CopyCalendarToCalendarComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.configurationClient.platformInfo(this.platform.key).subscribe(value => {
-      this.platformInfo = value
+    this.configurationClient.getAllPlatformInfo().subscribe(value => {
+      this.platformsInfo = value
     })
     this.formGroup = this.getFormGroup();
     this.loadScheduledJobs().subscribe()
