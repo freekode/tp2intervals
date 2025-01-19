@@ -72,8 +72,7 @@ Check all your values and save configuration again.
 ### Intervals.icu
 Copy API key and Athlete Id from [Settings page](https://intervals.icu/settings) in Developer Settings section on Intervals.icu web page.
 
-<a name="trainingpeaks-config"></a>
-### TrainingPeaks
+### <a name="trainingpeaks-config"></a> TrainingPeaks
 To use TrainingPeaks copy all cookies from request `https://tpapi.trainingpeaks.com/users/v3/token` and put it on Configuration page.
 The app automatically will remove redundant parts and only require cookie will remain. Follow guide below how to do that.
 
