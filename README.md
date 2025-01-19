@@ -68,9 +68,11 @@ If everything is fine, you will be redirected to the home page.
 If your configuration is wrong. You will see an error that there is no access to particular platform.
 Check all your values and save configuration again.
 
+<a name="intervalsicu-config"></a>
 ### Intervals.icu
 Copy API key and Athlete Id from [Settings page](https://intervals.icu/settings) in Developer Settings section on Intervals.icu web page.
 
+<a name="trainingpeaks-config"></a>
 ### TrainingPeaks
 To use TrainingPeaks copy all cookies from request `https://tpapi.trainingpeaks.com/users/v3/token` and put it on Configuration page.
 The app automatically will remove redundant parts and only require cookie will remain. Follow guide below how to do that.
@@ -80,6 +82,7 @@ Another guide is [available here](https://forum.intervals.icu/t/implemented-push
 
 <img src="https://github.com/freekode/tp2intervals/blob/main/docs/tp_guide.png?raw=true">
 
+<a name="trainerroad-config"></a>
 ### TrainerRoad
 Configuration is very similar to TrainingPeaks. Copy all cookies from request `https://tpapi.trainingpeaks.com/users/v3/token` and put it on Configuration page.
 The app automatically will remove redundant parts and only require cookie will remain. Follow guide below how to do that.
