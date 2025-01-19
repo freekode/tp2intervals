@@ -40,7 +40,6 @@ jobs:
       jar-artifact-name: tp2intervals-jar
       image-name: tp2intervals
       image-tag: ${{ needs.extract_branch_name.outputs.branch_name }}
-      dry-run: false
 
   electron:
     needs:
