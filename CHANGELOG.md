@@ -1,4 +1,9 @@
-<a name="0.10.0"></a>
+### 0.11.0
+- Added scheduled job to sync planned workouts in calendars
+- Added support arm64 for Mac
+- Added support to skip already synced workouts when syncing to Intervals.icu
+- Fixed null workout name in TrainingPeaks
+
 ### 0.10.0
 - Added calendar sync between TrainerRoad, TrainingPeaks and Intervals
 - Added bash script for automatic calendar sync with cron
