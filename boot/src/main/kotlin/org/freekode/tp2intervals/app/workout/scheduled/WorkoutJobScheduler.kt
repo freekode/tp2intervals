@@ -11,7 +11,7 @@ class WorkoutJobScheduler(
     private val workoutService: WorkoutService
 ) {
     private val log = LoggerFactory.getLogger(this.javaClass)
-    private val scheduledRequests = mutableListOf<Schedulable>()
+    private val scheduledRequests = mutableSetOf<Schedulable>()
 
     fun addRequest(schedulable: Schedulable) =
         scheduledRequests.add(schedulable)

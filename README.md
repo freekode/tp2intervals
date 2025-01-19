@@ -54,6 +54,7 @@ To fix issues I can only relay on logs and HAR files from you.
 * Create training plan or workout folder on Intervals.icu from planned workouts on TrainerRoad
 
 Automatically schedule workouts for today, by checking your calendar every 20 minutes.
+To clear up scheduled jobs just restart the application.
 
 
 ## Configuration
