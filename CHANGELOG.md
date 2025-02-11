@@ -1,3 +1,6 @@
+### 0.11.1
+- Fix docker image
+
 ### 0.11.0
 - Added scheduled job to sync planned workouts in calendars
 - Added support arm64 for Mac
