@@ -19,11 +19,10 @@ jobs:
   docker-image:
     needs:
       - jar
-    uses: ./.github/workflows/workflow-docker-image.yml
+    uses: ./.github/workflows/workflow-docker-image-new.yml
     with:
       jar-name: tp2intervals
       jar-artifact-name: tp2intervals-jar
-      image-name: tp2intervals
 
   electron:
     needs:
