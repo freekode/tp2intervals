@@ -44,11 +44,11 @@ export class WorkoutClient {
       })
   }
 
-  getScheduledJobsCopyCalendarToCalendar(): Observable<any> {
+  getScheduleRequests(): Observable<any> {
     return this.httpClient.get(`/api/workout/copy-calendar-to-calendar/schedule`)
   }
 
-  deleteScheduledJobCopyCalendarToCalendar(jobId: any) {
-    return this.httpClient.delete(`/api/workout/copy-calendar-to-calendar/schedule/${jobId}`)
+  deleteScheduleRequest(id: any) {
+    return this.httpClient.delete(`/api/workout/copy-calendar-to-calendar/schedule/${id}`)
   }
 }

@@ -56,7 +56,7 @@ export class CopyCalendarToCalendarComponent implements OnInit {
 
   formGroup: FormGroup
   platformsInfo: any
-  scheduledJobs: any[] = []
+  scheduleRequests: any[] = []
 
   constructor(
     private formBuilder: FormBuilder,
@@ -71,7 +71,7 @@ export class CopyCalendarToCalendarComponent implements OnInit {
       this.platformsInfo = value
     })
     this.formGroup = this.getFormGroup();
-    this.loadScheduledJobs().subscribe()
+    this.loadScheduleRequests().subscribe()
   }
 
   submit() {
@@ -97,7 +97,7 @@ export class CopyCalendarToCalendarComponent implements OnInit {
 
     this.inProgress = true
     this.workoutClient.scheduleCopyCalendarToCalendar(startDate, endDate, trainingTypes, skipSynced, direction).pipe(
-      switchMap(() => this.loadScheduledJobs()),
+      switchMap(() => this.loadScheduleRequests()),
       finalize(() => this.inProgress = false)
     ).subscribe(() => {
       this.notificationService.success(`Scheduled sync job`)
@@ -136,13 +136,13 @@ export class CopyCalendarToCalendarComponent implements OnInit {
     })
   }
 
-  private loadScheduledJobs() {
-    return this.workoutClient.getScheduledJobsCopyCalendarToCalendar().pipe(
+  private loadScheduleRequests() {
+    return this.workoutClient.getScheduleRequests().pipe(
       tap(values => {
-          this.scheduledJobs = values.map(value => {
+          this.scheduleRequests = values.map(value => {
             return {id: value.id, request: JSON.parse(value.requestJson)}
           })
-          console.log(this.scheduledJobs)
+          console.log(this.scheduleRequests)
         }
       )
     )
@@ -150,8 +150,8 @@ export class CopyCalendarToCalendarComponent implements OnInit {
 
   deleteJob(jobId: any) {
     this.inProgress = true
-    this.workoutClient.deleteScheduledJobCopyCalendarToCalendar(jobId).pipe(
-      switchMap(() => this.loadScheduledJobs()),
+    this.workoutClient.deleteScheduleRequest(jobId).pipe(
+      switchMap(() => this.loadScheduleRequests()),
       finalize(() => this.inProgress = false)
     ).subscribe(() => {
       this.notificationService.success(`Deleted job`)

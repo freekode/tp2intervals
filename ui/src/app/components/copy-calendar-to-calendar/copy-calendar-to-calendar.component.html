@@ -74,22 +74,22 @@
     </button>
   </div>
 
-  <div *ngIf="scheduledJobs.length > 0" style="margin-bottom: 10px">
+  <div *ngIf="scheduleRequests.length > 0" style="margin-bottom: 10px">
     <mat-list>
       <mat-list-item>
         Scheduled jobs
       </mat-list-item>
       <mat-divider></mat-divider>
-      @for (job of scheduledJobs; track job) {
+      @for (request of scheduleRequests; track request) {
         <mat-list-item>
-          Types: {{ mapTrainingTypesToTitles(job.request.types) }},
-          Skip synced: {{ job.request.skipSynced }},
-          {{ Platform.getTitle(job.request.sourcePlatform) }} -> {{ Platform.getTitle(job.request.targetPlatform) }}
+          Types: {{ mapTrainingTypesToTitles(request.request.types) }},
+          Skip synced: {{ request.request.skipSynced }},
+          {{ Platform.getTitle(request.request.sourcePlatform) }} -> {{ Platform.getTitle(request.request.targetPlatform) }}
           <button
             mat-raised-button
             color="primary"
             type="button"
-            (click)="deleteJob(job.id)">
+            (click)="deleteJob(request.id)">
             <i class="bi bi-trash"></i>
           </button>
         </mat-list-item>
@@ -113,5 +113,5 @@
        matTooltipPosition="right"></i>
   </div>
 
-  <mat-progress-bar *ngIf="inProgress" mode="query"></mat-progress-bar>
+  <mat-progress-bar *ngIf="inProgress" mode="query" style="margin-top: 10px"></mat-progress-bar>
 </form>
