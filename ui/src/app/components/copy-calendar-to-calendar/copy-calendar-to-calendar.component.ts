@@ -56,7 +56,7 @@ export class CopyCalendarToCalendarComponent implements OnInit {
 
   formGroup: FormGroup
   platformsInfo: any
-  scheduledJobs: any[] = []
+  scheduleRequests: any[] = []
 
   constructor(
     private formBuilder: FormBuilder,
@@ -71,7 +71,7 @@ export class CopyCalendarToCalendarComponent implements OnInit {
       this.platformsInfo = value
     })
     this.formGroup = this.getFormGroup();
-    this.loadScheduledJobs().subscribe()
+    this.loadScheduleRequests().subscribe()
   }
 
   submit() {
@@ -89,15 +89,15 @@ export class CopyCalendarToCalendarComponent implements OnInit {
   }
 
   scheduleToday() {
-    let startDate = formatDate(this.formGroup.controls['startDate'].value)
-    let endDate = formatDate(this.formGroup.controls['endDate'].value)
+    let startDate = null
+    let endDate = null
     let direction = this.formGroup.value.direction
     let trainingTypes = this.formGroup.value.trainingTypes
     let skipSynced = this.formGroup.value.skipSynced
 
     this.inProgress = true
     this.workoutClient.scheduleCopyCalendarToCalendar(startDate, endDate, trainingTypes, skipSynced, direction).pipe(
-      switchMap(() => this.loadScheduledJobs()),
+      switchMap(() => this.loadScheduleRequests()),
       finalize(() => this.inProgress = false)
     ).subscribe(() => {
       this.notificationService.success(`Scheduled sync job`)
@@ -136,11 +136,25 @@ export class CopyCalendarToCalendarComponent implements OnInit {
     })
   }
 
-  private loadScheduledJobs() {
-    return this.workoutClient.getScheduledJobsCopyCalendarToCalendar().pipe(
+  private loadScheduleRequests() {
+    return this.workoutClient.getScheduleRequests().pipe(
       tap(values => {
-        this.scheduledJobs = values
-      })
+          this.scheduleRequests = values.map(value => {
+            return {id: value.id, request: JSON.parse(value.requestJson)}
+          })
+          console.log(this.scheduleRequests)
+        }
+      )
     )
+  }
+
+  deleteJob(jobId: any) {
+    this.inProgress = true
+    this.workoutClient.deleteScheduleRequest(jobId).pipe(
+      switchMap(() => this.loadScheduleRequests()),
+      finalize(() => this.inProgress = false)
+    ).subscribe(() => {
+      this.notificationService.success(`Deleted job`)
+    })
   }
 }

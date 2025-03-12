@@ -1,18 +1,17 @@
-package org.freekode.tp2intervals.app.workout.scheduled
+package org.freekode.tp2intervals.app.workout.schedule
 
+import org.freekode.tp2intervals.app.workout.CopyFromCalendarToCalendarRequest
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.TrainingType
 import java.time.LocalDate
 
-data class CopyFromCalendarToCalendarScheduledRequest(
-    val startDate: LocalDate,
-    val endDate: LocalDate,
+data class C2CTodayScheduledRequest(
     val types: List<TrainingType>,
     val skipSynced: Boolean,
     val sourcePlatform: Platform,
     val targetPlatform: Platform
 ) : Schedulable {
-    fun forToday() = CopyFromCalendarToCalendarScheduledRequest(
+    fun forToday() = CopyFromCalendarToCalendarRequest(
         LocalDate.now(),
         LocalDate.now(),
         types,
