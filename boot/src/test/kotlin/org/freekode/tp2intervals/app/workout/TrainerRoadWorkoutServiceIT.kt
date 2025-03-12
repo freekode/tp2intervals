@@ -38,7 +38,7 @@ class TrainerRoadWorkoutServiceIT : BaseSpringITConfig() {
             platform,
             Platform.INTERVALS
         )
-        val response = workoutService.copyWorkoutFromLibraryToLibrary(copyRequest)
+        val response = workoutService.copyWorkoutL2L(copyRequest)
         libraryService.deleteLibrary(DeleteLibraryRequest(libraryContainer.externalData, Platform.INTERVALS))
         assertEquals(response.copied, 1)
     }
@@ -46,7 +46,7 @@ class TrainerRoadWorkoutServiceIT : BaseSpringITConfig() {
     @Test
     @Disabled("don't have example response for calendar")
     fun `should copy planned workouts to library`() {
-        val response = workoutService.copyWorkoutsFromCalendarToLibrary(
+        val response = workoutService.copyWorkoutsC2L(
             CopyFromCalendarToLibraryRequest(
                 LocalDate.parse("2024-03-04"),
                 LocalDate.parse("2024-03-10"),

@@ -89,8 +89,8 @@ export class CopyCalendarToCalendarComponent implements OnInit {
   }
 
   scheduleToday() {
-    let startDate = formatDate(this.formGroup.controls['startDate'].value)
-    let endDate = formatDate(this.formGroup.controls['endDate'].value)
+    let startDate = null
+    let endDate = null
     let direction = this.formGroup.value.direction
     let trainingTypes = this.formGroup.value.trainingTypes
     let skipSynced = this.formGroup.value.skipSynced
@@ -139,8 +139,22 @@ export class CopyCalendarToCalendarComponent implements OnInit {
   private loadScheduledJobs() {
     return this.workoutClient.getScheduledJobsCopyCalendarToCalendar().pipe(
       tap(values => {
-        this.scheduledJobs = values
-      })
+          this.scheduledJobs = values.map(value => {
+            return {id: value.id, request: JSON.parse(value.requestJson)}
+          })
+          console.log(this.scheduledJobs)
+        }
+      )
     )
+  }
+
+  deleteJob(jobId: any) {
+    this.inProgress = true
+    this.workoutClient.deleteScheduledJobCopyCalendarToCalendar(jobId).pipe(
+      switchMap(() => this.loadScheduledJobs()),
+      finalize(() => this.inProgress = false)
+    ).subscribe(() => {
+      this.notificationService.success(`Deleted job`)
+    })
   }
 }

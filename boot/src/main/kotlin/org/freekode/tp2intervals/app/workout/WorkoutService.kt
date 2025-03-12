@@ -1,6 +1,5 @@
 package org.freekode.tp2intervals.app.workout
 
-import org.freekode.tp2intervals.app.workout.scheduled.CopyFromCalendarToCalendarScheduledRequest
 import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.librarycontainer.LibraryContainerRepository
@@ -20,7 +19,7 @@ class WorkoutService(
     private val workoutRepositoryMap = workoutRepositories.associateBy { it.platform() }
     private val planRepositoryMap = planRepositories.associateBy { it.platform() }
 
-    fun copyWorkoutsFromCalendarToCalendar(request: CopyFromCalendarToCalendarScheduledRequest): CopyWorkoutsResponse {
+    fun copyWorkoutsC2C(request: CopyFromCalendarToCalendarRequest): CopyWorkoutsResponse {
         log.info("Received request for copy calendar to calendar: $request")
         val sourceWorkoutRepository = workoutRepositoryMap[request.sourcePlatform]!!
         val targetWorkoutRepository = workoutRepositoryMap[request.targetPlatform]!!
@@ -44,7 +43,7 @@ class WorkoutService(
         return response
     }
 
-    fun copyWorkoutsFromCalendarToLibrary(request: CopyFromCalendarToLibraryRequest): CopyWorkoutsResponse {
+    fun copyWorkoutsC2L(request: CopyFromCalendarToLibraryRequest): CopyWorkoutsResponse {
         log.info("Received request for copy calendar to library: $request")
         val sourceWorkoutRepository = workoutRepositoryMap[request.sourcePlatform]!!
         val targetWorkoutRepository = workoutRepositoryMap[request.targetPlatform]!!
@@ -64,7 +63,7 @@ class WorkoutService(
         )
     }
 
-    fun copyWorkoutFromLibraryToLibrary(request: CopyFromLibraryToLibraryRequest): CopyWorkoutsResponse {
+    fun copyWorkoutL2L(request: CopyFromLibraryToLibraryRequest): CopyWorkoutsResponse {
         log.info("Received request for copy library to library: $request")
         val sourceWorkoutRepository = workoutRepositoryMap[request.sourcePlatform]!!
         val targetWorkoutRepository = workoutRepositoryMap[request.targetPlatform]!!
