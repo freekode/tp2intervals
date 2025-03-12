@@ -26,6 +26,16 @@ jobs:
       image-tag: latest
       dry-run: false
 
+  docker-image-new:
+    needs:
+      - jar
+    uses: ./.github/workflows/workflow-docker-image-new.yml
+    secrets: inherit
+    with:
+      jar-name: tp2intervals
+      jar-artifact-name: tp2intervals-jar
+      dry-run: false
+
   electron:
     needs:
       - jar
