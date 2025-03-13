@@ -21,6 +21,5 @@
 - Added TrainerRoad configuration tutorial
 - Removed Strava support
 
-
 ### 0.9.0
 - Added support distance based steps in workouts
