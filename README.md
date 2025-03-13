@@ -104,14 +104,6 @@ java -Dserver.port=9090 -jar tp2intervals.jar
 ### Docker
 Docker image also built for every release
 
-To run docker execute:
-
-```shell
-docker run --rm --name tp2intervals -p 8080:8080 ghcr.io/freekode/tp2intervals:latest
-```
-
-Or with `docker compose`
-
 ```yaml
 services:
   app:
