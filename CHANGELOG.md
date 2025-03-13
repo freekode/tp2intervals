@@ -1,3 +1,7 @@
+### 0.12.0
+- Multiarch docker image
+- Persistent scheduled job
+
 ### 0.11.1
 - Fix docker image
 
