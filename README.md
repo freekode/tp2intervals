@@ -107,7 +107,7 @@ Docker image also built for every release
 To run docker execute:
 
 ```shell
-docker run --rm --name tp2intervals -p 8080:8080 ghcr.io/freekode/tp2intervals/tp2intervals:latest
+docker run --rm --name tp2intervals -p 8080:8080 ghcr.io/freekode/tp2intervals:latest
 ```
 
 Or with `docker compose`
@@ -115,7 +115,7 @@ Or with `docker compose`
 ```yaml
 services:
   app:
-    image: ghcr.io/freekode/tp2intervals/tp2intervals:latest
+    image: ghcr.io/freekode/tp2intervals:latest
     container_name: tp2intervals
     volumes:
       - ./tp2intervals.sqlite:/tp2intervals.sqlite
