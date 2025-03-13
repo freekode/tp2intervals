@@ -117,6 +117,8 @@ services:
   app:
     image: ghcr.io/freekode/tp2intervals/tp2intervals:latest
     container_name: tp2intervals
+    volumes:
+      - ./tp2intervals.sqlite:/tp2intervals.sqlite
     ports:
       - '8080:8080'
 ```
