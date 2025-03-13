@@ -31,7 +31,14 @@ All files are available for download on [Release page](https://github.com/freeko
     + [How to record HAR file](#how-to-record-har-file)
 
 
-**TrainerRoad Updates ⚠️**
+
+**New Docker image location ⚠️**
+
+**New image url: `ghcr.io/freekode/tp2intervals`**
+
+Old image url: `ghcr.io/freekode/tp2intervals/tp2intervals`
+
+**TrainerRoad Updates**
 
 I don't have access to TrainerRoad anymore. Account, which I used, cancelled subscription. I don't use the platform and it's too expensive to have it for occasional fixes.
 To fix issues I can only relay on logs and HAR files from you.
