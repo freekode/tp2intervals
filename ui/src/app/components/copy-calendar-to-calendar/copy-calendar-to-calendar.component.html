@@ -82,9 +82,6 @@
       <mat-divider></mat-divider>
       @for (request of scheduleRequests; track request) {
         <mat-list-item>
-          Types: {{ mapTrainingTypesToTitles(request.request.types) }},
-          Skip synced: {{ request.request.skipSynced }},
-          {{ Platform.getTitle(request.request.sourcePlatform) }} -> {{ Platform.getTitle(request.request.targetPlatform) }}
           <button
             mat-raised-button
             color="primary"
@@ -92,6 +89,9 @@
             (click)="deleteJob(request.id)">
             <i class="bi bi-trash"></i>
           </button>
+          Types: {{ mapTrainingTypesToTitles(request.request.types) }},
+          Skip synced: {{ request.request.skipSynced }},
+          {{ Platform.getTitle(request.request.sourcePlatform) }} -> {{ Platform.getTitle(request.request.targetPlatform) }}
         </mat-list-item>
       }
     </mat-list>
