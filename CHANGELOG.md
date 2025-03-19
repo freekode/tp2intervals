@@ -1,3 +1,6 @@
+### 0.12.1
+- Fixed invisible remove button for scheduled job
+
 ### 0.12.0
 - Multiarch docker image
 - Persistent scheduled job
