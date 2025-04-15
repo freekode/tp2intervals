@@ -1,3 +1,6 @@
+### 0.12.2
+- Fixed TP Premium users coulndt select future dates to sync workouts
+
 ### 0.12.1
 - Fixed invisible remove button for scheduled job
 
