@@ -25,7 +25,6 @@
     <mat-form-field class="form-field">
       <mat-label>Date Range</mat-label>
       <mat-date-range-input
-        [max]="(platformsInfo?.TRAINING_PEAKS.isPremium || direction.value.targetPlatform === Platform.INTERVALS.key) ? null : tomorrowDate"
         [rangePicker]="copyPlanDatePicker">
         <input matStartDate placeholder="Start Date" formControlName="startDate">
         <input matEndDate placeholder="End Date" formControlName="endDate">
@@ -33,6 +32,11 @@
       <mat-datepicker-toggle matIconSuffix [for]="copyPlanDatePicker"></mat-datepicker-toggle>
       <mat-date-range-picker #copyPlanDatePicker></mat-date-range-picker>
     </mat-form-field>
+
+    <i *ngIf="direction.value.targetPlatform === Platform.TRAINING_PEAKS.key && formGroup.controls['endDate'].value > tomorrowDate"
+       class="bi bi-exclamation-triangle-fill beta-icon"
+       matTooltip="Sync to futurte date will work only for TrainingPeaks Premium users"
+       matTooltipPosition="right"></i>
   </div>
 
   <div class="row" style="margin-bottom: 10px">
