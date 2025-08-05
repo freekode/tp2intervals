@@ -4,7 +4,7 @@ import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.librarycontainer.LibraryContainer
 
-data class CopyFromLibraryToLibraryRequest(
+data class CopyL2LRequest(
     val workoutExternalData: ExternalData,
     val targetLibraryContainer: LibraryContainer,
     val sourcePlatform: Platform,

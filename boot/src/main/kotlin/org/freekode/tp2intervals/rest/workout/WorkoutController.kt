@@ -1,8 +1,8 @@
 package org.freekode.tp2intervals.rest.workout
 
-import org.freekode.tp2intervals.app.workout.CopyFromCalendarToCalendarRequest
-import org.freekode.tp2intervals.app.workout.CopyFromCalendarToLibraryRequest
-import org.freekode.tp2intervals.app.workout.CopyFromLibraryToLibraryRequest
+import org.freekode.tp2intervals.app.workout.CopyC2CRequest
+import org.freekode.tp2intervals.app.workout.CopyC2LRequest
+import org.freekode.tp2intervals.app.workout.CopyL2LRequest
 import org.freekode.tp2intervals.app.workout.CopyWorkoutsResponse
 import org.freekode.tp2intervals.app.workout.WorkoutService
 import org.freekode.tp2intervals.domain.Platform
@@ -18,17 +18,17 @@ class WorkoutController(
     private val workoutService: WorkoutService,
 ) {
     @PostMapping("/api/workout/copy-calendar-to-calendar")
-    fun copyWorkoutsFromCalendarToCalendar(@RequestBody request: CopyFromCalendarToCalendarRequest): CopyWorkoutsResponse {
+    fun copyWorkoutsFromCalendarToCalendar(@RequestBody request: CopyC2CRequest): CopyWorkoutsResponse {
         return workoutService.copyWorkoutsC2C(request)
     }
 
     @PostMapping("/api/workout/copy-calendar-to-library")
-    fun copyWorkoutsFromCalendarToLibrary(@RequestBody request: CopyFromCalendarToLibraryRequest): CopyWorkoutsResponse {
+    fun copyWorkoutsFromCalendarToLibrary(@RequestBody request: CopyC2LRequest): CopyWorkoutsResponse {
         return workoutService.copyWorkoutsC2L(request)
     }
 
     @PostMapping("/api/workout/copy-library-to-library")
-    fun copyWorkoutFromLibraryToLibrary(@RequestBody request: CopyFromLibraryToLibraryRequest): CopyWorkoutsResponse {
+    fun copyWorkoutFromLibraryToLibrary(@RequestBody request: CopyL2LRequest): CopyWorkoutsResponse {
         return workoutService.copyWorkoutL2L(request)
     }
 

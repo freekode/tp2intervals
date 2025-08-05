@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.springframework.boot") version "3.2.0"
+    id("org.springframework.boot") version "3.5.4"
     id("io.spring.dependency-management") version "1.1.4"
     id("org.openapi.generator") version "7.2.0"
     kotlin("jvm") version "1.9.22"
@@ -21,7 +21,7 @@ repositories {
 
 dependencyManagement {
     imports {
-        mavenBom("org.springframework.cloud:spring-cloud-dependencies:2023.0.0")
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:2025.0.0")
     }
 }
 
@@ -46,7 +46,8 @@ dependencies {
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.junit.jupiter:junit-jupiter-engine")
-    testImplementation("org.wiremock:wiremock-standalone:3.5.2")
+//    testImplementation("org.wiremock:wiremock-standalone:3.5.2")
+    testImplementation("org.wiremock.integrations:wiremock-spring-boot:3.10.0")
 }
 
 springBoot {
@@ -62,6 +63,7 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+    systemProperty("spring.profiles.active", "test")
 }
 
 tasks.bootJar {

@@ -32,7 +32,7 @@ class TrainerRoadWorkoutServiceIT : BaseSpringITConfig() {
             CreateLibraryContainerRequest("copy form lib to lib ${LocalDateTime.now()}", Platform.INTERVALS)
         )
 
-        val copyRequest = CopyFromLibraryToLibraryRequest(
+        val copyRequest = CopyL2LRequest(
             foundWorkouts.first().externalData,
             libraryContainer,
             platform,
@@ -47,7 +47,7 @@ class TrainerRoadWorkoutServiceIT : BaseSpringITConfig() {
     @Disabled("don't have example response for calendar")
     fun `should copy planned workouts to library`() {
         val response = workoutService.copyWorkoutsC2L(
-            CopyFromCalendarToLibraryRequest(
+            CopyC2LRequest(
                 LocalDate.parse("2024-03-04"),
                 LocalDate.parse("2024-03-10"),
                 "copy from calend to lib ${LocalDateTime.now()}",

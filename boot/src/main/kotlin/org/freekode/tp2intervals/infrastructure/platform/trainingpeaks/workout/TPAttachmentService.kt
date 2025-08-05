@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service
 @Service
 class TPAttachmentService(
     private val trainingPeaksApiClient: TrainingPeaksApiClient,
-    @Value("\${app.attachments.enabled}") private val attachmentsEnabled: Boolean,
+    @param:Value("\${app.attachments.enabled}") private val attachmentsEnabled: Boolean,
 ) {
     private val log = LoggerFactory.getLogger(this.javaClass)
 

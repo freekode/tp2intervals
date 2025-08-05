@@ -4,7 +4,7 @@ import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.TrainingType
 import java.time.LocalDate
 
-data class CopyFromCalendarToLibraryRequest(
+data class CopyC2LRequest(
     val startDate: LocalDate,
     val endDate: LocalDate,
     val name: String,

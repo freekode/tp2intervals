@@ -1,4 +1,13 @@
 app:
+  training-peaks:
+    api-url: http://localhost:34567/training-peaks
+  intervals:
+    api-url: http://localhost:34567/intervals
+  trainer-road:
+    api-url: http://localhost:34567/trainer-road
+  attachments:
+    enabled: false
+
   default-config:
     'intervals.api-key': my-api-key
     'intervals.athlete-id': i112233
