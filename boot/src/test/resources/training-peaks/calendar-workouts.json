@@ -1,0 +1,977 @@
+[
+  {
+    "workoutId": 3275884332,
+    "athleteId": 4842855,
+    "title": "power test",
+    "workoutTypeValueId": 2,
+    "code": null,
+    "workoutDay": "2024-03-11T00:00:00",
+    "startTime": null,
+    "startTimePlanned": null,
+    "isItAnOr": false,
+    "isHidden": null,
+    "completed": null,
+    "description": "//////////\nintervalsId=34918213",
+    "userTags": null,
+    "coachComments": null,
+    "workoutComments": [],
+    "newComment": null,
+    "hasPrivateWorkoutNoteForCaller": false,
+    "publicSettingValue": 2,
+    "sharedWorkoutInformationKey": "FW72Z3Q4V2HTFKRQCTLR6YR5XA",
+    "sharedWorkoutInformationExpireKey": "U2FDDT6BMXLWDB6JXKTVD35ZNDNUAWO6TSTPVVI",
+    "distance": null,
+    "distancePlanned": null,
+    "distanceCustomized": null,
+    "distanceUnitsCustomized": null,
+    "totalTime": null,
+    "totalTimePlanned": 0.83333333333333337,
+    "heartRateMinimum": null,
+    "heartRateMaximum": null,
+    "heartRateAverage": null,
+    "calories": null,
+    "caloriesPlanned": null,
+    "tssActual": null,
+    "tssPlanned": 35.0,
+    "tssSource": 0,
+    "if": null,
+    "ifPlanned": null,
+    "velocityAverage": null,
+    "velocityPlanned": null,
+    "velocityMaximum": null,
+    "normalizedSpeedActual": null,
+    "normalizedPowerActual": null,
+    "powerAverage": null,
+    "powerMaximum": null,
+    "energy": null,
+    "energyPlanned": null,
+    "elevationGain": null,
+    "elevationGainPlanned": null,
+    "elevationLoss": null,
+    "elevationMinimum": null,
+    "elevationAverage": null,
+    "elevationMaximum": null,
+    "torqueAverage": null,
+    "torqueMaximum": null,
+    "tempMin": null,
+    "tempAvg": null,
+    "tempMax": null,
+    "cadenceAverage": null,
+    "cadenceMaximum": null,
+    "lastModifiedDate": "2025-08-05T13:39:48.373",
+    "equipmentBikeId": null,
+    "equipmentShoeId": null,
+    "isLocked": null,
+    "complianceDurationPercent": null,
+    "complianceDistancePercent": null,
+    "complianceTssPercent": null,
+    "rpe": null,
+    "feeling": null,
+    "structure": {
+      "structure": [
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "length": {
+                "value": 600,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 10,
+                  "maxValue": 30
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "length": {
+                "value": 600,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 40
+                },
+                {
+                  "minValue": 30,
+                  "maxValue": 90,
+                  "unit": "roundOrStridePerMinute"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "repetition",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "name": "Ramp",
+              "length": {
+                "value": 60,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 10,
+                  "maxValue": 15
+                }
+              ]
+            },
+            {
+              "name": "Ramp",
+              "length": {
+                "value": 60,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 15,
+                  "maxValue": 20
+                }
+              ]
+            },
+            {
+              "name": "Ramp",
+              "length": {
+                "value": 60,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 20,
+                  "maxValue": 25
+                }
+              ]
+            },
+            {
+              "name": "Ramp",
+              "length": {
+                "value": 60,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 25,
+                  "maxValue": 30
+                }
+              ]
+            },
+            {
+              "name": "Ramp",
+              "length": {
+                "value": 60,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 30,
+                  "maxValue": 35
+                }
+              ]
+            },
+            {
+              "name": "Ramp",
+              "length": {
+                "value": 60,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 35,
+                  "maxValue": 40
+                }
+              ]
+            },
+            {
+              "name": "Ramp",
+              "length": {
+                "value": 60,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 40,
+                  "maxValue": 45
+                }
+              ]
+            },
+            {
+              "name": "Ramp",
+              "length": {
+                "value": 60,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 45,
+                  "maxValue": 50
+                }
+              ]
+            },
+            {
+              "name": "Ramp",
+              "length": {
+                "value": 60,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 50,
+                  "maxValue": 55
+                }
+              ]
+            },
+            {
+              "name": "Ramp",
+              "length": {
+                "value": 60,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 55,
+                  "maxValue": 60
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "length": {
+                "value": 600,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 56,
+                  "maxValue": 75
+                },
+                {
+                  "minValue": 50,
+                  "maxValue": 50,
+                  "unit": "roundOrStridePerMinute"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "length": {
+                "value": 600,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 76,
+                  "maxValue": 105
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "primaryLengthMetric": "duration",
+      "primaryIntensityMetric": "percentOfFtp"
+    },
+    "orderOnDay": null,
+    "personalRecordCount": 0,
+    "syncedTo": null,
+    "poolLengthOptionId": null,
+    "workoutSubTypeId": null
+  },
+  {
+    "workoutId": 3275884334,
+    "athleteId": 4842855,
+    "title": "hr test",
+    "workoutTypeValueId": 2,
+    "code": null,
+    "workoutDay": "2024-03-12T00:00:00",
+    "startTime": null,
+    "startTimePlanned": null,
+    "isItAnOr": false,
+    "isHidden": null,
+    "completed": null,
+    "description": "//////////\nintervalsId=35626866",
+    "userTags": null,
+    "coachComments": null,
+    "workoutComments": [],
+    "newComment": null,
+    "hasPrivateWorkoutNoteForCaller": false,
+    "publicSettingValue": 2,
+    "sharedWorkoutInformationKey": "KAUER4VEC7BUHKRQCTLR6YR5XA",
+    "sharedWorkoutInformationExpireKey": "RHEHNQFRBU3LXB6JXKTVD35ZNDNUAWO6TSTPVVI",
+    "distance": null,
+    "distancePlanned": null,
+    "distanceCustomized": null,
+    "distanceUnitsCustomized": null,
+    "totalTime": null,
+    "totalTimePlanned": 0.83333333333333337,
+    "heartRateMinimum": null,
+    "heartRateMaximum": null,
+    "heartRateAverage": null,
+    "calories": null,
+    "caloriesPlanned": null,
+    "tssActual": null,
+    "tssPlanned": 25.0,
+    "tssSource": 0,
+    "if": null,
+    "ifPlanned": null,
+    "velocityAverage": null,
+    "velocityPlanned": null,
+    "velocityMaximum": null,
+    "normalizedSpeedActual": null,
+    "normalizedPowerActual": null,
+    "powerAverage": null,
+    "powerMaximum": null,
+    "energy": null,
+    "energyPlanned": null,
+    "elevationGain": null,
+    "elevationGainPlanned": null,
+    "elevationLoss": null,
+    "elevationMinimum": null,
+    "elevationAverage": null,
+    "elevationMaximum": null,
+    "torqueAverage": null,
+    "torqueMaximum": null,
+    "tempMin": null,
+    "tempAvg": null,
+    "tempMax": null,
+    "cadenceAverage": null,
+    "cadenceMaximum": null,
+    "lastModifiedDate": "2025-08-05T13:39:48.567",
+    "equipmentBikeId": null,
+    "equipmentShoeId": null,
+    "isLocked": null,
+    "complianceDurationPercent": null,
+    "complianceDistancePercent": null,
+    "complianceTssPercent": null,
+    "rpe": null,
+    "feeling": null,
+    "structure": {
+      "structure": [
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "length": {
+                "value": 600,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 33,
+                  "maxValue": 44
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "length": {
+                "value": 600,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 44
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "repetition",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "name": "Ramp",
+              "length": {
+                "value": 60,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 49,
+                  "maxValue": 50
+                }
+              ]
+            },
+            {
+              "name": "Ramp",
+              "length": {
+                "value": 60,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 50,
+                  "maxValue": 51
+                }
+              ]
+            },
+            {
+              "name": "Ramp",
+              "length": {
+                "value": 60,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 51,
+                  "maxValue": 52
+                }
+              ]
+            },
+            {
+              "name": "Ramp",
+              "length": {
+                "value": 60,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 52,
+                  "maxValue": 53
+                }
+              ]
+            },
+            {
+              "name": "Ramp",
+              "length": {
+                "value": 60,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 53,
+                  "maxValue": 54
+                }
+              ]
+            },
+            {
+              "name": "Ramp",
+              "length": {
+                "value": 60,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 54,
+                  "maxValue": 55
+                }
+              ]
+            },
+            {
+              "name": "Ramp",
+              "length": {
+                "value": 60,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 55,
+                  "maxValue": 56
+                }
+              ]
+            },
+            {
+              "name": "Ramp",
+              "length": {
+                "value": 60,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 56,
+                  "maxValue": 57
+                }
+              ]
+            },
+            {
+              "name": "Ramp",
+              "length": {
+                "value": 60,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 57,
+                  "maxValue": 58
+                }
+              ]
+            },
+            {
+              "name": "Ramp",
+              "length": {
+                "value": 60,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 58,
+                  "maxValue": 59
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "length": {
+                "value": 600,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 81,
+                  "maxValue": 89
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "length": {
+                "value": 600,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 90,
+                  "maxValue": 99
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "primaryLengthMetric": "duration",
+      "primaryIntensityMetric": "percentOfThresholdHr"
+    },
+    "orderOnDay": null,
+    "personalRecordCount": 0,
+    "syncedTo": null,
+    "poolLengthOptionId": null,
+    "workoutSubTypeId": null
+  },
+  {
+    "workoutId": 3275884338,
+    "athleteId": 4842855,
+    "title": "reps test",
+    "workoutTypeValueId": 2,
+    "code": null,
+    "workoutDay": "2024-03-13T00:00:00",
+    "startTime": null,
+    "startTimePlanned": null,
+    "isItAnOr": false,
+    "isHidden": null,
+    "completed": null,
+    "description": "//////////\nintervalsId=34889133",
+    "userTags": null,
+    "coachComments": null,
+    "workoutComments": [],
+    "newComment": null,
+    "hasPrivateWorkoutNoteForCaller": false,
+    "publicSettingValue": 2,
+    "sharedWorkoutInformationKey": "RJLUU5PFLODMBKRQCTLR6YR5XA",
+    "sharedWorkoutInformationExpireKey": "7CITIKTD6B5JFB6JXKTVD35ZNDNUAWO6TSTPVVI",
+    "distance": null,
+    "distancePlanned": null,
+    "distanceCustomized": null,
+    "distanceUnitsCustomized": null,
+    "totalTime": null,
+    "totalTimePlanned": 1.8333333333333333,
+    "heartRateMinimum": null,
+    "heartRateMaximum": null,
+    "heartRateAverage": null,
+    "calories": null,
+    "caloriesPlanned": null,
+    "tssActual": null,
+    "tssPlanned": 65.0,
+    "tssSource": 0,
+    "if": null,
+    "ifPlanned": null,
+    "velocityAverage": null,
+    "velocityPlanned": null,
+    "velocityMaximum": null,
+    "normalizedSpeedActual": null,
+    "normalizedPowerActual": null,
+    "powerAverage": null,
+    "powerMaximum": null,
+    "energy": null,
+    "energyPlanned": null,
+    "elevationGain": null,
+    "elevationGainPlanned": null,
+    "elevationLoss": null,
+    "elevationMinimum": null,
+    "elevationAverage": null,
+    "elevationMaximum": null,
+    "torqueAverage": null,
+    "torqueMaximum": null,
+    "tempMin": null,
+    "tempAvg": null,
+    "tempMax": null,
+    "cadenceAverage": null,
+    "cadenceMaximum": null,
+    "lastModifiedDate": "2025-08-05T13:39:48.74",
+    "equipmentBikeId": null,
+    "equipmentShoeId": null,
+    "isLocked": null,
+    "complianceDurationPercent": null,
+    "complianceDistancePercent": null,
+    "complianceTssPercent": null,
+    "rpe": null,
+    "feeling": null,
+    "structure": {
+      "structure": [
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "length": {
+                "value": 600,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 40
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "repetition",
+          "length": {
+            "value": 6,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "name": "Hard",
+              "length": {
+                "value": 600,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 60,
+                  "maxValue": 70
+                },
+                {
+                  "minValue": 80,
+                  "maxValue": 100,
+                  "unit": "roundOrStridePerMinute"
+                }
+              ]
+            },
+            {
+              "name": "Easy",
+              "length": {
+                "value": 300,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 50,
+                  "maxValue": 60
+                },
+                {
+                  "minValue": 80,
+                  "maxValue": 90,
+                  "unit": "roundOrStridePerMinute"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "length": {
+                "value": 600,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 40
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "primaryLengthMetric": "duration",
+      "primaryIntensityMetric": "percentOfFtp"
+    },
+    "orderOnDay": null,
+    "personalRecordCount": 0,
+    "syncedTo": null,
+    "poolLengthOptionId": null,
+    "workoutSubTypeId": null
+  },
+  {
+    "workoutId": 3275884342,
+    "athleteId": 4842855,
+    "title": "pace test",
+    "workoutTypeValueId": 3,
+    "code": null,
+    "workoutDay": "2024-03-14T00:00:00",
+    "startTime": null,
+    "startTimePlanned": null,
+    "isItAnOr": false,
+    "isHidden": null,
+    "completed": null,
+    "description": "//////////\nintervalsId=35627002",
+    "userTags": null,
+    "coachComments": null,
+    "workoutComments": [],
+    "newComment": null,
+    "hasPrivateWorkoutNoteForCaller": false,
+    "publicSettingValue": 2,
+    "sharedWorkoutInformationKey": "YRYPTGMGFHRTPKRQCTLR6YR5XA",
+    "sharedWorkoutInformationExpireKey": "LRX5EK4NPXPB5B6JXKTVD35ZNDNUAWO6TSTPVVI",
+    "distance": null,
+    "distancePlanned": null,
+    "distanceCustomized": null,
+    "distanceUnitsCustomized": null,
+    "totalTime": null,
+    "totalTimePlanned": 0.33333333333333331,
+    "heartRateMinimum": null,
+    "heartRateMaximum": null,
+    "heartRateAverage": null,
+    "calories": null,
+    "caloriesPlanned": null,
+    "tssActual": null,
+    "tssPlanned": 4.0,
+    "tssSource": 0,
+    "if": null,
+    "ifPlanned": null,
+    "velocityAverage": null,
+    "velocityPlanned": null,
+    "velocityMaximum": null,
+    "normalizedSpeedActual": null,
+    "normalizedPowerActual": null,
+    "powerAverage": null,
+    "powerMaximum": null,
+    "energy": null,
+    "energyPlanned": null,
+    "elevationGain": null,
+    "elevationGainPlanned": null,
+    "elevationLoss": null,
+    "elevationMinimum": null,
+    "elevationAverage": null,
+    "elevationMaximum": null,
+    "torqueAverage": null,
+    "torqueMaximum": null,
+    "tempMin": null,
+    "tempAvg": null,
+    "tempMax": null,
+    "cadenceAverage": null,
+    "cadenceMaximum": null,
+    "lastModifiedDate": "2025-08-05T13:39:48.933",
+    "equipmentBikeId": null,
+    "equipmentShoeId": null,
+    "isLocked": null,
+    "complianceDurationPercent": null,
+    "complianceDistancePercent": null,
+    "complianceTssPercent": null,
+    "rpe": null,
+    "feeling": null,
+    "structure": {
+      "structure": [
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "length": {
+                "value": 600,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 30
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "step",
+          "length": {
+            "value": 1,
+            "unit": "repetition"
+          },
+          "steps": [
+            {
+              "length": {
+                "value": 600,
+                "unit": "second"
+              },
+              "targets": [
+                {
+                  "minValue": 30,
+                  "maxValue": 40
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "primaryLengthMetric": "duration",
+      "primaryIntensityMetric": "percentOfThresholdPace"
+    },
+    "orderOnDay": null,
+    "personalRecordCount": 0,
+    "syncedTo": null,
+    "poolLengthOptionId": null,
+    "workoutSubTypeId": null
+  },
+  {
+    "workoutId": 3275884346,
+    "athleteId": 4842855,
+    "title": "swim test",
+    "workoutTypeValueId": 1,
+    "code": null,
+    "workoutDay": "2024-03-15T00:00:00",
+    "startTime": null,
+    "startTimePlanned": null,
+    "isItAnOr": false,
+    "isHidden": null,
+    "completed": null,
+    "description": "//////////\nintervalsId=35627133",
+    "userTags": null,
+    "coachComments": null,
+    "workoutComments": [],
+    "newComment": null,
+    "hasPrivateWorkoutNoteForCaller": false,
+    "publicSettingValue": 2,
+    "sharedWorkoutInformationKey": "CYFT64J5ZZLRFKRQCTLR6YR5XA",
+    "sharedWorkoutInformationExpireKey": "YYZX3JCILGLATB6JXKTVD35ZNDNUAWO6TSTPVVI",
+    "distance": null,
+    "distancePlanned": null,
+    "distanceCustomized": null,
+    "distanceUnitsCustomized": null,
+    "totalTime": null,
+    "totalTimePlanned": 1.5,
+    "heartRateMinimum": null,
+    "heartRateMaximum": null,
+    "heartRateAverage": null,
+    "calories": null,
+    "caloriesPlanned": null,
+    "tssActual": null,
+    "tssPlanned": null,
+    "tssSource": 0,
+    "if": null,
+    "ifPlanned": null,
+    "velocityAverage": null,
+    "velocityPlanned": null,
+    "velocityMaximum": null,
+    "normalizedSpeedActual": null,
+    "normalizedPowerActual": null,
+    "powerAverage": null,
+    "powerMaximum": null,
+    "energy": null,
+    "energyPlanned": null,
+    "elevationGain": null,
+    "elevationGainPlanned": null,
+    "elevationLoss": null,
+    "elevationMinimum": null,
+    "elevationAverage": null,
+    "elevationMaximum": null,
+    "torqueAverage": null,
+    "torqueMaximum": null,
+    "tempMin": null,
+    "tempAvg": null,
+    "tempMax": null,
+    "cadenceAverage": null,
+    "cadenceMaximum": null,
+    "lastModifiedDate": "2025-08-05T13:39:49.123",
+    "equipmentBikeId": null,
+    "equipmentShoeId": null,
+    "isLocked": null,
+    "complianceDurationPercent": null,
+    "complianceDistancePercent": null,
+    "complianceTssPercent": null,
+    "rpe": null,
+    "feeling": null,
+    "structure": null,
+    "orderOnDay": null,
+    "personalRecordCount": 0,
+    "syncedTo": null,
+    "poolLengthOptionId": null,
+    "workoutSubTypeId": null
+  }
+]

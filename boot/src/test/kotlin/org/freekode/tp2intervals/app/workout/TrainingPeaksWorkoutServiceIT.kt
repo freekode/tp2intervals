@@ -11,17 +11,18 @@ import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.workout.structure.StepModifier
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.user.TrainingPeaksUserDTO
+import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.TPWorkoutCalendarResponseDTO
 import org.freekode.tp2intervals.rest.workout.DeleteWorkoutRequestDTO
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.util.ResourceUtils
 import org.wiremock.spring.ConfigureWireMock
 import org.wiremock.spring.EnableWireMock
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 @EnableWireMock(ConfigureWireMock(port = 34567))
-//@WireMockTest(httpPort = 34567)
 class TrainingPeaksWorkoutServiceIT : BaseSpringITConfig() {
     @Autowired
     lateinit var libraryService: LibraryService
@@ -36,19 +37,19 @@ class TrainingPeaksWorkoutServiceIT : BaseSpringITConfig() {
         tpTokenStub()
         tpUserStub()
 
-        val stubResponse = TrainingPeaksUserDTO(
-            userId = "user-id",
-            accountStatus = TrainingPeaksUserDTO.TPUserAccountStatusDTO(isAthlete = true, isPremium = false)
-        )
+        val value = ResourceUtils.getFile("classpath:training-peaks/calendar-workouts.json").inputStream().readBytes().toString(Charsets.UTF_8)
         stubFor(
             get("/training-peaks/fitness/v6/athletes/user-id/workouts/2024-03-11/2024-03-17")
-                .willReturn(okJson(objectMapper.writeValueAsString(stubResponse)))
+                .willReturn(okJson(value))
         )
+        stubFor(
+            get("/training-peaks/fitness/v1/athletes/user-id/calendarNote/2024-03-11/2024-03-17")
+                .willReturn(okJson("[]"))
+        )
+
 
         val startDate = LocalDate.parse("2024-03-11")
         val endDate = LocalDate.parse("2024-03-17")
-        val deleteRequest = DeleteWorkoutRequestDTO(startDate, endDate, platform)
-        workoutService.deleteWorkoutsFromCalendar(deleteRequest)
 
         val copyRequest = CopyC2CRequest(
             startDate, endDate,
@@ -58,9 +59,6 @@ class TrainingPeaksWorkoutServiceIT : BaseSpringITConfig() {
             platform
         )
         val response = workoutService.copyWorkoutsC2C(copyRequest)
-
-        workoutService.deleteWorkoutsFromCalendar(deleteRequest)
-
 
         Assertions.assertEquals(response.copied, 5)
     }
@@ -83,7 +81,7 @@ class TrainingPeaksWorkoutServiceIT : BaseSpringITConfig() {
         Assertions.assertEquals(response.workouts, 23)
     }
 
-//    @Test
+    //    @Test
     fun `should copy planned workouts to library`() {
         val response = workoutService.copyWorkoutsC2L(
             CopyC2LRequest(
