@@ -11,7 +11,7 @@ class ToIntervalsStructureConverter(
         WorkoutStructure.TargetUnit.FTP_PERCENTAGE to "%",
         WorkoutStructure.TargetUnit.LTHR_PERCENTAGE to "% LTHR",
         WorkoutStructure.TargetUnit.PACE_PERCENTAGE to "% Pace",
-        WorkoutStructure.TargetUnit.RELATIVE_PERCEIVED_EFFORT to " HR",
+        WorkoutStructure.TargetUnit.RELATIVE_PERCEIVED_EFFORT to "",
     )
 
     fun toIntervalsStructureStr(): String {
@@ -32,7 +32,7 @@ class ToIntervalsStructureConverter(
     }
 
     private fun getStepString(workoutStep: SingleStep): String {
-        val name = workoutStep.name.orEmpty().replace("\\", "/")
+        val description = getDescription(structure.target, workoutStep)
         val length = toStepLength(workoutStep.length)
         val targetUnitStr = targetTypeMap[structure.target]!!
         val target = toTarget(structure.target, workoutStep.target)
@@ -44,7 +44,7 @@ class ToIntervalsStructureConverter(
             }
         } ?: ""
 
-        return "- $name $length $target$targetUnitStr ${structure.modifier.value} $cadence"
+        return "- $description $length $target$targetUnitStr ${structure.modifier.value} $cadence"
     }
 
     private fun toStepLength(length: StepLength) = when (length.unit) {
@@ -54,19 +54,11 @@ class ToIntervalsStructureConverter(
 
     private fun toTarget(targetUnit: WorkoutStructure.TargetUnit, target: StepTarget) : String {
       val targetVal =
-            if (target.isSingleValue()) {
-                if (targetUnit == WorkoutStructure.TargetUnit.RELATIVE_PERCEIVED_EFFORT) {
-                    rpeToTarget(target.start)
-                } else {
-                    "${target.start}"
-                }
+            if (targetUnit == WorkoutStructure.TargetUnit.RELATIVE_PERCEIVED_EFFORT) {
+                ""
             } else {
-                if (targetUnit == WorkoutStructure.TargetUnit.RELATIVE_PERCEIVED_EFFORT) {
-                    if (rpeToTarget(target.start) == rpeToTarget(target.end)) {
-                        rpeToTarget(target.start)
-                    } else {
-                        "${rpeToTarget(target.start)}-${rpeToTarget(target.end)}"
-                    }
+                if (target.isSingleValue()) {
+                    "${target.start}"
                 } else {
                     "${target.start}-${target.end}"
                 }
@@ -75,19 +67,17 @@ class ToIntervalsStructureConverter(
         return targetVal
     }
 
-    private fun rpeToTarget(value: Int) : String {
-        if (value <= 3) {
-            return "Z1"
-        } else if (value <= 6) {
-            return "Z2"
-        } else if (value <= 8) {
-            return "Z3"
-        } else if (value == 9) {
-            return "Z4"
-        } else if (value == 10) {
-            return "Z5"
+    private fun getDescription(targetUnit: WorkoutStructure.TargetUnit, workoutStep: SingleStep) : String {
+        var description = workoutStep.name.orEmpty().replace("\\", "/")
+
+        if (targetUnit == WorkoutStructure.TargetUnit.RELATIVE_PERCEIVED_EFFORT) {
+          if (workoutStep.target.isSingleValue()) {
+              description += " RPE ${workoutStep.target.start}"
+          } else {
+              description += " RPE ${workoutStep.target.start}-${workoutStep.target.end}"
+          }
         }
 
-        return "Z2"
+        return description.trim()
     }
 }
