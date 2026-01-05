@@ -44,7 +44,7 @@ jobs:
 
       - name: Build electron
         if: ${{ inputs.dry-run == true }}
-        run: npm run build --prefix electron
+        run: npm run build --prefix electron -- -c.extraMetadata.version=${{ inputs.version }}
 
       - name: Publish electron
         if: ${{ inputs.dry-run == false }}
