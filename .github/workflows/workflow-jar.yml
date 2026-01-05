@@ -3,6 +3,10 @@ name: Workflow JAR
 on:
   workflow_call:
     inputs:
+      version:
+        required: false
+        type: string
+        default: 'dev'
       jar-name:
         required: true
         type: string
@@ -50,7 +54,7 @@ jobs:
           APP_DEFAULT_CONFIG_TRAINER_ROAD_REMOVE_HTML_TAGS: true
         run: |
           cd ./boot
-          ./gradlew build
+          ./gradlew build -Pversion=${{ inputs.version }}
 
       - name: Cypress tests
         run: |
