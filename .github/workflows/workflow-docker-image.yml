@@ -69,8 +69,6 @@ jobs:
             type=raw,value=${{ inputs.version }}
             type=raw,value=latest,enable={{is_default_branch}}
             type=ref,event=tag
-            type=ref,event=branch
-            type=ref,event=pr
 
       - name: Build and push Docker image
         id: build-and-push
