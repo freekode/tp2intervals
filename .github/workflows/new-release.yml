@@ -1,4 +1,4 @@
-name: Release
+name: New Release
 
 on:
   pull_request:
