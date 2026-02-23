@@ -41,3 +41,4 @@ jobs:
       jar-artifact-name: tp2intervals-jar
       os: ${{ matrix.environment.os }}
       dry-run: true
+      version: 0.0.0-dev

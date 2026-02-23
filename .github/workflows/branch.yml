@@ -13,16 +13,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  extract_branch_name:
-    runs-on: ubuntu-latest
-    outputs:
-      branch_name: ${{ steps.extract_branch.outputs.branch_name }}
-
-    steps:
-      - name: Extract Branch Name
-        id: extract_branch
-        run: echo "branch_name=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
-
   jar:
     uses: ./.github/workflows/workflow-jar.yml
     secrets: inherit
