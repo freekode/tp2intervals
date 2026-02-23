@@ -50,7 +50,7 @@ jobs:
         if: ${{ inputs.dry-run == false }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm run publish --prefix electron -- -c.extraMetadata.version=${{ inputs.version }}
+        run: npm run publish --prefix electron -- "-c.extraMetadata.version=${{ inputs.version }}"
 
       - name: Show me what you got
         run: ls electron/dist
