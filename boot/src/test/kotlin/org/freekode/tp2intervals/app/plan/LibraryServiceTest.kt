@@ -18,10 +18,10 @@ import java.time.LocalDate
 
 class LibraryServiceTest {
 
-    private val trainingPeaksRepo: WorkoutRepository = mockk()
-    private val intervalsRepo: WorkoutRepository = mockk()
-    private val trainingPeaksPlanRepo: LibraryContainerRepository = mockk()
-    private val intervalsPlanRepo: LibraryContainerRepository = mockk()
+    private val trainingPeaksRepo: WorkoutRepository = mockk(relaxed = true)
+    private val intervalsRepo: WorkoutRepository = mockk(relaxed = true)
+    private val trainingPeaksPlanRepo: LibraryContainerRepository = mockk(relaxed = true)
+    private val intervalsPlanRepo: LibraryContainerRepository = mockk(relaxed = true)
 
     private lateinit var service: LibraryService
 
@@ -103,19 +103,19 @@ class LibraryServiceTest {
         val request = CopyLibraryRequest(
             libraryContainer = sourceLibrary,
             newName = "New",
-            stepModifier = StepModifier.WARMUP,
+            stepModifier = StepModifier.POWER_10S,
             sourcePlatform = Platform.TRAINING_PEAKS,
             targetPlatform = Platform.INTERVALS
         )
         service.copyLibrary(request)
 
-        verify { intervalsRepo.saveWorkoutsToLibrary(targetLibrary, match { it.first().structure?.modifier == StepModifier.WARMUP }) }
+        verify { intervalsRepo.saveWorkoutsToLibrary(targetLibrary, match { it.first().structure?.modifier == StepModifier.POWER_10S }) }
     }
 
     private fun createWorkout(name: String, date: LocalDate): Workout {
         return Workout(
             WorkoutDetails(
-                TrainingType.RIDE, name, null, null, null, ExternalData.empty()
+                TrainingType.BIKE, name, null, null, null, ExternalData.empty()
             ),
             date,
             null

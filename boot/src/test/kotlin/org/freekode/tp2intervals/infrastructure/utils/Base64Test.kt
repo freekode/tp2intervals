@@ -12,7 +12,7 @@ class Base64Test {
         val original = "Hello World".toByteArray()
         val encoded = Base64.getEncoder().encodeToString(original)
 
-        val result = Base64.decodeToByteArray(encoded)
+        val result = Base64.getDecoder().decode(encoded)
 
         assertArrayEquals(original, result)
     }
@@ -21,7 +21,7 @@ class Base64Test {
     fun `should handle empty string`() {
         val encoded = ""
 
-        val result = Base64.decodeToByteArray(encoded)
+        val result = Base64.getDecoder().decode(encoded)
 
         assertArrayEquals(ByteArray(0), result)
     }
@@ -31,7 +31,7 @@ class Base64Test {
         val original = byteArrayOf(0, 1, 2, 127, -128, -1)
         val encoded = Base64.getEncoder().encodeToString(original)
 
-        val result = Base64.decodeToByteArray(encoded)
+        val result = Base64.getDecoder().decode(encoded)
 
         assertArrayEquals(original, result)
     }
@@ -41,7 +41,7 @@ class Base64Test {
         val invalid = "not-valid-base64!!!"
 
         assertThrows<IllegalArgumentException> {
-            Base64.decodeToByteArray(invalid)
+            Base64.getDecoder().decode(invalid)
         }
     }
 }

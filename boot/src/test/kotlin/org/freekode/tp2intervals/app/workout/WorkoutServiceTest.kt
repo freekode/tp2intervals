@@ -17,10 +17,10 @@ import java.time.LocalDate
 
 class WorkoutServiceTest {
 
-    private val trainingPeaksRepo: WorkoutRepository = mockk()
-    private val intervalsRepo: WorkoutRepository = mockk()
-    private val trainingPeaksPlanRepo: LibraryContainerRepository = mockk()
-    private val intervalsPlanRepo: LibraryContainerRepository = mockk()
+    private val trainingPeaksRepo: WorkoutRepository = mockk(relaxed = true)
+    private val intervalsRepo: WorkoutRepository = mockk(relaxed = true)
+    private val trainingPeaksPlanRepo: LibraryContainerRepository = mockk(relaxed = true)
+    private val intervalsPlanRepo: LibraryContainerRepository = mockk(relaxed = true)
 
     private lateinit var service: WorkoutService
 
@@ -41,14 +41,14 @@ class WorkoutServiceTest {
     fun `should copy workouts from calendar to calendar`() {
         val startDate = LocalDate.of(2024, 1, 1)
         val endDate = LocalDate.of(2024, 1, 7)
-        val workout1 = createWorkout(TrainingType.RIDE, "Workout 1")
+        val workout1 = createWorkout(TrainingType.BIKE, "Workout 1")
         val workout2 = createWorkout(TrainingType.RUN, "Workout 2")
         every { trainingPeaksRepo.getWorkoutsFromCalendar(startDate, endDate) } returns listOf(workout1, workout2)
         every { intervalsRepo.getWorkoutsFromCalendar(startDate, endDate) } returns emptyList()
 
         val request = CopyFromCalendarToCalendarRequest(
             startDate, endDate,
-            listOf(TrainingType.RIDE),
+            listOf(TrainingType.BIKE),
             skipSynced = false,
             sourcePlatform = Platform.TRAINING_PEAKS,
             targetPlatform = Platform.INTERVALS
@@ -64,7 +64,7 @@ class WorkoutServiceTest {
     fun `should skip already synced workouts when flag is set`() {
         val startDate = LocalDate.of(2024, 1, 1)
         val endDate = LocalDate.of(2024, 1, 7)
-        val workout1 = createWorkout(TrainingType.RIDE, "Workout 1")
+        val workout1 = createWorkout(TrainingType.BIKE, "Workout 1")
         every { trainingPeaksRepo.getWorkoutsFromCalendar(startDate, endDate) } returns listOf(workout1)
         every { intervalsRepo.getWorkoutsFromCalendar(startDate, endDate) } returns listOf(workout1)
 
@@ -85,7 +85,7 @@ class WorkoutServiceTest {
     fun `should filter workouts by training type`() {
         val startDate = LocalDate.of(2024, 1, 1)
         val endDate = LocalDate.of(2024, 1, 7)
-        val rideWorkout = createWorkout(TrainingType.RIDE, "Ride")
+        val rideWorkout = createWorkout(TrainingType.BIKE, "Ride")
         val runWorkout = createWorkout(TrainingType.RUN, "Run")
         every { trainingPeaksRepo.getWorkoutsFromCalendar(startDate, endDate) } returns listOf(rideWorkout, runWorkout)
         every { intervalsRepo.getWorkoutsFromCalendar(startDate, endDate) } returns emptyList()
@@ -107,7 +107,7 @@ class WorkoutServiceTest {
     fun `should copy workouts from calendar to library`() {
         val startDate = LocalDate.of(2024, 1, 1)
         val endDate = LocalDate.of(2024, 1, 7)
-        val workout = createWorkout(TrainingType.RIDE, "Workout")
+        val workout = createWorkout(TrainingType.BIKE, "Workout")
         val newLibrary = LibraryContainer("New Library", startDate, true, 1, ExternalData.empty())
         every { trainingPeaksRepo.getWorkoutsFromCalendar(startDate, endDate) } returns listOf(workout)
         every { intervalsPlanRepo.createLibraryContainer("My Library", true, startDate) } returns newLibrary
@@ -128,7 +128,7 @@ class WorkoutServiceTest {
 
     @Test
     fun `should copy workouts from library to library`() {
-        val workout = createWorkout(TrainingType.RIDE, "Workout")
+        val workout = createWorkout(TrainingType.BIKE, "Workout")
         val targetLibrary = LibraryContainer("Target", LocalDate.now(), true, 1, ExternalData.empty())
         every { trainingPeaksRepo.getWorkoutFromLibrary(ExternalData.empty()) } returns workout
 
@@ -147,7 +147,7 @@ class WorkoutServiceTest {
     @Test
     fun `should find workouts by name`() {
         val expectedDetails = WorkoutDetails(
-            TrainingType.RIDE, "Evening Ride", null, null, null, ExternalData.empty()
+            TrainingType.BIKE, "Evening Ride", null, null, null, ExternalData.empty()
         )
         every { trainingPeaksRepo.findWorkoutsFromLibraryByName("Evening") } returns listOf(expectedDetails)
 

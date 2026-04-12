@@ -1,5 +1,6 @@
 package org.freekode.tp2intervals.domain.workout.structure
 
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
@@ -39,9 +40,9 @@ class WorkoutStructureTest {
         )
         val structure = WorkoutStructure(WorkoutStructure.TargetUnit.FTP_PERCENTAGE, listOf(step))
 
-        val modified = structure.addModifier(StepModifier.WARMUP)
+        val modified = structure.addModifier(StepModifier.POWER_10S)
 
-        assertEquals(StepModifier.WARMUP, modified.modifier)
+        assertEquals(StepModifier.POWER_10S, modified.modifier)
         assertEquals(structure.steps, modified.steps)
         assertEquals(structure.target, modified.target)
     }
@@ -57,7 +58,7 @@ class WorkoutStructureTest {
         )
         val structure = WorkoutStructure(WorkoutStructure.TargetUnit.FTP_PERCENTAGE, listOf(step))
 
-        structure.addModifier(StepModifier.COOLDOWN)
+        structure.addModifier(StepModifier.POWER_30S)
 
         assertEquals(StepModifier.NONE, structure.modifier)
     }

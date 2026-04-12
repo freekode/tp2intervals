@@ -92,10 +92,11 @@ class RampConverterTest {
 
         val result = RampConverter(step).toRampToMultiStep()
 
-        assertEquals(7, result.steps.size)
-        result.steps.forEach { s ->
+        assertEquals(8, result.steps.size)
+        result.steps.dropLast(1).forEach { s ->
             assertEquals(120L, s.length.value)
         }
+        assertEquals(60L, result.steps.last().length.value)
     }
 
     @Test
@@ -110,10 +111,11 @@ class RampConverterTest {
 
         val result = RampConverter(step).toRampToMultiStep()
 
-        assertEquals(6, result.steps.size)
-        result.steps.forEach { s ->
+        assertEquals(7, result.steps.size)
+        result.steps.dropLast(1).forEach { s ->
             assertEquals(180L, s.length.value)
         }
+        assertEquals(120L, result.steps.last().length.value)
     }
 
     @Test

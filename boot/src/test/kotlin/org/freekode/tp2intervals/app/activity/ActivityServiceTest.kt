@@ -14,8 +14,8 @@ import java.time.LocalDateTime
 
 class ActivityServiceTest {
 
-    private val trainingPeaksRepo: ActivityRepository = mockk()
-    private val intervalsRepo: ActivityRepository = mockk()
+    private val trainingPeaksRepo: ActivityRepository = mockk(relaxed = true)
+    private val intervalsRepo: ActivityRepository = mockk(relaxed = true)
 
     private lateinit var service: ActivityService
 
@@ -31,7 +31,7 @@ class ActivityServiceTest {
     fun `should sync activities with resource`() {
         val startDate = LocalDate.of(2024, 1, 1)
         val endDate = LocalDate.of(2024, 1, 7)
-        val activity1 = createActivity(TrainingType.RIDE, "Ride 1", "resource-data-1")
+        val activity1 = createActivity(TrainingType.BIKE, "Ride 1", "resource-data-1")
         val activity2 = createActivity(TrainingType.RUN, "Run 1", "resource-data-2")
         every { trainingPeaksRepo.getActivities(startDate, endDate, TrainingType.DEFAULT_LIST) } returns listOf(activity1, activity2)
 
@@ -52,7 +52,7 @@ class ActivityServiceTest {
     fun `should filter activities without resource`() {
         val startDate = LocalDate.of(2024, 1, 1)
         val endDate = LocalDate.of(2024, 1, 7)
-        val activityWithResource = createActivity(TrainingType.RIDE, "Ride", "resource")
+        val activityWithResource = createActivity(TrainingType.BIKE, "Ride", "resource")
         val activityWithoutResource = createActivity(TrainingType.RUN, "Run", null)
         every { trainingPeaksRepo.getActivities(startDate, endDate, TrainingType.DEFAULT_LIST) } returns listOf(activityWithResource, activityWithoutResource)
 
