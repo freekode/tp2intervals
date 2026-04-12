@@ -1,4 +1,4 @@
-package config.mock
+package org.freekode.tp2intervals.config.mock
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper

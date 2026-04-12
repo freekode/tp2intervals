@@ -1,7 +1,7 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainerroad.workout
 
-import config.mock.ObjectMapperFactory
-import config.mock.TrainerRoadApiClientMock
+import org.freekode.tp2intervals.config.mock.ObjectMapperFactory
+import org.freekode.tp2intervals.config.mock.TrainerRoadApiClientMock
 import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.workout.structure.SingleStep

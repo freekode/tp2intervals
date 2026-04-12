@@ -1,6 +1,6 @@
 package org.freekode.tp2intervals.app.workout
 
-import config.BaseSpringITConfig
+import org.freekode.tp2intervals.config.BaseSpringITConfig
 import org.assertj.core.api.Assertions.assertThat
 import org.freekode.tp2intervals.app.workout.schedule.C2CTodayScheduledRequest
 import org.freekode.tp2intervals.app.workout.schedule.WorkoutScheduledJob

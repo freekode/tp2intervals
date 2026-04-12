@@ -42,8 +42,8 @@ class IntervalsToTargetConverter(
         thresholdValue: Double,
         resolvedStepValueDTO: IntervalsWorkoutDocDTO.ResolvedStepValueDTO
     ): Pair<Int, Int> {
-        val rangeStart = Math.round((resolvedStepValueDTO.start / thresholdValue) * 100).toInt()
-        val rangeEnd = Math.round((resolvedStepValueDTO.end / thresholdValue) * 100).toInt()
+        val rangeStart = Math.round(resolvedStepValueDTO.start * thresholdValue).toInt()
+        val rangeEnd = Math.round(resolvedStepValueDTO.end * thresholdValue).toInt()
         return rangeStart to rangeEnd
     }
 }

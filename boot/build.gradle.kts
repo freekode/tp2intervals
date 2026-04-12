@@ -47,6 +47,12 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.junit.jupiter:junit-jupiter-engine")
     testImplementation("org.wiremock:wiremock-standalone:3.5.2")
+    testImplementation("io.mockk:mockk:1.13.10")
+    testImplementation("io.strikt:strikt-core:0.34.1")
+}
+
+tasks.withType<Test> {
+    systemProperty("kotlin.daemon.jvm.options", "-Xmx1024m")
 }
 
 springBoot {

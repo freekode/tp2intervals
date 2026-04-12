@@ -3,8 +3,8 @@ package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.
 import org.freekode.tp2intervals.domain.workout.structure.StepTarget
 
 class TPStepDTO(
-    var name: String?,
-    var length: TPLengthDTO?,
+    var name: String? = null,
+    var length: TPLengthDTO? = null,
     var targets: List<TPTargetDTO> = listOf(),
 ) {
     fun toMainTarget(): StepTarget {
