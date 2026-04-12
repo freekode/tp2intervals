@@ -1,6 +1,6 @@
 package org.freekode.tp2intervals
 
-import config.BaseSpringITConfig
+import org.freekode.tp2intervals.config.BaseSpringITConfig
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired

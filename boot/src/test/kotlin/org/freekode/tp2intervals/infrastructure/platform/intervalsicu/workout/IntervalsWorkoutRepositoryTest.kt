@@ -1,8 +1,8 @@
 package org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout
 
-import config.TestUtils
-import config.mock.IntervalsApiClientMock
-import config.mock.ObjectMapperFactory
+import org.freekode.tp2intervals.config.TestUtils
+import org.freekode.tp2intervals.config.mock.IntervalsApiClientMock
+import org.freekode.tp2intervals.config.mock.ObjectMapperFactory
 import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.structure.SingleStep

@@ -1,6 +1,6 @@
 package org.freekode.tp2intervals.app.workout
 
-import config.BaseSpringITConfig
+import org.freekode.tp2intervals.config.BaseSpringITConfig
 import org.freekode.tp2intervals.app.plan.CreateLibraryContainerRequest
 import org.freekode.tp2intervals.app.plan.DeleteLibraryRequest
 import org.freekode.tp2intervals.app.plan.LibraryService

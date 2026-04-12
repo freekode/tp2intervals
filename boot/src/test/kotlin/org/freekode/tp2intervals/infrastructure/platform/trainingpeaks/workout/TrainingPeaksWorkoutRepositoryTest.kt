@@ -1,8 +1,8 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout
 
-import config.TestUtils
-import config.mock.ObjectMapperFactory
-import config.mock.TrainingPeaksApiClientMock
+import org.freekode.tp2intervals.config.TestUtils
+import org.freekode.tp2intervals.config.mock.ObjectMapperFactory
+import org.freekode.tp2intervals.config.mock.TrainingPeaksApiClientMock
 import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.workout.structure.StepLength
 import org.freekode.tp2intervals.domain.workout.structure.MultiStep
