@@ -11,10 +11,10 @@ import org.junit.jupiter.api.assertThrows
 import strikt.api.expectThat
 import strikt.assertions.isEqualTo
 
-class RampConverterMockkTest {
+class RampConverterVerifyTest {
 
     @Test
-    fun `should convert ramp with mockk`() {
+    fun `should convert ramp to multi-step structure`() {
         val step = mockk<SingleStep> {
             every { length } returns StepLength(300, StepLength.LengthUnit.SECONDS)
             every { target } returns StepTarget(50, 100)
@@ -30,7 +30,7 @@ class RampConverterMockkTest {
     }
 
     @Test
-    fun `should throw when step is not time-based using mockk`() {
+    fun `should throw when step is not time-based`() {
         val step = mockk<SingleStep> {
             every { length } returns StepLength(1000, StepLength.LengthUnit.METERS)
             every { target } returns StepTarget(50, 100)
