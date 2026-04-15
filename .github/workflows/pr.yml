@@ -1,7 +1,7 @@
 name: Build PR
 
 on:
-  pull_request:
+#  pull_request:
   workflow_dispatch:
 
 concurrency:
@@ -19,7 +19,7 @@ jobs:
   docker-image:
     needs:
       - jar
-    uses: ./.github/workflows/workflow-docker-image-new.yml
+    uses: ./.github/workflows/workflow-docker-image.yml
     with:
       jar-name: tp2intervals
       jar-artifact-name: tp2intervals-jar

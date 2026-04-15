@@ -23,7 +23,6 @@ data class WorkoutDetails(
         other as WorkoutDetails
 
         if (name != other.name) return false
-        if (duration != other.duration) return false
         if (externalData != other.externalData) return false
 
         return true
@@ -31,7 +30,6 @@ data class WorkoutDetails(
 
     override fun hashCode(): Int {
         var result = name.hashCode()
-        result = 31 * result + (duration?.hashCode() ?: 0)
         result = 31 * result + externalData.hashCode()
         return result
     }

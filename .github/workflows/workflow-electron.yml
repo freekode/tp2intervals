@@ -3,6 +3,10 @@ name: Workflow Electron
 on:
   workflow_call:
     inputs:
+      version:
+        required: false
+        type: string
+        default: 'dev'
       jar-name:
         required: true
         type: string
@@ -40,13 +44,13 @@ jobs:
 
       - name: Build electron
         if: ${{ inputs.dry-run == true }}
-        run: npm run build --prefix electron
+        run: npm run build --prefix electron -- "-c.extraMetadata.version=${{ inputs.version }}"
 
       - name: Publish electron
         if: ${{ inputs.dry-run == false }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm run publish --prefix electron
+        run: npm run publish --prefix electron -- "-c.extraMetadata.version=${{ inputs.version }}"
 
       - name: Show me what you got
         run: ls electron/dist
