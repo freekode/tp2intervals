@@ -8,6 +8,7 @@ class TPTargetMapper {
             WorkoutStructure.TargetUnit.FTP_PERCENTAGE to "percentOfFtp",
             WorkoutStructure.TargetUnit.LTHR_PERCENTAGE to "percentOfThresholdHr",
             WorkoutStructure.TargetUnit.PACE_PERCENTAGE to "percentOfThresholdPace",
+            WorkoutStructure.TargetUnit.RELATIVE_PERCEIVED_EFFORT to "rpe",
         )
 
         fun getByIntensity(intensity: String): WorkoutStructure.TargetUnit =

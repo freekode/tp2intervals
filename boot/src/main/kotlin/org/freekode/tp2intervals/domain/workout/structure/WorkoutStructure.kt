@@ -19,5 +19,6 @@ data class WorkoutStructure(
         FTP_PERCENTAGE,
         LTHR_PERCENTAGE,
         PACE_PERCENTAGE,
+        RELATIVE_PERCEIVED_EFFORT,
     }
 }
