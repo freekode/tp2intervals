@@ -4,6 +4,8 @@ import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.workout.Attachment
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutDetails
+import org.freekode.tp2intervals.domain.workout.structure.SingleStep
+import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.library.TPWorkoutLibraryItemDTO
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure.FromTPStructureConverter
 import org.slf4j.LoggerFactory
@@ -58,7 +60,9 @@ class TPToWorkoutConverter {
             if (tpWorkout.structure == null || tpWorkout.structure.structure.isEmpty()) {
                 throw IllegalArgumentException("There is no structure")
             }
-            FromTPStructureConverter.toWorkoutStructure(tpWorkout.structure)
+            FromTPStructureConverter.toWorkoutStructure(tpWorkout.structure).also {
+                log.debug("Read TrainingPeaks workout {}, target preview: {}", tpWorkout.title, targetPreview(it))
+            }
         } catch (e: IllegalArgumentException) {
             log.warn("Error during TP Workout conversion, skipping, id: ${tpWorkout.id}, name: ${tpWorkout.title}, error - ${e.message}'")
             null
@@ -66,5 +70,12 @@ class TPToWorkoutConverter {
 
     private fun getWorkoutExternalData(tpWorkout: TPBaseWorkoutResponseDTO): ExternalData {
         return ExternalData.empty().withTrainingPeaks(tpWorkout.id).fromSimpleString(tpWorkout.description ?: "")
+    }
+
+    private fun targetPreview(structure: WorkoutStructure): String {
+        return structure.steps
+            .filterIsInstance<SingleStep>()
+            .take(8)
+            .joinToString { "${it.name}:${it.target.start}-${it.target.end}" }
     }
 }

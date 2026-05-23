@@ -7,12 +7,17 @@ import org.springframework.core.io.Resource
 
 class TrainerRoadActivityMapper {
     fun mapToActivity(dto: TrainerRoadActivityDTO, resource: Resource): Activity {
-        val type = if (dto.completedRide!!.IsOutside) TrainingType.BIKE else TrainingType.VIRTUAL_BIKE
+        val completedRide = dto.completedRide
+        val type = if (completedRide?.IsOutside ?: (dto.isOutside == true)) {
+            TrainingType.BIKE
+        } else {
+            TrainingType.VIRTUAL_BIKE
+        }
 
         return Activity(
-            dto.completedRide.Date,
+            completedRide?.Date ?: dto.date,
             type,
-            dto.completedRide.Name,
+            completedRide?.Name ?: dto.name ?: "TrainerRoad activity",
             Base64.encodeToString(resource)
         )
     }

@@ -7,6 +7,7 @@ import org.freekode.tp2intervals.domain.librarycontainer.LibraryContainer
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutDetails
 import org.freekode.tp2intervals.domain.workout.WorkoutRepository
+import org.freekode.tp2intervals.domain.workout.structure.SingleStep
 import org.freekode.tp2intervals.infrastructure.PlatformException
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.TrainingPeaksApiClient
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.configuration.TrainingPeaksConfigurationRepository
@@ -122,6 +123,8 @@ class TrainingPeaksWorkoutRepository(
         createRequest = CreateTPWorkoutRequestDTO.planWorkout(
             athleteId, workout, structureStr
         )
+        log.debug("Creating TrainingPeaks workout {}, target preview: {}", workout.details.name, targetPreview(workout))
+        log.debug("TrainingPeaks structure preview for {}: {}", workout.details.name, structureStr?.take(600))
         trainingPeaksApiClient.createAndPlanWorkout(athleteId, createRequest)
     }
 
@@ -152,5 +155,13 @@ class TrainingPeaksWorkoutRepository(
 
     private fun getNoteEndDateForFilter(startDate: LocalDate, endDate: LocalDate): LocalDate =
         if (startDate == endDate) endDate.plusDays(1) else endDate
+
+    private fun targetPreview(workout: Workout): String {
+        return workout.structure?.steps
+            ?.filterIsInstance<SingleStep>()
+            ?.take(8)
+            ?.joinToString { "${it.name}:${it.target.start}-${it.target.end}" }
+            ?: "no structure"
+    }
 
 }

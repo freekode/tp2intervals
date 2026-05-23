@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import java.io.InputStream
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.TRFindWorkoutsRequestDTO
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.TrainerRoadApiClient
+import org.freekode.tp2intervals.infrastructure.platform.trainerroad.TrainerRoadTimelineDTO
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.activity.TrainerRoadActivityDTO
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.workout.TRFindWorkoutsResponseDTO
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.workout.TRWorkoutResponseDTO
@@ -25,8 +26,12 @@ class TrainerRoadApiClientMock(
         anotherWorkoutResponse, TRWorkoutResponseDTO::class.java
     )
 
-    override fun getActivities(username: String, startDate: String, endDate: String): List<TrainerRoadActivityDTO> {
-        TODO("Not yet implemented")
+    override fun getTimeline(memberId: Long, startDate: String, endDate: String): TrainerRoadTimelineDTO {
+        return TrainerRoadTimelineDTO()
+    }
+
+    override fun getActivities(memberId: Long, ids: String): List<TrainerRoadActivityDTO> {
+        return emptyList()
     }
 
     override fun findWorkouts(requestDTO: TRFindWorkoutsRequestDTO): TRFindWorkoutsResponseDTO {

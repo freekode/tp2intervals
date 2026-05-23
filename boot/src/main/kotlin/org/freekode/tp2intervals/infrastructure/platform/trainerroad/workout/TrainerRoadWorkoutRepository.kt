@@ -29,8 +29,8 @@ class TrainerRoadWorkoutRepository(
     }
 
     override fun getWorkoutsFromCalendar(startDate: LocalDate, endDate: LocalDate): List<Workout> {
-        val username = trUsernameRepository.getUsername()
-        return trainerRoadApiClientService.getWorkoutsFromCalendar(startDate, endDate, username)
+        val memberId = trUsernameRepository.getMemberId()
+        return trainerRoadApiClientService.getWorkoutsFromCalendar(startDate, endDate, memberId)
     }
 
     override fun saveWorkoutsToCalendar(workouts: List<Workout>) {

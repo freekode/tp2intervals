@@ -13,4 +13,9 @@ class TRUsernameRepository(
     fun getUsername(): String {
         return trainerRoadMemberApiClient.getMember().Username!!
     }
+
+    @Cacheable(cacheNames = ["trMemberIdCache"], key = "'singleton'")
+    fun getMemberId(): Long {
+        return trainerRoadMemberApiClient.getMember().MemberId
+    }
 }

@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
+import org.springframework.web.bind.annotation.RequestParam
 
 @FeignClient(
     value = "TrainerRoadApiClient",
@@ -18,11 +20,23 @@ import org.springframework.web.bind.annotation.RequestBody
     configuration = [TrainerRoadApiClientConfig::class]
 )
 interface TrainerRoadApiClient {
-    @GetMapping("/app/api/calendar/activities/{username}?startDate={startDate}&endDate={endDate}")
+    @GetMapping(
+        value = ["/app/api/react-calendar/{memberId}/timeline"],
+        headers = ["trainerroad-jsonformat=camel-case", "tr-cache-control=use-cache"]
+    )
+    fun getTimeline(
+        @PathVariable("memberId") memberId: Long,
+        @RequestParam("start") startDate: String,
+        @RequestParam("end") endDate: String,
+    ): TrainerRoadTimelineDTO
+
+    @GetMapping(
+        value = ["/app/api/react-calendar/{memberId}/activities"],
+        headers = ["trainerroad-jsonformat=camel-case", "tr-cache-control=use-cache"]
+    )
     fun getActivities(
-        @PathVariable("username") username: String,
-        @PathVariable("startDate") startDate: String,
-        @PathVariable("endDate") endDate: String,
+        @PathVariable("memberId") memberId: Long,
+        @RequestHeader("ids") ids: String,
     ): List<TrainerRoadActivityDTO>
 
     @GetMapping("/app/api/workouts")
