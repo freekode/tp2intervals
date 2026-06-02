@@ -7,7 +7,7 @@
 }
 
 .github-link {
-  font-size: 20px;
+  font-size: 18px;
 
   span {
     letter-spacing: 0;
@@ -16,6 +16,38 @@
 }
 
 .kofi-icon {
-  height: 48px;
+  height: 40px;
   padding-top: 4px;
+}
+
+.sidenav-container {
+  height: 100vh;
+}
+
+.sidenav {
+  width: 250px;
+}
+
+.menu-header {
+  padding: 20px;
+  font-size: 1.2rem;
+  color: #3f51b5; // Cor primária
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.active {
+  background-color: rgba(0, 0, 0, 0.04);
+  color: #3f51b5 !important;
+  font-weight: bold;
+}
+
+.content {
+  padding: 0;
+}
+
+.bi-list {
+  font-size: 1.5rem;
 }

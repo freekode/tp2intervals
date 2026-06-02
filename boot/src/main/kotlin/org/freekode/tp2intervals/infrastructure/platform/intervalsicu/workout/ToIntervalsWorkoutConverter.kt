@@ -39,22 +39,35 @@ class ToIntervalsWorkoutConverter {
             (workout.date ?: LocalDate.now()).atStartOfDay().toString(),
             workout.details.name,
             IntervalsTrainingTypeMapper.getByTrainingType(workout.details.type),
-            "WORKOUT",
-            description
+            IntervalsTrainingTypeMapper.getByIntervalsType(workout.details.type.toString()).category.toString(),
+            description,
+            workout.details.duration?.seconds,
+            workout.details.load,
         )
     }
 
-
     private fun getDescription(workout: Workout, workoutString: String?): String {
-        var description = workout.details.description
-            .orEmpty()
-            .replace(unwantedStepRegex, "`-")
-            .let { "$it\n- - - -\n${Signature.description}" }
-        description += workoutString
-            ?.let { "\n\n- - - -\n$it" }
-            .orEmpty()
-        description += "\n\n${workout.details.externalData.toSimpleString()}"
-        return description
+        return buildString {
+            // Block - Description
+            workout.details.description?.takeIf { it.isNotBlank() }?.let {
+                val formatted = it.replace(unwantedStepRegex, "`-")
+                append("\n- - - -\n${Signature.description}")
+                append("#### Description\n\n$formatted\n\n<br>\n\n")
+            }
+
+            // Block - Workout Details
+            workoutString?.takeIf { it.isNotBlank() }?.let {
+                append("\n\n- - - -\n")
+                append("#### Workout Details\n$it\n\n")
+            }
+
+            // Block - ExternalData (Signature/Links)
+            val externalData = workout.details.externalData.toSimpleString()
+            if (externalData.isNotBlank()) {
+                append(externalData)
+            }
+        }.trim()
+            .replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
     }
 
     private fun getWorkoutString(workout: Workout) =

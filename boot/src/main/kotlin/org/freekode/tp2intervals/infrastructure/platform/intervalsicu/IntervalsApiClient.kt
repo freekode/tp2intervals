@@ -1,16 +1,13 @@
 package org.freekode.tp2intervals.infrastructure.platform.intervalsicu
 
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.activity.CreateActivityResponseDTO
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.wellness.IntervalsWellnessDTO
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.CreateEventRequestDTO
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.CreateWorkoutRequestDTO
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsEventDTO
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.http.MediaType
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestPart
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 
 @FeignClient(
@@ -65,4 +62,17 @@ interface IntervalsApiClient {
         @PathVariable name: String,
         @RequestPart("file") file: MultipartFile
     ): CreateActivityResponseDTO
+
+    @GetMapping("/api/v1/athlete/{athleteId}/wellness?oldest={startDate}&newest={endDate}")
+    fun getWellness(
+        @PathVariable("athleteId") athleteId: String,
+        @PathVariable("startDate") startDate: String,
+        @PathVariable("endDate") endDate: String,
+    ): List<IntervalsWellnessDTO>
+
+    @PutMapping("/api/v1/athlete/{athleteId}/wellness")
+    fun updateWellness(
+        @PathVariable athleteId: String,
+        @RequestBody requestDTO: IntervalsWellnessDTO
+    )
 }

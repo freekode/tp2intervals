@@ -1,6 +1,5 @@
 package org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout
 
-import java.time.LocalDate
 import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.librarycontainer.LibraryContainer
@@ -12,6 +11,7 @@ import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsA
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfigurationRepository
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Repository
+import java.time.LocalDate
 
 @Repository
 class IntervalsWorkoutRepository(
@@ -56,8 +56,8 @@ class IntervalsWorkoutRepository(
             configuration.paceRange,
         )
         return events
-            .filter { it.isWorkout() }
-            .mapNotNull { toWorkout(it) }
+            //.filter { it.isWorkout() } // Not only Workout
+            .mapNotNull { toEvent(it) }
     }
 
     override fun getWorkoutFromLibrary(externalData: ExternalData): Workout {
@@ -74,6 +74,10 @@ class IntervalsWorkoutRepository(
 
     override fun deleteWorkoutsFromCalendar(startDate: LocalDate, endDate: LocalDate) {
         TODO("Not yet implemented")
+    }
+
+    private fun toEvent(eventDTO: IntervalsEventDTO): Workout? {
+        return toWorkout(eventDTO)
     }
 
     private fun toWorkout(eventDTO: IntervalsEventDTO): Workout? {

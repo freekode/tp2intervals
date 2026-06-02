@@ -1,0 +1,115 @@
+<form [formGroup]="formGroup" novalidate>
+  <div class="row">
+    <mat-form-field class="form-field">
+      <mat-label>Direction</mat-label>
+      <mat-select formControlName="direction" #direction>
+        @for (item of directions; track item) {
+          <mat-option [value]="item.value">{{ item.title }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div class="row">
+    <mat-form-field class="form-field">
+      <mat-label>Wellness (Metrics)</mat-label>
+      <mat-select formControlName="trainingTypes" multiple>
+        @for (type of trainingTypes; track type) {
+          <mat-option [value]="type.value">{{ type.title }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div class="row">
+    <mat-form-field class="form-field">
+      <mat-label>Date Range</mat-label>
+      <mat-date-range-input
+        [rangePicker]="copyPlanDatePicker">
+        <input matStartDate placeholder="Start Date" formControlName="startDate">
+        <input matEndDate placeholder="End Date" formControlName="endDate">
+      </mat-date-range-input>
+      <mat-datepicker-toggle matIconSuffix [for]="copyPlanDatePicker"></mat-datepicker-toggle>
+      <mat-date-range-picker #copyPlanDatePicker></mat-date-range-picker>
+    </mat-form-field>
+
+    <i *ngIf="direction.value.targetPlatform === Platform.TRAINING_PEAKS.key && formGroup.controls['endDate'].value > tomorrowDate"
+       class="bi bi-exclamation-triangle-fill beta-icon"
+       matTooltip="Sync to futurte date will work only for TrainingPeaks Premium users"
+       matTooltipPosition="right"></i>
+  </div>
+
+  <div class="action-button-section">
+    <button
+      mat-raised-button
+      id="btn-confirm"
+      color="primary"
+      type="button"
+      [disabled]="formGroup.invalid || inProgress"
+      (click)="submit()"
+    >
+      Confirm
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      type="button"
+      style="margin-left: 10px"
+      [disabled]="formGroup.invalid || inProgress"
+      (click)="today()"
+    >
+      Only today
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      type="button"
+      style="margin-left: 10px"
+      [disabled]="formGroup.invalid || inProgress"
+      (click)="tomorrow()"
+    >
+      Only tomorrow
+    </button>
+  </div>
+
+  <div *ngIf="scheduleRequests.length > 0" style="margin-bottom: 10px">
+    <mat-list>
+      <mat-list-item>
+        Scheduled jobs
+      </mat-list-item>
+      <mat-divider></mat-divider>
+      @for (request of scheduleRequests; track request) {
+        <mat-list-item>
+          <button
+            mat-raised-button
+            color="primary"
+            type="button"
+            (click)="deleteJob(request.id)">
+            <i class="bi bi-trash"></i>
+          </button>
+          Types: {{ mapTrainingTypesToTitles(request.request.types) }},
+          Skip synced: {{ request.request.skipSynced }},
+          {{ Platform.getTitle(request.request.sourcePlatform) }} -> {{ Platform.getTitle(request.request.targetPlatform) }}
+        </mat-list-item>
+      }
+    </mat-list>
+  </div>
+
+  <div class="action-button-section">
+    <button
+      mat-raised-button
+      color="primary"
+      type="button"
+      matTooltip="Scheduled job runs every 20 minutes and will sync workouts for today. Jobs won't persist after app restart"
+      [disabled]="formGroup.invalid || inProgress"
+      (click)="scheduleToday()"
+    >
+      Schedule for today
+    </button>
+    <i class="bi bi-stars beta-icon"
+       matTooltip="Beta feature"
+       matTooltipPosition="right"></i>
+  </div>
+
+  <mat-progress-bar *ngIf="inProgress" mode="query" style="margin-top: 10px"></mat-progress-bar>
+</form>

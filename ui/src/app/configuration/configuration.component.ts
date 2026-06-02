@@ -17,6 +17,8 @@ import {MatSelectModule} from "@angular/material/select";
 import {MatExpansionModule} from "@angular/material/expansion";
 import {MatTooltipModule} from "@angular/material/tooltip";
 
+import {environment} from 'environments/environment';
+
 @Component({
   selector: 'app-configuration',
   standalone: true,
@@ -38,8 +40,10 @@ import {MatTooltipModule} from "@angular/material/tooltip";
   styleUrl: './configuration.component.scss'
 })
 export class ConfigurationComponent implements OnInit {
+  public config = environment;
+
   formGroup: FormGroup = this.formBuilder.group({
-    'intervals.api-key': [null, Validators.required],
+    'intervals.api-key': [this.config.intervals_api_key, Validators.required],
     'intervals.athlete-id': [null, Validators.required],
     'intervals.power-range': [null, [Validators.required, Validators.min(0), Validators.max(100)]],
     'intervals.hr-range': [null, [Validators.required, Validators.min(0), Validators.max(100)]],
@@ -64,6 +68,23 @@ export class ConfigurationComponent implements OnInit {
     this.inProgress = true
     this.configClient.getConfig().subscribe(config => {
       this.formGroup.patchValue(config.config);
+
+      if (!this.formGroup.get('intervals.api-key')?.value) {
+        this.formGroup.patchValue({
+          'intervals.api-key': this.config.intervals_api_key
+        });
+      }
+      if (!this.formGroup.get('intervals.athlete-id')?.value) {
+        this.formGroup.patchValue({
+          'intervals.athlete-id': this.config.intervals_athlete_id
+        });
+      }
+      if (!this.formGroup.get('training-peaks.auth-cookie')?.value) {
+        this.formGroup.patchValue({
+          'training-peaks.auth-cookie': this.config.trainingpeaks_auth_cookie
+        });
+      }
+
       this.inProgress = false
       this.listenTrainingPeaksCookie()
       this.listenTrainerRoadCookie()

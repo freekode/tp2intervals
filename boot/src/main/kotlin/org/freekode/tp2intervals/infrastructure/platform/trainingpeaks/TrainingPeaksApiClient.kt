@@ -1,16 +1,13 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks
 
+import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.metrics.TPMetricsDTO
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.CreateTPWorkoutRequestDTO
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.TPNoteResponseDTO
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.TPWorkoutCalendarResponseDTO
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.TPWorkoutDetailsResponseDTO
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.core.io.Resource
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.*
 
 @FeignClient(
     value = "TrainingPeaksApiClient",
@@ -64,4 +61,23 @@ interface TrainingPeaksApiClient {
         @PathVariable userId: String,
         @PathVariable workoutId: String,
     ): Boolean
+
+    @GetMapping("/metrics/v3/athletes/{athleteId}/consolidatedtimedmetrics/{startDate}/{endDate}")
+    fun getMetrics(
+        @PathVariable("athleteId") userId: String,
+        @PathVariable("startDate") startDate: String,
+        @PathVariable("endDate") endDate: String
+    ): List<TPMetricsDTO>
+
+    @PutMapping("/metrics/v3/athletes/{athleteId}/consolidatedtimedmetric")
+    fun createMetrics(
+        @PathVariable athleteId: String,
+        @RequestBody requestDTO: TPMetricsDTO
+    )
+
+    @DeleteMapping("/metrics/v3/athletes/{athleteId}/consolidatedtimedmetric")
+    fun deleteMetrics(
+        @PathVariable athleteId: String,
+        @RequestBody requestDTO: TPMetricsDTO
+    )
 }

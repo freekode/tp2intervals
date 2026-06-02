@@ -10,14 +10,16 @@ class IntervalsTrainingTypeMapper {
             TrainingType.VIRTUAL_BIKE to "VirtualRide",
             TrainingType.RUN to "Run",
             TrainingType.SWIM to "Swim",
-            TrainingType.WEIGHT to "WeightTraining",
-            TrainingType.NOTE to "NOTE",
+            TrainingType.STRENGTH to "Strength",
+            TrainingType.NOTE to "Note",
+            TrainingType.BRICK to "Brick",
             TrainingType.UNKNOWN to "Other",
             TrainingType.WALK to "Walk",
+            TrainingType.DAY_OFF to "Day_off",
         )
 
         fun getByIntervalsType(intervalsType: String): TrainingType =
-            typeMap.filterValues { it == intervalsType }.keys.firstOrNull() ?: TrainingType.UNKNOWN
+            typeMap.filterValues { it.equals(intervalsType, ignoreCase = true) }.keys.firstOrNull() ?: TrainingType.UNKNOWN
 
         fun getByTrainingType(trainingType: TrainingType): String = typeMap[trainingType]!!
     }

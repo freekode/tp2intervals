@@ -1,9 +1,23 @@
 services:
-  app:
-    image: ghcr.io/freekode/tp2intervals:latest
-    container_name: tp2intervals
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tp2intervals-backend
     restart: unless-stopped
     volumes:
-      - ./tp2intervals.sqlite:/tp2intervals.sqlite
+      - ./tp2intervals.sqlite:/app/tp2intervals.sqlite
     ports:
       - '8080:8080'
+
+  frontend:
+    image: node:20-alpine
+    container_name: tp2intervals-frontend
+    working_dir: /app
+    volumes:
+      - ./ui:/app
+    ports:
+      - '4200:4200'
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0 --poll 500 --proxy-config src/proxy.docker.conf.json"
+    depends_on:
+      - backend

@@ -9,6 +9,10 @@ import {GitHubClient} from "infrastructure/client/github.client";
 import * as semver from "semver";
 import {MatTooltipModule} from "@angular/material/tooltip";
 
+import {MatSidenavModule} from '@angular/material/sidenav';
+import {MatListModule} from '@angular/material/list';
+import {MatIconModule} from '@angular/material/icon';
+
 @Component({
   selector: 'app-top-bar',
   standalone: true,
@@ -17,7 +21,10 @@ import {MatTooltipModule} from "@angular/material/tooltip";
     MatToolbarModule,
     RouterLink,
     MatBadgeModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatSidenavModule,
+    MatListModule,
+    MatIconModule
   ],
   templateUrl: './top-bar.component.html',
   styleUrl: './top-bar.component.scss'

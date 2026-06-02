@@ -38,10 +38,15 @@ class TPToWorkoutConverter {
         var description = tpWorkout.description.orEmpty()
         description += tpWorkout.coachComments?.let { "\n- - - -\n$it" }.orEmpty()
 
+        val capitalizedTitle = if (tpWorkout.title.isNullOrBlank()) "Workout"
+        else tpWorkout.title.replaceFirstChar {
+            if (it.isLowerCase()) it.titlecase() else it.toString()
+        }
+
         return Workout(
             WorkoutDetails(
                 tpWorkout.getWorkoutType()!!,
-                if (tpWorkout.title.isNullOrBlank()) "Workout" else tpWorkout.title,
+                capitalizedTitle,
                 description,
                 tpWorkout.totalTimePlanned?.let { Duration.ofMinutes((it * 60).toLong()) },
                 tpWorkout.tssPlanned,

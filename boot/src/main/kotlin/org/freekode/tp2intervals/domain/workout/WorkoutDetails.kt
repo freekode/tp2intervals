@@ -1,10 +1,10 @@
 package org.freekode.tp2intervals.domain.workout
 
-import java.io.Serializable
-import java.time.Duration
-import java.time.LocalDate
 import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.TrainingType
+import java.io.Serializable
+import java.time.Duration
+import java.time.temporal.ChronoUnit
 
 data class WorkoutDetails(
     val type: TrainingType,
@@ -22,8 +22,9 @@ data class WorkoutDetails(
 
         other as WorkoutDetails
 
-        if (name != other.name) return false
-        if (duration != other.duration) return false
+        if (name.uppercase() != other.name.uppercase()
+            && !name.uppercase().startsWith(other.name.uppercase())) return false
+        if (duration?.truncatedTo(ChronoUnit.MINUTES) != other.duration?.truncatedTo(ChronoUnit.MINUTES)) return false
         if (externalData != other.externalData) return false
 
         return true

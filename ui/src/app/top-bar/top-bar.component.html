@@ -1,43 +1,57 @@
-<mat-toolbar color="primary">
-  @for (button of menuButtons; track button) {
-    @if (router.url === button.url) {
-      <button
-        id="{{button.url.substring(1, 100)}}"
-        mat-stroked-button
-        [routerLink]="[button.url]">
-        {{ button.name }}
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav #drawer mode="over" class="sidenav">
+    <mat-nav-list>
+      <div class="menu-header">
+        <b>TP2Intervals</b>
+      </div>
+      <mat-divider></mat-divider>
+
+      @for (button of menuButtons; track button.url) {
+        <a mat-list-item [routerLink]="[button.url]" (click)="drawer.close()"
+           [class.active]="router.url === button.url">
+          {{ button.name }}
+        </a>
+      }
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <mat-toolbar color="primary">
+      <button mat-icon-button (click)="drawer.toggle()" aria-label="Menu">
+        <i class="bi bi-list"></i>
       </button>
-    } @else {
-      <button
-        mat-flat-button
-        color="primary"
-        id="{{button.url.substring(1, 100)}}"
-        [routerLink]="[button.url]">
-        {{ button.name }}
-      </button>
-    }
-  }
-  <span class="spacer"></span>
-  <a mat-button
-     [matBadgeHidden]="updateAvailableBadgeHidden"
-     [matTooltipDisabled]="updateAvailableBadgeHidden"
-     matTooltip="Update available"
-     matBadge="1"
-     matBadgeSize="small"
-     matBadgePosition="before"
-     matBadgeColor="accent"
-     [href]="githubLink" target="_blank"
-     class="github-link"
-  >
-    <span>v{{ appVersion }}</span>
-    <i class="bi bi-github"></i>
-  </a>
-  <a mat-button href="https://ko-fi.com/freekode" target="_blank" class="external-link">
-    <img src="assets/kofi.webp" alt="kofi" class="kofi-icon"/>
-  </a>
-  <a mat-icon-button
-     href="https://forum.intervals.icu/t/tp2intervals-copy-trainingpeaks-and-trainerroad-workouts-plans-to-intervals/63375"
-     target="_blank" class="external-link">
-    <i class="bi bi-activity"></i>
-  </a>
-</mat-toolbar>
+
+      <span class="title">TP2Intervals</span>
+
+      <span class="spacer"></span>
+
+      <a mat-button
+         [matBadgeHidden]="updateAvailableBadgeHidden"
+         [matTooltipDisabled]="updateAvailableBadgeHidden"
+         matTooltip="Update available"
+         matBadge="1"
+         matBadgeSize="small"
+         matBadgePosition="before"
+         matBadgeColor="accent"
+         [href]="githubLink" target="_blank"
+         class="github-link"
+      >
+        <span>v{{ appVersion }}</span>
+        <i class="bi bi-github"></i>
+      </a>
+      <a mat-button href="https://ko-fi.com/freekode" target="_blank" class="external-link">
+        <img src="assets/kofi.webp" alt="kofi" class="kofi-icon"/>
+      </a>
+      <a mat-icon-button
+         href="https://forum.intervals.icu/t/tp2intervals-copy-trainingpeaks-and-trainerroad-workouts-plans-to-intervals/63375"
+         target="_blank" class="external-link">
+        <i class="bi bi-activity"></i>
+      </a>
+
+    </mat-toolbar>
+
+    <div class="content">
+      <ng-content></ng-content>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

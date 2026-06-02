@@ -1,6 +1,9 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.structure
 
-import org.freekode.tp2intervals.domain.workout.structure.*
+import org.freekode.tp2intervals.domain.workout.structure.MultiStep
+import org.freekode.tp2intervals.domain.workout.structure.SingleStep
+import org.freekode.tp2intervals.domain.workout.structure.WorkoutStep
+import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
 
 class FromTPStructureConverter(
     private val structureDTO: TPWorkoutStructureDTO
@@ -27,6 +30,7 @@ class FromTPStructureConverter(
     private fun mapSingleStep(tPStepDTO: TPStepDTO): SingleStep {
         return SingleStep(
             tPStepDTO.name,
+            tPStepDTO.notes,
             tPStepDTO.length!!.toStepLength(),
             tPStepDTO.toMainTarget(),
             tPStepDTO.toSecondaryTarget(),

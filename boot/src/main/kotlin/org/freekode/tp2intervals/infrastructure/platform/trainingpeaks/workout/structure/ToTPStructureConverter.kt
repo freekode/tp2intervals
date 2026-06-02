@@ -2,12 +2,7 @@ package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
-import org.freekode.tp2intervals.domain.workout.structure.MultiStep
-import org.freekode.tp2intervals.domain.workout.structure.SingleStep
-import org.freekode.tp2intervals.domain.workout.structure.StepLength
-import org.freekode.tp2intervals.domain.workout.structure.WorkoutStep
-import org.freekode.tp2intervals.domain.workout.structure.StepTarget
-import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
+import org.freekode.tp2intervals.domain.workout.structure.*
 
 class ToTPStructureConverter(
     private val objectMapper: ObjectMapper,
@@ -84,6 +79,7 @@ class ToTPStructureConverter(
 
         return TPStepDTO(
             workoutStep.name,
+            workoutStep.notes,
             TPLengthDTO.fromStepLength(workoutStep.length),
             targetList,
         )

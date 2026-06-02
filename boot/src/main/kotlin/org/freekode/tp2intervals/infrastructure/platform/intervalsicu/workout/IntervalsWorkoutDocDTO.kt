@@ -17,6 +17,7 @@ class IntervalsWorkoutDocDTO(
         "POWER" to WorkoutStructure.TargetUnit.FTP_PERCENTAGE,
         "HR" to WorkoutStructure.TargetUnit.LTHR_PERCENTAGE,
         "PACE" to WorkoutStructure.TargetUnit.PACE_PERCENTAGE,
+        "RPE" to WorkoutStructure.TargetUnit.RELATIVE_PERCEIVED_EFFORT,
     )
 
     fun mapTarget(): WorkoutStructure.TargetUnit {
@@ -25,6 +26,7 @@ class IntervalsWorkoutDocDTO(
 
     class WorkoutStepDTO(
         val text: String?,
+        val notes: String?,
         val reps: Int?,
         val duration: Long?,
         val distance: Long?,
