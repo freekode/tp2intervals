@@ -75,7 +75,7 @@ class TrainingPeaksWorkoutRepository(
         }
 
         val notes = planNotes.map { tpToWorkoutConverter.toWorkout(it) }
-        return workouts + notes
+        return (workouts + notes).sortedBy { it.date }
     }
 
     override fun getWorkoutsFromCalendar(startDate: LocalDate, endDate: LocalDate): List<Workout> {
@@ -90,7 +90,7 @@ class TrainingPeaksWorkoutRepository(
         }
 
         val notes = tpNotes.map { tpToWorkoutConverter.toWorkout(it) }
-        return workouts + notes
+        return (workouts + notes).sortedBy { it.date }
     }
 
     override fun findWorkoutsFromLibraryByName(name: String): List<WorkoutDetails> {
