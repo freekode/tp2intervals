@@ -105,3 +105,85 @@ restoring automatic writes in that case.
 
 Pause sync when switching account configuration and restart before resuming so
 the existing TrainingPeaks user and token caches are refreshed.
+
+## Preview-only Compose rehearsal
+
+Apply [the preview override](../docker-compose.preview.example.yml) after the
+installation's existing Compose file. It assumes the same `app` service key as
+the repository example. If the installed key differs, use that key in a local
+copy of the override. Keep the existing Traefik network, hostname, labels and
+proxy settings in the base file. The override supplies no routing rules or
+additional authentication. Retain any existing non-database mounts when
+adapting the override. Compose 2.24.4 or newer supports `!override`.
+
+1. Set `TP2INTERVALS_FORK_IMAGE` to the verified, locally available fork image
+   reference. Use a digest or verify the local tag's image ID. The stock
+   Compose file's upstream `:latest` image does not select the fork.
+2. Use a dedicated directory for `TP2INTERVALS_DATA_DIR` containing
+   `tp2intervals.sqlite`. For rehearsals, use disposable data. For cutover,
+   pause writers, make and verify a consistent SQLite backup, and seed the
+   new directory from that backup. Check for WAL and journal files in the
+   old container's database directory before copying. If sidecars are visible
+   only inside the old container, take the SQLite backup from a process
+   that can see them. Keep the prior database and backup until validation.
+3. Supply `TP2INTERVALS_PREFLIGHT_TOKEN` as a runtime secret. Validate
+   composition without printing the resolved secret:
+
+   ```sh
+   docker compose -f /path/to/installed-compose.yml \
+     -f /path/to/docker-compose.preview.example.yml config --quiet
+   docker compose -f /path/to/installed-compose.yml \
+     -f /path/to/docker-compose.preview.example.yml config --images
+   ```
+
+4. The overlay enables `TP2INTERVALS_PREVIEW_ONLY=true`. The server rejects
+   mutating HTTP requests except the authenticated preview POST, rejects
+   provider requests with non-read methods, skips scheduled jobs in both
+   directions, and rejects ledger writes. Startup can still apply Liquibase
+   migrations to the mounted database. Keep the app on the existing private
+   LAN/WireGuard and Traefik routes. The preview token protects the preview
+   route only. Never include credentials in access logs or HAR files.
+5. Development uses sandbox `development-sandbox`, with backend port `8080`.
+   With the existing host mapping, open `http://127.0.0.1:8080` on the Mac.
+   For production, retain the installation's existing Traefik hostname.
+6. To roll back, stop writers and save the current database directory with its
+   ledger. Restore the prior image configuration and preserve that database.
+   An older image can ignore both preview mode and write claims. Keep it
+   isolated from providers until schedules and post-backup writes have been
+   reconciled. Avoid dropping the ledger or replacing it with an older copy.
+
+## One-time legacy baseline design
+
+This section describes a proposed approval step. The current scheduler switch
+alone can still create a workout for an unreviewed no-match result. Keep it
+disabled pending the baseline implementation and operator approval.
+
+- Store a `legacy_baseline` record keyed by the resolved TrainingPeaks account
+  ID and canonical Intervals.icu athlete ID, bound to a configuration
+  generation. Retain the inventory revision or digest, reviewed date
+  coverage, approval time, and operator decision. Treat the current
+  generation as unapproved until the operator approves its exact revision.
+  Keep scheduled activation separate and default it to paused.
+- Build the inventory read-only. Verify single legacy links with the provider
+  event ID and source-account provenance. Preserve duplicate or ambiguous
+  matches and leave unresolved write claims blocked until evidence resolves
+  them. For no match observed, record any reviewed decision or hold the
+  workout when the coverage does not support deciding that it is new.
+  Preserve the review evidence and checked dispositions for cutover.
+- Explicit approval records the vetted legacy links, per-workout holds and
+  approved revision in one local audited SQLite transaction. A later, separate activation starts unattended forward
+  sync only for the active account pair with an approved baseline and a
+  persisted boolean `skipSynced=true`. A newly encountered ID can proceed
+  without per-workout approval, using the existing read checks and atomic
+  ledger claim. Existing held or unresolved IDs keep their blocks.
+- Resolve identities before unattended writes. A changed account pair or
+  configuration generation invalidates active approval and pauses the writer,
+  including when reverting to a once-approved pair. A transient identity
+  lookup failure fails closed. Ordinary provider token refresh does not
+  change the approval once the same identity is verified.
+- Respect the backend day boundary for Basic account reads. Use only today
+  and tomorrow on the TrainingPeaks side and review older Intervals.icu
+  imports independently where possible. Coverage is limited by provider
+  visibility, erased markers, and moves outside the search window. An old
+  import that the inventory missed can still look new later. An unreadable
+  calendar is a hold, and elapsed time never clears an uncertain POST.

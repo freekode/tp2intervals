@@ -1,0 +1,13 @@
+# Apply after the existing installation's Compose file. This preserves its
+# service settings, including Traefik networks, hostname and labels.
+services:
+  app:
+    image: ${TP2INTERVALS_FORK_IMAGE:?Set the verified fork image reference}
+    pull_policy: never
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:sqlite:/data/tp2intervals.sqlite
+      TP2INTERVALS_PREVIEW_ONLY: "true"
+      TP2INTERVALS_ENABLE_SCHEDULED_FORWARD_SYNC: "false"
+      TP2INTERVALS_PREFLIGHT_TOKEN: ${TP2INTERVALS_PREFLIGHT_TOKEN:?Set the runtime preview token}
+    volumes: !override
+      - "${TP2INTERVALS_DATA_DIR:?Set the existing or backed-up SQLite data directory}:/data"
