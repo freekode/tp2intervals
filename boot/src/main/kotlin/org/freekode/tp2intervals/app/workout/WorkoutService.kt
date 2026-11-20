@@ -10,6 +10,8 @@ import org.freekode.tp2intervals.rest.workout.DeleteWorkoutRequestDTO
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.time.LocalDate
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 @Service
 class WorkoutService(
@@ -20,7 +22,16 @@ class WorkoutService(
     private val workoutRepositoryMap = workoutRepositories.associateBy { it.platform() }
     private val planRepositoryMap = planRepositories.associateBy { it.platform() }
 
+    private val trainingPeaksCalendarLock = ReentrantLock()
+
     fun copyWorkoutsC2C(request: CopyFromCalendarToCalendarRequest): CopyWorkoutsResponse {
+        if (request.skipSynced && request.sourcePlatform == Platform.TRAINING_PEAKS && request.targetPlatform == Platform.INTERVALS) {
+            return trainingPeaksCalendarLock.withLock { copyCalendar(request) }
+        }
+        return copyCalendar(request)
+    }
+
+    private fun copyCalendar(request: CopyFromCalendarToCalendarRequest): CopyWorkoutsResponse {
         log.info("Received request for copy calendar to calendar: $request")
         val sourceWorkoutRepository = workoutRepositoryMap[request.sourcePlatform]!!
         val targetWorkoutRepository = workoutRepositoryMap[request.targetPlatform]!!
