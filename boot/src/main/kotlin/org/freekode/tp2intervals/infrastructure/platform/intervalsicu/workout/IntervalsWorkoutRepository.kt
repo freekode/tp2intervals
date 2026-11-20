@@ -11,6 +11,7 @@ import org.freekode.tp2intervals.infrastructure.PlatformException
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsApiClient
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfigurationRepository
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Repository
 
 @Repository
@@ -30,6 +31,28 @@ class IntervalsWorkoutRepository(
             val request = toIntervalsWorkoutConverter.createEventRequestDTO(it)
             intervalsApiClient.createEvent(intervalsConfigurationRepository.getConfiguration().athleteId, request)
         }
+    }
+
+    fun calendarAthleteId(): String = intervalsConfigurationRepository.getConfiguration().athleteId
+
+    fun createCalendarEvent(athleteId: String, workout: Workout): Long {
+        val request = ToIntervalsWorkoutConverter().createEventRequestDTO(workout)
+        val response = intervalsApiClient.createEvent(athleteId, request)
+        return response.body?.id?.takeIf { response.statusCode.is2xxSuccessful && it > 0 }
+            ?: throw PlatformException(Platform.INTERVALS, "Calendar create did not confirm an event ID")
+    }
+
+    fun getCalendarEvent(athleteId: String, eventId: Long): IntervalsEventDTO? {
+        val response = intervalsApiClient.getEvent(athleteId, eventId)
+        if (response.statusCode == HttpStatus.NOT_FOUND) return null
+        return response.body?.takeIf { response.statusCode.is2xxSuccessful && it.id == eventId }
+            ?: throw PlatformException(Platform.INTERVALS, "Calendar lookup did not return the requested event")
+    }
+
+    fun getCalendarSnapshot(athleteId: String, startDate: LocalDate, endDate: LocalDate): List<IntervalsEventDTO> {
+        val response = intervalsApiClient.getCalendarSnapshot(athleteId, startDate.toString(), endDate.toString())
+        return response.body?.takeIf { response.statusCode.is2xxSuccessful }
+            ?: throw PlatformException(Platform.INTERVALS, "Calendar listing did not return a successful response")
     }
 
     override fun saveWorkoutsToLibrary(libraryContainer: LibraryContainer, workouts: List<Workout>) {

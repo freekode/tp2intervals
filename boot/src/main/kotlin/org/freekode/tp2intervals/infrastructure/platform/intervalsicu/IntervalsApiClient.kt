@@ -1,16 +1,19 @@
 package org.freekode.tp2intervals.infrastructure.platform.intervalsicu
 
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.activity.CreateActivityResponseDTO
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.CreatedIntervalsEvent
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.CreateEventRequestDTO
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.CreateWorkoutRequestDTO
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsEventDTO
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestPart
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.multipart.MultipartFile
 
 @FeignClient(
@@ -32,7 +35,20 @@ interface IntervalsApiClient {
     fun createEvent(
         @PathVariable athleteId: String,
         @RequestBody createEventRequestDTO: CreateEventRequestDTO
-    )
+    ): ResponseEntity<CreatedIntervalsEvent>
+
+    @GetMapping("/api/v1/athlete/{athleteId}/events/{eventId}")
+    fun getEvent(
+        @PathVariable athleteId: String,
+        @PathVariable eventId: Long,
+    ): ResponseEntity<IntervalsEventDTO>
+
+    @GetMapping("/api/v1/athlete/{athleteId}/events")
+    fun getCalendarSnapshot(
+        @PathVariable athleteId: String,
+        @RequestParam oldest: String,
+        @RequestParam newest: String,
+    ): ResponseEntity<List<IntervalsEventDTO>>
 
     @GetMapping(
         "/api/v1/athlete/{athleteId}/events?" +

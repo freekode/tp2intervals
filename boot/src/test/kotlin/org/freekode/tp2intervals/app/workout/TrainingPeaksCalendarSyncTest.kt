@@ -8,6 +8,7 @@ import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsApiClient
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfiguration
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfigurationRepository
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.CreatedIntervalsEvent
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.CreateEventRequestDTO
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsEventDTO
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsWorkoutRepository
@@ -28,6 +29,7 @@ import org.mockito.Mockito.CALLS_REAL_METHODS
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.mockStatic
 import org.mockito.Mockito.`when`
+import org.springframework.http.ResponseEntity
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -161,7 +163,7 @@ class TrainingPeaksCalendarSyncTest {
             return events.filter { it.start_date_local.toLocalDate().toString() in startDate..endDate }
         }
 
-        override fun createEvent(athleteId: String, createEventRequestDTO: CreateEventRequestDTO) {
+        override fun createEvent(athleteId: String, createEventRequestDTO: CreateEventRequestDTO): ResponseEntity<CreatedIntervalsEvent> {
             assertEquals(ATHLETE_ID, athleteId)
             posts++
             events.add(
@@ -171,6 +173,7 @@ class TrainingPeaksCalendarSyncTest {
                     createEventRequestDTO.type, createdMovingTime, null, null
                 )
             )
+            return ResponseEntity.ok(CreatedIntervalsEvent(events.last().id))
         }
 
         fun sourceIds() = events.mapNotNull { event ->
