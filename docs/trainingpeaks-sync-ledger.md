@@ -25,7 +25,7 @@ used with the calendar create, list and lookup endpoints.
 - Sync preserves remote events and edits. **Skip synced** disabled still
   creates copies through the original path without using the ledger.
 
-Manual calendar copy reports affected workouts in the optional `syncReview`
+The calendar form displays manual copy warnings from the optional `syncReview`
 response property. Automatic runs log a warning with the workout ID and reason.
 Pending and ambiguous rows remain available for local review even after their
 workouts leave the scheduler's date window. For example, inspect a protected
@@ -43,28 +43,57 @@ A missing or changed event with a confirmed link stays `CONFIRMED` and is
 reported when that workout is next examined. An unresolved attempt may require
 operator investigation even if the POST never reached Intervals.icu.
 
+## Read-only preview and schedule audit
+
+Set `TP2INTERVALS_PREFLIGHT_TOKEN` on the backend to a high-entropy secret and
+restart. Preview is disabled when the token is unset. In the calendar sync
+form, choose **TrainingPeaks → Intervals.icu**, select the dates and workout
+types, and enter the token for **Preview sync**. The form clears the input after
+submission. Use localhost or HTTPS with a trusted reverse proxy. Protect the
+token and avoid recording Authorization headers. The token is separate from
+the provider credentials and protects only the preview endpoint. Keep the
+app's other controls on a trusted local network or behind access controls.
+
+The endpoint is `POST /api/workout/trainingpeaks-sync/preview` with
+`Authorization: Bearer <preview token>` and a JSON body containing
+`startDate`, `endDate` (ISO dates), and optionally `types` (workout-type enum
+names). It uses only provider reads and ledger lookups, creates no claims or
+links, and returns `Cache-Control: no-store`. A Basic athlete account can
+preview today and tomorrow as measured by the backend's calendar day.
+Provider availability and time zones can still limit the returned workouts.
+Results include source and candidate IDs, dates where known, and reason
+codes for review. A positive candidate for a pending attempt is displayed
+without confirming it. No match observed is inconclusive.
+
+Schedule rows report unsafe, invalid, or paused states in the calendar form.
+A forward schedule must contain the JSON boolean `true` for `skipSynced`.
+False, missing, malformed, or ambiguous JSON cannot execute a forward job.
+Correct an unsafe entry by deleting it and registering it again with
+**Skip already synced workouts** checked. Manual force copy still works
+and can bypass the ledger and create duplicates.
+
 ## First deployment with existing imports
 
-1. Pause scheduled and manual writers during upgrade and inventory. Keep a
-   consistent SQLite backup with the existing configuration and schedule data.
-   Liquibase adds the ledger table without rewriting those rows. Remote events
-   are untouched by the migration.
-2. Inventory relevant Intervals.icu calendars with read-only queries over the
-   dates where workouts may have moved. Group linked events by destination
-   athlete and the `trainingPeaksId` in the description footer. Verify the
-   original source account for older imports, which lack the account marker.
-   A date, name or duration alone cannot establish identity.
-3. For a verified one-to-one match, fetch the remote event by ID and seed a
-   `CONFIRMED` row in the new ledger under the full key. Record an `AMBIGUOUS`
-   row with a null remote event ID when the workout key is known but the
-   remote match is uncertain or there are multiple matches. Preserve all
-   remote events. Leave automation paused for scope that cannot be inventoried
-   reliably. In-window legacy links can also be adopted on demand by sync
-   under the bounded lookup described above.
-4. Review the links and outstanding rows before restoring schedules. Resolve
-   ambiguous or missing events through explicit operator review. A timeout,
-   an empty listing or elapsed time is insufficient evidence to clear a
-   pending row for another POST.
+1. Keep `TP2INTERVALS_ENABLE_SCHEDULED_FORWARD_SYNC` unset or `false` on every
+   instance and avoid manual writes during upgrade and inventory. Preserve a
+   consistent SQLite backup containing the existing configuration, schedules,
+   and any ledger. Liquibase adds the ledger without rewriting existing data.
+2. Run the read-only preview for the eligible dates and inspect the schedule
+   audit. Review unresolved, broken, ambiguous, and no-match rows before
+   activation. Use additional read-only inventory where imports may have
+   moved outside the lookup range. For legacy candidates, verify the source
+   account separately because older footers include only the workout ID.
+3. Link verified one-to-one matches in a separate, reviewed backfill while
+   writers are paused. Fetch each event by ID and seed a `CONFIRMED` row under
+   the full key. Record `AMBIGUOUS` with a null remote event ID for known keys
+   that cannot be resolved, including multiple matches. Preserve all remote
+   events. Preview itself offers no backfill or remote mutation.
+4. Once the destination inventory and schedule settings have been reviewed,
+   set `TP2INTERVALS_ENABLE_SCHEDULED_FORWARD_SYNC=true` and restart the intended
+   writer. This is an operator opt-in for that instance. Leave it paused if
+   the inventory is incomplete. Monitor unresolved warnings after
+   activation. An empty listing or elapsed time cannot justify clearing a
+   pending claim for another POST.
 
 The in-process guard covers overlapping scheduled and manual calls within
 one app. Separate instances must point to the same SQLite file, using storage

@@ -330,7 +330,7 @@ class TrainingPeaksSyncFailureTest {
         val service = WorkoutService(listOf(source, destination), emptyList(), sync)
         val schedules = mock(ScheduleRequestRepository::class.java)
         `when`(schedules.findAll()).thenReturn(requests.toList().ifEmpty { listOf(persistedRequest) })
-        return App(WorkoutScheduledJob(service, schedules, objectMapper), WorkoutController(service))
+        return App(WorkoutScheduledJob(service, schedules, objectMapper, scheduledForwardEnabled = true), WorkoutController(service))
     }
 
     private fun runScheduled(app: App) = withToday { app.job.job() }

@@ -1,5 +1,8 @@
 package org.freekode.tp2intervals.app.workout
 
+import org.freekode.tp2intervals.app.workout.TrainingPeaksSyncPreview.Candidate
+import org.freekode.tp2intervals.app.workout.TrainingPeaksSyncPreview.Reason
+import org.freekode.tp2intervals.app.workout.TrainingPeaksSyncPreview.Status
 import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsEventDTO
@@ -11,6 +14,7 @@ import org.freekode.tp2intervals.infrastructure.sync.TrainingPeaksSyncLedger.Sta
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.support.TransactionSynchronizationManager
+import java.time.LocalDate
 
 @Service
 class TrainingPeaksCalendarSync(
@@ -30,14 +34,7 @@ class TrainingPeaksCalendarSync(
         val workouts = source.getWorkoutsFromCalendar(sourceAccount, request.startDate, request.endDate)
         val reviews = mutableListOf<WorkoutSyncReview>()
         val legacyMatches by lazy {
-            // Look beyond the original dates for legacy imports that an athlete moved.
-            val current = destination.getCalendarSnapshot(athlete, request.startDate, request.endDate)
-            val surrounding = destination.getCalendarSnapshot(
-                athlete, request.startDate.minusDays(365), request.endDate.plusDays(365)
-            )
-            (current + surrounding).distinctBy { it.id }
-                .mapNotNull { event -> event.trainingPeaksId(sourceAccount)?.let { it to event.id } }
-                .groupBy({ it.first }, { it.second })
+            findCandidates(sourceAccount, athlete, request.startDate, request.endDate)
         }
         val plannedWorkouts by lazy { destination.getWorkoutsFromCalendar(request.startDate, request.endDate) }
 
@@ -55,11 +52,11 @@ class TrainingPeaksCalendarSync(
             val key = Key(sourceAccount, athlete, sourceId)
             val existing = ledger.find(key)
             if (existing != null) {
-                reviewKnown(key, existing, { legacyMatches[sourceId].orEmpty() })?.let(reviews::add)
+                reviewKnown(key, existing, { legacyMatches[sourceId].orEmpty().map { it.id } })?.let(reviews::add)
                 continue
             }
 
-            val candidates = legacyMatches[sourceId].orEmpty()
+            val candidates = legacyMatches[sourceId].orEmpty().map { it.id }
             when {
                 candidates.size > 1 -> {
                     ledger.recordAmbiguousMatch(key)
@@ -67,7 +64,7 @@ class TrainingPeaksCalendarSync(
                 }
                 candidates.size == 1 -> {
                     val eventId = candidates.single()
-                    if (destination.getCalendarEvent(athlete, eventId)?.trainingPeaksId(sourceAccount) == sourceId) {
+                    if (verifiedEvent(key, eventId) != null) {
                         if (!ledger.recordLegacyMatch(key, eventId)) {
                             reviewAfterConflict(key)?.let(reviews::add)
                         }
@@ -93,6 +90,102 @@ class TrainingPeaksCalendarSync(
         return CopyWorkoutsResponse(copied, workouts.size - copied, request.startDate, request.endDate, ExternalData.empty(), reviews)
     }
 
+    fun preview(request: TrainingPeaksPreviewRequest, today: LocalDate = LocalDate.now()): List<TrainingPeaksSyncPreview> {
+        val (start, end, types) = request
+        if (start > end || start < LocalDate.MIN.plusDays(365) || end > LocalDate.MAX.minusDays(365)) {
+            throw InvalidTrainingPeaksPreview("INVALID_DATE_RANGE")
+        }
+        val user = source.calendarUser()
+        if (!user.isAthlete) throw InvalidTrainingPeaksPreview("ATHLETE_ACCOUNT_REQUIRED")
+        if (!user.isPremium && (start < today || end > today.plusDays(1))) {
+            throw InvalidTrainingPeaksPreview("BASIC_TODAY_OR_TOMORROW_ONLY")
+        }
+
+        val athlete = destination.calendarAthleteId()
+        val candidates by lazy { findCandidates(user.userId, athlete, start, end) }
+        return source.getPlannedCalendarEntries(user.userId, start, end)
+            .filter { workout ->
+                val type = workout.getWorkoutType()
+                workout.workoutDay.toLocalDate() in start..end && type in types && type != TrainingType.NOTE
+            }
+            .map { workout ->
+                val date = workout.workoutDay.toLocalDate()
+                val id = workout.id.takeIf { it.isNotBlank() }
+                if (id == null) {
+                    TrainingPeaksSyncPreview(null, date, Status.BROKEN_OR_UNVERIFIED_LINK, Reason.SOURCE_ID_MISSING)
+                } else {
+                    val key = Key(user.userId, athlete, id)
+                    previewWorkout(key, date) { candidates[id].orEmpty() }
+                }
+            }
+    }
+
+    private fun previewWorkout(
+        key: Key,
+        date: LocalDate,
+        candidates: () -> List<IntervalsEventDTO>,
+    ): TrainingPeaksSyncPreview {
+        val entry = ledger.find(key)
+        if (entry?.state == State.CONFIRMED) {
+            val id = checkNotNull(entry.remoteEventId)
+            val event = destination.getCalendarEvent(key.destinationAthleteId, id)
+            val issue = when {
+                event == null -> Reason.LINK_MISSING
+                event.trainingPeaksId(key.sourceAccountId) != key.sourceWorkoutId -> Reason.LINK_MARKER_CHANGED
+                else -> null
+            }
+            return TrainingPeaksSyncPreview(
+                key.sourceWorkoutId,
+                date,
+                if (issue == null) Status.VERIFIED_LINK else Status.BROKEN_OR_UNVERIFIED_LINK,
+                issue ?: Reason.STORED_LINK_VERIFIED,
+                listOf(Candidate(id, event?.start_date_local?.toLocalDate())),
+            )
+        }
+
+        val matches = candidates()
+        val single = matches.singleOrNull()
+        val candidateDetails = matches.map { Candidate(it.id, it.start_date_local.toLocalDate()) }
+        fun result(status: Status, reason: Reason, events: List<Candidate> = candidateDetails) =
+            TrainingPeaksSyncPreview(key.sourceWorkoutId, date, status, reason, events)
+
+        if (entry?.state == State.PENDING) {
+            val verified = single?.let { verifiedEvent(key, it.id, allowLegacy = false) }
+            val reason = if (verified == null) Reason.CLAIM_PENDING else Reason.CLAIM_CANDIDATE_VERIFIED
+            return result(Status.UNRESOLVED_CLAIM, reason, verified?.let { listOf(it.previewCandidate()) } ?: candidateDetails)
+        }
+        if (matches.size > 1) return result(Status.MULTIPLE_LEGACY_CANDIDATES, Reason.MULTIPLE_MATCHES)
+        if (entry?.state == State.AMBIGUOUS) {
+            return result(Status.BROKEN_OR_UNVERIFIED_LINK, Reason.LEGACY_REVIEW_REQUIRED)
+        }
+        if (single == null) return result(Status.NO_MATCH_OBSERVED, Reason.LISTINGS_INCONCLUSIVE)
+
+        val event = verifiedEvent(key, single.id)
+            ?: return result(Status.BROKEN_OR_UNVERIFIED_LINK, Reason.LEGACY_REVIEW_REQUIRED)
+        val reason = if (event.trainingPeaksId(key.sourceAccountId, allowLegacy = false) == key.sourceWorkoutId) {
+            Reason.CANDIDATE_VERIFIED_BY_ID
+        } else {
+            Reason.LEGACY_ACCOUNT_UNVERIFIED
+        }
+        return result(Status.SINGLE_LEGACY_CANDIDATE, reason, listOf(event.previewCandidate()))
+    }
+
+    private fun IntervalsEventDTO.previewCandidate() = Candidate(id, start_date_local.toLocalDate())
+
+    private fun findCandidates(
+        sourceAccount: String, athlete: String, start: LocalDate, end: LocalDate,
+    ): Map<String, List<IntervalsEventDTO>> {
+        val current = destination.getCalendarSnapshot(athlete, start, end)
+        val surrounding = destination.getCalendarSnapshot(athlete, start.minusDays(365), end.plusDays(365))
+        return (current + surrounding).distinctBy { it.id }
+            .mapNotNull { event -> event.trainingPeaksId(sourceAccount)?.let { it to event } }
+            .groupBy({ it.first }, { it.second })
+    }
+
+    private fun verifiedEvent(key: Key, eventId: Long, allowLegacy: Boolean = true): IntervalsEventDTO? =
+        destination.getCalendarEvent(key.destinationAthleteId, eventId)
+            ?.takeIf { it.trainingPeaksId(key.sourceAccountId, allowLegacy) == key.sourceWorkoutId }
+
     private fun reviewAfterConflict(key: Key): WorkoutSyncReview? =
         reviewKnown(key, checkNotNull(ledger.find(key))) { emptyList() }
 
@@ -113,7 +206,7 @@ class TrainingPeaksCalendarSync(
                 val matches = candidates()
                 val candidate = matches.singleOrNull()
                 if (candidate != null &&
-                    destination.getCalendarEvent(key.destinationAthleteId, candidate)?.trainingPeaksId(key.sourceAccountId, allowLegacy = false) == key.sourceWorkoutId
+                    verifiedEvent(key, candidate, allowLegacy = false) != null
                 ) {
                     ledger.confirm(key, candidate)
                     null

@@ -16,7 +16,7 @@ import {MatListModule} from "@angular/material/list";
 import {NgIf} from "@angular/common";
 import {ConfigurationClient} from "infrastructure/client/configuration.client";
 import {finalize, switchMap, tap} from "rxjs";
-import {WorkoutClient} from "infrastructure/client/workout.client";
+import {ScheduledWorkoutRequest, TrainingPeaksSyncPreview, WorkoutClient} from "infrastructure/client/workout.client";
 import {NotificationService} from "infrastructure/notification.service";
 import {MatTooltipModule} from "@angular/material/tooltip";
 import {TrainingTypes} from "infrastructure/training-types";
@@ -56,7 +56,32 @@ export class CopyCalendarToCalendarComponent implements OnInit {
 
   formGroup: FormGroup
   platformsInfo: any
-  scheduleRequests: any[] = []
+  scheduleRequests: ScheduledWorkoutRequest[] = []
+  previewResult?: {start: string; end: string; workouts: TrainingPeaksSyncPreview[]}
+  previewError = ''
+  syncReview: {sourceWorkoutId: string; reason: string; remoteEventId?: number}[] = []
+
+  readonly previewLabels: Record<string, string> = {
+    VERIFIED_LINK: 'Verified link',
+    SINGLE_LEGACY_CANDIDATE: 'Single legacy candidate',
+    MULTIPLE_LEGACY_CANDIDATES: 'Multiple legacy candidates',
+    NO_MATCH_OBSERVED: 'No match observed (inconclusive)',
+    UNRESOLVED_CLAIM: 'Unresolved claim',
+    BROKEN_OR_UNVERIFIED_LINK: 'Broken or unverified link',
+  }
+  readonly scheduleWarnings: Record<string, string> = {
+    SKIP_SYNCED_FALSE: 'Blocked: Skip already synced workouts is off.',
+    SKIP_SYNCED_MISSING: 'Blocked: the Skip synced setting is missing.',
+    SKIP_SYNCED_MALFORMED: 'Blocked: the Skip synced setting is invalid.',
+    MALFORMED_REQUEST: 'Blocked: the saved schedule is invalid.',
+    FORWARD_SYNC_PAUSED: 'Paused: enable scheduled forward sync after reviewing the inventory.',
+  }
+
+  get isTrainingPeaksForward(): boolean {
+    const direction = this.formGroup.value.direction;
+    return direction?.sourcePlatform === Platform.TRAINING_PEAKS.key &&
+      direction?.targetPlatform === Platform.INTERVALS.key;
+  }
 
   constructor(
     private formBuilder: FormBuilder,
@@ -86,6 +111,38 @@ export class CopyCalendarToCalendarComponent implements OnInit {
 
   tomorrow() {
     this.copyWorkoutsForOneDay(formatDate(this.tomorrowDate));
+  }
+
+  preview(tokenInput: HTMLInputElement) {
+    const token = tokenInput.value.trim();
+    tokenInput.value = '';
+    this.previewResult = undefined;
+    this.previewError = '';
+    if (!token) {
+      this.previewError = 'Enter the preview access token.';
+      return;
+    }
+    const {startDate, endDate, trainingTypes} = this.formGroup.value;
+    const start = formatDate(startDate);
+    const end = formatDate(endDate);
+    this.inProgress = true;
+    this.workoutClient.previewTrainingPeaksSync(start, end, trainingTypes, token)
+      .pipe(finalize(() => this.inProgress = false))
+      .subscribe({
+        next: workouts => this.previewResult = {start, end, workouts},
+        error: error => {
+          const message = error.status === 400 ? error.error?.message : undefined;
+          if (error.status === 401) this.previewError = 'The preview token was rejected.';
+          else if (error.status === 503) this.previewError = 'Preview access is disabled on the server.';
+          else if (message === 'BASIC_TODAY_OR_TOMORROW_ONLY') {
+            this.previewError = 'Select today or tomorrow for a Basic TrainingPeaks account.';
+          } else if (message === 'ATHLETE_ACCOUNT_REQUIRED') {
+            this.previewError = 'Preview requires a TrainingPeaks athlete account.';
+          } else if (message === 'INVALID_DATE_RANGE') {
+            this.previewError = 'Select a valid date range.';
+          } else this.previewError = 'Preview could not read the selected calendars.';
+        }
+      });
   }
 
   scheduleToday() {
@@ -118,9 +175,11 @@ export class CopyCalendarToCalendarComponent implements OnInit {
     let skipSynced = this.formGroup.value.skipSynced
 
     this.inProgress = true
+    this.syncReview = [];
     this.workoutClient.copyCalendarToCalendar(startDate, endDate, trainingTypes, skipSynced, direction).pipe(
       finalize(() => this.inProgress = false)
     ).subscribe((response) => {
+      this.syncReview = response.syncReview ?? [];
       this.notificationService.success(
         `Planned: ${response.copied}\n Filtered out: ${response.filteredOut}\n From ${response.startDate} to ${response.endDate}`)
     })
@@ -137,15 +196,7 @@ export class CopyCalendarToCalendarComponent implements OnInit {
   }
 
   private loadScheduleRequests() {
-    return this.workoutClient.getScheduleRequests().pipe(
-      tap(values => {
-          this.scheduleRequests = values.map(value => {
-            return {id: value.id, request: JSON.parse(value.requestJson)}
-          })
-          console.log(this.scheduleRequests)
-        }
-      )
-    )
+    return this.workoutClient.getScheduleRequests().pipe(tap(values => this.scheduleRequests = values));
   }
 
   deleteJob(jobId: any) {

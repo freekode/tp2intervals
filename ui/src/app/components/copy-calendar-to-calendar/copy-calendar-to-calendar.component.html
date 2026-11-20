@@ -45,6 +45,61 @@
     </mat-checkbox>
   </div>
 
+  @if (isTrainingPeaksForward) {
+    <div class="row">
+      <mat-form-field class="form-field">
+        <mat-label>Preview access token</mat-label>
+        <input matInput #previewToken type="password" autocomplete="off">
+      </mat-form-field>
+      <button mat-stroked-button type="button" [disabled]="formGroup.invalid || inProgress"
+              (click)="preview(previewToken)">Preview sync</button>
+    </div>
+    @if (previewError) {
+      <p role="alert">{{ previewError }}</p>
+    }
+    @if (previewResult; as result) {
+      <section aria-label="Sync preview" aria-live="polite">
+        <p>{{ result.start }} to {{ result.end }} · {{ result.workouts.length }} planned workouts</p>
+        @if (!result.workouts.length) {
+          <p>No source workouts were returned for the selected dates and types.</p>
+        }
+        <ul>
+          @for (workout of result.workouts; track $index) {
+            <li>
+              <strong>{{ previewLabels[workout.status] }}</strong>
+              · TrainingPeaks {{ workout.sourceWorkoutId ?? 'ID unavailable' }} · {{ workout.sourceDate }}
+              <small>({{ workout.reason }})</small>
+              @if (workout.candidates.length) {
+                <ul>
+                  @for (candidate of workout.candidates; track candidate.eventId) {
+                    <li>Intervals.icu event {{ candidate.eventId }} · {{ candidate.date ?? 'date unavailable' }}</li>
+                  }
+                </ul>
+              }
+            </li>
+          }
+        </ul>
+        <p>Review unresolved, unverified and inconclusive rows before enabling scheduled sync.</p>
+      </section>
+    }
+    @if (!formGroup.value.skipSynced) {
+      <p role="alert">Manual force copy can create duplicate workouts.</p>
+    }
+    @if (syncReview.length) {
+      <section aria-label="Workouts requiring review" role="status">
+        <p>Workouts requiring review from the last copy</p>
+        <ul>
+          @for (item of syncReview; track $index) {
+            <li>
+              TrainingPeaks {{ item.sourceWorkoutId }} · {{ item.reason }}
+              @if (item.remoteEventId) { · Intervals.icu event {{ item.remoteEventId }} }
+            </li>
+          }
+        </ul>
+      </section>
+    }
+  }
+
   <div class="action-button-section">
     <button
       mat-raised-button
@@ -93,9 +148,15 @@
             (click)="deleteJob(request.id)">
             <i class="bi bi-trash"></i>
           </button>
-          Types: {{ mapTrainingTypesToTitles(request.request.types) }},
-          Skip synced: {{ request.request.skipSynced }},
-          {{ Platform.getTitle(request.request.sourcePlatform) }} -> {{ Platform.getTitle(request.request.targetPlatform) }}
+          @if (request.request; as job) {
+            {{ mapTrainingTypesToTitles(job.types) }} ·
+            {{ Platform.getTitle(job.sourcePlatform) }} → {{ Platform.getTitle(job.targetPlatform) }} · Skip synced: {{ job.skipSynced }}
+          } @else {
+            Job {{ request.id }}
+          }
+          @if (request.blockedReason) {
+            <span>{{ scheduleWarnings[request.blockedReason] }}</span>
+          }
         </mat-list-item>
       }
     </mat-list>
@@ -106,8 +167,8 @@
       mat-raised-button
       color="primary"
       type="button"
-      matTooltip="Scheduled job runs every 20 minutes and will sync workouts for today. Jobs won't persist after app restart"
-      [disabled]="formGroup.invalid || inProgress"
+      matTooltip="Scheduled jobs run every three minutes for today and persist after restart"
+      [disabled]="formGroup.invalid || inProgress || (isTrainingPeaksForward && !formGroup.value.skipSynced)"
       (click)="scheduleToday()"
     >
       Schedule for today

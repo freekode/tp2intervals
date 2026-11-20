@@ -45,6 +45,7 @@ class TrainingPeaksCalendarSyncTest {
     private val objectMapper = ObjectMapperFactory.objectMapper()
     private val trainingPeaks = mock(TrainingPeaksApiClient::class.java)
     private val intervals = StatefulIntervalsApi()
+    private lateinit var service: WorkoutService
 
     @Test
     fun `scheduled sync preserves an existing workout with edited fields`() {
@@ -93,11 +94,14 @@ class TrainingPeaksCalendarSyncTest {
     }
 
     @Test
-    fun `scheduled sync with skip synced disabled still creates another copy`() {
+    fun `manual sync with skip synced disabled still creates another copy`() {
         intervals.events.add(existingEvent("12345"))
-        val job = scheduledJob("12345", skipSynced = false)
+        scheduledJob("12345")
+        val request = CopyFromCalendarToCalendarRequest(
+            today, today, listOf(TrainingType.BIKE), false, Platform.TRAINING_PEAKS, Platform.INTERVALS
+        )
 
-        runTwice(job)
+        repeat(2) { service.copyWorkoutsC2C(request) }
 
         assertAll(
             { assertEquals(3, intervals.events.size) },
@@ -106,7 +110,7 @@ class TrainingPeaksCalendarSyncTest {
         )
     }
 
-    private fun scheduledJob(vararg sourceIds: String, skipSynced: Boolean = true): WorkoutScheduledJob {
+    private fun scheduledJob(vararg sourceIds: String): WorkoutScheduledJob {
         val userId = "trainingpeaks-athlete"
         val users = mock(TrainingPeaksUserRepository::class.java)
         val attachments = mock(TPAttachmentService::class.java)
@@ -129,11 +133,11 @@ class TrainingPeaksCalendarSyncTest {
         `when`(configuration.getConfiguration()).thenReturn(IntervalsConfiguration("unused", ATHLETE_ID, 0.1f, 0.2f, 0.3f))
         val destination = IntervalsWorkoutRepository(intervals, configuration)
         val sync = TrainingPeaksCalendarSync(source, destination, database.newLedger())
-        val service = WorkoutService(listOf(source, destination), emptyList(), sync)
+        service = WorkoutService(listOf(source, destination), emptyList(), sync)
         val schedules = mock(ScheduleRequestRepository::class.java)
-        val request = C2CTodayScheduledRequest(listOf(TrainingType.BIKE), skipSynced, Platform.TRAINING_PEAKS, Platform.INTERVALS)
+        val request = C2CTodayScheduledRequest(listOf(TrainingType.BIKE), true, Platform.TRAINING_PEAKS, Platform.INTERVALS)
         `when`(schedules.findAll()).thenReturn(listOf(ScheduleRequestEntity(objectMapper.writeValueAsString(request))))
-        return WorkoutScheduledJob(service, schedules, objectMapper)
+        return WorkoutScheduledJob(service, schedules, objectMapper, scheduledForwardEnabled = true)
     }
 
     private fun runTwice(job: WorkoutScheduledJob) {

@@ -1,6 +1,8 @@
 app:
   training-peaks:
     api-url: https://tpapi.trainingpeaks.com
+    preflight-token: ${TP2INTERVALS_PREFLIGHT_TOKEN:}
+    scheduled-forward-sync-enabled: ${TP2INTERVALS_ENABLE_SCHEDULED_FORWARD_SYNC:false}
   intervals:
     api-url: https://intervals.icu
   trainer-road:

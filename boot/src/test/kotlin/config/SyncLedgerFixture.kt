@@ -15,7 +15,8 @@ class SyncLedgerFixture(private val path: Path) {
         }
     }
 
-    fun newLedger() = TrainingPeaksSyncLedger(JdbcTemplate(newDataSource()))
+    fun newLedger(readOnly: Boolean = false) =
+        TrainingPeaksSyncLedger(JdbcTemplate(newDataSource().apply { setReadOnly(readOnly) }))
 
     private fun newDataSource() = SQLiteDataSource().apply {
         url = "jdbc:sqlite:$path"
