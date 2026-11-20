@@ -13,7 +13,8 @@
 
     <mat-form-field class="full-width">
       <mat-label>Intervals API Key</mat-label>
-      <input matInput placeholder="123456qwerty123456qwerty1" formControlName="intervals.api-key">
+      <input matInput placeholder="123456qwerty123456qwerty1" type="password" autocomplete="off" formControlName="intervals.api-key">
+      @if (storedCredentials['intervals.api-key']) { <mat-hint>Stored. Leave blank to keep it.</mat-hint> }
     </mat-form-field>
 
     <mat-form-field class="full-width">
@@ -59,7 +60,8 @@
 
     <mat-form-field class="full-width">
       <mat-label>TrainingPeaks Auth Cookie</mat-label>
-      <input matInput placeholder="Production_tpAuth=very_long_string" formControlName="training-peaks.auth-cookie">
+      <input matInput placeholder="Production_tpAuth=very_long_string" type="password" autocomplete="off" formControlName="training-peaks.auth-cookie">
+      @if (storedCredentials['training-peaks.auth-cookie']) { <mat-hint>Stored. Leave blank to keep it.</mat-hint> }
       @if (formGroup.controls['training-peaks.auth-cookie'].errors?.['pattern']) {
         <mat-error>Must be in format Production_tpAuth=[a-zA-Z0-9-_]*</mat-error>
       }
@@ -78,7 +80,8 @@
 
     <mat-form-field class="full-width">
       <mat-label>TrainerRoad Auth Cookie</mat-label>
-      <input matInput placeholder="TrainerRoadAuth=very_long_string" formControlName="trainer-road.auth-cookie">
+      <input matInput placeholder="TrainerRoadAuth=very_long_string" type="password" autocomplete="off" formControlName="trainer-road.auth-cookie">
+      @if (storedCredentials['trainer-road.auth-cookie']) { <mat-hint>Stored. Leave blank to keep it.</mat-hint> }
       @if (formGroup.controls['trainer-road.auth-cookie'].errors?.['pattern']) {
         <mat-error>Must be in format SharedTrainerRoadAuth=...</mat-error>
       }

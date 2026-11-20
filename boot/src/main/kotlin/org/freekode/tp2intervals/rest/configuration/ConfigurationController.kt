@@ -5,7 +5,7 @@ import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.config.UpdateConfigurationRequest
 import org.freekode.tp2intervals.domain.workout.structure.StepModifier
 import org.freekode.tp2intervals.rest.ErrorResponseDTO
-import org.slf4j.LoggerFactory
+import org.springframework.http.CacheControl
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -17,21 +17,28 @@ import org.springframework.web.bind.annotation.RestController
 class ConfigurationController(
     private val configurationService: ConfigurationService,
 ) {
-    private val log = LoggerFactory.getLogger(this.javaClass)
+    private val publicSettings = setOf(
+        "intervals.athlete-id", "intervals.power-range", "intervals.hr-range", "intervals.pace-range",
+        "training-peaks.copy-plan-days-shift", "trainer-road.remove-html-tags", "general.debug-mode",
+        "generic.beta-features-enabled",
+    )
+    private val credentialKeys = setOf("intervals.api-key", "training-peaks.auth-cookie", "trainer-road.auth-cookie")
 
     @GetMapping("/api/configuration")
-    fun getConfigurations(): AppConfigurationDTO {
-        log.debug("Received request for getting all configurations")
-        val configurations = configurationService.getConfigurations()
-        return AppConfigurationDTO(configurations.configMap)
+    fun getConfigurations(): ResponseEntity<AppConfigurationDTO> {
+        val config = configurationService.getConfigurations().configMap
+        val response = AppConfigurationDTO(
+            config.filterKeys { it in publicSettings },
+            credentialKeys.associateWith { !config[it].isNullOrBlank() },
+        )
+        return ResponseEntity.ok().cacheControl(CacheControl.noStore()).body(response)
     }
 
     @PutMapping("/api/configuration")
     fun updateConfiguration(@RequestBody requestDTO: UpdateConfigurationRequestDTO): ResponseEntity<ErrorResponseDTO> {
-        log.debug("Received request for updating configuration: {}", requestDTO)
         val errors = configurationService.updateConfiguration(UpdateConfigurationRequest(requestDTO.config))
         if (errors.isNotEmpty()) {
-            return ResponseEntity.badRequest().body(ErrorResponseDTO(errors.joinToString()))
+            return ResponseEntity.badRequest().body(ErrorResponseDTO("Configuration could not be saved. Check the account settings and credentials."))
         }
         return ResponseEntity.ok().build()
     }

@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {ConfigData} from 'infrastructure/config-data';
+import {ConfigData, credentialKeys} from 'infrastructure/config-data';
 import {Router} from '@angular/router';
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatInputModule} from "@angular/material/input";
@@ -51,6 +51,7 @@ export class ConfigurationComponent implements OnInit {
   });
 
   inProgress = false;
+  storedCredentials: Record<string, boolean> = {};
 
   constructor(
     private router: Router,
@@ -64,6 +65,12 @@ export class ConfigurationComponent implements OnInit {
     this.inProgress = true
     this.configClient.getConfig().subscribe(config => {
       this.formGroup.patchValue(config.config);
+      this.storedCredentials = config.storedCredentials;
+      if (this.storedCredentials['intervals.api-key']) {
+        const key = this.formGroup.controls['intervals.api-key'];
+        key.clearValidators();
+        key.updateValueAndValidity();
+      }
       this.inProgress = false
       this.listenTrainingPeaksCookie()
       this.listenTrainerRoadCookie()
@@ -74,7 +81,9 @@ export class ConfigurationComponent implements OnInit {
     this.inProgress = true
     let newConfiguration = new ConfigData(this.formGroup.getRawValue());
 
-    console.log(newConfiguration)
+    for (const key of credentialKeys) {
+      if (newConfiguration.config[key] === null) delete newConfiguration.config[key];
+    }
     this.configClient.updateConfig(newConfiguration).pipe(
       finalize(() => this.inProgress = false)
     ).subscribe(() => {
@@ -85,7 +94,7 @@ export class ConfigurationComponent implements OnInit {
 
   listenTrainerRoadCookie() {
     this.formGroup.controls['trainer-road.auth-cookie'].valueChanges.subscribe(value => {
-      let split = value.split('SharedTrainerRoadAuth=');
+      let split = (value ?? '').split('SharedTrainerRoadAuth=');
       if (split.length != 2) {
         return
       }
@@ -100,7 +109,7 @@ export class ConfigurationComponent implements OnInit {
 
   listenTrainingPeaksCookie() {
     this.formGroup.controls['training-peaks.auth-cookie'].valueChanges.subscribe(value => {
-      let split = value.split('Production_tpAuth=');
+      let split = (value ?? '').split('Production_tpAuth=');
       if (split.length != 2) {
         return
       }

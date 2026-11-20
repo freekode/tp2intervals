@@ -1,5 +1,6 @@
 package config
 
+import org.freekode.tp2intervals.config.PreviewOnly
 import liquibase.integration.spring.SpringLiquibase
 import org.freekode.tp2intervals.infrastructure.sync.TrainingPeaksSyncLedger
 import org.springframework.jdbc.core.JdbcTemplate
@@ -15,8 +16,8 @@ class SyncLedgerFixture(private val path: Path) {
         }
     }
 
-    fun newLedger(readOnly: Boolean = false) =
-        TrainingPeaksSyncLedger(JdbcTemplate(newDataSource().apply { setReadOnly(readOnly) }))
+    fun newLedger(readOnly: Boolean = false, mode: PreviewOnly = PreviewOnly(false)) =
+        TrainingPeaksSyncLedger(JdbcTemplate(newDataSource().apply { setReadOnly(readOnly) }), mode)
 
     private fun newDataSource() = SQLiteDataSource().apply {
         url = "jdbc:sqlite:$path"

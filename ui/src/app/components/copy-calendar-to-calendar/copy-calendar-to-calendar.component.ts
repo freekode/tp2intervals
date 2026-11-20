@@ -70,6 +70,7 @@ export class CopyCalendarToCalendarComponent implements OnInit {
     BROKEN_OR_UNVERIFIED_LINK: 'Broken or unverified link',
   }
   readonly scheduleWarnings: Record<string, string> = {
+    PREVIEW_ONLY: 'Paused: the server is in preview-only mode.',
     SKIP_SYNCED_FALSE: 'Blocked: Skip already synced workouts is off.',
     SKIP_SYNCED_MISSING: 'Blocked: the Skip synced setting is missing.',
     SKIP_SYNCED_MALFORMED: 'Blocked: the Skip synced setting is invalid.',

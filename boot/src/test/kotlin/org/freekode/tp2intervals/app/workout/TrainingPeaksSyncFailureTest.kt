@@ -1,5 +1,6 @@
 package org.freekode.tp2intervals.app.workout
 
+import org.freekode.tp2intervals.config.PreviewOnly
 import config.SyncLedgerFixture
 import config.mock.ObjectMapperFactory
 import feign.FeignException
@@ -330,7 +331,7 @@ class TrainingPeaksSyncFailureTest {
         val service = WorkoutService(listOf(source, destination), emptyList(), sync)
         val schedules = mock(ScheduleRequestRepository::class.java)
         `when`(schedules.findAll()).thenReturn(requests.toList().ifEmpty { listOf(persistedRequest) })
-        return App(WorkoutScheduledJob(service, schedules, objectMapper, scheduledForwardEnabled = true), WorkoutController(service))
+        return App(WorkoutScheduledJob(service, schedules, objectMapper, scheduledForwardEnabled = true, mode = PreviewOnly(false)), WorkoutController(service))
     }
 
     private fun runScheduled(app: App) = withToday { app.job.job() }

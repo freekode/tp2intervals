@@ -1,5 +1,6 @@
 package org.freekode.tp2intervals.app.workout
 
+import org.freekode.tp2intervals.config.PreviewOnly
 import config.mock.ObjectMapperFactory
 import org.freekode.tp2intervals.app.workout.schedule.C2CTodayScheduledRequest
 import org.freekode.tp2intervals.app.workout.schedule.ScheduleIssue
@@ -109,7 +110,7 @@ class WorkoutScheduledSafetyTest {
         verifyNoInteractions(service)
     }
 
-    private fun scheduler(enabled: Boolean) = WorkoutScheduledJob(service, schedules, mapper, enabled)
+    private fun scheduler(enabled: Boolean) = WorkoutScheduledJob(service, schedules, mapper, enabled, PreviewOnly(false))
 
     private fun requestForToday(scheduled: C2CTodayScheduledRequest) =
         CopyFromCalendarToCalendarRequest(today, today, scheduled.types, scheduled.skipSynced, scheduled.sourcePlatform, scheduled.targetPlatform)

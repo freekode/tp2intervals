@@ -1,4 +1,5 @@
 app:
+  preview-only: ${TP2INTERVALS_PREVIEW_ONLY:false}
   training-peaks:
     api-url: https://tpapi.trainingpeaks.com
     preflight-token: ${TP2INTERVALS_PREFLIGHT_TOKEN:}
@@ -16,7 +17,7 @@ spring:
       client:
         config:
           default:
-            loggerLevel: full
+            loggerLevel: none
   jackson:
     default-property-inclusion: non_null
     serialization:

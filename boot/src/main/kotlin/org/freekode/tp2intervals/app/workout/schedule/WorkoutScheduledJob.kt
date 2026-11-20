@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.freekode.tp2intervals.domain.Platform
+import org.freekode.tp2intervals.config.PreviewOnly
 import org.springframework.beans.factory.annotation.Value
 import org.freekode.tp2intervals.app.workout.WorkoutService
 import org.freekode.tp2intervals.infrastructure.schedule.ScheduleRequestEntity
@@ -22,6 +23,7 @@ class WorkoutScheduledJob(
     private val objectMapper: ObjectMapper,
     @Value("\${app.training-peaks.scheduled-forward-sync-enabled:false}")
     private val scheduledForwardEnabled: Boolean,
+    private val mode: PreviewOnly,
 ) {
     private val log = LoggerFactory.getLogger(this.javaClass)
 
@@ -36,6 +38,7 @@ class WorkoutScheduledJob(
     }
 
     fun addRequest(schedulable: C2CTodayScheduledRequest) {
+        mode.requireWritable()
         require(!isForward(schedulable) || schedulable.skipSynced) { ScheduleIssue.SKIP_SYNCED_FALSE.name }
         val requestJson = objectMapper.writeValueAsString(schedulable)
         if (scheduleRequestRepository.findByRequestJson(requestJson) != null) throw IllegalArgumentException("Request already exists")
@@ -46,6 +49,7 @@ class WorkoutScheduledJob(
         scheduleRequestRepository.findAll().toList()
 
     fun deleteRequest(id: Int) {
+        mode.requireWritable()
         scheduleRequestRepository.deleteById(id)
     }
 
@@ -86,7 +90,8 @@ class WorkoutScheduledJob(
     }
 
     private fun blockedReason(request: C2CTodayScheduledRequest?, issue: ScheduleIssue?): ScheduleIssue? =
-        issue ?: if (request != null && isForward(request) && !scheduledForwardEnabled) {
+        issue ?: if (mode.enabled) ScheduleIssue.PREVIEW_ONLY
+        else if (request != null && isForward(request) && !scheduledForwardEnabled) {
             ScheduleIssue.FORWARD_SYNC_PAUSED
         } else null
 
@@ -97,6 +102,7 @@ class WorkoutScheduledJob(
 data class AuditedScheduleRequest(val id: Int?, val request: C2CTodayScheduledRequest?, val blockedReason: ScheduleIssue?)
 
 enum class ScheduleIssue {
+    PREVIEW_ONLY,
     SKIP_SYNCED_FALSE,
     SKIP_SYNCED_MISSING,
     SKIP_SYNCED_MALFORMED,

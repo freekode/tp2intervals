@@ -1,5 +1,6 @@
 package org.freekode.tp2intervals.app.workout
 
+import org.freekode.tp2intervals.config.PreviewOnly
 import config.SyncLedgerFixture
 import config.mock.ObjectMapperFactory
 import org.freekode.tp2intervals.app.workout.schedule.C2CTodayScheduledRequest
@@ -137,7 +138,7 @@ class TrainingPeaksCalendarSyncTest {
         val schedules = mock(ScheduleRequestRepository::class.java)
         val request = C2CTodayScheduledRequest(listOf(TrainingType.BIKE), true, Platform.TRAINING_PEAKS, Platform.INTERVALS)
         `when`(schedules.findAll()).thenReturn(listOf(ScheduleRequestEntity(objectMapper.writeValueAsString(request))))
-        return WorkoutScheduledJob(service, schedules, objectMapper, scheduledForwardEnabled = true)
+        return WorkoutScheduledJob(service, schedules, objectMapper, scheduledForwardEnabled = true, mode = PreviewOnly(false))
     }
 
     private fun runTwice(job: WorkoutScheduledJob) {
