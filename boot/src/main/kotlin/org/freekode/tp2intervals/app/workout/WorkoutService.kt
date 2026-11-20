@@ -2,6 +2,7 @@ package org.freekode.tp2intervals.app.workout
 
 import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.Platform
+import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.librarycontainer.LibraryContainerRepository
 import org.freekode.tp2intervals.domain.workout.WorkoutDetails
 import org.freekode.tp2intervals.domain.workout.WorkoutRepository
@@ -28,7 +29,22 @@ class WorkoutService(
         var filteredWorkoutsToSync = allWorkoutsToSync.filter { request.types.contains(it.details.type) }
         if (request.skipSynced) {
             val plannedWorkouts = targetWorkoutRepository.getWorkoutsFromCalendar(request.startDate, request.endDate)
-            filteredWorkoutsToSync = filteredWorkoutsToSync.filter { !plannedWorkouts.contains(it) }
+            if (request.sourcePlatform == Platform.TRAINING_PEAKS && request.targetPlatform == Platform.INTERVALS) {
+                val syncedTrainingPeaksIds = plannedWorkouts.asSequence()
+                    .filter { it.details.type != TrainingType.NOTE }
+                    .mapNotNull { it.details.externalData.trainingPeaksId }
+                    .toSet()
+                filteredWorkoutsToSync = filteredWorkoutsToSync.filter { workout ->
+                    val sourceId = workout.details.externalData.trainingPeaksId
+                    if (sourceId != null && workout.details.type != TrainingType.NOTE) {
+                        sourceId !in syncedTrainingPeaksIds
+                    } else {
+                        workout !in plannedWorkouts
+                    }
+                }
+            } else {
+                filteredWorkoutsToSync = filteredWorkoutsToSync.filter { it !in plannedWorkouts }
+            }
         }
 
         val response = CopyWorkoutsResponse(
