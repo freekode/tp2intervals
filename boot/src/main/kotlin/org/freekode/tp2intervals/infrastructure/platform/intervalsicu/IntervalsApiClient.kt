@@ -39,15 +39,15 @@ interface IntervalsApiClient {
 
     @GetMapping("/api/v1/athlete/{athleteId}/events/{eventId}")
     fun getEvent(
-        @PathVariable athleteId: String,
-        @PathVariable eventId: Long,
+        @PathVariable("athleteId") athleteId: String,
+        @PathVariable("eventId") eventId: Long,
     ): ResponseEntity<IntervalsEventDTO>
 
     @GetMapping("/api/v1/athlete/{athleteId}/events")
     fun getCalendarSnapshot(
-        @PathVariable athleteId: String,
-        @RequestParam oldest: String,
-        @RequestParam newest: String,
+        @PathVariable("athleteId") athleteId: String,
+        @RequestParam("oldest") oldest: String,
+        @RequestParam("newest") newest: String,
     ): ResponseEntity<List<IntervalsEventDTO>>
 
     @GetMapping(

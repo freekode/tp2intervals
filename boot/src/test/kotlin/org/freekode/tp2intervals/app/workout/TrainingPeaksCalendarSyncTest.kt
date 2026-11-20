@@ -1,5 +1,6 @@
 package org.freekode.tp2intervals.app.workout
 
+import config.SyncLedgerFixture
 import config.mock.ObjectMapperFactory
 import org.freekode.tp2intervals.app.workout.schedule.C2CTodayScheduledRequest
 import org.freekode.tp2intervals.app.workout.schedule.WorkoutScheduledJob
@@ -25,15 +26,21 @@ import org.junit.jupiter.api.Assertions.assertAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.io.TempDir
 import org.mockito.Mockito.CALLS_REAL_METHODS
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.mockStatic
 import org.mockito.Mockito.`when`
 import org.springframework.http.ResponseEntity
+import java.nio.file.Path
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 class TrainingPeaksCalendarSyncTest {
+    @TempDir
+    lateinit var tempDir: Path
+
+    private val database by lazy { SyncLedgerFixture(tempDir.resolve("sync.sqlite")) }
     private val today = LocalDate.of(2025, 2, 12)
     private val objectMapper = ObjectMapperFactory.objectMapper()
     private val trainingPeaks = mock(TrainingPeaksApiClient::class.java)
@@ -121,7 +128,8 @@ class TrainingPeaksCalendarSyncTest {
         val configuration = mock(IntervalsConfigurationRepository::class.java)
         `when`(configuration.getConfiguration()).thenReturn(IntervalsConfiguration("unused", ATHLETE_ID, 0.1f, 0.2f, 0.3f))
         val destination = IntervalsWorkoutRepository(intervals, configuration)
-        val service = WorkoutService(listOf(source, destination), emptyList())
+        val sync = TrainingPeaksCalendarSync(source, destination, database.newLedger())
+        val service = WorkoutService(listOf(source, destination), emptyList(), sync)
         val schedules = mock(ScheduleRequestRepository::class.java)
         val request = C2CTodayScheduledRequest(listOf(TrainingType.BIKE), skipSynced, Platform.TRAINING_PEAKS, Platform.INTERVALS)
         `when`(schedules.findAll()).thenReturn(listOf(ScheduleRequestEntity(objectMapper.writeValueAsString(request))))
@@ -149,6 +157,14 @@ class TrainingPeaksCalendarSyncTest {
             private set
         var reads = 0
             private set
+
+        override fun getCalendarSnapshot(athleteId: String, oldest: String, newest: String) =
+            ResponseEntity.ok(getEvents(athleteId, oldest, newest, 0f, 0f, 0f))
+
+        override fun getEvent(athleteId: String, eventId: Long): ResponseEntity<IntervalsEventDTO> {
+            assertEquals(ATHLETE_ID, athleteId)
+            return ResponseEntity.ofNullable(events.firstOrNull { it.id == eventId })
+        }
 
         override fun getEvents(
             athleteId: String,

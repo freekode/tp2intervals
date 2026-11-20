@@ -1,5 +1,6 @@
 package org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout
 
+import feign.FeignException
 import java.time.LocalDate
 import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.Platform
@@ -35,15 +36,20 @@ class IntervalsWorkoutRepository(
 
     fun calendarAthleteId(): String = intervalsConfigurationRepository.getConfiguration().athleteId
 
-    fun createCalendarEvent(athleteId: String, workout: Workout): Long {
-        val request = ToIntervalsWorkoutConverter().createEventRequestDTO(workout)
+    fun createCalendarEvent(athleteId: String, sourceAccountId: String, workout: Workout): Long {
+        val request = ToIntervalsWorkoutConverter().createEventRequestDTO(workout, sourceAccountId)
         val response = intervalsApiClient.createEvent(athleteId, request)
         return response.body?.id?.takeIf { response.statusCode.is2xxSuccessful && it > 0 }
             ?: throw PlatformException(Platform.INTERVALS, "Calendar create did not confirm an event ID")
     }
 
     fun getCalendarEvent(athleteId: String, eventId: Long): IntervalsEventDTO? {
-        val response = intervalsApiClient.getEvent(athleteId, eventId)
+        val response = try {
+            intervalsApiClient.getEvent(athleteId, eventId)
+        } catch (error: FeignException) {
+            if (error.status() == HttpStatus.NOT_FOUND.value()) return null
+            throw error
+        }
         if (response.statusCode == HttpStatus.NOT_FOUND) return null
         return response.body?.takeIf { response.statusCode.is2xxSuccessful && it.id == eventId }
             ?: throw PlatformException(Platform.INTERVALS, "Calendar lookup did not return the requested event")

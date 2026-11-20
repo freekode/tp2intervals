@@ -78,8 +78,12 @@ class TrainingPeaksWorkoutRepository(
         return workouts + notes
     }
 
-    override fun getWorkoutsFromCalendar(startDate: LocalDate, endDate: LocalDate): List<Workout> {
-        val userId = trainingPeaksUserRepository.getUser().userId
+    fun calendarAccountId(): String = trainingPeaksUserRepository.getUser().userId
+
+    override fun getWorkoutsFromCalendar(startDate: LocalDate, endDate: LocalDate): List<Workout> =
+        getWorkoutsFromCalendar(calendarAccountId(), startDate, endDate)
+
+    fun getWorkoutsFromCalendar(userId: String, startDate: LocalDate, endDate: LocalDate): List<Workout> {
         val tpWorkouts = trainingPeaksApiClient.getWorkouts(userId, startDate.toString(), endDate.toString())
 
         val noteEndDate = getNoteEndDateForFilter(startDate, endDate)

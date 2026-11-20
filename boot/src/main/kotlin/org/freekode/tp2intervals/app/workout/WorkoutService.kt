@@ -2,7 +2,6 @@ package org.freekode.tp2intervals.app.workout
 
 import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.Platform
-import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.librarycontainer.LibraryContainerRepository
 import org.freekode.tp2intervals.domain.workout.WorkoutDetails
 import org.freekode.tp2intervals.domain.workout.WorkoutRepository
@@ -17,6 +16,7 @@ import kotlin.concurrent.withLock
 class WorkoutService(
     workoutRepositories: List<WorkoutRepository>,
     planRepositories: List<LibraryContainerRepository>,
+    private val trainingPeaksCalendarSync: TrainingPeaksCalendarSync,
 ) {
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val workoutRepositoryMap = workoutRepositories.associateBy { it.platform() }
@@ -26,7 +26,7 @@ class WorkoutService(
 
     fun copyWorkoutsC2C(request: CopyFromCalendarToCalendarRequest): CopyWorkoutsResponse {
         if (request.skipSynced && request.sourcePlatform == Platform.TRAINING_PEAKS && request.targetPlatform == Platform.INTERVALS) {
-            return trainingPeaksCalendarLock.withLock { copyCalendar(request) }
+            return trainingPeaksCalendarLock.withLock { trainingPeaksCalendarSync.copy(request) }
         }
         return copyCalendar(request)
     }
@@ -40,22 +40,7 @@ class WorkoutService(
         var filteredWorkoutsToSync = allWorkoutsToSync.filter { request.types.contains(it.details.type) }
         if (request.skipSynced) {
             val plannedWorkouts = targetWorkoutRepository.getWorkoutsFromCalendar(request.startDate, request.endDate)
-            if (request.sourcePlatform == Platform.TRAINING_PEAKS && request.targetPlatform == Platform.INTERVALS) {
-                val syncedTrainingPeaksIds = plannedWorkouts.asSequence()
-                    .filter { it.details.type != TrainingType.NOTE }
-                    .mapNotNull { it.details.externalData.trainingPeaksId }
-                    .toSet()
-                filteredWorkoutsToSync = filteredWorkoutsToSync.filter { workout ->
-                    val sourceId = workout.details.externalData.trainingPeaksId
-                    if (sourceId != null && workout.details.type != TrainingType.NOTE) {
-                        sourceId !in syncedTrainingPeaksIds
-                    } else {
-                        workout !in plannedWorkouts
-                    }
-                }
-            } else {
-                filteredWorkoutsToSync = filteredWorkoutsToSync.filter { it !in plannedWorkouts }
-            }
+            filteredWorkoutsToSync = filteredWorkoutsToSync.filter { it !in plannedWorkouts }
         }
 
         val response = CopyWorkoutsResponse(

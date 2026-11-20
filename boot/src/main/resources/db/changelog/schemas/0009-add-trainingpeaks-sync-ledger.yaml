@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: trainingpeaks-sync-ledger
+      author: tp2intervals
+      changes:
+        - sql:
+            sql: |
+              CREATE TABLE trainingpeaks_sync_ledger (
+                source_account_id TEXT NOT NULL,
+                destination_athlete_id TEXT NOT NULL,
+                source_workout_id TEXT NOT NULL,
+                state TEXT NOT NULL,
+                remote_event_id INTEGER,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                PRIMARY KEY (source_account_id, destination_athlete_id, source_workout_id),
+                CHECK (
+                  (state = 'CONFIRMED' AND remote_event_id IS NOT NULL AND remote_event_id > 0)
+                  OR (state IN ('PENDING', 'AMBIGUOUS') AND remote_event_id IS NULL)
+                )
+              )
+      rollback:
+        - dropTable:
+            tableName: trainingpeaks_sync_ledger

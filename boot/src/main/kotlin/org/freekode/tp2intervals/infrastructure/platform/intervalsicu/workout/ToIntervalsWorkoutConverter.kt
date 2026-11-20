@@ -32,9 +32,10 @@ class ToIntervalsWorkoutConverter {
         return request
     }
 
-    fun createEventRequestDTO(workout: Workout): CreateEventRequestDTO {
+    fun createEventRequestDTO(workout: Workout, trainingPeaksAccountId: String? = null): CreateEventRequestDTO {
         val workoutString = getWorkoutString(workout)
-        val description = getDescription(workout, workoutString)
+        val accountMarker = trainingPeaksAccountId?.let { "\ntrainingPeaksAccountId=$it" }.orEmpty()
+        val description = getDescription(workout, workoutString) + accountMarker
         return CreateEventRequestDTO(
             (workout.date ?: LocalDate.now()).atStartOfDay().toString(),
             workout.details.name,
