@@ -16,7 +16,7 @@ import {MatListModule} from "@angular/material/list";
 import {NgIf} from "@angular/common";
 import {ConfigurationClient} from "infrastructure/client/configuration.client";
 import {finalize, switchMap, tap} from "rxjs";
-import {ScheduledWorkoutRequest, TrainingPeaksSyncPreview, WorkoutClient} from "infrastructure/client/workout.client";
+import {ScheduledWorkoutRequest, TrainingPeaksPreviewInventory, TrainingPeaksPreviewSelection, WorkoutClient} from "infrastructure/client/workout.client";
 import {NotificationService} from "infrastructure/notification.service";
 import {MatTooltipModule} from "@angular/material/tooltip";
 import {TrainingTypes} from "infrastructure/training-types";
@@ -57,7 +57,10 @@ export class CopyCalendarToCalendarComponent implements OnInit {
   formGroup: FormGroup
   platformsInfo: any
   scheduleRequests: ScheduledWorkoutRequest[] = []
-  previewResult?: {start: string; end: string; workouts: TrainingPeaksSyncPreview[]}
+  previewResult?: {selection: TrainingPeaksPreviewSelection; inventory: TrainingPeaksPreviewInventory}
+  readonly selectedLegacyLinks = new Map<string, number>();
+  acknowledgeInconclusive = false;
+  approvalMessage = '';
   previewError = ''
   syncReview: {sourceWorkoutId: string; reason: string; remoteEventId?: number}[] = []
 
@@ -119,18 +122,20 @@ export class CopyCalendarToCalendarComponent implements OnInit {
     tokenInput.value = '';
     this.previewResult = undefined;
     this.previewError = '';
+    this.approvalMessage = '';
+    this.acknowledgeInconclusive = false;
+    this.selectedLegacyLinks.clear();
     if (!token) {
       this.previewError = 'Enter the preview access token.';
       return;
     }
     const {startDate, endDate, trainingTypes} = this.formGroup.value;
-    const start = formatDate(startDate);
-    const end = formatDate(endDate);
+    const selection = {startDate: formatDate(startDate), endDate: formatDate(endDate), types: [...trainingTypes]};
     this.inProgress = true;
-    this.workoutClient.previewTrainingPeaksSync(start, end, trainingTypes, token)
+    this.workoutClient.previewTrainingPeaksSync(selection, token)
       .pipe(finalize(() => this.inProgress = false))
       .subscribe({
-        next: workouts => this.previewResult = {start, end, workouts},
+        next: inventory => this.previewResult = {selection, inventory},
         error: error => {
           const message = error.status === 400 ? error.error?.message : undefined;
           if (error.status === 401) this.previewError = 'The preview token was rejected.';
@@ -144,6 +149,43 @@ export class CopyCalendarToCalendarComponent implements OnInit {
           } else this.previewError = 'Preview could not read the selected calendars.';
         }
       });
+  }
+
+  selectLegacyLink(sourceId: string, eventId: number, selected: boolean) {
+    if (selected) this.selectedLegacyLinks.set(sourceId, eventId);
+    else this.selectedLegacyLinks.delete(sourceId);
+  }
+
+  approveBaseline(tokenInput: HTMLInputElement) {
+    const result = this.previewResult;
+    const token = tokenInput.value.trim();
+    tokenInput.value = '';
+    if (!result || !this.acknowledgeInconclusive) return;
+    if (!token) {
+      this.previewError = 'Enter the preview access token again to approve.';
+      return;
+    }
+    this.previewError = '';
+    this.inProgress = true;
+    this.workoutClient.approveTrainingPeaksBaseline(
+      result.selection, result.inventory.revision, this.acknowledgeInconclusive,
+      Object.fromEntries(this.selectedLegacyLinks), token
+    ).pipe(finalize(() => this.inProgress = false)).subscribe({
+      next: reply => {
+        this.approvalMessage = `Baseline approved at ${reply.approvedAt} UTC. ${reply.heldWorkouts} reviewed workouts held.`;
+        this.previewResult = undefined;
+      },
+      error: error => {
+        if (error.status === 409) {
+          this.previewResult = undefined;
+          this.previewError = 'The inventory changed. Preview it again before approving.';
+        } else if (error.status === 401) {
+          this.previewError = 'The preview token was rejected.';
+        } else {
+          this.previewError = 'Baseline approval failed. Check preview-only and activation settings.';
+        }
+      }
+    });
   }
 
   scheduleToday() {

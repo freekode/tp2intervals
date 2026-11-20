@@ -57,17 +57,22 @@
     @if (previewError) {
       <p role="alert">{{ previewError }}</p>
     }
+    @if (approvalMessage) { <p role="status">{{ approvalMessage }}</p> }
     @if (previewResult; as result) {
       <section aria-label="Sync preview" aria-live="polite">
-        <p>{{ result.start }} to {{ result.end }} · {{ result.workouts.length }} planned workouts</p>
-        @if (!result.workouts.length) {
+        <p>{{ result.selection.startDate }} to {{ result.selection.endDate }} · {{ result.inventory.workouts.length }} inventory entries</p>
+        <p>TrainingPeaks {{ result.inventory.sourceAccountId }} → Intervals.icu {{ result.inventory.destinationAthleteId }}</p>
+        @if (result.inventory.approvedAt) {
+          <p>Current baseline approved {{ result.inventory.approvedAt }} UTC</p>
+        }
+        @if (!result.inventory.workouts.length) {
           <p>No source workouts were returned for the selected dates and types.</p>
         }
         <ul>
-          @for (workout of result.workouts; track $index) {
+          @for (workout of result.inventory.workouts; track $index) {
             <li>
               <strong>{{ previewLabels[workout.status] }}</strong>
-              · TrainingPeaks {{ workout.sourceWorkoutId ?? 'ID unavailable' }} · {{ workout.sourceDate }}
+              · TrainingPeaks {{ workout.sourceWorkoutId ?? 'ID unavailable' }} · {{ workout.sourceDate ?? 'outside the source selection' }}
               <small>({{ workout.reason }})</small>
               @if (workout.candidates.length) {
                 <ul>
@@ -76,10 +81,25 @@
                   }
                 </ul>
               }
+              @if (workout.status === 'SINGLE_LEGACY_CANDIDATE' && workout.sourceWorkoutId) {
+                <mat-checkbox [checked]="selectedLegacyLinks.has(workout.sourceWorkoutId)"
+                  (change)="selectLegacyLink(workout.sourceWorkoutId, workout.candidates[0].eventId, $event.checked)">
+                  Link this event after verifying its source account
+                </mat-checkbox>
+              }
             </li>
           }
         </ul>
-        <p>Review unresolved, unverified and inconclusive rows before enabling scheduled sync.</p>
+        @if (result.inventory.previewOnly || result.inventory.activationEnabled) {
+          <p>Approval requires preview-only mode off and scheduled forward sync paused.</p>
+        }
+        <mat-checkbox [checked]="acknowledgeInconclusive" (change)="acknowledgeInconclusive = $event.checked">
+          I reviewed this inventory and understand that no match observed is not proof of absence.
+        </mat-checkbox>
+        <p>Unlinked legacy candidates and inconclusive workouts in this review will be held.</p>
+        <button mat-stroked-button type="button"
+          [disabled]="inProgress || !acknowledgeInconclusive || result.inventory.previewOnly || result.inventory.activationEnabled"
+          (click)="approveBaseline(previewToken)">Approve legacy baseline</button>
       </section>
     }
     @if (!formGroup.value.skipSynced) {

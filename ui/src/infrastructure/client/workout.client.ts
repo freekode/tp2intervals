@@ -5,10 +5,26 @@ import {Observable} from 'rxjs';
 
 export interface TrainingPeaksSyncPreview {
   sourceWorkoutId?: string;
-  sourceDate: string;
+  sourceDate?: string;
   status: string;
   reason: string;
   candidates: {eventId: number; date?: string}[];
+}
+
+export interface TrainingPeaksPreviewSelection {
+  startDate: string;
+  endDate: string;
+  types: string[];
+}
+
+export interface TrainingPeaksPreviewInventory {
+  revision: string;
+  sourceAccountId: string;
+  destinationAthleteId: string;
+  workouts: TrainingPeaksSyncPreview[];
+  approvedAt?: string;
+  previewOnly: boolean;
+  activationEnabled: boolean;
 }
 
 export interface ScheduledWorkoutRequest {
@@ -30,10 +46,21 @@ export class WorkoutClient {
       .post(`/api/workout/copy-calendar-to-calendar`, {startDate, endDate, types, skipSynced, ...platformDirection})
   }
 
-  previewTrainingPeaksSync(startDate: string, endDate: string, types: string[], token: string) {
-    return this.httpClient.post<TrainingPeaksSyncPreview[]>(
+  previewTrainingPeaksSync(selection: TrainingPeaksPreviewSelection, token: string) {
+    return this.httpClient.post<TrainingPeaksPreviewInventory>(
       '/api/workout/trainingpeaks-sync/preview',
-      {startDate, endDate, types},
+      selection,
+      {headers: {Authorization: 'Bearer ' + token}}
+    );
+  }
+
+  approveTrainingPeaksBaseline(
+    selection: TrainingPeaksPreviewSelection, revision: string, acknowledgeInconclusive: boolean,
+    legacyLinks: Record<string, number>, token: string
+  ) {
+    return this.httpClient.post<{approvedAt: string; heldWorkouts: number}>(
+      '/api/workout/trainingpeaks-sync/baseline/approve',
+      {selection, revision, acknowledgeInconclusive, legacyLinks},
       {headers: {Authorization: 'Bearer ' + token}}
     );
   }

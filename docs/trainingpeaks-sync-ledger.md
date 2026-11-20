@@ -61,8 +61,10 @@ names). It uses only provider reads and ledger lookups, creates no claims or
 links, and returns `Cache-Control: no-store`. A Basic athlete account can
 preview today and tomorrow as measured by the backend's calendar day.
 Provider availability and time zones can still limit the returned workouts.
-Results include source and candidate IDs, dates where known, and reason
-codes for review. A positive candidate for a pending attempt is displayed
+The response includes an inventory revision, an account pair, and workout rows
+with source and candidate IDs, dates where known, and reason codes. Submit the
+reviewed selection, revision, acknowledgement and selected legacy links to
+`POST /api/workout/trainingpeaks-sync/baseline/approve` using the same bearer. A positive candidate for a pending attempt is displayed
 without confirming it. No match observed is inconclusive.
 
 Schedule rows report unsafe, invalid, or paused states in the calendar form.
@@ -74,26 +76,32 @@ and can bypass the ledger and create duplicates.
 
 ## First deployment with existing imports
 
-1. Keep `TP2INTERVALS_ENABLE_SCHEDULED_FORWARD_SYNC` unset or `false` on every
-   instance and avoid manual writes during upgrade and inventory. Preserve a
-   consistent SQLite backup containing the existing configuration, schedules,
-   and any ledger. Liquibase adds the ledger without rewriting existing data.
-2. Run the read-only preview for the eligible dates and inspect the schedule
-   audit. Review unresolved, broken, ambiguous, and no-match rows before
-   activation. Use additional read-only inventory where imports may have
-   moved outside the lookup range. For legacy candidates, verify the source
-   account separately because older footers include only the workout ID.
-3. Link verified one-to-one matches in a separate, reviewed backfill while
-   writers are paused. Fetch each event by ID and seed a `CONFIRMED` row under
-   the full key. Record `AMBIGUOUS` with a null remote event ID for known keys
-   that cannot be resolved, including multiple matches. Preserve all remote
-   events. Preview itself offers no backfill or remote mutation.
-4. Once the destination inventory and schedule settings have been reviewed,
-   set `TP2INTERVALS_ENABLE_SCHEDULED_FORWARD_SYNC=true` and restart the intended
-   writer. This is an operator opt-in for that instance. Leave it paused if
-   the inventory is incomplete. Monitor unresolved warnings after
-   activation. An empty listing or elapsed time cannot justify clearing a
-   pending claim for another POST.
+1. Stop all writers and take a consistent SQLite backup, including data in
+   any WAL sidecar. Keep the original database and the verified backup.
+   Apply the additive migration on a disposable copy before cutover. Keep
+   `TP2INTERVALS_ENABLE_SCHEDULED_FORWARD_SYNC=false` on every instance.
+2. With preview-only enabled, run Preview sync over the supported source
+   dates. Review the displayed account pair, six classifications, and any
+   destination-marker or unresolved-ledger rows outside the source selection.
+   Run additional read-only historical inventory where needed. Basic users
+   can read today and tomorrow on the backend calendar. Review older imports
+   independently on the destination when necessary.
+3. For approval, restart with `TP2INTERVALS_PREVIEW_ONLY=false` and keep
+   scheduled activation off on all instances. Preview again. Select a single
+   legacy candidate only after verifying its source account. Acknowledge
+   that no match observed is inconclusive and explicitly approve. The app
+   rereads the inventory and rejects a changed revision. Approval persists
+   the evidence, selected links, and holds together in SQLite. It does not
+   update or delete provider events. Any stronger restriction on historical
+   gaps should be resolved before this step.
+4. Review the audit and safely enable the writer by setting
+   `TP2INTERVALS_ENABLE_SCHEDULED_FORWARD_SYNC=true` only on the intended
+   instances and restarting. The current account pair must have an approved
+   baseline and a valid `skipSynced=true` schedule. Newly encountered IDs can
+   sync automatically. Previously reviewed inconclusive or ambiguous
+   workouts remain held, and pending attempts continue to require positive
+   reconciliation. A blocked legacy row can be examined without repeating
+   the whole approval for each new workout.
 
 The in-process guard covers overlapping scheduled and manual calls within
 one app. Separate instances must point to the same SQLite file, using storage
@@ -152,38 +160,42 @@ adapting the override. Compose 2.24.4 or newer supports `!override`.
    isolated from providers until schedules and post-backup writes have been
    reconciled. Avoid dropping the ledger or replacing it with an older copy.
 
-## One-time legacy baseline design
+## Legacy baseline state and enforcement
 
-This section describes a proposed approval step. The current scheduler switch
-alone can still create a workout for an unreviewed no-match result. Keep it
-disabled pending the baseline implementation and operator approval.
-
-- Store a `legacy_baseline` record keyed by the resolved TrainingPeaks account
-  ID and canonical Intervals.icu athlete ID, bound to a configuration
-  generation. Retain the inventory revision or digest, reviewed date
-  coverage, approval time, and operator decision. Treat the current
-  generation as unapproved until the operator approves its exact revision.
-  Keep scheduled activation separate and default it to paused.
-- Build the inventory read-only. Verify single legacy links with the provider
-  event ID and source-account provenance. Preserve duplicate or ambiguous
-  matches and leave unresolved write claims blocked until evidence resolves
-  them. For no match observed, record any reviewed decision or hold the
-  workout when the coverage does not support deciding that it is new.
-  Preserve the review evidence and checked dispositions for cutover.
-- Explicit approval records the vetted legacy links, per-workout holds and
-  approved revision in one local audited SQLite transaction. A later, separate activation starts unattended forward
-  sync only for the active account pair with an approved baseline and a
-  persisted boolean `skipSynced=true`. A newly encountered ID can proceed
-  without per-workout approval, using the existing read checks and atomic
-  ledger claim. Existing held or unresolved IDs keep their blocks.
-- Resolve identities before unattended writes. A changed account pair or
-  configuration generation invalidates active approval and pauses the writer,
-  including when reverting to a once-approved pair. A transient identity
-  lookup failure fails closed. Ordinary provider token refresh does not
-  change the approval once the same identity is verified.
-- Respect the backend day boundary for Basic account reads. Use only today
-  and tomorrow on the TrainingPeaks side and review older Intervals.icu
-  imports independently where possible. Coverage is limited by provider
-  visibility, erased markers, and moves outside the search window. An old
-  import that the inventory missed can still look new later. An unreadable
-  calendar is a hold, and elapsed time never clears an uncertain POST.
+- An installation starts without approval. Liquibase `0010` adds
+  `trainingpeaks_sync_generation`, `trainingpeaks_legacy_baseline`, and
+  `trainingpeaks_legacy_hold`. The audit row stores the source account,
+  canonical destination athlete, configuration generation, revision,
+  coverage dates, review decisions, approval time and state.
+- Approval records an `APPROVED` row and supersedes any prior approved row.
+  Its revision covers the reviewed date range, account identities, selected
+  types, classifications, candidate IDs and dates, prior approval and
+  SQLite inventory version. The provider reads happen before the SQLite
+  transaction. SQLite rejects a changed generation, later approval, or
+  ledger mutation between rechecking and recording the reviewed inventory.
+- Changing a provider credential or the configured destination athlete
+  advances the generation and marks existing approval `INVALIDATED`.
+  Scheduled runs resolve the source account and destination identity.
+  A different resolved pair invalidates the approval even when the stored
+  configuration is unchanged. Returning to the old pair requires a new
+  review. Provider token refresh, midnight and toggling activation do not
+  advance the generation.
+- The writer requires activation, a real boolean `skipSynced=true`,
+  writable mode and an active approval for the resolved pair. The SQLite
+  statement that claims a workout also checks current approval, generation
+  and the absence of a hold. This check shares the same SQLite write
+  boundary across instances. It rechecks approval before sending the POST
+  and pins the destination authorization used to resolve the athlete.
+  A revoked claim stays pending. A request already in flight can finish,
+  so stop and drain all writers before configuration changes or rollback.
+  Manual force-copy remains a separate deliberate action outside preview mode.
+- Missing linked events stay linked for review. Claims never time out into
+  an automatic retry. Baseline holds survive restarts and subsequent
+  approvals. They can be reviewed manually using SQLite and preview.
+  Preview alone neither confirms an unresolved claim nor clears a hold.
+- Inventory and provider operations are not one distributed transaction.
+  Both destination listings can omit an older import. Missing or edited
+  markers and moves outside the bounded search can also conceal a historical
+  event, especially with the Basic source window. A previously unobserved
+  ID can therefore still look new. Keep the rollout paused if that residual
+  risk is unacceptable for the reviewed inventory.
