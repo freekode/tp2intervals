@@ -11,7 +11,7 @@ data class TrainingPeaksPreviewRequest(
 
 data class TrainingPeaksSyncPreview(
     val sourceWorkoutId: String?,
-    val sourceDate: LocalDate,
+    val sourceDate: LocalDate?,
     val status: Status,
     val reason: Reason,
     val candidates: List<Candidate> = emptyList(),
@@ -39,7 +39,30 @@ data class TrainingPeaksSyncPreview(
         LINK_MARKER_CHANGED,
         LEGACY_REVIEW_REQUIRED,
         SOURCE_ID_MISSING,
+        PREVIOUS_REVIEW_HOLD,
+        LEGACY_DESTINATION_KEY_UNVERIFIED,
     }
 }
 
 class InvalidTrainingPeaksPreview(val reason: String) : RuntimeException(reason)
+
+data class TrainingPeaksPreviewInventory(
+    val revision: String,
+    val sourceAccountId: String,
+    val destinationAthleteId: String,
+    val workouts: List<TrainingPeaksSyncPreview>,
+    val approvedAt: String?,
+    val previewOnly: Boolean,
+    val activationEnabled: Boolean,
+)
+
+data class TrainingPeaksBaselineApprovalRequest(
+    val selection: TrainingPeaksPreviewRequest,
+    val revision: String,
+    val acknowledgeInconclusive: Boolean,
+    val legacyLinks: Map<String, Long> = emptyMap(),
+)
+
+data class TrainingPeaksBaselineApproval(val revision: String, val approvedAt: String, val heldWorkouts: Int)
+
+class StaleTrainingPeaksInventory : RuntimeException("STALE_INVENTORY_REVISION")

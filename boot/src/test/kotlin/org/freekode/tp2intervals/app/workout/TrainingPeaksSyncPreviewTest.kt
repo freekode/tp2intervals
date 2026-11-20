@@ -2,10 +2,12 @@ package org.freekode.tp2intervals.app.workout
 
 import com.fasterxml.jackson.databind.SerializationFeature
 import config.SyncLedgerFixture
+import org.freekode.tp2intervals.config.PreviewOnly
 import config.mock.ObjectMapperFactory
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsApiClient
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfiguration
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfigurationRepository
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfigurationRepository.CalendarIdentity
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsEventDTO
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsWorkoutRepository
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.TrainingPeaksApiClient
@@ -85,7 +87,7 @@ class TrainingPeaksSyncPreviewTest {
                 .andExpect(header().string("Cache-Control", "no-store"))
                 .andReturn().response.contentAsString
         }
-        val rows = objectMapper.readTree(reply).associateBy { it.path("sourceWorkoutId").asText() }
+        val rows = objectMapper.readTree(reply)["workouts"].associateBy { it.path("sourceWorkoutId").asText() }
         val statuses = listOf(
             "VERIFIED_LINK", "SINGLE_LEGACY_CANDIDATE", "MULTIPLE_LEGACY_CANDIDATES",
             "NO_MATCH_OBSERVED", "UNRESOLVED_CLAIM", "BROKEN_OR_UNVERIFIED_LINK", "BROKEN_OR_UNVERIFIED_LINK"
@@ -133,13 +135,16 @@ class TrainingPeaksSyncPreviewTest {
     }
 
     private fun mvc(token: String = "preview-test-token"): org.springframework.test.web.servlet.MockMvc {
-        `when`(user.getUser()).thenReturn(TrainingPeaksUser(SOURCE, isAthlete = true, isPremium = false))
-        `when`(calendarConfig.getConfiguration()).thenReturn(IntervalsConfiguration("unused", DESTINATION, 0f, 0f, 0f))
+        `when`(user.resolveUser()).thenReturn(TrainingPeaksUser(SOURCE, isAthlete = true, isPremium = false))
+        `when`(calendarConfig.resolveCalendarIdentity()).thenReturn(CalendarIdentity(DESTINATION, "synthetic"))
         val source = TrainingPeaksWorkoutRepository(
             trainingPeaks, mock(), TPToWorkoutConverter(), mock(), user, mock(), mock(), mock(), objectMapper
         )
         val io = IntervalsWorkoutRepository(intervals, calendarConfig)
-        val controller = TrainingPeaksPreviewController(TrainingPeaksCalendarSync(source, io, database.newLedger(readOnly = true)), token)
+        val controller = TrainingPeaksPreviewController(TrainingPeaksCalendarSync(
+            source, io, database.newLedger(readOnly = true), database.baselines(readOnly = true),
+            objectMapper, PreviewOnly(false), false
+        ), token)
         return MockMvcBuilders.standaloneSetup(controller)
             .setMessageConverters(MappingJackson2HttpMessageConverter(objectMapper))
             .build()

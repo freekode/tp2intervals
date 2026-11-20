@@ -25,6 +25,9 @@ class IntervalsApiClientMock(
         TODO("Not yet implemented")
     }
 
+    override fun createScheduledEvent(athleteId: String, authorization: String, request: CreateEventRequestDTO) =
+        createEvent(athleteId, request)
+
     override fun createEvent(athleteId: String, createEventRequestDTO: CreateEventRequestDTO): ResponseEntity<CreatedIntervalsEvent> {
         TODO("Not yet implemented")
     }

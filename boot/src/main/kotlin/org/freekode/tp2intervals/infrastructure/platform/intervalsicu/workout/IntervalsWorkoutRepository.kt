@@ -13,6 +13,7 @@ import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsA
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfigurationRepository
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Repository
 
 @Repository
@@ -34,11 +35,15 @@ class IntervalsWorkoutRepository(
         }
     }
 
-    fun calendarAthleteId(): String = intervalsConfigurationRepository.getConfiguration().athleteId
+    fun resolveCalendarIdentity() = intervalsConfigurationRepository.resolveCalendarIdentity()
 
-    fun createCalendarEvent(athleteId: String, sourceAccountId: String, workout: Workout): Long {
-        val request = ToIntervalsWorkoutConverter().createEventRequestDTO(workout, sourceAccountId)
-        val response = intervalsApiClient.createEvent(athleteId, request)
+    fun createScopedCalendarEvent(
+        identity: IntervalsConfigurationRepository.CalendarIdentity, sourceAccountId: String, workout: Workout,
+    ): Long = confirmedId(intervalsApiClient.createScheduledEvent(
+        identity.athleteId, identity.authorization, ToIntervalsWorkoutConverter().createEventRequestDTO(workout, sourceAccountId)
+    ))
+
+    private fun confirmedId(response: ResponseEntity<CreatedIntervalsEvent>): Long {
         return response.body?.id?.takeIf { response.statusCode.is2xxSuccessful && it > 0 }
             ?: throw PlatformException(Platform.INTERVALS, "Calendar create did not confirm an event ID")
     }

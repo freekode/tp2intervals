@@ -65,8 +65,8 @@ class WorkoutScheduledSafetyTest {
         verifyNoInteractions(service)
         fixedToday { job.job() }
 
-        verify(service).copyWorkoutsC2C(requestForToday(safe))
-        verify(service).copyWorkoutsC2C(requestForToday(reverse))
+        verify(service).copyScheduledWorkouts(requestForToday(safe))
+        verify(service).copyScheduledWorkouts(requestForToday(reverse))
         verifyNoMoreInteractions(service)
         verify(schedules, org.mockito.Mockito.times(2)).findAll()
         verifyNoMoreInteractions(schedules)

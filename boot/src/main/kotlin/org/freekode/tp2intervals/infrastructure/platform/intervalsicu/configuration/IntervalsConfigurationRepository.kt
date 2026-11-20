@@ -44,6 +44,20 @@ class IntervalsConfigurationRepository(
         return IntervalsConfiguration(config)
     }
 
+    class CalendarIdentity(
+        val athleteId: String,
+        val authorization: String,
+        val configuredAthleteId: String = athleteId,
+    )
+
+    fun resolveCalendarIdentity(): CalendarIdentity {
+        val config = getConfiguration()
+        val authorization = Auth.getAuthorizationHeader(config.apiKey)
+        val id = intervalsAthleteApiClient.getAthlete(config.athleteId, authorization)["id"] as? String
+        require(!id.isNullOrBlank()) { "INTERVALS_ATHLETE_ID_UNVERIFIED" }
+        return CalendarIdentity(id, authorization, config.athleteId)
+    }
+
     private fun isValid(): Boolean {
         try {
             val currentConfig =

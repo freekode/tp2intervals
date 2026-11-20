@@ -31,6 +31,14 @@ class WorkoutService(
         return copyCalendar(request)
     }
 
+    fun copyScheduledWorkouts(request: CopyFromCalendarToCalendarRequest) {
+        if (request.sourcePlatform == Platform.TRAINING_PEAKS && request.targetPlatform == Platform.INTERVALS) {
+            trainingPeaksCalendarLock.withLock { trainingPeaksCalendarSync.copyScheduled(request) }
+        } else {
+            copyWorkoutsC2C(request)
+        }
+    }
+
     private fun copyCalendar(request: CopyFromCalendarToCalendarRequest): CopyWorkoutsResponse {
         log.info("Received request for copy calendar to calendar: $request")
         val sourceWorkoutRepository = workoutRepositoryMap[request.sourcePlatform]!!

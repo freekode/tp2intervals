@@ -11,9 +11,9 @@ data class C2CTodayScheduledRequest(
     val sourcePlatform: Platform,
     val targetPlatform: Platform
 ) : Schedulable {
-    fun forToday() = CopyFromCalendarToCalendarRequest(
-        LocalDate.now(),
-        LocalDate.now(),
+    fun forToday(today: LocalDate = LocalDate.now()) = CopyFromCalendarToCalendarRequest(
+        today,
+        today,
         types,
         skipSynced,
         sourcePlatform,

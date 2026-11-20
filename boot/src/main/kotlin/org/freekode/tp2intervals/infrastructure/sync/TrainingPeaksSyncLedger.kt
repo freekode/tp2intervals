@@ -21,7 +21,47 @@ class TrainingPeaksSyncLedger(private val jdbc: JdbcTemplate, private val mode: 
         key.sourceAccountId, key.destinationAthleteId, key.sourceWorkoutId
     ).singleOrNull()
 
+    fun idsForDestination(source: String, destination: String): List<String> = jdbc.query(
+        """
+        SELECT source_workout_id FROM trainingpeaks_sync_ledger
+        WHERE source_account_id = ? AND destination_athlete_id = ?
+        """.trimIndent(),
+        { row, _ -> row.getString(1) }, source, destination
+    )
+
+    fun unresolvedIds(source: String, destination: String): List<String> = jdbc.query(
+        """
+        SELECT source_workout_id FROM trainingpeaks_sync_ledger
+        WHERE source_account_id = ? AND destination_athlete_id = ? AND state IN ('PENDING', 'AMBIGUOUS')
+        """.trimIndent(),
+        { row, _ -> row.getString(1) }, source, destination
+    )
+
     fun claim(key: Key): Boolean = insert(key, State.PENDING)
+
+    fun claimForSync(key: Key, approval: TrainingPeaksLegacyBaselineRepository.Approval?): Boolean {
+        mode.requireWritable()
+        return jdbc.update(
+            """
+            INSERT INTO trainingpeaks_sync_ledger
+              (source_account_id, destination_athlete_id, source_workout_id, state)
+            SELECT ?, ?, ?, 'PENDING'
+            WHERE NOT EXISTS (
+              SELECT 1 FROM trainingpeaks_legacy_hold
+              WHERE source_account_id = ? AND destination_athlete_id = ? AND source_workout_id = ?
+            )
+            AND (? IS NULL OR EXISTS (
+              SELECT 1 FROM trainingpeaks_legacy_baseline b JOIN trainingpeaks_sync_generation g
+              ON b.generation = g.generation
+              WHERE b.id = ? AND b.state = 'APPROVED' AND b.source_account_id = ? AND b.destination_athlete_id = ?
+            ))
+            ON CONFLICT (source_account_id, destination_athlete_id, source_workout_id) DO NOTHING
+            """.trimIndent(),
+            key.sourceAccountId, key.destinationAthleteId, key.sourceWorkoutId,
+            key.sourceAccountId, key.destinationAthleteId, key.sourceWorkoutId,
+            approval?.id, approval?.id, key.sourceAccountId, key.destinationAthleteId,
+        ) == 1
+    }
 
     fun recordLegacyMatch(key: Key, remoteEventId: Long): Boolean = insert(key, State.CONFIRMED, remoteEventId)
 

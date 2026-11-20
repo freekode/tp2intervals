@@ -67,7 +67,7 @@ class WorkoutScheduledJob(
                 log.warn("Scheduled sync {} blocked: {}", entry.id, blocked)
                 continue
             }
-            workoutService.copyWorkoutsC2C(checkNotNull(request).forToday())
+            workoutService.copyScheduledWorkouts(checkNotNull(request).forToday())
         }
     }
 

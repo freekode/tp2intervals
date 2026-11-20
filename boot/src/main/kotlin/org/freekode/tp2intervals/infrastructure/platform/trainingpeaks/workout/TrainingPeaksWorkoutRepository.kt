@@ -78,9 +78,9 @@ class TrainingPeaksWorkoutRepository(
         return workouts + notes
     }
 
-    fun calendarUser() = trainingPeaksUserRepository.getUser()
+    fun calendarUser() = trainingPeaksUserRepository.resolveUser()
 
-    fun calendarAccountId(): String = calendarUser().userId
+    fun calendarAccountId(): String = trainingPeaksUserRepository.getUser().userId
 
     fun getPlannedCalendarEntries(userId: String, startDate: LocalDate, endDate: LocalDate) =
         trainingPeaksApiClient.getWorkouts(userId, startDate.toString(), endDate.toString())

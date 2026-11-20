@@ -3,7 +3,14 @@ package org.freekode.tp2intervals.app.workout
 import org.freekode.tp2intervals.app.workout.TrainingPeaksSyncPreview.Candidate
 import org.freekode.tp2intervals.app.workout.TrainingPeaksSyncPreview.Reason
 import org.freekode.tp2intervals.app.workout.TrainingPeaksSyncPreview.Status
+import com.fasterxml.jackson.databind.ObjectMapper
+import org.freekode.tp2intervals.config.PreviewOnly
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfigurationRepository.CalendarIdentity
+import org.freekode.tp2intervals.infrastructure.sync.TrainingPeaksLegacyBaselineRepository
+import org.freekode.tp2intervals.infrastructure.sync.TrainingPeaksLegacyBaselineRepository.Accounts
+import org.freekode.tp2intervals.infrastructure.sync.TrainingPeaksLegacyBaselineRepository.Approval
 import org.freekode.tp2intervals.domain.ExternalData
+import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsEventDTO
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsWorkoutRepository
@@ -13,6 +20,9 @@ import org.freekode.tp2intervals.infrastructure.sync.TrainingPeaksSyncLedger.Key
 import org.freekode.tp2intervals.infrastructure.sync.TrainingPeaksSyncLedger.State
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import org.springframework.beans.factory.annotation.Value
+import java.security.MessageDigest
+import java.util.HexFormat
 import org.springframework.transaction.support.TransactionSynchronizationManager
 import java.time.LocalDate
 
@@ -21,16 +31,54 @@ class TrainingPeaksCalendarSync(
     private val source: TrainingPeaksWorkoutRepository,
     private val destination: IntervalsWorkoutRepository,
     private val ledger: TrainingPeaksSyncLedger,
+    private val baselines: TrainingPeaksLegacyBaselineRepository,
+    private val objectMapper: ObjectMapper,
+    private val mode: PreviewOnly,
+    @Value("\${app.training-peaks.scheduled-forward-sync-enabled:false}")
+    private val scheduledForwardEnabled: Boolean,
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
+    fun copyScheduled(request: CopyFromCalendarToCalendarRequest, today: LocalDate = LocalDate.now()) {
+        if (!scheduledForwardEnabled || mode.enabled || !request.skipSynced ||
+            request.sourcePlatform != Platform.TRAINING_PEAKS ||
+            request.targetPlatform != Platform.INTERVALS
+        ) return
+
+        // An unapproved installation has no reason to contact the providers from a job.
+        if (baselines.latest()?.state != "APPROVED") {
+            log.info("Scheduled TrainingPeaks sync paused: BASELINE_REQUIRED")
+            return
+        }
+        val generation = baselines.generation()
+        val user = source.calendarUser()
+        val target = destination.resolveCalendarIdentity()
+        val accounts = Accounts(user.userId, target.athleteId, generation)
+        val approval = baselines.usableApproval(accounts) ?: return
+        if (!user.isAthlete || request.startDate > request.endDate ||
+            (!user.isPremium && (request.startDate != today || request.endDate != today))
+        ) return
+
+        copy(request, user.userId, target, approval)
+    }
+
     fun copy(request: CopyFromCalendarToCalendarRequest): CopyWorkoutsResponse {
+        mode.requireWritable()
+        return copy(request, source.calendarUser().userId, destination.resolveCalendarIdentity(), null)
+    }
+
+    private fun copy(
+        request: CopyFromCalendarToCalendarRequest,
+        sourceAccount: String,
+        target: CalendarIdentity,
+        approval: Approval?,
+    ): CopyWorkoutsResponse {
         check(!TransactionSynchronizationManager.isActualTransactionActive()) {
             "TrainingPeaks sync must commit each claim before calling Intervals.icu"
         }
 
-        val sourceAccount = source.calendarAccountId()
-        val athlete = destination.calendarAthleteId()
+        val athlete = target.athleteId
+        val previousKeys = legacyDestinationIds(sourceAccount, target)
         val workouts = source.getWorkoutsFromCalendar(sourceAccount, request.startDate, request.endDate)
         val reviews = mutableListOf<WorkoutSyncReview>()
         val legacyMatches by lazy {
@@ -42,7 +90,7 @@ class TrainingPeaksCalendarSync(
         for (workout in workouts.filter { it.details.type in request.types }) {
             val sourceId = workout.details.externalData.trainingPeaksId
             if (sourceId.isNullOrBlank() || workout.details.type == TrainingType.NOTE) {
-                if (workout !in plannedWorkouts) {
+                if (approval == null && workout !in plannedWorkouts) {
                     destination.saveWorkoutsToCalendar(listOf(workout))
                     copied++
                 }
@@ -56,6 +104,10 @@ class TrainingPeaksCalendarSync(
                 continue
             }
 
+            if (sourceId in previousKeys || baselines.isHeld(key)) {
+                reviews.add(review(key, WorkoutSyncReview.Reason.LEGACY_BASELINE_HOLD))
+                continue
+            }
             val candidates = legacyMatches[sourceId].orEmpty().map { it.id }
             when {
                 candidates.size > 1 -> {
@@ -73,9 +125,12 @@ class TrainingPeaksCalendarSync(
                         reviews.add(review(key, WorkoutSyncReview.Reason.LEGACY_LINK_UNVERIFIED, eventId))
                     }
                 }
-                ledger.claim(key) -> {
+                ledger.claimForSync(key, approval) -> {
+                    // If approval was revoked after reserving the attempt, keep the claim
+                    // and avoid sending it. The explicit header pins the verified target.
+                    if (approval != null && !baselines.isCurrent(approval)) continue
                     try {
-                        val eventId = destination.createCalendarEvent(athlete, sourceAccount, workout)
+                        val eventId = destination.createScopedCalendarEvent(target, sourceAccount, workout)
                         ledger.confirm(key, eventId)
                         copied++
                     } catch (failure: RuntimeException) {
@@ -83,27 +138,87 @@ class TrainingPeaksCalendarSync(
                         throw failure
                     }
                 }
-                else -> reviewAfterConflict(key)?.let(reviews::add)
+                else -> ledger.find(key)?.let {
+                    reviewKnown(key, it) { emptyList() }?.let(reviews::add)
+                }
             }
         }
 
         return CopyWorkoutsResponse(copied, workouts.size - copied, request.startDate, request.endDate, ExternalData.empty(), reviews)
     }
 
-    fun preview(request: TrainingPeaksPreviewRequest, today: LocalDate = LocalDate.now()): List<TrainingPeaksSyncPreview> {
+    private data class Inventory(
+        val accounts: Accounts,
+        val previousId: Long,
+        val inventoryVersion: Long,
+        val rows: List<TrainingPeaksSyncPreview>,
+        val revision: String,
+        val approval: Approval?,
+    )
+
+    fun preview(request: TrainingPeaksPreviewRequest, today: LocalDate = LocalDate.now()): TrainingPeaksPreviewInventory {
+        val inventory = inventory(request, today)
+        return TrainingPeaksPreviewInventory(
+            inventory.revision, inventory.accounts.source, inventory.accounts.destination,
+            inventory.rows, inventory.approval?.approvedAt, mode.enabled, scheduledForwardEnabled,
+        )
+    }
+
+    fun approve(request: TrainingPeaksBaselineApprovalRequest, today: LocalDate = LocalDate.now()): TrainingPeaksBaselineApproval {
+        mode.requireWritable()
+        if (!request.acknowledgeInconclusive) throw InvalidTrainingPeaksPreview("ACKNOWLEDGEMENT_REQUIRED")
+        // Make a distinct, reviewable cutover step before starting unattended work.
+        if (scheduledForwardEnabled) throw InvalidTrainingPeaksPreview("PAUSE_SCHEDULING_BEFORE_APPROVAL")
+        val inventory = inventory(request.selection, today)
+        if (request.revision != inventory.revision) throw StaleTrainingPeaksInventory()
+
+        val selectable = inventory.rows.filter {
+            it.status == Status.SINGLE_LEGACY_CANDIDATE && it.sourceWorkoutId != null
+        }.associate { it.sourceWorkoutId!! to it.candidates.single().eventId }
+        if (request.legacyLinks.any { (sourceId, eventId) -> selectable[sourceId] != eventId }) {
+            throw InvalidTrainingPeaksPreview("LEGACY_LINK_NOT_IN_REVIEW")
+        }
+
+        val holds = inventory.rows.mapNotNull { row ->
+            val id = row.sourceWorkoutId ?: return@mapNotNull null
+            if (row.status in setOf(Status.VERIFIED_LINK, Status.UNRESOLVED_CLAIM) || id in request.legacyLinks) {
+                null
+            } else id to row.reason.name
+        }.toMap()
+        val approved = baselines.approve(
+            inventory.accounts, inventory.previousId, inventory.inventoryVersion, inventory.revision,
+            request.selection.startDate, request.selection.endDate,
+            objectMapper.writeValueAsString(mapOf(
+                "acknowledgedInconclusive" to true,
+                "types" to request.selection.types,
+                "workouts" to inventory.rows,
+                "selectedLegacyLinks" to request.legacyLinks,
+                "holds" to holds,
+            )), request.legacyLinks, holds,
+        ) ?: throw StaleTrainingPeaksInventory()
+        return TrainingPeaksBaselineApproval(approved.revision, approved.approvedAt, holds.size)
+    }
+
+    private fun inventory(request: TrainingPeaksPreviewRequest, today: LocalDate): Inventory {
         val (start, end, types) = request
         if (start > end || start < LocalDate.MIN.plusDays(365) || end > LocalDate.MAX.minusDays(365)) {
             throw InvalidTrainingPeaksPreview("INVALID_DATE_RANGE")
         }
+        val generation = baselines.generation()
+        val inventoryVersion = baselines.inventoryVersion()
+        val previous = baselines.latest()
         val user = source.calendarUser()
         if (!user.isAthlete) throw InvalidTrainingPeaksPreview("ATHLETE_ACCOUNT_REQUIRED")
         if (!user.isPremium && (start < today || end > today.plusDays(1))) {
             throw InvalidTrainingPeaksPreview("BASIC_TODAY_OR_TOMORROW_ONLY")
         }
 
-        val athlete = destination.calendarAthleteId()
-        val candidates by lazy { findCandidates(user.userId, athlete, start, end) }
-        return source.getPlannedCalendarEntries(user.userId, start, end)
+        val target = destination.resolveCalendarIdentity()
+        val athlete = target.athleteId
+        val previousKeys = legacyDestinationIds(user.userId, target)
+        val accounts = Accounts(user.userId, athlete, generation)
+        val candidates = findCandidates(user.userId, athlete, start, end)
+        val rows = source.getPlannedCalendarEntries(user.userId, start, end)
             .filter { workout ->
                 val type = workout.getWorkoutType()
                 workout.workoutDay.toLocalDate() in start..end && type in types && type != TrainingType.NOTE
@@ -115,14 +230,46 @@ class TrainingPeaksCalendarSync(
                     TrainingPeaksSyncPreview(null, date, Status.BROKEN_OR_UNVERIFIED_LINK, Reason.SOURCE_ID_MISSING)
                 } else {
                     val key = Key(user.userId, athlete, id)
-                    previewWorkout(key, date) { candidates[id].orEmpty() }
+                    if (id in previousKeys && ledger.find(key) == null) unverifiedPreviousKey(id, date, candidates[id].orEmpty())
+                    else previewWorkout(key, date) { candidates[id].orEmpty() }
                 }
             }
+        val visibleSourceIds = rows.mapNotNull { it.sourceWorkoutId }.toSet()
+        val additionalIds = (candidates.keys + ledger.unresolvedIds(user.userId, athlete) + previousKeys) - visibleSourceIds
+        val additionalRows = additionalIds.map { id ->
+            val key = Key(user.userId, athlete, id)
+            if (id in previousKeys && ledger.find(key) == null) unverifiedPreviousKey(id, null, candidates[id].orEmpty())
+            else previewWorkout(key, null) { candidates[id].orEmpty() }
+        }
+        if (generation != baselines.generation() || inventoryVersion != baselines.inventoryVersion() || previous != baselines.latest()) {
+            throw StaleTrainingPeaksInventory()
+        }
+
+        val stableRows = (rows + additionalRows).map { it.copy(candidates = it.candidates.sortedBy { candidate -> candidate.eventId }) }
+            .sortedWith(compareBy({ it.sourceDate }, { it.sourceWorkoutId }, { it.status }, { it.reason }))
+        val previousId = previous?.id ?: 0
+        val content = objectMapper.writeValueAsBytes(listOf(
+            accounts, previousId, inventoryVersion, previous?.state, start, end, types.distinct().sorted(), stableRows,
+        ))
+        val revision = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(content))
+        return Inventory(accounts, previousId, inventoryVersion, stableRows, revision, previous?.takeIf {
+            it.state == "APPROVED" && it.accounts == accounts
+        })
     }
+
+    private fun legacyDestinationIds(source: String, target: CalendarIdentity): Set<String> =
+        if (target.configuredAthleteId == target.athleteId) emptySet()
+        else ledger.idsForDestination(source, target.configuredAthleteId).toSet()
+
+    private fun unverifiedPreviousKey(id: String, date: LocalDate?, events: List<IntervalsEventDTO>) =
+        TrainingPeaksSyncPreview(
+            id, date, Status.BROKEN_OR_UNVERIFIED_LINK, Reason.LEGACY_DESTINATION_KEY_UNVERIFIED,
+            events.map { it.previewCandidate() },
+        )
 
     private fun previewWorkout(
         key: Key,
-        date: LocalDate,
+        date: LocalDate?,
         candidates: () -> List<IntervalsEventDTO>,
     ): TrainingPeaksSyncPreview {
         val entry = ledger.find(key)
@@ -155,6 +302,7 @@ class TrainingPeaksCalendarSync(
             return result(Status.UNRESOLVED_CLAIM, reason, verified?.let { listOf(it.previewCandidate()) } ?: candidateDetails)
         }
         if (matches.size > 1) return result(Status.MULTIPLE_LEGACY_CANDIDATES, Reason.MULTIPLE_MATCHES)
+        if (baselines.isHeld(key)) return result(Status.BROKEN_OR_UNVERIFIED_LINK, Reason.PREVIOUS_REVIEW_HOLD)
         if (entry?.state == State.AMBIGUOUS) {
             return result(Status.BROKEN_OR_UNVERIFIED_LINK, Reason.LEGACY_REVIEW_REQUIRED)
         }

@@ -3,7 +3,10 @@ package org.freekode.tp2intervals.rest.workout
 import org.freekode.tp2intervals.app.workout.InvalidTrainingPeaksPreview
 import org.freekode.tp2intervals.app.workout.TrainingPeaksCalendarSync
 import org.freekode.tp2intervals.app.workout.TrainingPeaksPreviewRequest
-import org.freekode.tp2intervals.app.workout.TrainingPeaksSyncPreview
+import org.freekode.tp2intervals.app.workout.TrainingPeaksPreviewInventory
+import org.freekode.tp2intervals.app.workout.TrainingPeaksBaselineApproval
+import org.freekode.tp2intervals.app.workout.TrainingPeaksBaselineApprovalRequest
+import org.freekode.tp2intervals.app.workout.StaleTrainingPeaksInventory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.CacheControl
 import org.springframework.http.HttpHeaders
@@ -25,7 +28,15 @@ class TrainingPeaksPreviewController(
     fun preview(
         @RequestHeader(HttpHeaders.AUTHORIZATION, required = false) authorization: String?,
         @RequestBody request: TrainingPeaksPreviewRequest,
-    ): ResponseEntity<List<TrainingPeaksSyncPreview>> {
+    ): ResponseEntity<TrainingPeaksPreviewInventory> = respond(authorization) { sync.preview(request) }
+
+    @PostMapping("/api/workout/trainingpeaks-sync/baseline/approve")
+    fun approve(
+        @RequestHeader(HttpHeaders.AUTHORIZATION, required = false) authorization: String?,
+        @RequestBody request: TrainingPeaksBaselineApprovalRequest,
+    ): ResponseEntity<TrainingPeaksBaselineApproval> = respond(authorization) { sync.approve(request) }
+
+    private fun <T> respond(authorization: String?, action: () -> T): ResponseEntity<T> {
         if (token.isBlank()) throw ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "PREVIEW_DISABLED")
         val bearer = authorization
             ?.takeIf { it.startsWith("Bearer ", ignoreCase = true) }
@@ -34,11 +45,15 @@ class TrainingPeaksPreviewController(
             throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "PREVIEW_AUTH_REQUIRED")
         }
         val results = try {
-            sync.preview(request)
+            action()
         } catch (error: InvalidTrainingPeaksPreview) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, error.reason)
+        } catch (_: StaleTrainingPeaksInventory) {
+            throw ResponseStatusException(HttpStatus.CONFLICT, "STALE_INVENTORY_REVISION")
+        } catch (error: ResponseStatusException) {
+            throw error
         } catch (_: RuntimeException) {
-            throw ResponseStatusException(HttpStatus.BAD_GATEWAY, "PREVIEW_READ_FAILED")
+            throw ResponseStatusException(HttpStatus.BAD_GATEWAY, "BASELINE_REQUEST_FAILED")
         }
         return ResponseEntity.ok().cacheControl(CacheControl.noStore()).body(results)
     }

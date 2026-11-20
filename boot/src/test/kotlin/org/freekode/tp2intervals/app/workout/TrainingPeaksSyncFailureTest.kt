@@ -14,9 +14,11 @@ import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutDetails
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.TrainingPeaksWorkoutRepository
+import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.user.TrainingPeaksUser
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsApiClient
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfiguration
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfigurationRepository
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfigurationRepository.CalendarIdentity
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.CreatedIntervalsEvent
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.CreateEventRequestDTO
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsEventDTO
@@ -312,6 +314,7 @@ class TrainingPeaksSyncFailureTest {
         val source = mock(TrainingPeaksWorkoutRepository::class.java)
         `when`(source.platform()).thenReturn(Platform.TRAINING_PEAKS)
         `when`(source.calendarAccountId()).thenReturn(SOURCE_ACCOUNT)
+        `when`(source.calendarUser()).thenReturn(TrainingPeaksUser(SOURCE_ACCOUNT, isAthlete = true, isPremium = false))
         `when`(source.getWorkoutsFromCalendar(SOURCE_ACCOUNT, today, today)).thenReturn(
             listOf(
                 Workout(
@@ -326,8 +329,10 @@ class TrainingPeaksSyncFailureTest {
         )
         val config = mock(IntervalsConfigurationRepository::class.java)
         `when`(config.getConfiguration()).thenReturn(IntervalsConfiguration("unused", ATHLETE_ID, 0.1f, 0.2f, 0.3f))
+        `when`(config.resolveCalendarIdentity()).thenReturn(CalendarIdentity(ATHLETE_ID, "synthetic"))
         val destination = IntervalsWorkoutRepository(intervals, config)
-        val sync = TrainingPeaksCalendarSync(source, destination, database.newLedger())
+        database.seedBaseline(SOURCE_ACCOUNT, ATHLETE_ID)
+        val sync = TrainingPeaksCalendarSync(source, destination, database.newLedger(), database.baselines(), objectMapper, PreviewOnly(false), true)
         val service = WorkoutService(listOf(source, destination), emptyList(), sync)
         val schedules = mock(ScheduleRequestRepository::class.java)
         `when`(schedules.findAll()).thenReturn(requests.toList().ifEmpty { listOf(persistedRequest) })
@@ -453,6 +458,9 @@ class TrainingPeaksSyncFailureTest {
             snapshotBarrier?.await(5, SECONDS)
             return snapshot
         }
+
+        override fun createScheduledEvent(athleteId: String, authorization: String, request: CreateEventRequestDTO) =
+            createEvent(athleteId, request)
 
         @Synchronized
         override fun createEvent(athleteId: String, createEventRequestDTO: CreateEventRequestDTO): ResponseEntity<CreatedIntervalsEvent> {

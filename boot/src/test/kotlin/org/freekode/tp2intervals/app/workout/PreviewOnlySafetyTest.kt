@@ -71,6 +71,7 @@ class PreviewOnlySafetyTest {
         mvc.perform(post("/api/library-container/copy")).andExpect(status().isForbidden)
         mvc.perform(put("/api/configuration")).andExpect(status().isForbidden)
         mvc.perform(delete("/api/workout")).andExpect(status().isForbidden)
+        mvc.perform(post("/api/workout/trainingpeaks-sync/baseline/approve")).andExpect(status().isForbidden)
         mvc.perform(post("/actuator/loggers/root")).andExpect(status().isForbidden)
         mvc.perform(post("/api/workout/trainingpeaks-sync/preview").contentType(MediaType.APPLICATION_JSON)
             .content("""{"startDate":"2026-01-01","endDate":"2026-01-01"}""")).andExpect(status().isUnauthorized)

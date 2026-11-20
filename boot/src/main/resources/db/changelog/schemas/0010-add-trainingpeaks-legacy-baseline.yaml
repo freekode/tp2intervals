@@ -1,0 +1,81 @@
+databaseChangeLog:
+  - changeSet:
+      id: trainingpeaks-legacy-baseline
+      author: tp2intervals
+      changes:
+        - sql:
+            sql: |
+              CREATE TABLE trainingpeaks_sync_generation (
+                singleton INTEGER PRIMARY KEY CHECK (singleton = 1),
+                generation INTEGER NOT NULL,
+                inventory_version INTEGER NOT NULL
+              );
+              INSERT INTO trainingpeaks_sync_generation VALUES (1, 0, 0);
+              CREATE TABLE trainingpeaks_legacy_baseline (
+                id INTEGER PRIMARY KEY,
+                source_account_id TEXT NOT NULL,
+                destination_athlete_id TEXT NOT NULL,
+                generation INTEGER NOT NULL,
+                revision TEXT NOT NULL,
+                start_date TEXT NOT NULL,
+                end_date TEXT NOT NULL,
+                review_json TEXT NOT NULL,
+                approved_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                state TEXT NOT NULL CHECK (state IN ('APPROVED', 'INVALIDATED', 'SUPERSEDED'))
+              );
+              CREATE TABLE trainingpeaks_legacy_hold (
+                source_account_id TEXT NOT NULL,
+                destination_athlete_id TEXT NOT NULL,
+                source_workout_id TEXT NOT NULL,
+                baseline_id INTEGER NOT NULL REFERENCES trainingpeaks_legacy_baseline(id),
+                reason TEXT NOT NULL,
+                PRIMARY KEY (source_account_id, destination_athlete_id, source_workout_id)
+              );
+        - sql:
+            splitStatements: false
+            sql: |
+              CREATE TRIGGER trainingpeaks_generation_insert AFTER INSERT ON config
+              WHEN NEW.key IN ('training-peaks.auth-cookie', 'intervals.api-key', 'intervals.athlete-id')
+              BEGIN
+                UPDATE trainingpeaks_sync_generation SET generation = generation + 1;
+                UPDATE trainingpeaks_legacy_baseline SET state = 'INVALIDATED' WHERE state = 'APPROVED';
+              END
+        - sql:
+            splitStatements: false
+            sql: |
+              CREATE TRIGGER trainingpeaks_generation_update AFTER UPDATE ON config
+              WHEN OLD.value IS NOT NEW.value AND NEW.key IN ('training-peaks.auth-cookie', 'intervals.api-key', 'intervals.athlete-id')
+              BEGIN
+                UPDATE trainingpeaks_sync_generation SET generation = generation + 1;
+                UPDATE trainingpeaks_legacy_baseline SET state = 'INVALIDATED' WHERE state = 'APPROVED';
+              END
+        - sql:
+            splitStatements: false
+            sql: |
+              CREATE TRIGGER trainingpeaks_generation_delete AFTER DELETE ON config
+              WHEN OLD.key IN ('training-peaks.auth-cookie', 'intervals.api-key', 'intervals.athlete-id')
+              BEGIN
+                UPDATE trainingpeaks_sync_generation SET generation = generation + 1;
+                UPDATE trainingpeaks_legacy_baseline SET state = 'INVALIDATED' WHERE state = 'APPROVED';
+              END
+        - sql:
+            splitStatements: false
+            sql: |
+              CREATE TRIGGER trainingpeaks_inventory_insert AFTER INSERT ON trainingpeaks_sync_ledger
+              BEGIN
+                UPDATE trainingpeaks_sync_generation SET inventory_version = inventory_version + 1;
+              END
+        - sql:
+            splitStatements: false
+            sql: |
+              CREATE TRIGGER trainingpeaks_inventory_update AFTER UPDATE ON trainingpeaks_sync_ledger
+              BEGIN
+                UPDATE trainingpeaks_sync_generation SET inventory_version = inventory_version + 1;
+              END
+        - sql:
+            splitStatements: false
+            sql: |
+              CREATE TRIGGER trainingpeaks_inventory_delete AFTER DELETE ON trainingpeaks_sync_ledger
+              BEGIN
+                UPDATE trainingpeaks_sync_generation SET inventory_version = inventory_version + 1;
+              END

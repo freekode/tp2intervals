@@ -17,6 +17,7 @@ data class CopyWorkoutsResponse(
 data class WorkoutSyncReview(val sourceWorkoutId: String, val reason: Reason, val remoteEventId: Long?) {
     enum class Reason {
         UNRESOLVED_WRITE,
+        LEGACY_BASELINE_HOLD,
         AMBIGUOUS_IMPORT,
         LEGACY_LINK_UNVERIFIED,
         LINKED_EVENT_MISSING,
