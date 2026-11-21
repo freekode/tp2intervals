@@ -15,6 +15,7 @@ data class TrainingPeaksSyncPreview(
     val status: Status,
     val reason: Reason,
     val candidates: List<Candidate> = emptyList(),
+    val canResolveUnmatchedHold: Boolean = false,
 ) {
     data class Candidate(val eventId: Long, val date: LocalDate?)
 
@@ -66,3 +67,12 @@ data class TrainingPeaksBaselineApprovalRequest(
 data class TrainingPeaksBaselineApproval(val revision: String, val approvedAt: String, val heldWorkouts: Int)
 
 class StaleTrainingPeaksInventory : RuntimeException("STALE_INVENTORY_REVISION")
+
+data class TrainingPeaksHoldResolutionRequest(
+    val selection: TrainingPeaksPreviewRequest,
+    val revision: String,
+    val sourceWorkoutId: String,
+    val acknowledgeManualVerification: Boolean,
+)
+
+data class TrainingPeaksHoldResolution(val eventId: Long)

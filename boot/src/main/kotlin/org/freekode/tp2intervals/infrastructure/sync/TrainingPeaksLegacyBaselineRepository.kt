@@ -54,12 +54,15 @@ class TrainingPeaksLegacyBaselineRepository(
     fun isCurrent(approval: Approval): Boolean =
         latest() == approval && generation() == approval.accounts.generation
 
-    fun isHeld(key: Key): Boolean = jdbc.queryForObject(
+    fun isHeld(key: Key): Boolean = holdReason(key) != null
+
+    fun holdReason(key: Key): String? = jdbc.query(
         """
-        SELECT EXISTS(SELECT 1 FROM trainingpeaks_legacy_hold
-          WHERE source_account_id = ? AND destination_athlete_id = ? AND source_workout_id = ?)
-        """.trimIndent(), Int::class.java, key.sourceAccountId, key.destinationAthleteId, key.sourceWorkoutId
-    ) == 1
+        SELECT reason FROM trainingpeaks_legacy_hold
+        WHERE source_account_id = ? AND destination_athlete_id = ? AND source_workout_id = ?
+        """.trimIndent(),
+        { row, _ -> row.getString(1) }, key.sourceAccountId, key.destinationAthleteId, key.sourceWorkoutId
+    ).singleOrNull()
 
     fun approve(
         accounts: Accounts,

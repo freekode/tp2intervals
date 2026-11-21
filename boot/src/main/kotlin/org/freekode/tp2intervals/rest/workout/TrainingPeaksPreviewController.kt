@@ -6,6 +6,8 @@ import org.freekode.tp2intervals.app.workout.TrainingPeaksPreviewRequest
 import org.freekode.tp2intervals.app.workout.TrainingPeaksPreviewInventory
 import org.freekode.tp2intervals.app.workout.TrainingPeaksBaselineApproval
 import org.freekode.tp2intervals.app.workout.TrainingPeaksBaselineApprovalRequest
+import org.freekode.tp2intervals.app.workout.TrainingPeaksHoldResolutionRequest
+import org.freekode.tp2intervals.app.workout.TrainingPeaksHoldResolution
 import org.freekode.tp2intervals.app.workout.StaleTrainingPeaksInventory
 import org.freekode.tp2intervals.app.workout.PreviewStage
 import org.freekode.tp2intervals.app.workout.TrainingPeaksPreviewFailure
@@ -41,6 +43,13 @@ class TrainingPeaksPreviewController(
         @RequestHeader(HttpHeaders.AUTHORIZATION, required = false) authorization: String?,
         @RequestBody request: TrainingPeaksBaselineApprovalRequest,
     ): ResponseEntity<TrainingPeaksBaselineApproval> = respond(authorization, "approve") { sync.approve(request) }
+
+    @PostMapping("/api/workout/trainingpeaks-sync/holds/resolve")
+    fun resolveHold(
+        @RequestHeader(HttpHeaders.AUTHORIZATION, required = false) authorization: String?,
+        @RequestBody request: TrainingPeaksHoldResolutionRequest,
+    ): ResponseEntity<TrainingPeaksHoldResolution> =
+        respond(authorization, "resolveHold") { sync.resolveUnmatchedHold(request) }
 
     private fun <T> respond(authorization: String?, operation: String, action: () -> T): ResponseEntity<T> {
         if (token.isBlank()) throw ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "PREVIEW_DISABLED")

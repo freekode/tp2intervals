@@ -63,6 +63,30 @@ class TrainingPeaksSyncLedger(private val jdbc: JdbcTemplate, private val mode: 
         ) == 1
     }
 
+    fun claimReviewedUnmatchedHold(
+        key: Key, approval: TrainingPeaksLegacyBaselineRepository.Approval, inventoryVersion: Long,
+    ): Boolean {
+        mode.requireWritable()
+        return jdbc.update(
+            """
+            INSERT INTO trainingpeaks_sync_ledger
+              (source_account_id, destination_athlete_id, source_workout_id, state)
+            SELECT h.source_account_id, h.destination_athlete_id, h.source_workout_id, 'PENDING'
+            FROM trainingpeaks_legacy_hold h
+            JOIN trainingpeaks_legacy_baseline b
+              ON b.source_account_id = h.source_account_id AND b.destination_athlete_id = h.destination_athlete_id
+            JOIN trainingpeaks_sync_generation g ON b.generation = g.generation
+            WHERE h.source_account_id = ? AND h.destination_athlete_id = ? AND h.source_workout_id = ?
+              AND h.reason = 'LISTINGS_INCONCLUSIVE'
+              AND b.id = ? AND b.state = 'APPROVED'
+              AND b.id = (SELECT MAX(id) FROM trainingpeaks_legacy_baseline)
+              AND g.inventory_version = ?
+            ON CONFLICT (source_account_id, destination_athlete_id, source_workout_id) DO NOTHING
+            """.trimIndent(),
+            key.sourceAccountId, key.destinationAthleteId, key.sourceWorkoutId, approval.id, inventoryVersion
+        ) == 1
+    }
+
     fun recordLegacyMatch(key: Key, remoteEventId: Long): Boolean = insert(key, State.CONFIRMED, remoteEventId)
 
     fun recordAmbiguousMatch(key: Key): Boolean = insert(key, State.AMBIGUOUS)

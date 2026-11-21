@@ -94,7 +94,15 @@ and can bypass the ledger and create duplicates.
    the evidence, selected links, and holds together in SQLite. It does not
    update or delete provider events. Any stronger restriction on historical
    gaps should be resolved before this step.
-4. Review the audit and safely enable the writer by setting
+4. Keep the scheduler paused. If you independently verified that a held
+   workout exists in TrainingPeaks and has never been synced to intervals.icu,
+   take a fresh preview while the workout is still accessible. Confirm that
+   individual row and use **Create this workout once**. For Basic accounts,
+   use today's or tomorrow's source workout date. Verify the returned event ID
+   in intervals.icu, then preview again to check that the link is verified.
+   If the response is lost or uncertain, inspect the destination and the
+   unresolved claim. Do not retry the create or use force copy.
+5. Review the audit and enable the writer by setting
    `TP2INTERVALS_ENABLE_SCHEDULED_FORWARD_SYNC=true` only on the intended
    instances and restarting. The current account pair must have an approved
    baseline and a valid `skipSynced=true` schedule. Newly encountered IDs can
@@ -191,8 +199,19 @@ adapting the override. Compose 2.24.4 or newer supports `!override`.
   Manual force-copy remains a separate deliberate action outside preview mode.
 - Missing linked events stay linked for review. Claims never time out into
   an automatic retry. Baseline holds survive restarts and subsequent
-  approvals. They can be reviewed manually using SQLite and preview.
-  Preview alone neither confirms an unresolved claim nor clears a hold.
+  approvals. Preview alone neither confirms an unresolved claim nor clears a hold.
+- After approval, the bearer-protected hold endpoint accepts only an explicitly
+  confirmed, currently visible source workout held for `LISTINGS_INCONCLUSIVE`.
+  It checks a fresh revision, source content, current account pair and destination
+  listings. A matching destination event or any existing ledger entry blocks the
+  attempt. With scheduling paused and preview-only off, a single conditional
+  SQLite insert claims the exact ID. The original hold remains for audit.
+  The existing ledger records a successful remote event ID or retains its pending
+  claim for positive reconciliation. There is no schema change.
+- If a workout drops out of the Basic source window, leave the hold in place.
+  Unselected legacy links and ambiguous holds are ineligible for the create
+  workflow. Review historical links carefully at initial approval because a
+  later approval preserves those holds.
 - Inventory and provider operations are not one distributed transaction.
   Both destination listings can omit an older import. Missing or edited
   markers and moves outside the bounded search can also conceal a historical

@@ -14,12 +14,15 @@ import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsCalendarEventDTO
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsWorkoutRepository
+import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.TPWorkoutCalendarResponseDTO
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.TrainingPeaksWorkoutRepository
 import org.freekode.tp2intervals.infrastructure.sync.TrainingPeaksSyncLedger
 import org.freekode.tp2intervals.infrastructure.sync.TrainingPeaksSyncLedger.Key
 import org.freekode.tp2intervals.infrastructure.sync.TrainingPeaksSyncLedger.State
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import org.springframework.http.HttpStatus
+import org.springframework.web.server.ResponseStatusException
 import org.springframework.beans.factory.annotation.Value
 import java.security.MessageDigest
 import java.util.HexFormat
@@ -154,6 +157,7 @@ class TrainingPeaksCalendarSync(
         val rows: List<TrainingPeaksSyncPreview>,
         val revision: String,
         val approval: Approval?,
+        val sourceEntries: List<TPWorkoutCalendarResponseDTO>,
     )
 
     fun preview(request: TrainingPeaksPreviewRequest, today: LocalDate = LocalDate.now()): TrainingPeaksPreviewInventory {
@@ -201,6 +205,56 @@ class TrainingPeaksCalendarSync(
         return TrainingPeaksBaselineApproval(approved.revision, approved.approvedAt, holds.size)
     }
 
+    fun resolveUnmatchedHold(
+        request: TrainingPeaksHoldResolutionRequest, today: LocalDate = LocalDate.now(),
+    ): TrainingPeaksHoldResolution {
+        mode.requireWritable()
+        if (scheduledForwardEnabled) throw InvalidTrainingPeaksPreview("PAUSE_SCHEDULING_BEFORE_RESOLUTION")
+        if (!request.acknowledgeManualVerification) throw InvalidTrainingPeaksPreview("ACKNOWLEDGEMENT_REQUIRED")
+        check(!TransactionSynchronizationManager.isActualTransactionActive()) {
+            "The hold claim must commit before calling Intervals.icu"
+        }
+
+        val inventory = inventory(request.selection, today)
+        if (request.revision != inventory.revision) throw StaleTrainingPeaksInventory()
+        val approval = inventory.approval ?: throw InvalidTrainingPeaksPreview("BASELINE_REQUIRED")
+        val id = request.sourceWorkoutId
+        if (inventory.rows.none { it.sourceWorkoutId == id && it.canResolveUnmatchedHold }) {
+            throw InvalidTrainingPeaksPreview("HOLD_NOT_ELIGIBLE")
+        }
+        val entry = inventory.sourceEntries.single { it.id == id }
+        val accounts = inventory.accounts
+        val workout = previewStage(PreviewStage.SOURCE_ROWS, PreviewProvider.TRAINING_PEAKS) {
+            source.toCalendarWorkout(accounts.source, entry)
+        }
+        val user = previewStage(PreviewStage.TRAINING_PEAKS_ACCOUNT, PreviewProvider.TRAINING_PEAKS) { source.calendarUser() }
+        val target = previewStage(PreviewStage.INTERVALS_ACCOUNT, PreviewProvider.INTERVALS) {
+            destination.resolveCalendarIdentity()
+        }
+        if (!user.isAthlete || user.userId != accounts.source || target.athleteId != accounts.destination ||
+            (!user.isPremium && entry.workoutDay.toLocalDate() !in today..today.plusDays(1))
+        ) throw StaleTrainingPeaksInventory()
+
+        val key = Key(accounts.source, accounts.destination, id)
+        val candidates = previewStage(PreviewStage.INTERVALS_CALENDAR_LEGACY_WINDOW, PreviewProvider.INTERVALS) {
+            findCandidates(accounts.source, accounts.destination, request.selection.startDate, request.selection.endDate)
+        }
+        if (id in candidates || id in legacyDestinationIds(accounts.source, target) ||
+            !ledger.claimReviewedUnmatchedHold(key, approval, inventory.inventoryVersion) ||
+            !baselines.isCurrent(approval)
+        ) throw StaleTrainingPeaksInventory()
+
+        return try {
+            val eventId = destination.createScopedCalendarEvent(target, accounts.source, workout)
+            ledger.confirm(key, eventId)
+            check(ledger.find(key)?.remoteEventId == eventId)
+            TrainingPeaksHoldResolution(eventId)
+        } catch (failure: RuntimeException) {
+            log.warn("TrainingPeaks hold resolution needs review: code=HOLD_WRITE_UNCERTAIN exception={}", failure.javaClass.simpleName)
+            throw ResponseStatusException(HttpStatus.BAD_GATEWAY, "HOLD_WRITE_UNCERTAIN")
+        }
+    }
+
     private fun inventory(request: TrainingPeaksPreviewRequest, today: LocalDate): Inventory {
         val (start, end, types) = request
         if (start > end || start < LocalDate.MIN.plusDays(365) || end > LocalDate.MAX.minusDays(365)) {
@@ -235,6 +289,8 @@ class TrainingPeaksCalendarSync(
                 workout.workoutDay.toLocalDate() in start..end && type in types && type != TrainingType.NOTE
             }
         }
+        val approval = previous?.takeIf { it.state == "APPROVED" && it.accounts == accounts }
+        val selectedById = selected.groupBy { it.id }
         val (rows, additionalRows) = previewStage(PreviewStage.LEDGER_MATCHING) {
             val previousKeys = legacyDestinationIds(user.userId, target)
             val candidates = groupCandidates(user.userId, current, surrounding)
@@ -242,7 +298,13 @@ class TrainingPeaksCalendarSync(
                 val key = Key(user.userId, athlete, id)
                 val matches = candidates[id].orEmpty()
                 return if (id in previousKeys && ledger.find(key) == null) unverifiedPreviousKey(id, date, matches)
-                else previewWorkout(key, date) { matches }
+                else previewWorkout(key, date) { matches }.let { row ->
+                    if (date != null && approval != null && !scheduledForwardEnabled &&
+                        row.reason == Reason.PREVIOUS_REVIEW_HOLD && matches.isEmpty() &&
+                        selectedById[id]?.size == 1 && ledger.find(key) == null &&
+                        baselines.holdReason(key) == Reason.LISTINGS_INCONCLUSIVE.name
+                    ) row.copy(canResolveUnmatchedHold = true) else row
+                }
             }
             val visible = selected.map { workout ->
                 val date = workout.workoutDay.toLocalDate()
@@ -265,13 +327,12 @@ class TrainingPeaksCalendarSync(
             val stableRows = (rows + additionalRows).map { it.copy(candidates = it.candidates.sortedBy { candidate -> candidate.eventId }) }
                 .sortedWith(compareBy({ it.sourceDate }, { it.sourceWorkoutId }, { it.status }, { it.reason }))
             val previousId = previous?.id ?: 0
+            val resolvable = stableRows.filter { it.canResolveUnmatchedHold }.map { selectedById.getValue(it.sourceWorkoutId!!).single() }
             val content = objectMapper.writeValueAsBytes(listOf(
-                accounts, previousId, inventoryVersion, previous?.state, start, end, types.distinct().sorted(), stableRows,
+                accounts, previousId, inventoryVersion, previous?.state, start, end, types.distinct().sorted(), stableRows, resolvable,
             ))
             val revision = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(content))
-            Inventory(accounts, previousId, inventoryVersion, stableRows, revision, previous?.takeIf {
-                it.state == "APPROVED" && it.accounts == accounts
-            })
+            Inventory(accounts, previousId, inventoryVersion, stableRows, revision, approval, selected)
         }
     }
 
@@ -396,8 +457,7 @@ class TrainingPeaksCalendarSync(
     }
 
     private fun review(key: Key, reason: WorkoutSyncReview.Reason, eventId: Long? = null): WorkoutSyncReview {
-        log.warn("TrainingPeaks sync needs review: {} for workout {}, Intervals athlete {}, event {}",
-            reason, key.sourceWorkoutId, key.destinationAthleteId, eventId)
+        log.warn("TrainingPeaks sync needs review: code={}", reason)
         return WorkoutSyncReview(key.sourceWorkoutId, reason, eventId)
     }
 

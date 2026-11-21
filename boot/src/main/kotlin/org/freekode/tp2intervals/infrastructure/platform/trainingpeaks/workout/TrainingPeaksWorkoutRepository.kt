@@ -95,10 +95,7 @@ class TrainingPeaksWorkoutRepository(
 
         val noteEndDate = getNoteEndDateForFilter(startDate, endDate)
         val tpNotes = trainingPeaksApiClient.getNotes(userId, startDate.toString(), noteEndDate.toString())
-        val workouts = tpWorkouts.map {
-            val attachments = tpAttachmentService.getAttachments(userId, it.id)
-            tpToWorkoutConverter.toWorkout(it, attachments)
-        }
+        val workouts = tpWorkouts.map { toCalendarWorkout(userId, it) }
 
         val notes = tpNotes.map { tpToWorkoutConverter.toWorkout(it) }
         return workouts + notes
@@ -109,6 +106,9 @@ class TrainingPeaksWorkoutRepository(
             .map { it.details }
             .filter { it.name.contains(name) }
     }
+
+    fun toCalendarWorkout(userId: String, entry: TPWorkoutCalendarResponseDTO): Workout =
+        tpToWorkoutConverter.toWorkout(entry, tpAttachmentService.getAttachments(userId, entry.id))
 
     override fun getWorkoutFromLibrary(externalData: ExternalData): Workout {
         return tpWorkoutLibraryRepository.getAllWorkouts()

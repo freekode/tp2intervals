@@ -72,10 +72,23 @@ class PreviewOnlySafetyTest {
         mvc.perform(put("/api/configuration")).andExpect(status().isForbidden)
         mvc.perform(delete("/api/workout")).andExpect(status().isForbidden)
         mvc.perform(post("/api/workout/trainingpeaks-sync/baseline/approve")).andExpect(status().isForbidden)
+        mvc.perform(post("/api/workout/trainingpeaks-sync/holds/resolve")).andExpect(status().isForbidden)
         mvc.perform(post("/actuator/loggers/root")).andExpect(status().isForbidden)
         mvc.perform(post("/api/workout/trainingpeaks-sync/preview").contentType(MediaType.APPLICATION_JSON)
             .content("""{"startDate":"2026-01-01","endDate":"2026-01-01"}""")).andExpect(status().isUnauthorized)
         verifyNoInteractions(workout, sync)
+    }
+
+    @Test
+    fun `writable hold endpoint requires the preview bearer token`() {
+        val sync = mock(TrainingPeaksCalendarSync::class.java)
+        val mvc = MockMvcBuilders.standaloneSetup(TrainingPeaksPreviewController(sync, "synthetic-token"))
+            .setMessageConverters(MappingJackson2HttpMessageConverter(mapper)).build()
+        mvc.perform(post("/api/workout/trainingpeaks-sync/holds/resolve").contentType(MediaType.APPLICATION_JSON)
+            .content("""{"selection":{"startDate":"2026-01-01","endDate":"2026-01-01"},
+                "revision":"synthetic","sourceWorkoutId":"1","acknowledgeManualVerification":true}"""))
+            .andExpect(status().isUnauthorized)
+        verifyNoInteractions(sync)
     }
 
     @Test

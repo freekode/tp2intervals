@@ -1,5 +1,9 @@
 package org.freekode.tp2intervals.app.workout
 
+import ch.qos.logback.classic.Logger
+import ch.qos.logback.classic.spi.ILoggingEvent
+import ch.qos.logback.core.read.ListAppender
+import org.slf4j.LoggerFactory
 import config.SyncLedgerFixture
 import config.mock.ObjectMapperFactory
 import org.freekode.tp2intervals.config.PreviewOnly
@@ -24,6 +28,9 @@ import org.mockito.Mockito.*
 import org.springframework.web.server.ResponseStatusException
 import java.nio.file.Path
 import java.time.LocalDate
+import java.util.concurrent.CyclicBarrier
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 class TrainingPeaksLegacyBaselineTest {
     @TempDir
@@ -184,6 +191,156 @@ class TrainingPeaksLegacyBaselineTest {
         assertEquals(generation, db.baselines().generation())
         jdbc.update("DELETE FROM config WHERE key='intervals.api-key'")
         assertEquals(generation + 1, db.baselines().generation())
+    }
+
+    @Test
+    fun `75 historical candidates can be reviewed and only the chosen unmatched hold is created after restart`() {
+        stub(day, listOf("new"))
+        val events = (1L..75L).map { id ->
+            IntervalsCalendarEventDTO(id, "//////////\ntrainingPeaksId=old-$id",
+                day.minusDays(id).atStartOfDay(), "WORKOUT", "Ride")
+        }
+        doReturn(events).`when`(destination).getCalendarSnapshot(target.athleteId, day.minusDays(365), day.plusDays(365))
+        events.forEach { doReturn(it).`when`(destination).getCalendarEvent(target.athleteId, it.id) }
+        val preview = sync().preview(dates, day)
+        val historical = preview.workouts.filter { it.sourceDate == null }
+        assertEquals(75, historical.size)
+        assertTrue(historical.all { it.reason == TrainingPeaksSyncPreview.Reason.LEGACY_ACCOUNT_UNVERIFIED })
+        assertEquals(setOf("new"), preview.workouts.filter { it.sourceDate == day }.mapNotNull { it.sourceWorkoutId }.toSet())
+        val links = historical.filterNot { it.sourceWorkoutId == "old-75" }
+            .associate { it.sourceWorkoutId!! to it.candidates.single().eventId }
+        val approval = sync().approve(TrainingPeaksBaselineApprovalRequest(dates, preview.revision, true, links), day)
+        assertEquals(2, approval.heldWorkouts)
+        assertEquals(74L, db.newLedger().find(key("old-74"))?.remoteEventId)
+        assertTrue(db.baselines().isHeld(key("old-75")))
+        assertNull(db.newLedger().find(key("old-75")))
+        sync().copy(request(day))
+        verify(destination, never()).createScopedCalendarEvent(target, "source", workout("new", day))
+
+        prepareCreate("new")
+        val decision = decision("new")
+        assertEquals(501L, sync().resolveUnmatchedHold(decision, day).eventId)
+        assertEquals(501L, db.newLedger().find(key("new"))?.remoteEventId)
+        assertTrue(db.baselines().isHeld(key("new")))
+        assertTrue(db.baselines().isHeld(key("old-75")))
+        assertNull(db.newLedger().find(key("old-75")))
+        assertThrows(StaleTrainingPeaksInventory::class.java) { sync().resolveUnmatchedHold(decision, day) }
+        verify(destination, times(1)).createScopedCalendarEvent(target, "source", workout("new", day))
+    }
+
+    @Test
+    fun `hold resolution rejects missing acknowledgement expired visibility modes and changed identity`() {
+        stub(day, listOf("new"))
+        approve(sync())
+        val reviewed = decision("new")
+        assertThrows(InvalidTrainingPeaksPreview::class.java) {
+            sync().resolveUnmatchedHold(reviewed.copy(acknowledgeManualVerification = false), day)
+        }
+        assertThrows(ResponseStatusException::class.java) { sync(previewOnly = true).resolveUnmatchedHold(reviewed, day) }
+        assertThrows(InvalidTrainingPeaksPreview::class.java) { sync(enabled = true).resolveUnmatchedHold(reviewed, day) }
+        assertEquals("BASIC_TODAY_OR_TOMORROW_ONLY", assertThrows(InvalidTrainingPeaksPreview::class.java) {
+            sync().resolveUnmatchedHold(reviewed, day.plusDays(1))
+        }.reason)
+        doReturn(TrainingPeaksUser("different", true, false)).`when`(source).calendarUser()
+        doReturn(emptyList<TPWorkoutCalendarResponseDTO>()).`when`(source).getPlannedCalendarEntries("different", day, day)
+        assertThrows(StaleTrainingPeaksInventory::class.java) { sync().resolveUnmatchedHold(reviewed, day) }
+        assertNull(db.newLedger().find(key("new")))
+        verify(destination, never()).createScopedCalendarEvent(target, "source", workout("new", day))
+    }
+
+    @Test
+    fun `editing the source workout invalidates a reviewed hold decision`() {
+        stub(day, listOf("new"))
+        approve(sync())
+        val reviewed = decision("new")
+        doReturn(listOf(TPWorkoutCalendarResponseDTO(day.atStartOfDay(), "new", 2, "Edited", 1.0, null, null, null, null)))
+            .`when`(source).getPlannedCalendarEntries("source", day, day)
+        assertThrows(StaleTrainingPeaksInventory::class.java) { sync().resolveUnmatchedHold(reviewed, day) }
+        verify(destination, never()).createScopedCalendarEvent(target, "source", workout("new", day))
+        assertNull(db.newLedger().find(key("new")))
+    }
+
+    @Test
+    fun `an event appearing after review and before the final calendar check prevents the claim`() {
+        stub(day, listOf("new"))
+        approve(sync())
+        val reviewed = decision("new")
+        val entry = source.getPlannedCalendarEntries("source", day, day).single()
+        doAnswer {
+            listCalendar(day, listOf(event(35, "new")))
+            workout("new", day)
+        }.`when`(source).toCalendarWorkout("source", entry)
+        assertThrows(StaleTrainingPeaksInventory::class.java) { sync().resolveUnmatchedHold(reviewed, day) }
+        verify(destination, never()).createScopedCalendarEvent(target, "source", workout("new", day))
+        assertNull(db.newLedger().find(key("new")))
+    }
+
+    @Test
+    fun `concurrent services claim a reviewed hold once even when its POST outcome is uncertain`() {
+        stub(day, listOf("new"))
+        approve(sync())
+        val reviewed = decision("new")
+        val entry = source.getPlannedCalendarEntries("source", day, day).single()
+        val barrier = CyclicBarrier(2)
+        doAnswer {
+            barrier.await(5, TimeUnit.SECONDS)
+            workout("new", day)
+        }.`when`(source).toCalendarWorkout("source", entry)
+        doThrow(IllegalStateException("synthetic sensitive upstream failure"))
+            .`when`(destination).createScopedCalendarEvent(target, "source", workout("new", day))
+        val logger = LoggerFactory.getLogger(TrainingPeaksCalendarSync::class.java) as Logger
+        val warnings = ListAppender<ILoggingEvent>().apply { start() }
+        logger.addAppender(warnings)
+        val executor = Executors.newFixedThreadPool(2)
+        try {
+            val outcomes = (1..2).map {
+                executor.submit<Throwable?> { runCatching { sync().resolveUnmatchedHold(reviewed, day) }.exceptionOrNull() }
+            }.map { it.get(10, TimeUnit.SECONDS) }
+            assertEquals(1, outcomes.count { it is StaleTrainingPeaksInventory })
+            val uncertain = outcomes.filterIsInstance<ResponseStatusException>().single()
+            assertEquals("HOLD_WRITE_UNCERTAIN", uncertain.reason)
+            assertNull(uncertain.cause)
+            val warning = warnings.list.single { "HOLD_WRITE_UNCERTAIN" in it.formattedMessage }
+            assertFalse("synthetic sensitive upstream failure" in warning.formattedMessage)
+            assertNull(warning.throwableProxy)
+        } finally {
+            executor.shutdownNow()
+            logger.detachAppender(warnings)
+            warnings.stop()
+        }
+        val pending = sync().preview(dates, day).workouts.single()
+        assertEquals(TrainingPeaksSyncPreview.Status.UNRESOLVED_CLAIM, pending.status)
+        assertFalse(pending.canResolveUnmatchedHold)
+        assertEquals(State.PENDING, db.newLedger().find(key("new"))?.state)
+        assertThrows(StaleTrainingPeaksInventory::class.java) { sync().resolveUnmatchedHold(reviewed, day) }
+        verify(destination).createScopedCalendarEvent(target, "source", workout("new", day))
+    }
+
+    @Test
+    fun `an ambiguous claim makes a previously held source ineligible even with a fresh preview`() {
+        stub(day, listOf("new"))
+        approve(sync())
+        assertTrue(db.newLedger().recordAmbiguousMatch(key("new")))
+        val refreshed = sync().preview(dates, day)
+        assertFalse(refreshed.workouts.single().canResolveUnmatchedHold)
+        val failure = assertThrows(InvalidTrainingPeaksPreview::class.java) {
+            sync().resolveUnmatchedHold(TrainingPeaksHoldResolutionRequest(dates, refreshed.revision, "new", true), day)
+        }
+        assertEquals("HOLD_NOT_ELIGIBLE", failure.reason)
+        assertEquals(State.AMBIGUOUS, db.newLedger().find(key("new"))?.state)
+        verify(destination, never()).createScopedCalendarEvent(target, "source", workout("new", day))
+    }
+
+    private fun decision(id: String): TrainingPeaksHoldResolutionRequest {
+        val preview = sync().preview(dates, day)
+        assertTrue(preview.workouts.single { it.sourceWorkoutId == id }.canResolveUnmatchedHold)
+        return TrainingPeaksHoldResolutionRequest(dates, preview.revision, id, true)
+    }
+
+    private fun prepareCreate(id: String) {
+        val entry = source.getPlannedCalendarEntries("source", day, day).single { it.id == id }
+        doReturn(workout(id, day)).`when`(source).toCalendarWorkout("source", entry)
+        doReturn(501L).`when`(destination).createScopedCalendarEvent(target, "source", workout(id, day))
     }
 
     private fun approve(app: TrainingPeaksCalendarSync): TrainingPeaksBaselineApproval {
