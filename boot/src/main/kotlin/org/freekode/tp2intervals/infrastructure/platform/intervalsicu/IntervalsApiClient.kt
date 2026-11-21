@@ -4,6 +4,7 @@ import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.activity.C
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.CreatedIntervalsEvent
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.CreateEventRequestDTO
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.CreateWorkoutRequestDTO
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsCalendarEventDTO
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsEventDTO
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.http.MediaType
@@ -49,14 +50,14 @@ interface IntervalsApiClient {
     fun getEvent(
         @PathVariable("athleteId") athleteId: String,
         @PathVariable("eventId") eventId: Long,
-    ): ResponseEntity<IntervalsEventDTO>
+    ): ResponseEntity<IntervalsCalendarEventDTO>
 
     @GetMapping("/api/v1/athlete/{athleteId}/events")
     fun getCalendarSnapshot(
         @PathVariable("athleteId") athleteId: String,
         @RequestParam("oldest") oldest: String,
         @RequestParam("newest") newest: String,
-    ): ResponseEntity<List<IntervalsEventDTO>>
+    ): ResponseEntity<List<IntervalsCalendarEventDTO?>>
 
     @GetMapping(
         "/api/v1/athlete/{athleteId}/events?" +

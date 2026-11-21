@@ -3,6 +3,7 @@ package org.freekode.tp2intervals.app.workout
 import org.freekode.tp2intervals.config.PreviewOnly
 import config.SyncLedgerFixture
 import config.mock.ObjectMapperFactory
+import config.mock.calendarIdentity
 import feign.FeignException
 import feign.Request
 import feign.Response
@@ -21,6 +22,7 @@ import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configurat
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfigurationRepository.CalendarIdentity
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.CreatedIntervalsEvent
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.CreateEventRequestDTO
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsCalendarEventDTO
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsEventDTO
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsWorkoutRepository
 import org.freekode.tp2intervals.infrastructure.PlatformException
@@ -422,14 +424,14 @@ class TrainingPeaksSyncFailureTest {
 
         fun lookedUpIds() = synchronized(this) { lookedUpEventIds.toList() }
 
-        override fun getCalendarSnapshot(athleteId: String, oldest: String, newest: String) =
-            ResponseEntity.status(snapshotStatus).body(getEvents(athleteId, oldest, newest, 0f, 0f, 0f))
+        override fun getCalendarSnapshot(athleteId: String, oldest: String, newest: String): ResponseEntity<List<IntervalsCalendarEventDTO?>> =
+            ResponseEntity.status(snapshotStatus).body(getEvents(athleteId, oldest, newest, 0f, 0f, 0f).map { it.calendarIdentity() })
 
         @Synchronized
-        override fun getEvent(athleteId: String, eventId: Long): ResponseEntity<IntervalsEventDTO> {
+        override fun getEvent(athleteId: String, eventId: Long): ResponseEntity<IntervalsCalendarEventDTO> {
             assertEquals(ATHLETE_ID, athleteId)
             lookedUpEventIds.add(eventId)
-            return ResponseEntity.ofNullable(events.firstOrNull { it.id == eventId })
+            return ResponseEntity.ofNullable(events.firstOrNull { it.id == eventId }?.calendarIdentity())
         }
 
         override fun getEvents(

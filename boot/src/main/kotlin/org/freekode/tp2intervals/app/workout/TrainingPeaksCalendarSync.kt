@@ -12,7 +12,7 @@ import org.freekode.tp2intervals.infrastructure.sync.TrainingPeaksLegacyBaseline
 import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.TrainingType
-import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsEventDTO
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsCalendarEventDTO
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsWorkoutRepository
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.TrainingPeaksWorkoutRepository
 import org.freekode.tp2intervals.infrastructure.sync.TrainingPeaksSyncLedger
@@ -279,7 +279,7 @@ class TrainingPeaksCalendarSync(
         if (target.configuredAthleteId == target.athleteId) emptySet()
         else ledger.idsForDestination(source, target.configuredAthleteId).toSet()
 
-    private fun unverifiedPreviousKey(id: String, date: LocalDate?, events: List<IntervalsEventDTO>) =
+    private fun unverifiedPreviousKey(id: String, date: LocalDate?, events: List<IntervalsCalendarEventDTO>) =
         TrainingPeaksSyncPreview(
             id, date, Status.BROKEN_OR_UNVERIFIED_LINK, Reason.LEGACY_DESTINATION_KEY_UNVERIFIED,
             events.map { it.previewCandidate() },
@@ -288,7 +288,7 @@ class TrainingPeaksCalendarSync(
     private fun previewWorkout(
         key: Key,
         date: LocalDate?,
-        candidates: () -> List<IntervalsEventDTO>,
+        candidates: () -> List<IntervalsCalendarEventDTO>,
     ): TrainingPeaksSyncPreview {
         val entry = ledger.find(key)
         if (entry?.state == State.CONFIRMED) {
@@ -343,22 +343,22 @@ class TrainingPeaksCalendarSync(
             verifiedEvent(key, eventId, allowLegacy)
         }
 
-    private fun IntervalsEventDTO.previewCandidate() = Candidate(id, start_date_local.toLocalDate())
+    private fun IntervalsCalendarEventDTO.previewCandidate() = Candidate(id, start_date_local.toLocalDate())
 
     private fun findCandidates(
         sourceAccount: String, athlete: String, start: LocalDate, end: LocalDate,
-    ): Map<String, List<IntervalsEventDTO>> {
+    ): Map<String, List<IntervalsCalendarEventDTO>> {
         val current = destination.getCalendarSnapshot(athlete, start, end)
         val surrounding = destination.getCalendarSnapshot(athlete, start.minusDays(365), end.plusDays(365))
         return groupCandidates(sourceAccount, current, surrounding)
     }
 
-    private fun groupCandidates(sourceAccount: String, current: List<IntervalsEventDTO>, surrounding: List<IntervalsEventDTO>) =
+    private fun groupCandidates(sourceAccount: String, current: List<IntervalsCalendarEventDTO>, surrounding: List<IntervalsCalendarEventDTO>) =
         (current + surrounding).distinctBy { it.id }
             .mapNotNull { event -> event.trainingPeaksId(sourceAccount)?.let { it to event } }
             .groupBy({ it.first }, { it.second })
 
-    private fun verifiedEvent(key: Key, eventId: Long, allowLegacy: Boolean = true): IntervalsEventDTO? =
+    private fun verifiedEvent(key: Key, eventId: Long, allowLegacy: Boolean = true): IntervalsCalendarEventDTO? =
         destination.getCalendarEvent(key.destinationAthleteId, eventId)
             ?.takeIf { it.trainingPeaksId(key.sourceAccountId, allowLegacy) == key.sourceWorkoutId }
 
@@ -401,8 +401,8 @@ class TrainingPeaksCalendarSync(
         return WorkoutSyncReview(key.sourceWorkoutId, reason, eventId)
     }
 
-    private fun IntervalsEventDTO.trainingPeaksId(sourceAccountId: String, allowLegacy: Boolean = true): String? {
-        if (!isWorkout() || type == "NOTE") return null
+    private fun IntervalsCalendarEventDTO.trainingPeaksId(sourceAccountId: String, allowLegacy: Boolean = true): String? {
+        if (category != "WORKOUT" || type == "NOTE") return null
         val footer = description.orEmpty().substringAfterLast("//////////", missingDelimiterValue = "")
         val markers = footer.lineSequence().map { it.trim().split('=', limit = 2) }
             .filter { it.size == 2 }.groupBy({ it[0] }, { it[1] })

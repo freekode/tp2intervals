@@ -3,6 +3,7 @@ package org.freekode.tp2intervals.app.workout
 import org.freekode.tp2intervals.config.PreviewOnly
 import config.SyncLedgerFixture
 import config.mock.ObjectMapperFactory
+import config.mock.calendarIdentity
 import org.freekode.tp2intervals.app.workout.schedule.C2CTodayScheduledRequest
 import org.freekode.tp2intervals.app.workout.schedule.WorkoutScheduledJob
 import org.freekode.tp2intervals.domain.Platform
@@ -13,6 +14,7 @@ import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configurat
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfigurationRepository.CalendarIdentity
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.CreatedIntervalsEvent
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.CreateEventRequestDTO
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsCalendarEventDTO
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsEventDTO
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsWorkoutRepository
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.TrainingPeaksApiClient
@@ -168,12 +170,12 @@ class TrainingPeaksCalendarSyncTest {
         var reads = 0
             private set
 
-        override fun getCalendarSnapshot(athleteId: String, oldest: String, newest: String) =
-            ResponseEntity.ok(getEvents(athleteId, oldest, newest, 0f, 0f, 0f))
+        override fun getCalendarSnapshot(athleteId: String, oldest: String, newest: String): ResponseEntity<List<IntervalsCalendarEventDTO?>> =
+            ResponseEntity.ok(getEvents(athleteId, oldest, newest, 0f, 0f, 0f).map { it.calendarIdentity() })
 
-        override fun getEvent(athleteId: String, eventId: Long): ResponseEntity<IntervalsEventDTO> {
+        override fun getEvent(athleteId: String, eventId: Long): ResponseEntity<IntervalsCalendarEventDTO> {
             assertEquals(ATHLETE_ID, athleteId)
-            return ResponseEntity.ofNullable(events.firstOrNull { it.id == eventId })
+            return ResponseEntity.ofNullable(events.firstOrNull { it.id == eventId }?.calendarIdentity())
         }
 
         override fun getEvents(

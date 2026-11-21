@@ -8,6 +8,7 @@ import feign.FeignException
 import feign.Request
 import feign.Response
 import feign.codec.DecodeException
+import com.fasterxml.jackson.databind.JsonMappingException
 import config.SyncLedgerFixture
 import org.freekode.tp2intervals.config.PreviewOnly
 import org.freekode.tp2intervals.config.PreviewOnlyHttpGuard
@@ -16,7 +17,7 @@ import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsA
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfiguration
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfigurationRepository
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfigurationRepository.CalendarIdentity
-import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsEventDTO
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsCalendarEventDTO
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsWorkoutRepository
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.TrainingPeaksApiClient
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.user.TrainingPeaksUser
@@ -174,6 +175,25 @@ class TrainingPeaksSyncPreviewTest {
     }
 
     @Test
+    fun `legacy decode warning redacts unknown field names and array indexes`() {
+        val mvc = mvc()
+        val mapping = JsonMappingException.from(null as com.fasterxml.jackson.core.JsonParser?, SECRET).apply {
+            prependPath(Any(), "start_date_local")
+            prependPath(Any(), SECRET)
+            prependPath(Any(), 34567)
+        }
+        `when`(intervals.getCalendarSnapshot(DESTINATION, today.toString(), tomorrow.toString()))
+            .thenReturn(ResponseEntity.ok(emptyList()))
+        `when`(intervals.getCalendarSnapshot(DESTINATION, today.minusDays(365).toString(), tomorrow.plusDays(365).toString()))
+            .thenThrow(DecodeException(200, SECRET, upstreamRequest(), mapping))
+        assertFailure(
+            mvc, 502, "INTERVALS_INVALID_RESPONSE", "INTERVALS_CALENDAR_LEGACY_WINDOW", "INTERVALS", 200,
+            "decoder=JsonMappingException fieldPath=[*].[unknown].start_date_local",
+        )
+        verifyNoInteractions(trainingPeaks)
+    }
+
+    @Test
     fun `a malformed upstream payload is classified separately from an internal runtime error`() {
         val mvc = mvc()
         doThrow(DecodeException(200, SECRET, upstreamRequest())).`when`(user).resolveUser()
@@ -193,6 +213,7 @@ class TrainingPeaksSyncPreviewTest {
     private fun assertFailure(
         mvc: org.springframework.test.web.servlet.MockMvc,
         expectedStatus: Int, code: String, stage: String, provider: String, upstreamStatus: Int?,
+        decodeDetails: String? = null,
     ) {
         val logger = LoggerFactory.getLogger(TrainingPeaksPreviewController::class.java) as Logger
         val appender = ListAppender<ILoggingEvent>().apply { start() }
@@ -208,6 +229,7 @@ class TrainingPeaksSyncPreviewTest {
             val message = log.formattedMessage
             org.junit.jupiter.api.Assertions.assertTrue(message.contains("stage=$stage provider=$provider exception="))
             org.junit.jupiter.api.Assertions.assertTrue(message.contains("upstreamStatus=${upstreamStatus ?: "-"} code=$code"))
+            decodeDetails?.let { org.junit.jupiter.api.Assertions.assertTrue(message.contains(it)) }
             assertFalse(message.contains(SECRET))
             org.junit.jupiter.api.Assertions.assertNull(log.throwableProxy)
         } finally {
@@ -259,11 +281,11 @@ class TrainingPeaksSyncPreviewTest {
     private fun workout(id: String, date: LocalDate = today) =
         TPWorkoutCalendarResponseDTO(date.atStartOfDay(), id, 2, "Synthetic", 1.0, null, null, null, null)
 
-    private fun event(id: Long, workoutId: String, date: LocalDate, legacy: Boolean = false): IntervalsEventDTO {
+    private fun event(id: Long, workoutId: String, date: LocalDate, legacy: Boolean = false): IntervalsCalendarEventDTO {
         val account = if (legacy) "" else "\ntrainingPeaksAccountId=$SOURCE"
-        return IntervalsEventDTO(
-            id, "Edited athlete workout", "//////////\ntrainingPeaksId=$workoutId$account",
-            date.atStartOfDay(), "WORKOUT", "Ride", null, null, null
+        return IntervalsCalendarEventDTO(
+            id, "//////////\ntrainingPeaksId=$workoutId$account",
+            date.atStartOfDay(), "WORKOUT", "Ride"
         )
     }
 

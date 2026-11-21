@@ -58,8 +58,9 @@ class TrainingPeaksPreviewController(
             throw ResponseStatusException(HttpStatus.CONFLICT, "STALE_INVENTORY_REVISION")
         } catch (error: TrainingPeaksPreviewFailure) {
             log.warn(
-                "TrainingPeaks inventory failed operation={} stage={} provider={} exception={} upstreamStatus={} code={}",
-                operation, error.stage, error.provider, error.exceptionClass, error.upstreamStatus ?: "-", error.code
+                "TrainingPeaks inventory failed operation={} stage={} provider={} exception={} upstreamStatus={} code={} decoder={} fieldPath={}",
+                operation, error.stage, error.provider, error.exceptionClass, error.upstreamStatus ?: "-", error.code,
+                error.decoder?.type ?: "-", error.decoder?.path ?: "-",
             )
             throw ResponseStatusException(error.status, error.code)
         }

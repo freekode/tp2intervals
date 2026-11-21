@@ -9,7 +9,7 @@ import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutDetails
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfigurationRepository.CalendarIdentity
-import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsEventDTO
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsCalendarEventDTO
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsWorkoutRepository
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.user.TrainingPeaksUser
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.TPWorkoutCalendarResponseDTO
@@ -205,7 +205,7 @@ class TrainingPeaksLegacyBaselineTest {
         listCalendar(date, emptyList())
     }
 
-    private fun listCalendar(date: LocalDate, events: List<IntervalsEventDTO>) {
+    private fun listCalendar(date: LocalDate, events: List<IntervalsCalendarEventDTO>) {
         doReturn(events).`when`(destination).getCalendarSnapshot(target.athleteId, date, date)
         doReturn(events).`when`(destination).getCalendarSnapshot(target.athleteId, date.minusDays(365), date.plusDays(365))
     }
@@ -216,8 +216,8 @@ class TrainingPeaksLegacyBaselineTest {
         WorkoutDetails(TrainingType.BIKE, "Synthetic", null, null, null, ExternalData.empty().withTrainingPeaks(id)), date, null
     )
 
-    private fun event(id: Long, sourceId: String) = IntervalsEventDTO(
-        id, "Synthetic", "//////////\ntrainingPeaksId=$sourceId", day.atStartOfDay(), "WORKOUT", "Ride", null, null, null
+    private fun event(id: Long, sourceId: String) = IntervalsCalendarEventDTO(
+        id, "//////////\ntrainingPeaksId=$sourceId", day.atStartOfDay(), "WORKOUT", "Ride"
     )
 
     private fun request(date: LocalDate) =

@@ -13,6 +13,7 @@ import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsA
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfigurationRepository
 import org.freekode.tp2intervals.infrastructure.ProviderReadFailure
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Repository
@@ -49,7 +50,7 @@ class IntervalsWorkoutRepository(
             ?: throw PlatformException(Platform.INTERVALS, "Calendar create did not confirm an event ID")
     }
 
-    fun getCalendarEvent(athleteId: String, eventId: Long): IntervalsEventDTO? {
+    fun getCalendarEvent(athleteId: String, eventId: Long): IntervalsCalendarEventDTO? {
         val response = try {
             intervalsApiClient.getEvent(athleteId, eventId)
         } catch (error: FeignException) {
@@ -57,14 +58,19 @@ class IntervalsWorkoutRepository(
             throw error
         }
         if (response.statusCode == HttpStatus.NOT_FOUND) return null
-        return response.body?.takeIf { response.statusCode.is2xxSuccessful && it.id == eventId }
+        return response.body?.takeIf { response.statusCode == HttpStatus.OK && it.isValid() && it.id == eventId }
             ?: throw calendarReadFailure(response.statusCode.value())
     }
 
-    fun getCalendarSnapshot(athleteId: String, startDate: LocalDate, endDate: LocalDate): List<IntervalsEventDTO> {
+    fun getCalendarSnapshot(athleteId: String, startDate: LocalDate, endDate: LocalDate): List<IntervalsCalendarEventDTO> {
         val response = intervalsApiClient.getCalendarSnapshot(athleteId, startDate.toString(), endDate.toString())
-        return response.body?.takeIf { response.statusCode.is2xxSuccessful }
-            ?: throw calendarReadFailure(response.statusCode.value())
+        val events = response.body
+        if (response.statusCode != HttpStatus.OK || response.headers.containsKey(HttpHeaders.CONTENT_RANGE) || events == null) {
+            throw calendarReadFailure(response.statusCode.value())
+        }
+        return events.map { event ->
+            event?.takeIf { it.isValid() } ?: throw calendarReadFailure(response.statusCode.value())
+        }
     }
 
     private fun calendarReadFailure(status: Int) = ProviderReadFailure(

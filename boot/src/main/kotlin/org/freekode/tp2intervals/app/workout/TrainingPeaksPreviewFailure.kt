@@ -1,5 +1,7 @@
 package org.freekode.tp2intervals.app.workout
 
+import com.fasterxml.jackson.core.JsonProcessingException
+import com.fasterxml.jackson.databind.JsonMappingException
 import feign.FeignException
 import feign.codec.DecodeException
 import org.freekode.tp2intervals.infrastructure.ProviderReadFailure
@@ -22,6 +24,7 @@ internal class TrainingPeaksPreviewFailure(
     val upstreamStatus: Int?,
     val code: String,
     val status: HttpStatus,
+    val decoder: CalendarDecodeDiagnostic? = null,
 ) : RuntimeException(code) {
     companion object {
         fun from(stage: PreviewStage, provider: PreviewProvider, error: Exception): TrainingPeaksPreviewFailure {
@@ -39,7 +42,12 @@ internal class TrainingPeaksPreviewFailure(
             if (provider != PreviewProvider.INTERNAL && upstreamCode != null) {
                 val status = if (upstreamCode == "CONFIGURATION_REQUIRED") HttpStatus.SERVICE_UNAVAILABLE
                 else HttpStatus.BAD_GATEWAY
-                return TrainingPeaksPreviewFailure(stage, provider, error.javaClass.simpleName, upstream, "${provider}_$upstreamCode", status)
+                return TrainingPeaksPreviewFailure(
+                    stage, provider, error.javaClass.simpleName, upstream, "${provider}_$upstreamCode", status,
+                    if (provider == PreviewProvider.INTERVALS && error is DecodeException &&
+                        stage in calendarDecodeStages
+                    ) calendarDecodeDiagnostic(error) else null,
+                )
             }
             val code = if (error is DataAccessException) "PREVIEW_STORAGE_ERROR" else "PREVIEW_INTERNAL_ERROR"
             return TrainingPeaksPreviewFailure(
@@ -47,6 +55,28 @@ internal class TrainingPeaksPreviewFailure(
             )
         }
     }
+}
+
+internal data class CalendarDecodeDiagnostic(val type: String, val path: String)
+
+private val calendarDecodeStages = setOf(
+    PreviewStage.INTERVALS_CALENDAR_RANGE, PreviewStage.INTERVALS_CALENDAR_LEGACY_WINDOW, PreviewStage.INTERVALS_EVENT_LOOKUP,
+)
+
+private val calendarFields = setOf("id", "description", "start_date_local", "category", "type")
+
+private fun calendarDecodeDiagnostic(error: DecodeException): CalendarDecodeDiagnostic {
+    val causes = generateSequence<Throwable>(error) { it.cause }.take(12).toList()
+    val mapping = causes.filterIsInstance<JsonMappingException>().firstOrNull { it.path.isNotEmpty() }
+    val decoding = mapping ?: causes.filterIsInstance<JsonProcessingException>().firstOrNull()
+    val path = mapping?.path?.take(8)?.joinToString("") { reference ->
+        when {
+            reference.index >= 0 -> "[*]"
+            reference.fieldName in calendarFields -> ".${reference.fieldName}"
+            else -> ".[unknown]"
+        }
+    } ?: "$"
+    return CalendarDecodeDiagnostic(decoding?.javaClass?.simpleName ?: "DecodeException", path)
 }
 
 internal inline fun <T> previewStage(

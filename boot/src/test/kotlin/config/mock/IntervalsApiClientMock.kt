@@ -10,6 +10,7 @@ import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.activity.C
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.CreatedIntervalsEvent
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.CreateEventRequestDTO
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.CreateWorkoutRequestDTO
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsCalendarEventDTO
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsEventDTO
 import org.springframework.web.multipart.MultipartFile
 
@@ -32,10 +33,10 @@ class IntervalsApiClientMock(
         TODO("Not yet implemented")
     }
 
-    override fun getEvent(athleteId: String, eventId: Long): ResponseEntity<IntervalsEventDTO> =
+    override fun getEvent(athleteId: String, eventId: Long): ResponseEntity<IntervalsCalendarEventDTO> =
         TODO("Not yet implemented")
 
-    override fun getCalendarSnapshot(athleteId: String, oldest: String, newest: String): ResponseEntity<List<IntervalsEventDTO>> =
+    override fun getCalendarSnapshot(athleteId: String, oldest: String, newest: String): ResponseEntity<List<IntervalsCalendarEventDTO?>> =
         TODO("Not yet implemented")
 
     override fun getEvents(
