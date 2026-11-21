@@ -3,3 +3,17 @@
   padding-bottom: 10px;
   padding-left: 10px;
 }
+
+
+.inventory-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.inventory-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+}

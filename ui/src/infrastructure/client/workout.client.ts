@@ -9,6 +9,7 @@ export interface TrainingPeaksSyncPreview {
   status: string;
   reason: string;
   candidates: {eventId: number; date?: string}[];
+  canResolveUnmatchedHold?: boolean;
 }
 
 export interface TrainingPeaksPreviewSelection {
@@ -61,6 +62,16 @@ export class WorkoutClient {
     return this.httpClient.post<{approvedAt: string; heldWorkouts: number}>(
       '/api/workout/trainingpeaks-sync/baseline/approve',
       {selection, revision, acknowledgeInconclusive, legacyLinks},
+      {headers: {Authorization: 'Bearer ' + token}}
+    );
+  }
+
+  resolveTrainingPeaksHold(
+    selection: TrainingPeaksPreviewSelection, revision: string, sourceWorkoutId: string, token: string
+  ) {
+    return this.httpClient.post<{eventId: number}>(
+      '/api/workout/trainingpeaks-sync/holds/resolve',
+      {selection, revision, sourceWorkoutId, acknowledgeManualVerification: true},
       {headers: {Authorization: 'Bearer ' + token}}
     );
   }

@@ -26,8 +26,8 @@
       <mat-label>Date Range</mat-label>
       <mat-date-range-input
         [rangePicker]="copyPlanDatePicker">
-        <input matStartDate placeholder="Start Date" formControlName="startDate">
-        <input matEndDate placeholder="End Date" formControlName="endDate">
+        <input matStartDate placeholder="YYYY-MM-DD" aria-label="Start date" formControlName="startDate">
+        <input matEndDate placeholder="YYYY-MM-DD" aria-label="End date" formControlName="endDate">
       </mat-date-range-input>
       <mat-datepicker-toggle matIconSuffix [for]="copyPlanDatePicker"></mat-datepicker-toggle>
       <mat-date-range-picker #copyPlanDatePicker></mat-date-range-picker>
@@ -60,38 +60,91 @@
     @if (approvalMessage) { <p role="status">{{ approvalMessage }}</p> }
     @if (previewResult; as result) {
       <section aria-label="Sync preview" aria-live="polite">
-        <p>{{ result.selection.startDate }} to {{ result.selection.endDate }} · {{ result.inventory.workouts.length }} inventory entries</p>
+        <p>TrainingPeaks source dates {{ result.selection.startDate }} through {{ result.selection.endDate }}.
+          The intervals.icu search also covers 365 days before and after that range to find historical or moved events.</p>
         <p>TrainingPeaks {{ result.inventory.sourceAccountId }} → Intervals.icu {{ result.inventory.destinationAthleteId }}</p>
+        <p><strong>Preview-only {{ result.inventory.previewOnly ? 'on' : 'off' }}</strong> ·
+          <strong>Scheduled forward sync {{ result.inventory.activationEnabled ? 'enabled' : 'paused' }}</strong></p>
         @if (result.inventory.approvedAt) {
           <p>Current baseline approved {{ result.inventory.approvedAt }} UTC</p>
         }
-        @if (!result.inventory.workouts.length) {
-          <p>No source workouts were returned for the selected dates and types.</p>
-        }
-        <ul>
-          @for (workout of result.inventory.workouts; track $index) {
-            <li>
-              <strong>{{ previewLabels[workout.status] }}</strong>
-              · TrainingPeaks {{ workout.sourceWorkoutId ?? 'ID unavailable' }} · {{ workout.sourceDate ?? 'outside the source selection' }}
-              <small>({{ workout.reason }})</small>
-              @if (workout.candidates.length) {
-                <ul>
-                  @for (candidate of workout.candidates; track candidate.eventId) {
-                    <li>Intervals.icu event {{ candidate.eventId }} · {{ candidate.date ?? 'date unavailable' }}</li>
-                  }
-                </ul>
-              }
-              @if (workout.status === 'SINGLE_LEGACY_CANDIDATE' && workout.sourceWorkoutId) {
-                <mat-checkbox [checked]="selectedLegacyLinks.has(workout.sourceWorkoutId)"
-                  (change)="selectLegacyLink(workout.sourceWorkoutId, workout.candidates[0].eventId, $event.checked)">
-                  Link this event after verifying its source account
-                </mat-checkbox>
-              }
-            </li>
+        <ul class="inventory-counts" aria-label="Inventory counts">
+          @for (item of classificationCounts; track item.status) {
+            <li>{{ item.label }}: {{ item.count }}</li>
           }
         </ul>
+        <div class="inventory-controls">
+          <mat-form-field>
+            <mat-label>Classification</mat-label>
+            <mat-select [(ngModel)]="classification" [ngModelOptions]="{standalone: true}">
+              <mat-option value="">All classifications</mat-option>
+              @for (item of classificationCounts; track item.status) {
+                <mat-option [value]="item.status">{{ item.label }} ({{ item.count }})</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Sort inventory</mat-label>
+            <mat-select [(ngModel)]="inventorySort" [ngModelOptions]="{standalone: true}">
+              <mat-option value="date-desc">Date, newest first</mat-option>
+              <mat-option value="date-asc">Date, oldest first</mat-option>
+              <mat-option value="status">Classification</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="inventory-controls">
+          <button mat-stroked-button type="button" [disabled]="inProgress" (click)="selectVisibleLegacyLinks(true)">
+            Select visible single candidates
+          </button>
+          <button mat-stroked-button type="button" [disabled]="inProgress" (click)="selectVisibleLegacyLinks(false)">
+            Deselect visible single candidates
+          </button>
+          <span>{{ selectedLegacyLinks.size }} selected across all filters</span>
+        </div>
+        <p>Verify that each selected event belongs to this TrainingPeaks account before approving links.</p>
+        @for (group of visibleInventoryGroups; track group.title) {
+          <h3>{{ group.title }}</h3>
+          @if (!group.rows.length) { <p>No entries in this view.</p> }
+          <ul>
+            @for (workout of group.rows; track workout) {
+              <li>
+                <strong>{{ previewLabels[workout.status] }}</strong>
+                · TrainingPeaks {{ workout.sourceWorkoutId ?? 'ID unavailable' }}
+                @if (workout.sourceDate) { · {{ workout.sourceDate }} }
+                <small>({{ workout.reason }})</small>
+                @if (workout.candidates.length) {
+                  <ul>
+                    @for (candidate of workout.candidates; track candidate.eventId) {
+                      <li>Intervals.icu event {{ candidate.eventId }} · {{ candidate.date ?? 'date unavailable' }}</li>
+                    }
+                  </ul>
+                }
+                @if (workout.status === 'SINGLE_LEGACY_CANDIDATE' && workout.sourceWorkoutId) {
+                  <mat-checkbox [checked]="selectedLegacyLinks.has(workout.sourceWorkoutId)" [disabled]="inProgress"
+                    (change)="selectLegacyLink(workout.sourceWorkoutId, workout.candidates[0].eventId, $event.checked)">
+                    Link this event after verifying its source account
+                  </mat-checkbox>
+                }
+                @if (workout.canResolveUnmatchedHold && !result.inventory.previewOnly && !result.inventory.activationEnabled) {
+                  <div>
+                    <mat-checkbox [checked]="acknowledgedHold === workout.sourceWorkoutId" [disabled]="inProgress"
+                      (change)="acknowledgedHold = $event.checked ? workout.sourceWorkoutId : undefined">
+                      I checked intervals.icu and confirmed this workout has never been synchronized.
+                      Calendar listings can omit events.
+                    </mat-checkbox>
+                    <button mat-stroked-button type="button"
+                      [disabled]="inProgress || acknowledgedHold !== workout.sourceWorkoutId"
+                      (click)="resolveHold(workout, previewToken)">Create this workout once</button>
+                  </div>
+                }
+              </li>
+            }
+          </ul>
+        }
+        <p>Unlinked and inconclusive entries are held to prevent duplicates. An unmatched hold can be resolved individually
+          after approval while its source workout is still visible. Pending writes and ambiguous links require investigation.</p>
         @if (result.inventory.previewOnly || result.inventory.activationEnabled) {
-          <p>Approval requires preview-only mode off and scheduled forward sync paused.</p>
+          <p>Approval and hold resolution require preview-only mode off and scheduled forward sync paused.</p>
         }
         <mat-checkbox [checked]="acknowledgeInconclusive" (change)="acknowledgeInconclusive = $event.checked">
           I reviewed this inventory and understand that no match observed is not proof of absence.

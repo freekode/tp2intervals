@@ -5,7 +5,7 @@ import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatInputModule} from "@angular/material/input";
 import {MatProgressBarModule} from "@angular/material/progress-bar";
 import {MatDatepickerModule} from "@angular/material/datepicker";
-import {MatNativeDateModule} from "@angular/material/core";
+import {IsoDateModule} from "utils/iso-date.module";
 import {MatSnackBarModule} from "@angular/material/snack-bar";
 import {MatSelectModule} from "@angular/material/select";
 import {MatCheckboxModule} from "@angular/material/checkbox";
@@ -16,7 +16,7 @@ import {MatListModule} from "@angular/material/list";
 import {NgIf} from "@angular/common";
 import {ConfigurationClient} from "infrastructure/client/configuration.client";
 import {finalize, switchMap, tap} from "rxjs";
-import {ScheduledWorkoutRequest, TrainingPeaksPreviewInventory, TrainingPeaksPreviewSelection, WorkoutClient} from "infrastructure/client/workout.client";
+import {ScheduledWorkoutRequest, TrainingPeaksPreviewInventory, TrainingPeaksPreviewSelection, TrainingPeaksSyncPreview, WorkoutClient} from "infrastructure/client/workout.client";
 import {NotificationService} from "infrastructure/notification.service";
 import {MatTooltipModule} from "@angular/material/tooltip";
 import {TrainingTypes} from "infrastructure/training-types";
@@ -32,7 +32,7 @@ import {TrainingTypes} from "infrastructure/training-types";
     ReactiveFormsModule,
     MatProgressBarModule,
     MatDatepickerModule,
-    MatNativeDateModule,
+    IsoDateModule,
     MatSnackBarModule,
     MatSelectModule,
     MatCheckboxModule,
@@ -47,19 +47,22 @@ import {TrainingTypes} from "infrastructure/training-types";
 export class CopyCalendarToCalendarComponent implements OnInit {
   readonly Platform = Platform;
   readonly todayDate = new Date()
-  readonly tomorrowDate = new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
+  readonly tomorrowDate = new Date(this.todayDate.getFullYear(), this.todayDate.getMonth(), this.todayDate.getDate() + 1)
 
   @Input() trainingTypes: any[] = []
   @Input() selectedTrainingTypes = ['BIKE', 'VIRTUAL_BIKE']
   @Input() directions: any[] = []
   @Input() inProgress = false
 
-  formGroup: FormGroup
+  formGroup!: FormGroup
   platformsInfo: any
   scheduleRequests: ScheduledWorkoutRequest[] = []
   previewResult?: {selection: TrainingPeaksPreviewSelection; inventory: TrainingPeaksPreviewInventory}
   readonly selectedLegacyLinks = new Map<string, number>();
   acknowledgeInconclusive = false;
+  acknowledgedHold?: string;
+  classification = '';
+  inventorySort = 'date-desc';
   approvalMessage = '';
   previewError = ''
   syncReview: {sourceWorkoutId: string; reason: string; remoteEventId?: number}[] = []
@@ -124,6 +127,8 @@ export class CopyCalendarToCalendarComponent implements OnInit {
     this.previewError = '';
     this.approvalMessage = '';
     this.acknowledgeInconclusive = false;
+    this.acknowledgedHold = undefined;
+    this.classification = '';
     this.selectedLegacyLinks.clear();
     if (!token) {
       this.previewError = 'Enter the preview access token.';
@@ -155,6 +160,78 @@ export class CopyCalendarToCalendarComponent implements OnInit {
           } else this.previewError = 'Preview could not read the selected calendars.';
         }
       });
+  }
+
+  get classificationCounts() {
+    const counts = new Map<string, number>();
+    for (const row of this.previewResult?.inventory.workouts ?? []) {
+      counts.set(row.status, (counts.get(row.status) ?? 0) + 1);
+    }
+    return Object.entries(this.previewLabels).map(([status, label]) => ({status, label, count: counts.get(status) ?? 0}));
+  }
+
+  get visibleInventoryGroups() {
+    const rows = (this.previewResult?.inventory.workouts ?? [])
+      .filter(row => !this.classification || row.status === this.classification)
+      .sort((a, b) => {
+        if (this.inventorySort === 'status') {
+          return a.status.localeCompare(b.status) || this.inventoryDate(b).localeCompare(this.inventoryDate(a));
+        }
+        return this.inventorySort === 'date-asc'
+          ? this.inventoryDate(a).localeCompare(this.inventoryDate(b))
+          : this.inventoryDate(b).localeCompare(this.inventoryDate(a));
+      });
+    return [
+      {title: 'Current TrainingPeaks source workouts', rows: rows.filter(row => !!row.sourceDate)},
+      {title: 'Historical destination and ledger entries', rows: rows.filter(row => !row.sourceDate)},
+    ];
+  }
+
+  private inventoryDate(row: TrainingPeaksSyncPreview): string {
+    return row.sourceDate ?? row.candidates.reduce((latest, event) => event.date && event.date > latest ? event.date : latest, '');
+  }
+
+  selectVisibleLegacyLinks(selected: boolean) {
+    for (const group of this.visibleInventoryGroups) {
+      for (const row of group.rows) {
+        if (row.status === 'SINGLE_LEGACY_CANDIDATE' && row.sourceWorkoutId && row.candidates.length === 1) {
+          this.selectLegacyLink(row.sourceWorkoutId, row.candidates[0].eventId, selected);
+        }
+      }
+    }
+  }
+
+  resolveHold(row: TrainingPeaksSyncPreview, tokenInput: HTMLInputElement) {
+    const result = this.previewResult;
+    const id = row.sourceWorkoutId;
+    if (!result || !id || !row.canResolveUnmatchedHold || this.acknowledgedHold !== id ||
+        result.inventory.previewOnly || result.inventory.activationEnabled || this.inProgress) return;
+    const token = tokenInput.value.trim();
+    tokenInput.value = '';
+    if (!token) {
+      this.previewError = 'Enter the preview access token again to resolve this hold.';
+      return;
+    }
+    this.previewError = '';
+    this.approvalMessage = '';
+    this.inProgress = true;
+    this.workoutClient.resolveTrainingPeaksHold(result.selection, result.inventory.revision, id, token)
+      .pipe(finalize(() => this.inProgress = false)).subscribe({
+        next: reply => {
+          this.previewResult = undefined;
+          this.approvalMessage = `Created Intervals.icu event ${reply.eventId}. Preview again to verify the link.`;
+        },
+        error: error => {
+          const code = error.error?.detail ?? error.error?.message;
+          this.previewResult = undefined;
+          this.previewError = code === 'HOLD_WRITE_UNCERTAIN'
+            ? 'The write outcome is uncertain. Check the destination and preview again. Do not retry or force copy.'
+            : error.status === 401
+              ? 'The preview token was rejected.'
+              : 'Resolution was blocked. Check the account, source date and server settings, then run a fresh preview.';
+        },
+      });
+    this.acknowledgedHold = undefined;
   }
 
   selectLegacyLink(sourceId: string, eventId: number, selected: boolean) {

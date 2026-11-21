@@ -5,7 +5,7 @@ import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatInputModule} from "@angular/material/input";
 import {MatProgressBarModule} from "@angular/material/progress-bar";
 import {MatDatepickerModule} from "@angular/material/datepicker";
-import {MatNativeDateModule} from "@angular/material/core";
+import {IsoDateModule} from "utils/iso-date.module";
 import {MatSnackBarModule} from "@angular/material/snack-bar";
 import {MatSelectModule} from "@angular/material/select";
 import {MatCheckboxModule} from "@angular/material/checkbox";
@@ -27,7 +27,7 @@ import {
     ReactiveFormsModule,
     MatProgressBarModule,
     MatDatepickerModule,
-    MatNativeDateModule,
+    IsoDateModule,
     MatSnackBarModule,
     MatSelectModule,
     MatCheckboxModule,
