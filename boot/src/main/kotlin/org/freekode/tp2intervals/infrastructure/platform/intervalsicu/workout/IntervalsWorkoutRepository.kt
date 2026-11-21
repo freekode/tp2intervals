@@ -11,6 +11,7 @@ import org.freekode.tp2intervals.domain.workout.WorkoutRepository
 import org.freekode.tp2intervals.infrastructure.PlatformException
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsApiClient
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfigurationRepository
+import org.freekode.tp2intervals.infrastructure.ProviderReadFailure
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -57,14 +58,20 @@ class IntervalsWorkoutRepository(
         }
         if (response.statusCode == HttpStatus.NOT_FOUND) return null
         return response.body?.takeIf { response.statusCode.is2xxSuccessful && it.id == eventId }
-            ?: throw PlatformException(Platform.INTERVALS, "Calendar lookup did not return the requested event")
+            ?: throw calendarReadFailure(response.statusCode.value())
     }
 
     fun getCalendarSnapshot(athleteId: String, startDate: LocalDate, endDate: LocalDate): List<IntervalsEventDTO> {
         val response = intervalsApiClient.getCalendarSnapshot(athleteId, startDate.toString(), endDate.toString())
         return response.body?.takeIf { response.statusCode.is2xxSuccessful }
-            ?: throw PlatformException(Platform.INTERVALS, "Calendar listing did not return a successful response")
+            ?: throw calendarReadFailure(response.statusCode.value())
     }
+
+    private fun calendarReadFailure(status: Int) = ProviderReadFailure(
+        Platform.INTERVALS,
+        if (status in 200..299) ProviderReadFailure.Kind.RESPONSE else ProviderReadFailure.Kind.HTTP,
+        status,
+    )
 
     override fun saveWorkoutsToLibrary(libraryContainer: LibraryContainer, workouts: List<Workout>) {
         val toIntervalsWorkoutConverter = ToIntervalsWorkoutConverter()

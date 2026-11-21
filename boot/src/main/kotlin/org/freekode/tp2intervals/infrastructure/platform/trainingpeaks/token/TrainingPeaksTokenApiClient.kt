@@ -13,5 +13,5 @@ import org.springframework.web.bind.annotation.RequestHeader
 )
 interface TrainingPeaksTokenApiClient {
     @GetMapping("/users/v3/token")
-    fun getToken(@RequestHeader(HttpHeaders.COOKIE) cookie: String): TrainingPeaksUserTokenDTO
+    fun getToken(@RequestHeader(HttpHeaders.COOKIE) cookie: String): TrainingPeaksUserTokenDTO?
 }

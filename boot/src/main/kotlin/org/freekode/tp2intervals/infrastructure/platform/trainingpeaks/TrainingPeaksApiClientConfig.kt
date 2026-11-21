@@ -2,7 +2,7 @@ package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks
 
 import feign.RequestInterceptor
 import org.freekode.tp2intervals.domain.Platform
-import org.freekode.tp2intervals.infrastructure.PlatformException
+import org.freekode.tp2intervals.infrastructure.ProviderReadFailure
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.configuration.TrainingPeaksConfigurationRepository
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.token.TrainingPeaksTokenRepository
 import org.springframework.context.annotation.Bean
@@ -18,8 +18,8 @@ class TrainingPeaksApiClientConfig(
     @Bean
     fun requestInterceptor(): RequestInterceptor {
         return RequestInterceptor { template ->
-            val cookie = configuration.getConfiguration().authCookie
-                ?: throw PlatformException(Platform.TRAINING_PEAKS, "Access to the platform is not configured")
+            val cookie = configuration.getConfiguration().authCookie?.takeIf { it.isNotBlank() }
+                ?: throw ProviderReadFailure(Platform.TRAINING_PEAKS, ProviderReadFailure.Kind.CONFIGURATION)
             val key = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(cookie.toByteArray()))
             val token = trainingPeaksTokenRepository.getToken(cookie, key)
             template.header(HttpHeaders.AUTHORIZATION, "Bearer $token")

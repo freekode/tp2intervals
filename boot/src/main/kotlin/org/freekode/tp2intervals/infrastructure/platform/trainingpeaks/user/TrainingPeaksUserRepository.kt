@@ -1,5 +1,7 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.user
 
+import org.freekode.tp2intervals.domain.Platform
+import org.freekode.tp2intervals.infrastructure.ProviderReadFailure
 import org.springframework.cache.annotation.CacheConfig
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Repository
@@ -14,6 +16,8 @@ class TrainingPeaksUserRepository(
 
     fun resolveUser(): TrainingPeaksUser {
         val dto = trainingPeaksUserApiClient.getUser()
-        return TrainingPeaksUser(dto.userId!!, dto.accountStatus.isAthlete, dto.accountStatus.isPremium)
+        val id = dto?.userId?.takeIf { it.isNotBlank() }
+            ?: throw ProviderReadFailure(Platform.TRAINING_PEAKS, ProviderReadFailure.Kind.RESPONSE)
+        return TrainingPeaksUser(id, dto.accountStatus.isAthlete, dto.accountStatus.isPremium)
     }
 }

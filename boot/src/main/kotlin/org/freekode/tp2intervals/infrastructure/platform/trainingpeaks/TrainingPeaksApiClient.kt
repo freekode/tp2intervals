@@ -25,7 +25,7 @@ interface TrainingPeaksApiClient {
         @PathVariable("userId") userId: String,
         @PathVariable("startDate") startDate: String,
         @PathVariable("endDate") endDate: String
-    ): List<TPWorkoutCalendarResponseDTO>
+    ): List<TPWorkoutCalendarResponseDTO>?
 
     @GetMapping("/fitness/v1/athletes/{userId}/calendarNote/{startDate}/{endDate}")
     fun getNotes(

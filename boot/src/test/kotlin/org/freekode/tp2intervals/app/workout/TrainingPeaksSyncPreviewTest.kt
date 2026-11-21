@@ -1,8 +1,16 @@
 package org.freekode.tp2intervals.app.workout
 
 import com.fasterxml.jackson.databind.SerializationFeature
+import ch.qos.logback.classic.Logger
+import ch.qos.logback.classic.spi.ILoggingEvent
+import ch.qos.logback.core.read.ListAppender
+import feign.FeignException
+import feign.Request
+import feign.Response
+import feign.codec.DecodeException
 import config.SyncLedgerFixture
 import org.freekode.tp2intervals.config.PreviewOnly
+import org.freekode.tp2intervals.config.PreviewOnlyHttpGuard
 import config.mock.ObjectMapperFactory
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsApiClient
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfiguration
@@ -17,19 +25,24 @@ import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.T
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.TPWorkoutCalendarResponseDTO
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.TrainingPeaksWorkoutRepository
 import org.freekode.tp2intervals.infrastructure.sync.TrainingPeaksSyncLedger.Key
+import org.freekode.tp2intervals.infrastructure.sync.TrainingPeaksLegacyBaselineRepository
 import org.freekode.tp2intervals.rest.workout.TrainingPeaksPreviewController
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import org.mockito.Mockito.CALLS_REAL_METHODS
+import org.mockito.Mockito.doThrow
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.mockStatic
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoInteractions
 import org.mockito.Mockito.verifyNoMoreInteractions
 import org.mockito.Mockito.`when`
+import org.slf4j.LoggerFactory
+import org.springframework.dao.DataAccessResourceFailureException
 import org.springframework.http.MediaType
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
@@ -134,19 +147,101 @@ class TrainingPeaksSyncPreviewTest {
         verifyNoInteractions(calendarConfig, trainingPeaks, intervals)
     }
 
-    private fun mvc(token: String = "preview-test-token"): org.springframework.test.web.servlet.MockMvc {
+    @Test
+    fun `TrainingPeaks authentication failure is separated from preview bearer authentication`() {
+        val mvc = mvc()
+        doThrow(httpError(401)).`when`(user).resolveUser()
+        assertFailure(mvc, 502, "TRAINING_PEAKS_AUTH_FAILED", "TRAINING_PEAKS_ACCOUNT", "TRAINING_PEAKS", 401)
+        verifyNoInteractions(calendarConfig, trainingPeaks, intervals)
+    }
+
+    @Test
+    fun `Intervals authentication failure identifies the failing provider`() {
+        val mvc = mvc()
+        doThrow(httpError(403)).`when`(calendarConfig).resolveCalendarIdentity()
+        assertFailure(mvc, 502, "INTERVALS_AUTH_FAILED", "INTERVALS_ACCOUNT", "INTERVALS", 403)
+        verifyNoInteractions(trainingPeaks, intervals)
+    }
+
+    @Test
+    fun `a provider HTTP error during the legacy window reports its exact stage`() {
+        val mvc = mvc()
+        `when`(intervals.getCalendarSnapshot(DESTINATION, today.toString(), tomorrow.toString())).thenReturn(ResponseEntity.ok(emptyList()))
+        `when`(intervals.getCalendarSnapshot(DESTINATION, today.minusDays(365).toString(), tomorrow.plusDays(365).toString()))
+            .thenReturn(ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build())
+        assertFailure(mvc, 502, "INTERVALS_REQUEST_FAILED", "INTERVALS_CALENDAR_LEGACY_WINDOW", "INTERVALS", 503)
+        verifyNoInteractions(trainingPeaks)
+    }
+
+    @Test
+    fun `a malformed upstream payload is classified separately from an internal runtime error`() {
+        val mvc = mvc()
+        doThrow(DecodeException(200, SECRET, upstreamRequest())).`when`(user).resolveUser()
+        assertFailure(mvc, 502, "TRAINING_PEAKS_INVALID_RESPONSE", "TRAINING_PEAKS_ACCOUNT", "TRAINING_PEAKS", 200)
+        doThrow(IllegalStateException(SECRET)).`when`(user).resolveUser()
+        assertFailure(mvc, 500, "PREVIEW_INTERNAL_ERROR", "TRAINING_PEAKS_ACCOUNT", "INTERNAL", null)
+    }
+
+    @Test
+    fun `SQLite failure reports a storage error without leaking database details`() {
+        val baselines = mock(TrainingPeaksLegacyBaselineRepository::class.java)
+        doThrow(DataAccessResourceFailureException(SECRET)).`when`(baselines).generation()
+        assertFailure(mvc(baselines = baselines), 500, "PREVIEW_STORAGE_ERROR", "BASELINE_READ", "INTERNAL", null)
+        verifyNoInteractions(user, calendarConfig, trainingPeaks, intervals)
+    }
+
+    private fun assertFailure(
+        mvc: org.springframework.test.web.servlet.MockMvc,
+        expectedStatus: Int, code: String, stage: String, provider: String, upstreamStatus: Int?,
+    ) {
+        val logger = LoggerFactory.getLogger(TrainingPeaksPreviewController::class.java) as Logger
+        val appender = ListAppender<ILoggingEvent>().apply { start() }
+        logger.addAppender(appender)
+        try {
+            val result = fixedToday {
+                mvc.perform(request("Bearer preview-test-token"))
+                    .andExpect(status().`is`(expectedStatus))
+                    .andExpect(status().reason(code)).andReturn()
+            }
+            assertFalse(result.response.contentAsString.contains(SECRET))
+            val log = appender.list.single()
+            val message = log.formattedMessage
+            org.junit.jupiter.api.Assertions.assertTrue(message.contains("stage=$stage provider=$provider exception="))
+            org.junit.jupiter.api.Assertions.assertTrue(message.contains("upstreamStatus=${upstreamStatus ?: "-"} code=$code"))
+            assertFalse(message.contains(SECRET))
+            org.junit.jupiter.api.Assertions.assertNull(log.throwableProxy)
+        } finally {
+            logger.detachAppender(appender)
+            appender.stop()
+        }
+    }
+
+    private fun upstreamRequest() = Request.create(
+        Request.HttpMethod.GET, "https://synthetic.invalid/?secret=$SECRET", emptyMap(), null, Charsets.UTF_8, null
+    )
+
+    private fun httpError(status: Int): FeignException =
+        FeignException.errorStatus("synthetic", Response.builder().request(upstreamRequest())
+            .status(status).reason(SECRET).body(SECRET, Charsets.UTF_8).build())
+
+    private fun mvc(
+        token: String = "preview-test-token",
+        baselines: TrainingPeaksLegacyBaselineRepository = database.baselines(readOnly = true),
+    ): org.springframework.test.web.servlet.MockMvc {
         `when`(user.resolveUser()).thenReturn(TrainingPeaksUser(SOURCE, isAthlete = true, isPremium = false))
         `when`(calendarConfig.resolveCalendarIdentity()).thenReturn(CalendarIdentity(DESTINATION, "synthetic"))
         val source = TrainingPeaksWorkoutRepository(
             trainingPeaks, mock(), TPToWorkoutConverter(), mock(), user, mock(), mock(), mock(), objectMapper
         )
         val io = IntervalsWorkoutRepository(intervals, calendarConfig)
+        val mode = PreviewOnly(true)
         val controller = TrainingPeaksPreviewController(TrainingPeaksCalendarSync(
-            source, io, database.newLedger(readOnly = true), database.baselines(readOnly = true),
-            objectMapper, PreviewOnly(false), false
+            source, io, database.newLedger(readOnly = true), baselines,
+            objectMapper, mode, false
         ), token)
         return MockMvcBuilders.standaloneSetup(controller)
             .setMessageConverters(MappingJackson2HttpMessageConverter(objectMapper))
+            .addFilters<org.springframework.test.web.servlet.setup.StandaloneMockMvcBuilder>(PreviewOnlyHttpGuard(mode))
             .build()
     }
 
@@ -173,6 +268,7 @@ class TrainingPeaksSyncPreviewTest {
     }
 
     private companion object {
+        const val SECRET = "synthetic-secret-that-must-not-be-logged"
         const val SOURCE = "trainingpeaks-synthetic"
         const val DESTINATION = "intervals-synthetic"
     }

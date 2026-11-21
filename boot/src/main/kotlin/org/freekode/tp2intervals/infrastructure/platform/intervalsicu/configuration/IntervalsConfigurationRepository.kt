@@ -9,6 +9,7 @@ import org.freekode.tp2intervals.domain.config.UpdateConfigurationRequest
 import org.freekode.tp2intervals.infrastructure.CatchFeignException
 import org.freekode.tp2intervals.infrastructure.PlatformException
 import org.freekode.tp2intervals.infrastructure.utils.Auth
+import org.freekode.tp2intervals.infrastructure.ProviderReadFailure
 import org.springframework.cache.CacheManager
 import org.springframework.cache.annotation.CacheConfig
 import org.springframework.cache.annotation.Cacheable
@@ -51,10 +52,19 @@ class IntervalsConfigurationRepository(
     )
 
     fun resolveCalendarIdentity(): CalendarIdentity {
-        val config = getConfiguration()
+        val settings = appConfigurationRepository.getConfigurationByPrefix(platform().key).configMap
+        val config = try {
+            IntervalsConfiguration(settings)
+        } catch (_: NullPointerException) {
+            throw ProviderReadFailure(Platform.INTERVALS, ProviderReadFailure.Kind.CONFIGURATION)
+        } catch (_: NumberFormatException) {
+            throw ProviderReadFailure(Platform.INTERVALS, ProviderReadFailure.Kind.CONFIGURATION)
+        } catch (_: PlatformException) {
+            throw ProviderReadFailure(Platform.INTERVALS, ProviderReadFailure.Kind.CONFIGURATION)
+        }
         val authorization = Auth.getAuthorizationHeader(config.apiKey)
-        val id = intervalsAthleteApiClient.getAthlete(config.athleteId, authorization)["id"] as? String
-        require(!id.isNullOrBlank()) { "INTERVALS_ATHLETE_ID_UNVERIFIED" }
+        val id = intervalsAthleteApiClient.getAthlete(config.athleteId, authorization)?.get("id") as? String
+        if (id.isNullOrBlank()) throw ProviderReadFailure(Platform.INTERVALS, ProviderReadFailure.Kind.RESPONSE)
         return CalendarIdentity(id, authorization, config.athleteId)
     }
 

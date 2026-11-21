@@ -137,10 +137,16 @@ export class CopyCalendarToCalendarComponent implements OnInit {
       .subscribe({
         next: inventory => this.previewResult = {selection, inventory},
         error: error => {
-          const message = error.status === 400 ? error.error?.message : undefined;
+          const message = error.error?.detail ?? error.error?.message;
           if (error.status === 401) this.previewError = 'The preview token was rejected.';
-          else if (error.status === 503) this.previewError = 'Preview access is disabled on the server.';
-          else if (message === 'BASIC_TODAY_OR_TOMORROW_ONLY') {
+          else if (message === 'PREVIEW_DISABLED') this.previewError = 'Preview access is disabled on the server.';
+          else if (message === 'TRAINING_PEAKS_AUTH_FAILED') this.previewError = 'TrainingPeaks rejected its stored credentials.';
+          else if (message === 'INTERVALS_AUTH_FAILED') this.previewError = 'Intervals.icu rejected its stored credentials.';
+          else if (message === 'TRAINING_PEAKS_CONFIGURATION_REQUIRED' || message === 'INTERVALS_CONFIGURATION_REQUIRED') {
+            this.previewError = 'The provider configuration is missing or invalid.';
+          } else if (error.status === 500) {
+            this.previewError = 'Preview failed inside the application. Check the server log for the diagnostic code.';
+          } else if (message === 'BASIC_TODAY_OR_TOMORROW_ONLY') {
             this.previewError = 'Select today or tomorrow for a Basic TrainingPeaks account.';
           } else if (message === 'ATHLETE_ACCOUNT_REQUIRED') {
             this.previewError = 'Preview requires a TrainingPeaks athlete account.';

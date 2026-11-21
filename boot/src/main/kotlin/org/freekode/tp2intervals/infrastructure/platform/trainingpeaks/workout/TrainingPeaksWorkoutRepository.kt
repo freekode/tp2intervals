@@ -8,6 +8,7 @@ import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutDetails
 import org.freekode.tp2intervals.domain.workout.WorkoutRepository
 import org.freekode.tp2intervals.infrastructure.PlatformException
+import org.freekode.tp2intervals.infrastructure.ProviderReadFailure
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.TrainingPeaksApiClient
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.configuration.TrainingPeaksConfigurationRepository
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.library.TPWorkoutLibraryRepository
@@ -84,6 +85,7 @@ class TrainingPeaksWorkoutRepository(
 
     fun getPlannedCalendarEntries(userId: String, startDate: LocalDate, endDate: LocalDate) =
         trainingPeaksApiClient.getWorkouts(userId, startDate.toString(), endDate.toString())
+            ?: throw ProviderReadFailure(Platform.TRAINING_PEAKS, ProviderReadFailure.Kind.RESPONSE)
 
     override fun getWorkoutsFromCalendar(startDate: LocalDate, endDate: LocalDate): List<Workout> =
         getWorkoutsFromCalendar(calendarAccountId(), startDate, endDate)

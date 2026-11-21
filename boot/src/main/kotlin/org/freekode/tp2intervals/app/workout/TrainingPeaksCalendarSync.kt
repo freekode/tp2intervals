@@ -185,17 +185,19 @@ class TrainingPeaksCalendarSync(
                 null
             } else id to row.reason.name
         }.toMap()
-        val approved = baselines.approve(
-            inventory.accounts, inventory.previousId, inventory.inventoryVersion, inventory.revision,
-            request.selection.startDate, request.selection.endDate,
-            objectMapper.writeValueAsString(mapOf(
-                "acknowledgedInconclusive" to true,
-                "types" to request.selection.types,
-                "workouts" to inventory.rows,
-                "selectedLegacyLinks" to request.legacyLinks,
-                "holds" to holds,
-            )), request.legacyLinks, holds,
-        ) ?: throw StaleTrainingPeaksInventory()
+        val approved = previewStage(PreviewStage.APPROVAL_PERSIST) {
+            baselines.approve(
+                inventory.accounts, inventory.previousId, inventory.inventoryVersion, inventory.revision,
+                request.selection.startDate, request.selection.endDate,
+                objectMapper.writeValueAsString(mapOf(
+                    "acknowledgedInconclusive" to true,
+                    "types" to request.selection.types,
+                    "workouts" to inventory.rows,
+                    "selectedLegacyLinks" to request.legacyLinks,
+                    "holds" to holds,
+                )), request.legacyLinks, holds,
+            )
+        } ?: throw StaleTrainingPeaksInventory()
         return TrainingPeaksBaselineApproval(approved.revision, approved.approvedAt, holds.size)
     }
 
@@ -204,57 +206,73 @@ class TrainingPeaksCalendarSync(
         if (start > end || start < LocalDate.MIN.plusDays(365) || end > LocalDate.MAX.minusDays(365)) {
             throw InvalidTrainingPeaksPreview("INVALID_DATE_RANGE")
         }
-        val generation = baselines.generation()
-        val inventoryVersion = baselines.inventoryVersion()
-        val previous = baselines.latest()
-        val user = source.calendarUser()
+        val (generation, inventoryVersion, previous) = previewStage(PreviewStage.BASELINE_READ) {
+            Triple(baselines.generation(), baselines.inventoryVersion(), baselines.latest())
+        }
+        val user = previewStage(PreviewStage.TRAINING_PEAKS_ACCOUNT, PreviewProvider.TRAINING_PEAKS) { source.calendarUser() }
         if (!user.isAthlete) throw InvalidTrainingPeaksPreview("ATHLETE_ACCOUNT_REQUIRED")
         if (!user.isPremium && (start < today || end > today.plusDays(1))) {
             throw InvalidTrainingPeaksPreview("BASIC_TODAY_OR_TOMORROW_ONLY")
         }
 
-        val target = destination.resolveCalendarIdentity()
+        val target = previewStage(PreviewStage.INTERVALS_ACCOUNT, PreviewProvider.INTERVALS) {
+            destination.resolveCalendarIdentity()
+        }
         val athlete = target.athleteId
-        val previousKeys = legacyDestinationIds(user.userId, target)
         val accounts = Accounts(user.userId, athlete, generation)
-        val candidates = findCandidates(user.userId, athlete, start, end)
-        val rows = source.getPlannedCalendarEntries(user.userId, start, end)
-            .filter { workout ->
+        val current = previewStage(PreviewStage.INTERVALS_CALENDAR_RANGE, PreviewProvider.INTERVALS) {
+            destination.getCalendarSnapshot(athlete, start, end)
+        }
+        val surrounding = previewStage(PreviewStage.INTERVALS_CALENDAR_LEGACY_WINDOW, PreviewProvider.INTERVALS) {
+            destination.getCalendarSnapshot(athlete, start.minusDays(365), end.plusDays(365))
+        }
+        val planned = previewStage(PreviewStage.TRAINING_PEAKS_CALENDAR, PreviewProvider.TRAINING_PEAKS) {
+            source.getPlannedCalendarEntries(user.userId, start, end)
+        }
+        val selected = previewStage(PreviewStage.SOURCE_ROWS) {
+            planned.filter { workout ->
                 val type = workout.getWorkoutType()
                 workout.workoutDay.toLocalDate() in start..end && type in types && type != TrainingType.NOTE
             }
-            .map { workout ->
+        }
+        val (rows, additionalRows) = previewStage(PreviewStage.LEDGER_MATCHING) {
+            val previousKeys = legacyDestinationIds(user.userId, target)
+            val candidates = groupCandidates(user.userId, current, surrounding)
+            fun rowFor(id: String, date: LocalDate?): TrainingPeaksSyncPreview {
+                val key = Key(user.userId, athlete, id)
+                val matches = candidates[id].orEmpty()
+                return if (id in previousKeys && ledger.find(key) == null) unverifiedPreviousKey(id, date, matches)
+                else previewWorkout(key, date) { matches }
+            }
+            val visible = selected.map { workout ->
                 val date = workout.workoutDay.toLocalDate()
                 val id = workout.id.takeIf { it.isNotBlank() }
                 if (id == null) {
                     TrainingPeaksSyncPreview(null, date, Status.BROKEN_OR_UNVERIFIED_LINK, Reason.SOURCE_ID_MISSING)
-                } else {
-                    val key = Key(user.userId, athlete, id)
-                    if (id in previousKeys && ledger.find(key) == null) unverifiedPreviousKey(id, date, candidates[id].orEmpty())
-                    else previewWorkout(key, date) { candidates[id].orEmpty() }
-                }
+                } else rowFor(id, date)
             }
-        val visibleSourceIds = rows.mapNotNull { it.sourceWorkoutId }.toSet()
-        val additionalIds = (candidates.keys + ledger.unresolvedIds(user.userId, athlete) + previousKeys) - visibleSourceIds
-        val additionalRows = additionalIds.map { id ->
-            val key = Key(user.userId, athlete, id)
-            if (id in previousKeys && ledger.find(key) == null) unverifiedPreviousKey(id, null, candidates[id].orEmpty())
-            else previewWorkout(key, null) { candidates[id].orEmpty() }
+            val visibleSourceIds = visible.mapNotNull { it.sourceWorkoutId }.toSet()
+            val additionalIds = (candidates.keys + ledger.unresolvedIds(user.userId, athlete) + previousKeys) - visibleSourceIds
+            visible to additionalIds.map { rowFor(it, null) }
         }
-        if (generation != baselines.generation() || inventoryVersion != baselines.inventoryVersion() || previous != baselines.latest()) {
-            throw StaleTrainingPeaksInventory()
+        previewStage(PreviewStage.BASELINE_READ) {
+            if (generation != baselines.generation() || inventoryVersion != baselines.inventoryVersion() || previous != baselines.latest()) {
+                throw StaleTrainingPeaksInventory()
+            }
         }
 
-        val stableRows = (rows + additionalRows).map { it.copy(candidates = it.candidates.sortedBy { candidate -> candidate.eventId }) }
-            .sortedWith(compareBy({ it.sourceDate }, { it.sourceWorkoutId }, { it.status }, { it.reason }))
-        val previousId = previous?.id ?: 0
-        val content = objectMapper.writeValueAsBytes(listOf(
-            accounts, previousId, inventoryVersion, previous?.state, start, end, types.distinct().sorted(), stableRows,
-        ))
-        val revision = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(content))
-        return Inventory(accounts, previousId, inventoryVersion, stableRows, revision, previous?.takeIf {
-            it.state == "APPROVED" && it.accounts == accounts
-        })
+        return previewStage(PreviewStage.REVISION) {
+            val stableRows = (rows + additionalRows).map { it.copy(candidates = it.candidates.sortedBy { candidate -> candidate.eventId }) }
+                .sortedWith(compareBy({ it.sourceDate }, { it.sourceWorkoutId }, { it.status }, { it.reason }))
+            val previousId = previous?.id ?: 0
+            val content = objectMapper.writeValueAsBytes(listOf(
+                accounts, previousId, inventoryVersion, previous?.state, start, end, types.distinct().sorted(), stableRows,
+            ))
+            val revision = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(content))
+            Inventory(accounts, previousId, inventoryVersion, stableRows, revision, previous?.takeIf {
+                it.state == "APPROVED" && it.accounts == accounts
+            })
+        }
     }
 
     private fun legacyDestinationIds(source: String, target: CalendarIdentity): Set<String> =
@@ -275,7 +293,9 @@ class TrainingPeaksCalendarSync(
         val entry = ledger.find(key)
         if (entry?.state == State.CONFIRMED) {
             val id = checkNotNull(entry.remoteEventId)
-            val event = destination.getCalendarEvent(key.destinationAthleteId, id)
+            val event = previewStage(PreviewStage.INTERVALS_EVENT_LOOKUP, PreviewProvider.INTERVALS) {
+                destination.getCalendarEvent(key.destinationAthleteId, id)
+            }
             val issue = when {
                 event == null -> Reason.LINK_MISSING
                 event.trainingPeaksId(key.sourceAccountId) != key.sourceWorkoutId -> Reason.LINK_MARKER_CHANGED
@@ -297,7 +317,7 @@ class TrainingPeaksCalendarSync(
             TrainingPeaksSyncPreview(key.sourceWorkoutId, date, status, reason, events)
 
         if (entry?.state == State.PENDING) {
-            val verified = single?.let { verifiedEvent(key, it.id, allowLegacy = false) }
+            val verified = single?.let { previewVerifiedEvent(key, it.id, allowLegacy = false) }
             val reason = if (verified == null) Reason.CLAIM_PENDING else Reason.CLAIM_CANDIDATE_VERIFIED
             return result(Status.UNRESOLVED_CLAIM, reason, verified?.let { listOf(it.previewCandidate()) } ?: candidateDetails)
         }
@@ -308,7 +328,7 @@ class TrainingPeaksCalendarSync(
         }
         if (single == null) return result(Status.NO_MATCH_OBSERVED, Reason.LISTINGS_INCONCLUSIVE)
 
-        val event = verifiedEvent(key, single.id)
+        val event = previewVerifiedEvent(key, single.id)
             ?: return result(Status.BROKEN_OR_UNVERIFIED_LINK, Reason.LEGACY_REVIEW_REQUIRED)
         val reason = if (event.trainingPeaksId(key.sourceAccountId, allowLegacy = false) == key.sourceWorkoutId) {
             Reason.CANDIDATE_VERIFIED_BY_ID
@@ -318,6 +338,11 @@ class TrainingPeaksCalendarSync(
         return result(Status.SINGLE_LEGACY_CANDIDATE, reason, listOf(event.previewCandidate()))
     }
 
+    private fun previewVerifiedEvent(key: Key, eventId: Long, allowLegacy: Boolean = true) =
+        previewStage(PreviewStage.INTERVALS_EVENT_LOOKUP, PreviewProvider.INTERVALS) {
+            verifiedEvent(key, eventId, allowLegacy)
+        }
+
     private fun IntervalsEventDTO.previewCandidate() = Candidate(id, start_date_local.toLocalDate())
 
     private fun findCandidates(
@@ -325,10 +350,13 @@ class TrainingPeaksCalendarSync(
     ): Map<String, List<IntervalsEventDTO>> {
         val current = destination.getCalendarSnapshot(athlete, start, end)
         val surrounding = destination.getCalendarSnapshot(athlete, start.minusDays(365), end.plusDays(365))
-        return (current + surrounding).distinctBy { it.id }
+        return groupCandidates(sourceAccount, current, surrounding)
+    }
+
+    private fun groupCandidates(sourceAccount: String, current: List<IntervalsEventDTO>, surrounding: List<IntervalsEventDTO>) =
+        (current + surrounding).distinctBy { it.id }
             .mapNotNull { event -> event.trainingPeaksId(sourceAccount)?.let { it to event } }
             .groupBy({ it.first }, { it.second })
-    }
 
     private fun verifiedEvent(key: Key, eventId: Long, allowLegacy: Boolean = true): IntervalsEventDTO? =
         destination.getCalendarEvent(key.destinationAthleteId, eventId)

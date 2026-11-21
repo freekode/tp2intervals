@@ -7,6 +7,10 @@ import org.freekode.tp2intervals.app.workout.TrainingPeaksPreviewInventory
 import org.freekode.tp2intervals.app.workout.TrainingPeaksBaselineApproval
 import org.freekode.tp2intervals.app.workout.TrainingPeaksBaselineApprovalRequest
 import org.freekode.tp2intervals.app.workout.StaleTrainingPeaksInventory
+import org.freekode.tp2intervals.app.workout.PreviewStage
+import org.freekode.tp2intervals.app.workout.TrainingPeaksPreviewFailure
+import org.freekode.tp2intervals.app.workout.previewStage
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.CacheControl
 import org.springframework.http.HttpHeaders
@@ -24,19 +28,21 @@ class TrainingPeaksPreviewController(
     private val sync: TrainingPeaksCalendarSync,
     @Value("\${app.training-peaks.preflight-token:}") private val token: String,
 ) {
+    private val log = LoggerFactory.getLogger(javaClass)
+
     @PostMapping("/api/workout/trainingpeaks-sync/preview")
     fun preview(
         @RequestHeader(HttpHeaders.AUTHORIZATION, required = false) authorization: String?,
         @RequestBody request: TrainingPeaksPreviewRequest,
-    ): ResponseEntity<TrainingPeaksPreviewInventory> = respond(authorization) { sync.preview(request) }
+    ): ResponseEntity<TrainingPeaksPreviewInventory> = respond(authorization, "preview") { sync.preview(request) }
 
     @PostMapping("/api/workout/trainingpeaks-sync/baseline/approve")
     fun approve(
         @RequestHeader(HttpHeaders.AUTHORIZATION, required = false) authorization: String?,
         @RequestBody request: TrainingPeaksBaselineApprovalRequest,
-    ): ResponseEntity<TrainingPeaksBaselineApproval> = respond(authorization) { sync.approve(request) }
+    ): ResponseEntity<TrainingPeaksBaselineApproval> = respond(authorization, "approve") { sync.approve(request) }
 
-    private fun <T> respond(authorization: String?, action: () -> T): ResponseEntity<T> {
+    private fun <T> respond(authorization: String?, operation: String, action: () -> T): ResponseEntity<T> {
         if (token.isBlank()) throw ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "PREVIEW_DISABLED")
         val bearer = authorization
             ?.takeIf { it.startsWith("Bearer ", ignoreCase = true) }
@@ -45,15 +51,17 @@ class TrainingPeaksPreviewController(
             throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "PREVIEW_AUTH_REQUIRED")
         }
         val results = try {
-            action()
+            previewStage(PreviewStage.REQUEST, action = action)
         } catch (error: InvalidTrainingPeaksPreview) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, error.reason)
         } catch (_: StaleTrainingPeaksInventory) {
             throw ResponseStatusException(HttpStatus.CONFLICT, "STALE_INVENTORY_REVISION")
-        } catch (error: ResponseStatusException) {
-            throw error
-        } catch (_: RuntimeException) {
-            throw ResponseStatusException(HttpStatus.BAD_GATEWAY, "BASELINE_REQUEST_FAILED")
+        } catch (error: TrainingPeaksPreviewFailure) {
+            log.warn(
+                "TrainingPeaks inventory failed operation={} stage={} provider={} exception={} upstreamStatus={} code={}",
+                operation, error.stage, error.provider, error.exceptionClass, error.upstreamStatus ?: "-", error.code
+            )
+            throw ResponseStatusException(error.status, error.code)
         }
         return ResponseEntity.ok().cacheControl(CacheControl.noStore()).body(results)
     }
