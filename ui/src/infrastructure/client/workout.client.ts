@@ -135,7 +135,7 @@ export class WorkoutClient {
     return this.httpClient.get<ScheduledWorkoutRequest[]>(`/api/workout/copy-calendar-to-calendar/schedule`)
   }
 
-  deleteScheduleRequest(id: any) {
+  deleteScheduleRequest(id: number) {
     return this.httpClient.delete(`/api/workout/copy-calendar-to-calendar/schedule/${id}`)
   }
 }

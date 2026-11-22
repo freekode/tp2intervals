@@ -17,7 +17,7 @@ import {MatDividerModule} from "@angular/material/divider";
 import {MatListModule} from "@angular/material/list";
 import {NgIf} from "@angular/common";
 import {ConfigurationClient} from "infrastructure/client/configuration.client";
-import {finalize, switchMap, tap} from "rxjs";
+import {catchError, EMPTY, finalize, switchMap, tap} from "rxjs";
 import {ScheduledWorkoutRequest, ScheduleSettings, ScheduleWindow, TrainingPeaksPreviewInventory, TrainingPeaksPreviewSelection, TrainingPeaksSyncPreview, WorkoutClient} from "infrastructure/client/workout.client";
 import {NotificationService} from "infrastructure/notification.service";
 import {MatTooltipModule} from "@angular/material/tooltip";
@@ -61,6 +61,7 @@ export class CopyCalendarToCalendarComponent implements OnInit {
   platformsInfo: any
   scheduleRequests: ScheduledWorkoutRequest[] = []
   scheduleSettings?: ScheduleSettings;
+  scheduleError = '';
   previewResult?: {selection: TrainingPeaksPreviewSelection; inventory: TrainingPeaksPreviewInventory}
   readonly selectedLegacyLinks = new Map<string, number>();
   acknowledgeInconclusive = false;
@@ -409,13 +410,36 @@ export class CopyCalendarToCalendarComponent implements OnInit {
     return this.workoutClient.getScheduleRequests().pipe(tap(values => this.scheduleRequests = values));
   }
 
-  deleteJob(jobId: any) {
-    this.inProgress = true
-    this.workoutClient.deleteScheduleRequest(jobId).pipe(
-      switchMap(() => this.loadScheduleRequests()),
-      finalize(() => this.inProgress = false)
-    ).subscribe(() => {
-      this.notificationService.success(`Deleted job`)
-    })
+  deleteJob(jobId: number) {
+    if (this.scheduleSettings?.previewOnly) return;
+    this.scheduleError = '';
+    this.authorizeWrite({
+      action: `Delete schedule ${jobId}`,
+      destination: 'Saved schedules',
+      details: 'Remove this recurring request. Existing provider events and synchronization links are preserved.',
+    }, () => {
+      this.inProgress = true;
+      this.workoutClient.deleteScheduleRequest(jobId).pipe(
+        switchMap(() => this.loadScheduleRequests().pipe(
+          catchError(() => {
+            this.scheduleError = `Schedule ${jobId} was deleted. Reload the page to refresh the schedule list.`;
+            return EMPTY;
+          })
+        )),
+        finalize(() => this.inProgress = false)
+      ).subscribe({
+        next: () => this.notificationService.success(`Deleted schedule ${jobId}`),
+        error: error => {
+          const code = error.error?.detail ?? error.error?.message;
+          if (code === 'PREVIEW_ONLY') {
+            this.scheduleError = 'Preview-only mode blocks schedule deletion.';
+          } else if (error.status === 403) {
+            this.scheduleError = `Schedule ${jobId} deletion was rejected (HTTP 403). Check the trusted reverse-proxy configuration and preview-only status.`;
+          } else {
+            this.scheduleError = `Could not delete schedule ${jobId}. Reload the schedule list before retrying.`;
+          }
+        },
+      });
+    });
   }
 }

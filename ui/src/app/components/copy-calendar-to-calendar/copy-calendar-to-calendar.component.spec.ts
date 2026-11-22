@@ -1,4 +1,5 @@
-import {of} from 'rxjs';
+import {of, throwError} from 'rxjs';
+import {HttpClient, HttpRequest, HttpResponse} from '@angular/common/http';
 import {FormBuilder} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {CopyCalendarToCalendarComponent} from './copy-calendar-to-calendar.component';
@@ -22,11 +23,13 @@ describe('TrainingPeaks legacy review', () => {
     const repair = jasmine.createSpy('repairTrainingPeaksLink').and.returnValue(of({eventId: 72, recreated: false}));
     const copy = jasmine.createSpy('copyCalendarToCalendar').and.returnValue(of({copied: 1}));
     const schedule = jasmine.createSpy('scheduleCopyCalendarToCalendar').and.returnValue(of({}));
+    const deleteSchedule = jasmine.createSpy('deleteScheduleRequest').and.returnValue(of(null));
+    const getSchedules = jasmine.createSpy('getScheduleRequests').and.returnValue(of([{id: 4}]));
     const open = jasmine.createSpy('open').and.returnValue({afterClosed: () => of(true)});
     const component = new CopyCalendarToCalendarComponent(
       new FormBuilder(), {} as ConfigurationClient,
       {resolveTrainingPeaksHold: resolve, repairTrainingPeaksLink: repair, copyCalendarToCalendar: copy,
-        scheduleCopyCalendarToCalendar: schedule, getScheduleRequests: () => of([])} as unknown as WorkoutClient,
+        scheduleCopyCalendarToCalendar: schedule, getScheduleRequests: getSchedules, deleteScheduleRequest: deleteSchedule} as unknown as WorkoutClient,
       {success: () => {}} as unknown as NotificationService, {open} as unknown as MatDialog,
     );
     component.previewResult = {
@@ -36,7 +39,7 @@ describe('TrainingPeaks legacy review', () => {
         workouts: [...historical, held], previewOnly: false, activationEnabled: false,
       },
     };
-    return {component, resolve, repair, copy, open, schedule};
+    return {component, resolve, repair, copy, open, schedule, deleteSchedule, getSchedules};
   }
 
   it('groups and sorts historical candidates and bulk-selects the visible filter', () => {
@@ -149,6 +152,51 @@ describe('TrainingPeaks legacy review', () => {
     component.scheduleSettings.previewOnly = true;
     component.scheduleToday('TODAY_AND_TOMORROW');
     expect(schedule.calls.count()).toBe(1);
+  });
+
+
+  it('uses the schedule DELETE method and URL', () => {
+    const requests: HttpRequest<unknown>[] = [];
+    const http = new HttpClient({handle: request => {
+      requests.push(request);
+      return of(new HttpResponse({body: null}));
+    }});
+    new WorkoutClient(http).deleteScheduleRequest(3).subscribe();
+    expect(requests.length).toBe(1);
+    const [request] = requests;
+    expect(request.method).toBe('DELETE');
+    expect(request.url).toBe('/api/workout/copy-calendar-to-calendar/schedule/3');
+  });
+
+  it('confirms a local deletion and refreshes without invoking synchronization', () => {
+    const {component, deleteSchedule, getSchedules, open, copy, schedule} = setup();
+    component.scheduleRequests = [{id: 3}, {id: 4}];
+    open.and.returnValue({afterClosed: () => of(false)});
+    component.deleteJob(3);
+    expect(deleteSchedule).not.toHaveBeenCalled();
+    expect(open.calls.mostRecent().args[1].data.action).toBe('Delete schedule 3');
+
+    open.and.returnValue({afterClosed: () => of(true)});
+    component.deleteJob(3);
+    expect(deleteSchedule).toHaveBeenCalledOnceWith(3);
+    expect(getSchedules).toHaveBeenCalledTimes(1);
+    expect(component.scheduleRequests).toEqual([{id: 4}]);
+    expect(copy).not.toHaveBeenCalled();
+    expect(schedule).not.toHaveBeenCalled();
+  });
+
+  it('preserves the list and explains an HTTP 403 deletion failure', () => {
+    const {component, deleteSchedule, getSchedules, copy, schedule} = setup();
+    component.scheduleRequests = [{id: 3}];
+    deleteSchedule.and.returnValue(throwError(() => ({status: 403, error: 'Invalid CORS request'})));
+    component.deleteJob(3);
+    expect(component.scheduleError).toContain('HTTP 403');
+    expect(component.scheduleError).toContain('trusted reverse-proxy configuration');
+    expect(component.scheduleRequests).toEqual([{id: 3}]);
+    expect(component.inProgress).toBeFalse();
+    expect(getSchedules).not.toHaveBeenCalled();
+    expect(copy).not.toHaveBeenCalled();
+    expect(schedule).not.toHaveBeenCalled();
   });
 
 });

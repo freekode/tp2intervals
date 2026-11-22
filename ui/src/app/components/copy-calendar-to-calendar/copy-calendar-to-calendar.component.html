@@ -218,6 +218,8 @@
     </button>
   </div>
 
+  @if (scheduleError) { <p role="alert">{{ scheduleError }}</p> }
+
   <div *ngIf="scheduleRequests.length > 0" style="margin-bottom: 10px">
     <mat-list>
       <mat-list-item>
@@ -230,6 +232,8 @@
             mat-raised-button
             color="primary"
             type="button"
+            [attr.aria-label]="'Delete schedule ' + request.id"
+            [disabled]="inProgress || scheduleSettings?.previewOnly"
             (click)="deleteJob(request.id)">
             <i class="bi bi-trash"></i>
           </button>
