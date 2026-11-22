@@ -21,10 +21,12 @@ describe('TrainingPeaks legacy review', () => {
     const resolve = jasmine.createSpy('resolveTrainingPeaksHold').and.returnValue(of({eventId: 71}));
     const repair = jasmine.createSpy('repairTrainingPeaksLink').and.returnValue(of({eventId: 72, recreated: false}));
     const copy = jasmine.createSpy('copyCalendarToCalendar').and.returnValue(of({copied: 1}));
+    const schedule = jasmine.createSpy('scheduleCopyCalendarToCalendar').and.returnValue(of({}));
     const open = jasmine.createSpy('open').and.returnValue({afterClosed: () => of(true)});
     const component = new CopyCalendarToCalendarComponent(
       new FormBuilder(), {} as ConfigurationClient,
-      {resolveTrainingPeaksHold: resolve, repairTrainingPeaksLink: repair, copyCalendarToCalendar: copy} as unknown as WorkoutClient,
+      {resolveTrainingPeaksHold: resolve, repairTrainingPeaksLink: repair, copyCalendarToCalendar: copy,
+        scheduleCopyCalendarToCalendar: schedule, getScheduleRequests: () => of([])} as unknown as WorkoutClient,
       {success: () => {}} as unknown as NotificationService, {open} as unknown as MatDialog,
     );
     component.previewResult = {
@@ -34,7 +36,7 @@ describe('TrainingPeaks legacy review', () => {
         workouts: [...historical, held], previewOnly: false, activationEnabled: false,
       },
     };
-    return {component, resolve, repair, copy, open};
+    return {component, resolve, repair, copy, open, schedule};
   }
 
   it('groups and sorts historical candidates and bulk-selects the visible filter', () => {
@@ -121,6 +123,32 @@ describe('TrainingPeaks legacy review', () => {
     component.repairLink(missing, token);
     expect(repair).toHaveBeenCalledOnceWith(selection, 'reviewed', 'new', 71, 72, false, 'synthetic-token');
     expect(token.value).toBe('');
+  });
+
+
+  it('stages an explicit rolling request with configured cadence, timezone and pause guidance', () => {
+    const {component, schedule, open} = setup();
+    component.formGroup = new FormBuilder().group({
+      direction: Platform.DIRECTION_TP_INT, trainingTypes: [['BIKE']], skipSynced: false,
+    });
+    component.scheduleSettings = {
+      intervalMinutes: 20, timezone: 'Europe/Amsterdam', forwardEnabled: false, previewOnly: false,
+      otherIntervalMinutes: 3, otherTimezone: 'UTC',
+    };
+    open.and.returnValue({afterClosed: () => of(false)});
+    component.scheduleToday('TODAY_AND_TOMORROW');
+    expect(schedule).not.toHaveBeenCalled();
+    const details = open.calls.mostRecent().args[1].data.details;
+    expect(details).toContain('Today + tomorrow (rolling) · every 20 minutes · Europe/Amsterdam');
+    expect(details).toContain('paused');
+    expect(details).toContain('without starting a sync');
+
+    open.and.returnValue({afterClosed: () => of(true)});
+    component.scheduleToday('TODAY_AND_TOMORROW');
+    expect(schedule).toHaveBeenCalledOnceWith(['BIKE'], true, Platform.DIRECTION_TP_INT, 'TODAY_AND_TOMORROW');
+    component.scheduleSettings.previewOnly = true;
+    component.scheduleToday('TODAY_AND_TOMORROW');
+    expect(schedule.calls.count()).toBe(1);
   });
 
 });

@@ -235,7 +235,7 @@
           </button>
           @if (request.request; as job) {
             {{ mapTrainingTypesToTitles(job.types) }} ·
-            {{ Platform.getTitle(job.sourcePlatform) }} → {{ Platform.getTitle(job.targetPlatform) }} · Skip synced: {{ job.skipSynced }}
+            {{ Platform.getTitle(job.sourcePlatform) }} → {{ Platform.getTitle(job.targetPlatform) }} · Skip synced: {{ job.skipSynced }} · {{ scheduleDescription(job) }}
           } @else {
             Job {{ request.id }}
           }
@@ -252,12 +252,22 @@
       mat-raised-button
       color="primary"
       type="button"
-      matTooltip="Scheduled jobs run every three minutes for today and persist after restart"
-      [disabled]="formGroup.invalid || inProgress"
+      [disabled]="formGroup.invalid || inProgress || !scheduleSettings || scheduleSettings.previewOnly"
       (click)="scheduleToday()"
     >
       Schedule for today
     </button>
+    @if (isTrainingPeaksForward) {
+      <button mat-raised-button color="primary" type="button"
+        [disabled]="formGroup.invalid || inProgress || !scheduleSettings || scheduleSettings.previewOnly"
+        (click)="scheduleToday('TODAY_AND_TOMORROW')">Schedule today + tomorrow</button>
+      @if (scheduleSettings; as settings) {
+        <p>Scheduled forward sync {{ settings.forwardEnabled ? 'enabled' : 'paused' }} · every {{ settings.intervalMinutes }}
+          minutes · {{ settings.timezone }}. Saved requests roll forward each day and do not run on save.
+          @if (settings.previewOnly) { Preview-only blocks scheduled writes. }
+        </p>
+      }
+    }
     <i class="bi bi-stars beta-icon"
        matTooltip="Beta feature"
        matTooltipPosition="right"></i>

@@ -30,9 +30,20 @@ export interface TrainingPeaksPreviewInventory {
   activationEnabled: boolean;
 }
 
+export type ScheduleWindow = 'TODAY_AND_TOMORROW';
+
+export interface ScheduleSettings {
+  intervalMinutes: number;
+  timezone: string;
+  forwardEnabled: boolean;
+  previewOnly: boolean;
+  otherIntervalMinutes: number;
+  otherTimezone: string;
+}
+
 export interface ScheduledWorkoutRequest {
   id: number;
-  request?: {types: string[]; skipSynced: boolean; sourcePlatform: string; targetPlatform: string};
+  request?: {types: string[]; skipSynced: boolean; sourcePlatform: string; targetPlatform: string; window?: ScheduleWindow};
   blockedReason?: string;
 }
 
@@ -106,15 +117,18 @@ export class WorkoutClient {
     return this.httpClient.get(`/api/workout/find`, {params: {platform, name}})
   }
 
-  scheduleCopyCalendarToCalendar(startDate, endDate, types, skipSynced, platformDirection): Observable<any> {
+  scheduleCopyCalendarToCalendar(types, skipSynced, platformDirection, window?: ScheduleWindow): Observable<any> {
     return this.httpClient
       .post(`/api/workout/copy-calendar-to-calendar/schedule`, {
-        startDate,
-        endDate,
         types,
         skipSynced,
-        ...platformDirection
+        ...platformDirection,
+        ...(window ? {window} : {})
       })
+  }
+
+  getScheduleSettings(): Observable<ScheduleSettings> {
+    return this.httpClient.get<ScheduleSettings>('/api/workout/copy-calendar-to-calendar/schedule/settings');
   }
 
   getScheduleRequests(): Observable<ScheduledWorkoutRequest[]> {

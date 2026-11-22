@@ -18,7 +18,7 @@ import {MatListModule} from "@angular/material/list";
 import {NgIf} from "@angular/common";
 import {ConfigurationClient} from "infrastructure/client/configuration.client";
 import {finalize, switchMap, tap} from "rxjs";
-import {ScheduledWorkoutRequest, TrainingPeaksPreviewInventory, TrainingPeaksPreviewSelection, TrainingPeaksSyncPreview, WorkoutClient} from "infrastructure/client/workout.client";
+import {ScheduledWorkoutRequest, ScheduleSettings, ScheduleWindow, TrainingPeaksPreviewInventory, TrainingPeaksPreviewSelection, TrainingPeaksSyncPreview, WorkoutClient} from "infrastructure/client/workout.client";
 import {NotificationService} from "infrastructure/notification.service";
 import {MatTooltipModule} from "@angular/material/tooltip";
 import {TrainingTypes} from "infrastructure/training-types";
@@ -60,6 +60,7 @@ export class CopyCalendarToCalendarComponent implements OnInit {
   formGroup!: FormGroup
   platformsInfo: any
   scheduleRequests: ScheduledWorkoutRequest[] = []
+  scheduleSettings?: ScheduleSettings;
   previewResult?: {selection: TrainingPeaksPreviewSelection; inventory: TrainingPeaksPreviewInventory}
   readonly selectedLegacyLinks = new Map<string, number>();
   acknowledgeInconclusive = false;
@@ -83,6 +84,7 @@ export class CopyCalendarToCalendarComponent implements OnInit {
     SKIP_SYNCED_FALSE: 'Blocked: Skip already synced workouts is off.',
     SKIP_SYNCED_MISSING: 'Blocked: the Skip synced setting is missing.',
     SKIP_SYNCED_MALFORMED: 'Blocked: the Skip synced setting is invalid.',
+    UNSUPPORTED_WINDOW: 'Blocked: this rolling window is invalid for the saved direction.',
     MALFORMED_REQUEST: 'Blocked: the saved schedule is invalid.',
     FORWARD_SYNC_PAUSED: 'Paused: enable scheduled forward sync after reviewing the inventory.',
   }
@@ -108,6 +110,7 @@ export class CopyCalendarToCalendarComponent implements OnInit {
     })
     this.formGroup = this.getFormGroup();
     this.loadScheduleRequests().subscribe()
+    this.workoutClient.getScheduleSettings().subscribe(settings => this.scheduleSettings = settings);
   }
 
   submit() {
@@ -327,23 +330,37 @@ export class CopyCalendarToCalendarComponent implements OnInit {
     return this.isTrainingPeaksForward || this.formGroup.value.skipSynced;
   }
 
-  scheduleToday() {
-    let startDate = null
-    let endDate = null
-    let direction = this.formGroup.value.direction
-    let trainingTypes = this.formGroup.value.trainingTypes
-    const skipSynced = this.effectiveSkipSynced
+  scheduleDescription(request: NonNullable<ScheduledWorkoutRequest['request']>): string {
+    const settings = this.scheduleSettings;
+    const window = request.window ? 'Today + tomorrow' : 'Today';
+    if (!settings) return `${window} (rolling)`;
+    const forward = request.sourcePlatform === Platform.TRAINING_PEAKS.key && request.targetPlatform === Platform.INTERVALS.key;
+    const cadence = forward ? settings.intervalMinutes : settings.otherIntervalMinutes;
+    const timezone = forward ? settings.timezone : settings.otherTimezone;
+    return `${window} (rolling) · every ${cadence} minutes · ${timezone}`;
+  }
 
+  scheduleToday(window?: ScheduleWindow) {
+    const settings = this.scheduleSettings;
+    const forward = this.isTrainingPeaksForward;
+    if (!settings || settings.previewOnly || (window && !forward)) return;
+
+    const {direction, trainingTypes} = this.formGroup.value;
+    const skipSynced = this.effectiveSkipSynced;
+    const description = this.scheduleDescription({...direction, types: trainingTypes, skipSynced, window});
+    const status = forward
+      ? ` Scheduled forward sync is ${settings.forwardEnabled ? 'enabled' : 'paused'}. Skip-already-synced protection is mandatory.`
+      : '';
     this.authorizeWrite({
-      action: 'Schedule workout synchronization',
+      action: window ? 'Schedule today + tomorrow' : 'Schedule for today',
       destination: Platform.getTitle(direction.targetPlatform) ?? direction.targetPlatform,
-      details: 'Add a recurring job for the current day. When enabled, it may create or update provider events.',
+      details: `${description}. This saves the request without starting a sync.${status} The job may run shortly after activation or restart.`,
     }, () => {
       this.inProgress = true;
-      this.workoutClient.scheduleCopyCalendarToCalendar(startDate, endDate, trainingTypes, skipSynced, direction).pipe(
+      this.workoutClient.scheduleCopyCalendarToCalendar(trainingTypes, skipSynced, direction, window).pipe(
         switchMap(() => this.loadScheduleRequests()),
         finalize(() => this.inProgress = false)
-      ).subscribe(() => this.notificationService.success('Scheduled sync job'));
+      ).subscribe(() => this.notificationService.success('Schedule saved'));
     });
   }
 
