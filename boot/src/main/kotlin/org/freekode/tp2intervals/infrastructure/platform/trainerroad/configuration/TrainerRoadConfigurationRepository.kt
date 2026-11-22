@@ -49,6 +49,21 @@ class TrainerRoadConfigurationRepository(
         return TrainerRoadConfiguration(config)
     }
 
+    @CatchFeignException(platform = Platform.TRAINER_ROAD)
+    fun testConnection(authCookie: String): TrainerRoadConnectionTestResponse {
+        if (authCookie.isBlank()) {
+            throw PlatformException(Platform.TRAINER_ROAD, "Access to the platform is not configured")
+        }
+        val member = trainerRoadValidationApiClient.getMember(authCookie)
+            ?: throw PlatformException(Platform.TRAINER_ROAD, "Access Denied")
+        if (member.MemberId == -1L) {
+            throw PlatformException(Platform.TRAINER_ROAD, "Access Denied")
+        }
+        val username = member.Username?.takeIf { it.isNotBlank() }
+            ?: throw PlatformException(Platform.TRAINER_ROAD, "TrainerRoad did not return a username")
+        return TrainerRoadConnectionTestResponse(member.MemberId, username)
+    }
+
     private fun isValid(): Boolean {
         try {
             val currentConfig =

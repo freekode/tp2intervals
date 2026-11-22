@@ -51,6 +51,9 @@ export class ConfigurationComponent implements OnInit {
   });
 
   inProgress = false;
+  trainerRoadTestInProgress = false;
+  trainerRoadTestResult: string | null = null;
+  trainerRoadTestSucceeded = false;
 
   constructor(
     private router: Router,
@@ -83,8 +86,37 @@ export class ConfigurationComponent implements OnInit {
     });
   }
 
+  testTrainerRoadConnection(): void {
+    const control = this.formGroup.controls['trainer-road.auth-cookie'];
+    control.markAsTouched();
+    if (control.invalid || !control.value) {
+      this.trainerRoadTestSucceeded = false;
+      this.trainerRoadTestResult = 'Enter a valid SharedTrainerRoadAuth cookie.';
+      return;
+    }
+
+    this.trainerRoadTestInProgress = true;
+    this.trainerRoadTestResult = null;
+    this.configClient.testTrainerRoadConnection(control.value).pipe(
+      finalize(() => this.trainerRoadTestInProgress = false)
+    ).subscribe({
+      next: (response) => {
+        this.trainerRoadTestSucceeded = true;
+        this.trainerRoadTestResult = `Connected successfully — signed in as ${response.username}.`;
+        this.notificationService.success(this.trainerRoadTestResult);
+      },
+      error: (error) => {
+        this.trainerRoadTestSucceeded = false;
+        const message = error?.error?.message || 'TrainerRoad connection failed.';
+        this.trainerRoadTestResult = message;
+        this.notificationService.error(message);
+      }
+    });
+  }
+
   listenTrainerRoadCookie() {
     this.formGroup.controls['trainer-road.auth-cookie'].valueChanges.subscribe(value => {
+      this.trainerRoadTestResult = null;
       let split = value.split('SharedTrainerRoadAuth=');
       if (split.length != 2) {
         return

@@ -38,4 +38,11 @@ export class ConfigurationClient {
       map(response => (<any>response).infoMap)
     )
   }
+
+  testTrainerRoadConnection(authCookie: string): Observable<{ memberId: number, username: string }> {
+    return this.httpClient.post<{ memberId: number, username: string }>(
+      `/api/configuration/trainer-road/test`,
+      {authCookie}
+    )
+  }
 }

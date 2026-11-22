@@ -11,6 +11,15 @@ class TRWorkoutResponseDTO(
         val details: TrainerRoadWorkoutDetailsDTO,
         @JsonProperty("IntervalData")
         val intervalData: List<IntervalsDataDTO>,
+        @JsonProperty("WorkoutData")
+        val workoutData: List<WorkoutDataDTO> = emptyList(),
+    )
+
+    class WorkoutDataDTO(
+        @JsonProperty("Tick")
+        val tick: Double,
+        @JsonProperty("FtpPercent")
+        val ftpPercent: Double,
     )
 
     class IntervalsDataDTO(
@@ -25,6 +34,8 @@ class TRWorkoutResponseDTO(
         @JsonProperty("TestInterval")
         val testInterval: Boolean,
         @JsonProperty("StartTargetPowerPercent")
-        val startTargetPowerPercent: Int,
+        val startTargetPowerPercent: Double?,
+        @JsonProperty("EndTargetPowerPercent")
+        val endTargetPowerPercent: Double? = null,
     )
 }

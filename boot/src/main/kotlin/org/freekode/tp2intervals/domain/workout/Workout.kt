@@ -5,11 +5,13 @@ import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
 import java.io.Serializable
 import java.time.LocalDate
+import java.time.LocalTime
 
 data class Workout(
     val details: WorkoutDetails,
     val date: LocalDate?,
     val structure: WorkoutStructure?,
+    val startTime: LocalTime? = null,
 ) : Serializable {
     companion object {
         fun note(date: LocalDate, name: String, description: String?, externalData: ExternalData): Workout {
@@ -18,7 +20,11 @@ data class Workout(
     }
 
     fun withDate(date: LocalDate): Workout {
-        return Workout(details, date, structure)
+        return Workout(details, date, structure, startTime)
+    }
+
+    fun withStartTime(startTime: LocalTime?): Workout {
+        return Workout(details, date, structure, startTime)
     }
 
     override fun equals(other: Any?): Boolean {

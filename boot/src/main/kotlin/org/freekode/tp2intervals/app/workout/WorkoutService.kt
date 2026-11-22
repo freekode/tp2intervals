@@ -6,9 +6,11 @@ import org.freekode.tp2intervals.domain.librarycontainer.LibraryContainerReposit
 import org.freekode.tp2intervals.domain.workout.WorkoutDetails
 import org.freekode.tp2intervals.domain.workout.WorkoutRepository
 import org.freekode.tp2intervals.rest.workout.DeleteWorkoutRequestDTO
+import org.freekode.tp2intervals.infrastructure.PlatformException
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.time.LocalDate
+import java.time.LocalTime
 
 @Service
 class WorkoutService(
@@ -26,6 +28,14 @@ class WorkoutService(
 
         val allWorkoutsToSync = sourceWorkoutRepository.getWorkoutsFromCalendar(request.startDate, request.endDate)
         var filteredWorkoutsToSync = allWorkoutsToSync.filter { request.types.contains(it.details.type) }
+        val defaultStartTime = request.defaultStartTime?.takeIf { it.isNotBlank() }?.let {
+            try {
+                LocalTime.parse(it)
+            } catch (e: Exception) {
+                throw PlatformException(request.targetPlatform, "Invalid default start time: $it")
+            }
+        }
+        filteredWorkoutsToSync = filteredWorkoutsToSync.map { it.withStartTime(defaultStartTime) }
         if (request.skipSynced) {
             val plannedWorkouts = targetWorkoutRepository.getWorkoutsFromCalendar(request.startDate, request.endDate)
             filteredWorkoutsToSync = filteredWorkoutsToSync.filter { !plannedWorkouts.contains(it) }

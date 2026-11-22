@@ -15,4 +15,37 @@ class TrainerRoadWorkoutDetailsDTO(
     val tss: Int,
     @JsonProperty("Duration")
     val duration: Int,
+    @JsonProperty("GoalDescription")
+    val goalDescription: String? = null,
+    @JsonProperty("ProfileName")
+    val profileName: String? = null,
+    @JsonProperty("WorkoutDifficultyRating")
+    val workoutDifficultyRating: Int? = null,
+    @JsonProperty("WorkoutLevel")
+    val workoutLevel: Double? = null,
+    @JsonProperty("Zones")
+    val zones: List<TrainerRoadZoneDTO> = emptyList(),
+    @JsonProperty("Progression")
+    val progression: TrainerRoadProgressionDTO? = null,
+    @JsonProperty("ProgressionLevel")
+    val progressionLevel: Double? = null,
+    @JsonProperty("Levels")
+    val levels: List<TrainerRoadLevelDTO> = emptyList(),
+)
+
+class TrainerRoadZoneDTO(
+    @JsonProperty("Description")
+    val description: String?,
+)
+
+class TrainerRoadProgressionDTO(
+    @JsonProperty("Text")
+    val text: String?,
+)
+
+class TrainerRoadLevelDTO(
+    @JsonProperty("Level")
+    val level: Double?,
+    @JsonProperty("IsPrimary")
+    val isPrimary: Boolean?,
 )

@@ -7,6 +7,8 @@ import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.workout.structure.SingleStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.TrainerRoadApiClientService
+import org.freekode.tp2intervals.infrastructure.platform.trainerroad.workout.TRWorkoutResponseDTO
+import org.freekode.tp2intervals.infrastructure.platform.trainerroad.workout.TrainerRoadWorkoutMapper
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.configuration.TrainerRoadConfiguration
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.configuration.TrainerRoadConfigurationRepository
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.member.TRUsernameRepository
@@ -97,11 +99,55 @@ class TrainerRoadWorkoutRepositoryTest {
     fun `should exclude html tags from description`() {
         val data = ExternalData(null, null, "simple")
         val workout = trainerRoadWorkoutRepository.getWorkoutFromLibrary(data)
-        assertEquals(
-            "simple is 4x3-minute intervals of leg-speed drills at a very low 60% FTP with 3 minutes of rest between intervals. " +
-                    "Keep the pressure on the pedals light and your intensity low to moderate regardless of your cadence.",
-            workout.details.description
+        assertTrue(workout.details.description!!.startsWith(
+            "simple is 4x3-minute intervals of leg-speed drills at a very low 60% FTP"
+        ))
+        assertTrue(workout.details.description!!.contains("Goal:"))
+        assertTrue(workout.details.description!!.contains("Zone: Endurance"))
+        assertTrue(workout.details.description!!.contains("Progression: Endurance"))
+    }
+
+    @Test
+    fun `should use live WorkoutData values when interval target fields are zero`() {
+        val dto = objectMapper.readValue(
+            """
+            {
+              "Workout": {
+                "Details": {
+                  "Id": "265566",
+                  "WorkoutName": "Galena -2",
+                  "WorkoutDescription": "Sweet Spot workout",
+                  "IsOutside": false,
+                  "Tss": 70,
+                  "Duration": 45
+                },
+                "IntervalData": [
+                  {
+                    "Start": 120,
+                    "End": 1320,
+                    "Name": "Sweet Spot 2",
+                    "IsFake": false,
+                    "TestInterval": false,
+                    "StartTargetPowerPercent": 0,
+                    "EndTargetPowerPercent": 0
+                  }
+                ],
+                "WorkoutData": [
+                  {"Tick": 120, "FtpPercent": 90},
+                  {"Tick": 1319, "FtpPercent": 94}
+                ]
+              }
+            }
+            """.trimIndent(),
+            TRWorkoutResponseDTO::class.java,
         )
+
+        val workout = TrainerRoadWorkoutMapper().toWorkout(dto, true)
+        val step = workout.structure!!.steps.single() as SingleStep
+
+        assertEquals(90, step.target.start)
+        assertEquals(94, step.target.end)
+        assertEquals(20 * 60.toLong(), step.length.value)
     }
 
     private fun trainerRoadConfigurationRepository(): TrainerRoadConfigurationRepository {

@@ -24,13 +24,19 @@ class TrainerRoadApiClientService(
             .map { TrainerRoadWorkoutMapper().toWorkoutDetails(it, removeHtmlTags) }
     }
 
-    fun getWorkoutsFromCalendar(startDate: LocalDate, endDate: LocalDate, username: String): List<Workout> {
-        return trainerRoadApiClient.getActivities(username, startDate.toString(), endDate.toString())
-            .filter { it.activity != null }
-            .map { activity ->
-                getWorkout(activity.activity!!.id)
-                    .withDate(activity.date.toLocalDate())
-            }
+    fun getWorkoutsFromCalendar(
+        startDate: LocalDate,
+        endDate: LocalDate,
+        memberId: Long,
+    ): List<Workout> {
+        val timeline = trainerRoadApiClient.getCalendarTimeline(memberId)
+        val plannedActivities = timeline.plannedActivities
+            .filter { it.workoutId != null }
+            .filter { it.date.toLocalDate() in startDate..endDate }
+        return plannedActivities.map { plannedActivity ->
+            getWorkout(plannedActivity.workoutId!!.toString())
+                .withDate(plannedActivity.date.toLocalDate())
+        }
     }
 
     @Cacheable

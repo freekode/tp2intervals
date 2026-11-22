@@ -1,0 +1,11 @@
+{
+  "MemberId": 123456,
+  "Username": "example-athlete",
+  "FirstName": "Example",
+  "Roles": [
+    "ActiveMember"
+  ],
+  "Units": 0,
+  "TzdbIdentifier": "UTC",
+  "Ftp": 200
+}

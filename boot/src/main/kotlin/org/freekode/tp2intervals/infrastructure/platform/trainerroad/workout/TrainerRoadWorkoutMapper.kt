@@ -10,7 +10,7 @@ import java.time.Duration
 class TrainerRoadWorkoutMapper {
     fun toWorkout(trWorkoutResponseDTO: TRWorkoutResponseDTO, removeHtmlTags: Boolean): Workout {
         val trWorkout: TRWorkoutResponseDTO.TRWorkout = trWorkoutResponseDTO.workout
-        val steps = convertSteps(trWorkout.intervalData)
+        val steps = convertSteps(trWorkout.intervalData, trWorkout.workoutData)
         return Workout(
             toWorkoutDetails(trWorkout.details, removeHtmlTags),
             null,
@@ -22,14 +22,17 @@ class TrainerRoadWorkoutMapper {
         return WorkoutDetails(
             if (detailsDTO.isOutside) TrainingType.BIKE else TrainingType.VIRTUAL_BIKE,
             detailsDTO.workoutName,
-            getDescription(detailsDTO.workoutDescription, removeHtmlTags),
+            getDescription(detailsDTO, removeHtmlTags),
             Duration.ofMinutes(detailsDTO.duration.toLong()),
             detailsDTO.tss,
             ExternalData.empty().withTrainerRoad(detailsDTO.id)
         )
     }
 
-    private fun convertSteps(intervals: List<TRWorkoutResponseDTO.IntervalsDataDTO>): List<WorkoutStep> {
+    private fun convertSteps(
+        intervals: List<TRWorkoutResponseDTO.IntervalsDataDTO>,
+        workoutData: List<TRWorkoutResponseDTO.WorkoutDataDTO>,
+    ): List<WorkoutStep> {
         val steps = mutableListOf<WorkoutStep>()
 
         for (interval in intervals) {
@@ -37,21 +40,87 @@ class TrainerRoadWorkoutMapper {
                 continue
             }
             val stepLength = StepLength.seconds((interval.end - interval.start).toLong())
-            val ftpPercent = interval.startTargetPowerPercent
+            val dataStartTarget = targetAtTick(workoutData, interval.start)
+            val dataEndTarget = targetAtTick(workoutData, interval.end - 1)
+            val ftpPercent = dataStartTarget
+                ?: interval.startTargetPowerPercent?.toInt()
+                ?: 0
+            val ftpEndPercent = dataEndTarget
+                ?: interval.endTargetPowerPercent?.toInt()
+                ?: ftpPercent
 
             val name = if (interval.name == "Fake") "Step" else interval.name
 
             val singleStep =
-                SingleStep(name, stepLength, StepTarget(ftpPercent, ftpPercent), null, false)
+                SingleStep(name, stepLength, StepTarget(ftpPercent, ftpEndPercent), null, false)
             steps.add(singleStep)
         }
         return steps
     }
 
-    private fun getDescription(description: String, removeHtmlTags: Boolean): String =
+    private fun targetAtTick(
+        workoutData: List<TRWorkoutResponseDTO.WorkoutDataDTO>,
+        tick: Double,
+    ): Int? {
+        if (workoutData.isEmpty()) {
+            return null
+        }
+        val closest = workoutData.minByOrNull { kotlin.math.abs(it.tick - tick) } ?: return null
+        return closest.ftpPercent.toInt()
+    }
+
+    private fun getDescription(details: TrainerRoadWorkoutDetailsDTO, removeHtmlTags: Boolean): String {
+        val description = formatDescription(details.workoutDescription, removeHtmlTags)
+        val sections = mutableListOf<String>()
+        sections += description
+
+        details.goalDescription
+            ?.takeIf { it.isNotBlank() }
+            ?.let { sections += "Goal: ${formatDescription(it, removeHtmlTags)}" }
+
+        val metadata = mutableListOf<String>()
+        details.zones.firstOrNull()?.description?.takeIf { it.isNotBlank() }?.let {
+            metadata += "Zone: $it"
+        }
+        details.profileName?.takeIf { it.isNotBlank() }?.let {
+            metadata += "Profile: $it"
+        }
+        details.workoutDifficultyRating?.let {
+            metadata += "Difficulty: $it"
+        }
+        details.workoutLevel?.let {
+            metadata += "Workout level: ${formatDecimal(it)}"
+        }
+        details.progression?.text?.takeIf { it.isNotBlank() }?.let { progression ->
+            val level = details.levels.firstOrNull { it.isPrimary == true }?.level
+                ?: details.progressionLevel
+            val levelText = level?.let { " ${formatDecimal(it)}" }.orEmpty()
+            metadata += "Progression: $progression$levelText"
+        }
+
+        if (metadata.isNotEmpty()) {
+            sections += metadata.joinToString(separator = " | ")
+        }
+
+        return sections.joinToString(separator = "\n\n").trim()
+    }
+
+    private fun formatDescription(description: String, removeHtmlTags: Boolean): String =
         if (removeHtmlTags) {
-            description.replace("<[^>]*>".toRegex(), " ").replace("&" + "nbsp;", " ").replace("\\s+".toRegex(), " ")
+            description
+                .replace("<[^>]*>".toRegex(), " ")
+                .replace("&" + "nbsp;", " ")
+                .replace("&amp;", "&")
+                .replace("&lt;", "<")
+                .replace("&gt;", ">")
+                .replace("&quot;", "\"")
+                .replace("&#39;", "'")
+                .replace("&nbsp;", " ")
+                .replace("\\s+".toRegex(), " ")
         } else {
             description
         }.trim()
+
+    private fun formatDecimal(value: Double): String =
+        if (value % 1.0 == 0.0) value.toInt().toString() else String.format("%.2f", value)
 }

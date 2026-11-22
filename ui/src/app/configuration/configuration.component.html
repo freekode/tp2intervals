@@ -84,6 +84,25 @@
       }
     </mat-form-field>
 
+    <div class="row test-connection-row">
+      <button
+        mat-stroked-button
+        type="button"
+        [disabled]="trainerRoadTestInProgress || !formGroup.controls['trainer-road.auth-cookie'].value"
+        (click)="testTrainerRoadConnection()"
+      >
+        Test connection
+      </button>
+    </div>
+    <div
+      *ngIf="trainerRoadTestResult"
+      class="test-connection-result"
+      [class.success]="trainerRoadTestSucceeded"
+      [class.error]="!trainerRoadTestSucceeded"
+    >
+      {{ trainerRoadTestResult }}
+    </div>
+
     <mat-checkbox class="form-checkbox" formControlName="trainer-road.remove-html-tags">
       Remove HTML tags from description
     </mat-checkbox>

@@ -9,6 +9,8 @@ import org.freekode.tp2intervals.domain.config.PlatformInfo
 import org.freekode.tp2intervals.domain.config.PlatformInfoRepository
 import org.freekode.tp2intervals.domain.config.UpdateConfigurationRequest
 import org.freekode.tp2intervals.infrastructure.PlatformException
+import org.freekode.tp2intervals.infrastructure.platform.trainerroad.configuration.TrainerRoadConfigurationRepository
+import org.freekode.tp2intervals.infrastructure.platform.trainerroad.configuration.TrainerRoadConnectionTestResponse
 import org.springframework.stereotype.Service
 
 
@@ -24,6 +26,13 @@ class ConfigurationService(
     fun getConfiguration(key: String): String? = appConfigurationRepository.getConfiguration(key)
 
     fun getConfigurations(): AppConfiguration = appConfigurationRepository.getConfigurations()
+
+    fun testTrainerRoadConnection(authCookie: String): TrainerRoadConnectionTestResponse {
+        val repository = platformConfigurationRepositories
+            .filterIsInstance<TrainerRoadConfigurationRepository>()
+            .single()
+        return repository.testConnection(authCookie)
+    }
 
     fun updateConfiguration(request: UpdateConfigurationRequest): List<String> {
         val errors = platformConfigurationRepositories.mapNotNull { updateConfiguration(request, it) }
