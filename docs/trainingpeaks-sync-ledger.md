@@ -308,3 +308,54 @@ dc config --format json | jq '.services.app | {
    SQLite database and claims. An in-flight write may already have committed.
    Inspect it before resuming. A rollback to an older image should remain
    paused, and its UI may not understand the optional rolling-window field.
+
+## Schedule deletion behind Traefik HTTPS
+
+A browser includes its HTTPS Origin on a same-origin DELETE. Traefik forwards
+the request over HTTP, so Spring must reconstruct the original scheme, host and
+port. With forwarding disabled, Spring MVC treats the request as cross-origin
+and rejects DELETE under the existing API method policy.
+
+In `/path/to/compose-overrides/docker-compose.rc.yaml`, configure the
+application service environment after confirming that the application port is
+unpublished and that the immediate Traefik peer is on the expected network:
+
+```yaml
+SERVER_FORWARD_HEADERS_STRATEGY: native
+SERVER_TOMCAT_REMOTEIP_INTERNAL_PROXIES: '192[.]0[.]2[.]10' # Example only. Use Traefik's actual peer IP.
+```
+
+Use the exact IP, expressed as a Java regular expression, or explicitly list
+the exact peers when there is more than one. To identify the container's
+address on the shared network without reading environment variables:
+
+```sh
+docker network inspect traefik --format '{{range .Containers}}{{println .Name .IPv4Address .IPv6Address}}{{end}}'
+```
+
+Verify that Traefik discards or overwrites client-supplied forwarded headers
+and that insecure forwarded-header trust is off. Any ingress trustedIPs must
+be limited to genuine upstream proxies. If these conditions cannot be
+verified, leave native forwarding disabled. The repository defaults to
+forwarding off and a deny-all internal-proxy pattern. Do not use framework
+forwarding or a broad private-network regex in this deployment. Recheck the
+peer address after Traefik recreation because Docker may change it.
+
+The existing CORS policy deliberately excludes cross-origin DELETE. HTTPS
+same-origin DELETE works with trusted forwarded scheme, host and port.
+Deletion only removes the requested schedule row. A missing ID returns HTTP
+200 with an empty body, so repeated deletion is harmless. The forward gate
+may remain paused. Preview-only blocks deletion because it is a local
+configuration write. Neither deletion nor schedule registration writes to
+either provider.
+
+After native smoke validation and separate authorization, use both existing
+Compose files and back up the database at
+`/path/to/installation/data/tp2intervals.sqlite`. Keep the gate off and the
+current data mount, token, Traefik settings, cadence and timezone. Verify the
+saved ID survives the app image change before deleting it through the UI.
+Check the schedule list and SQLite read-only before saving one replacement
+rolling request. Verify the replacement is paused. Activation is a separate
+monitored change. To pause, stop the application if necessary, restore the
+forward gate to false and recreate the app. Preserve the database instead of
+restoring an older claim history.

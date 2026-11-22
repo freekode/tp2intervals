@@ -35,6 +35,11 @@ spring:
       config: classpath:ehcache.xml
 
 server:
+  forward-headers-strategy: none
+  tomcat:
+    remoteip:
+      # Opt-in native forwarding must name the trusted immediate proxy.
+      internal-proxies: '(?!)'
   error:
     include-message: always
 
