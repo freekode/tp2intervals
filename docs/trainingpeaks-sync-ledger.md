@@ -251,3 +251,60 @@ the new ID and completion time in the same ledger transition. Back up the
 database before upgrade. Keep older binaries preview-only after rollback
 because they are unaware of the pending-repair policy. Keep the migrated
 database and reconcile any remote writes before deciding how to restore data.
+
+## Rolling TrainingPeaks scheduling
+
+Use one app instance for scheduling. An enabled forward schedule defaults to
+60 minutes in Europe/Amsterdam. Set `TP2INTERVALS_SCHEDULE_INTERVAL_MINUTES`
+to an integer from 5 to 1440 and `TP2INTERVALS_SCHEDULE_TIMEZONE` to an IANA
+timezone. These settings do not change the JVM timezone. Other directions
+retain their three-minute cadence and JVM timezone. One timer checks which
+cadence is due every minute. It serializes scans and does not replay missed
+ticks after downtime. The first scan after restart is due immediately.
+
+**Schedule for today** keeps the legacy rolling one-day window.
+**Schedule today + tomorrow** adds `"window":"TODAY_AND_TOMORROW"` to the
+existing SQLite request JSON. Older rows still mean today only. The selected
+window uses one captured schedule-zone date, including around midnight and
+DST. A Basic provider may reject that date around its own day boundary.
+The job stops for that run and does not retry with a different date range.
+Provider workout rows outside the requested window are filtered before claims.
+This is additive sync. A moved or edited source workout does not update the
+already linked destination event. Confirmed deletions require explicit repair.
+
+For the existing production layout, use the same Compose project and files:
+
+```sh
+cd /path/to/installation
+dc() {
+  docker compose -f /path/to/installation/docker-compose.yaml \
+    -f /path/to/compose-overrides/docker-compose.rc.yaml "$@"
+}
+dc config --format json | jq '.services.app | {
+  image, platform, ports: (.ports // []),
+  sqlite: .environment.SPRING_DATASOURCE_URL,
+  preview_only: .environment.TP2INTERVALS_PREVIEW_ONLY,
+  forward_enabled: .environment.TP2INTERVALS_ENABLE_SCHEDULED_FORWARD_SYNC,
+  interval: .environment.TP2INTERVALS_SCHEDULE_INTERVAL_MINUTES,
+  timezone: .environment.TP2INTERVALS_SCHEDULE_TIMEZONE
+}'
+```
+
+1. Verify the image natively and back up the existing
+   `/path/to/installation/data/tp2intervals.sqlite` consistently. Retain
+   the existing Traefik network and data mount. Start the reviewed image with
+   the forward gate off and verify the preview, baseline and ledger.
+2. With preview-only off and the forward gate still false, save exactly one
+   rolling forward schedule. Check the saved row has the intended types,
+   `skipSynced=true`, `window=TODAY_AND_TOMORROW` and
+   `blockedReason=FORWARD_SYNC_PAUSED`. Saving a row does not trigger a run.
+3. Separately set the forward gate true in the effective override and check the
+   merged configuration. Recreate only the app service during a monitored window.
+   Check the scheduled request ID, dates, and copied/skipped counts in
+   `dc logs --since 10m app`. Compare the ledger and destination calendar with
+   the pre-run snapshot. A block or error has its own log record.
+4. To pause, stop the app if immediate containment is needed. Restore the gate
+   to false, recreate the app and check that the saved row is paused. Keep the
+   SQLite database and claims. An in-flight write may already have committed.
+   Inspect it before resuming. A rollback to an older image should remain
+   paused, and its UI may not understand the optional rolling-window field.

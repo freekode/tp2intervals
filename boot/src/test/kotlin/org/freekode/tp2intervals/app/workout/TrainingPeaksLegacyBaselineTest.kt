@@ -515,6 +515,52 @@ class TrainingPeaksLegacyBaselineTest {
         verify(destination, never()).createScopedCalendarEvent(target, "source", workout("new", day))
     }
 
+    @Test
+    fun `rolling windows filter out of range records and claim a shared workout only once`() {
+        stub(day, emptyList())
+        db.seedBaseline("source", target.athleteId)
+        val tomorrow = day.plusDays(1)
+        val later = day.plusDays(2)
+        fun entry(id: String, date: LocalDate) =
+            TPWorkoutCalendarResponseDTO(date.atStartOfDay(), id, 2, "Synthetic", 1.0, null, null, null, null)
+        val shared = entry("shared", tomorrow)
+        val outside = entry("outside", later)
+        doReturn(listOf(shared, outside)).`when`(source).getPlannedCalendarEntries("source", day, tomorrow)
+        doReturn(listOf(shared)).`when`(source).getPlannedCalendarEntries("source", tomorrow, later)
+        doReturn(workout("shared", tomorrow)).`when`(source).toCalendarWorkout("source", shared)
+        doReturn(emptyList<IntervalsCalendarEventDTO>()).`when`(destination).getCalendarSnapshot(target.athleteId, day, tomorrow)
+        doReturn(emptyList<IntervalsCalendarEventDTO>()).`when`(destination)
+            .getCalendarSnapshot(target.athleteId, day.minusDays(365), tomorrow.plusDays(365))
+        doReturn(75L).`when`(destination).createScopedCalendarEvent(target, "source", workout("shared", tomorrow))
+        val first = sync(enabled = true).copyScheduled(request(day).copy(endDate = tomorrow), day).result!!
+        assertEquals(1, first.copied)
+        assertEquals(1, first.filteredOut)
+        verify(source, never()).toCalendarWorkout("source", outside)
+        doReturn(event(75, "shared")).`when`(destination).getCalendarEvent(target.athleteId, 75L)
+        val second = sync(enabled = true).copyScheduled(request(tomorrow).copy(endDate = later), tomorrow).result!!
+        assertEquals(0, second.copied)
+        assertEquals(1, second.filteredOut)
+        assertEquals(75L, db.newLedger().find(key("shared"))?.remoteEventId)
+        verify(destination).createScopedCalendarEvent(target, "source", workout("shared", tomorrow))
+    }
+
+    @Test
+    fun `Basic provider day boundary rejection does not fall back to another request or create anything`() {
+        stub(day, emptyList())
+        db.seedBaseline("source", target.athleteId)
+        val tomorrow = day.plusDays(1)
+        doThrow(org.freekode.tp2intervals.infrastructure.ProviderReadFailure(
+            Platform.TRAINING_PEAKS, org.freekode.tp2intervals.infrastructure.ProviderReadFailure.Kind.HTTP, 403
+        )).`when`(source).getPlannedCalendarEntries("source", day, tomorrow)
+        assertThrows(org.freekode.tp2intervals.infrastructure.ProviderReadFailure::class.java) {
+            sync(enabled = true).copyScheduled(request(day).copy(endDate = tomorrow), day)
+        }
+        verify(source).getPlannedCalendarEntries("source", day, tomorrow)
+        verify(source, never()).getPlannedCalendarEntries("source", day, day)
+        verify(destination, never()).getCalendarSnapshot(target.athleteId, day, tomorrow)
+        assertEquals(0, db.jdbc().queryForObject("SELECT COUNT(*) FROM trainingpeaks_sync_ledger", Int::class.java))
+    }
+
     private fun missingLinkDecision(replacements: List<IntervalsCalendarEventDTO> = emptyList()): TrainingPeaksLinkRepairRequest {
         stub(day, listOf("new"))
         db.seedBaseline("source", target.athleteId)
@@ -556,8 +602,9 @@ class TrainingPeaksLegacyBaselineTest {
     private fun stub(date: LocalDate, ids: List<String>) {
         doReturn(TrainingPeaksUser("source", true, false)).`when`(source).calendarUser()
         doReturn(target).`when`(destination).resolveCalendarIdentity()
-        doReturn(ids.map { TPWorkoutCalendarResponseDTO(date.atStartOfDay(), it, 2, "Synthetic", 1.0, null, null, null, null) })
-            .`when`(source).getPlannedCalendarEntries("source", date, date)
+        val entries = ids.map { TPWorkoutCalendarResponseDTO(date.atStartOfDay(), it, 2, "Synthetic", 1.0, null, null, null, null) }
+        doReturn(entries).`when`(source).getPlannedCalendarEntries("source", date, date)
+        entries.forEach { doReturn(workout(it.id, date)).`when`(source).toCalendarWorkout("source", it) }
         doReturn(ids.map { workout(it, date) }).`when`(source).getWorkoutsFromCalendar("source", date, date)
         listCalendar(date, emptyList())
     }

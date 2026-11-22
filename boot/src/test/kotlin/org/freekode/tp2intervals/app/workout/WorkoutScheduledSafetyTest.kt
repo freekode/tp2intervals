@@ -12,9 +12,7 @@ import org.freekode.tp2intervals.infrastructure.schedule.ScheduleRequestReposito
 import org.freekode.tp2intervals.rest.workout.WorkoutScheduledJobController
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.CALLS_REAL_METHODS
 import org.mockito.Mockito.mock
-import org.mockito.Mockito.mockStatic
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoInteractions
 import org.mockito.Mockito.verifyNoMoreInteractions
@@ -24,6 +22,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.time.LocalDate
+import java.time.Instant
 
 class WorkoutScheduledSafetyTest {
     private val service = mock(WorkoutService::class.java)
@@ -63,10 +62,10 @@ class WorkoutScheduledSafetyTest {
             audit.map { it.blockedReason }
         )
         verifyNoInteractions(service)
-        fixedToday { job.job() }
+        job.runDue(Instant.parse("2025-02-12T12:00:00Z"))
 
-        verify(service).copyScheduledWorkouts(requestForToday(safe))
-        verify(service).copyScheduledWorkouts(requestForToday(reverse))
+        verify(service).copyScheduledWorkouts(requestForToday(safe), today)
+        verify(service).copyScheduledWorkouts(requestForToday(reverse), today)
         verifyNoMoreInteractions(service)
         verify(schedules, org.mockito.Mockito.times(2)).findAll()
         verifyNoMoreInteractions(schedules)
@@ -115,10 +114,4 @@ class WorkoutScheduledSafetyTest {
     private fun requestForToday(scheduled: C2CTodayScheduledRequest) =
         CopyFromCalendarToCalendarRequest(today, today, scheduled.types, scheduled.skipSynced, scheduled.sourcePlatform, scheduled.targetPlatform)
 
-    private fun fixedToday(action: () -> Unit) {
-        mockStatic(LocalDate::class.java, CALLS_REAL_METHODS).use { clock ->
-            clock.`when`<LocalDate> { LocalDate.now() }.thenReturn(today)
-            action()
-        }
-    }
 }

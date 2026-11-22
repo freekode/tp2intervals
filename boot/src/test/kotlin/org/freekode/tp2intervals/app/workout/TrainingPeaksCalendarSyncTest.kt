@@ -33,14 +33,13 @@ import org.junit.jupiter.api.Assertions.assertThrows
 import org.springframework.web.server.ResponseStatusException
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
-import org.mockito.Mockito.CALLS_REAL_METHODS
 import org.mockito.Mockito.mock
-import org.mockito.Mockito.mockStatic
 import org.mockito.Mockito.`when`
 import org.springframework.http.ResponseEntity
 import java.nio.file.Path
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 class TrainingPeaksCalendarSyncTest {
     @TempDir
@@ -167,11 +166,9 @@ class TrainingPeaksCalendarSyncTest {
     }
 
     private fun runTwice(job: WorkoutScheduledJob) {
-        mockStatic(LocalDate::class.java, CALLS_REAL_METHODS).use { clock ->
-            clock.`when`<LocalDate> { LocalDate.now() }.thenReturn(today)
-            job.job()
-            job.job()
-        }
+        val start = today.atTime(12, 0).toInstant(ZoneOffset.UTC)
+        job.runDue(start)
+        job.runDue(start.plusSeconds(3600))
     }
 
     private fun existingEvent(sourceId: String, name: String = "Threshold", movingTime: Long = WORKOUT_SECONDS) =

@@ -60,7 +60,7 @@ Coach account
 * Copy workouts from TrainerRoad library to Intervals
 * Create training plan or workout folder on Intervals.icu from planned workouts on TrainerRoad
 
-Automatically schedule workouts for today, by checking your calendar every 20 minutes.
+Schedule planned workouts for today or for today and tomorrow. TrainingPeaks → intervals.icu forward scheduling is paused by default and requires a reviewed baseline. When enabled, the default cadence is 60 minutes in Europe/Amsterdam. Other scheduling directions retain their three-minute cadence. See the [rolling schedule runbook](docs/trainingpeaks-sync-ledger.md#rolling-trainingpeaks-scheduling).
 To clear up scheduled jobs just restart the application.
 
 

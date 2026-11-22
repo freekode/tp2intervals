@@ -27,6 +27,9 @@ class WorkoutScheduledJobController(
     fun getScheduleRequests() =
         workoutScheduledJob.auditRequests()
 
+    @GetMapping("/api/workout/copy-calendar-to-calendar/schedule/settings")
+    fun getScheduleSettings() = workoutScheduledJob.settings()
+
     @DeleteMapping("/api/workout/copy-calendar-to-calendar/schedule/{id}")
     fun deleteScheduleRequest(@PathVariable id: Int) =
         workoutScheduledJob.deleteRequest(id)

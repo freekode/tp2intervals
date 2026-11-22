@@ -43,27 +43,27 @@ class TrainingPeaksCalendarSync(
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
-    fun copyScheduled(request: CopyFromCalendarToCalendarRequest, today: LocalDate = LocalDate.now()) {
-        if (!scheduledForwardEnabled || mode.enabled || !request.skipSynced ||
-            request.sourcePlatform != Platform.TRAINING_PEAKS ||
-            request.targetPlatform != Platform.INTERVALS
-        ) return
-
-        // An unapproved installation has no reason to contact the providers from a job.
-        if (baselines.latest()?.state != "APPROVED") {
-            log.info("Scheduled TrainingPeaks sync paused: BASELINE_REQUIRED")
-            return
+    fun copyScheduled(request: CopyFromCalendarToCalendarRequest, today: LocalDate): ScheduledCopyOutcome {
+        val blocked = when {
+            mode.enabled -> "PREVIEW_ONLY"
+            !scheduledForwardEnabled -> "FORWARD_SYNC_PAUSED"
+            !request.skipSynced || request.sourcePlatform != Platform.TRAINING_PEAKS ||
+                request.targetPlatform != Platform.INTERVALS -> "UNSAFE_FORWARD_REQUEST"
+            baselines.latest()?.state != "APPROVED" -> "BASELINE_REQUIRED"
+            request.startDate != today || request.endDate !in today..today.plusDays(1) -> "INVALID_ROLLING_WINDOW"
+            else -> null
         }
+        if (blocked != null) return ScheduledCopyOutcome(blockedReason = blocked)
+
         val generation = baselines.generation()
         val user = source.calendarUser()
+        if (!user.isAthlete) return ScheduledCopyOutcome(blockedReason = "ATHLETE_REQUIRED")
         val target = destination.resolveCalendarIdentity()
         val accounts = Accounts(user.userId, target.athleteId, generation)
-        val approval = baselines.usableApproval(accounts) ?: return
-        if (!user.isAthlete || request.startDate > request.endDate ||
-            (!user.isPremium && (request.startDate != today || request.endDate != today))
-        ) return
+        val approval = baselines.usableApproval(accounts)
+            ?: return ScheduledCopyOutcome(blockedReason = "BASELINE_REQUIRED")
 
-        copy(request, user.userId, target, approval)
+        return ScheduledCopyOutcome(result = copy(request, user.userId, target, approval))
     }
 
     fun copy(request: CopyFromCalendarToCalendarRequest): CopyWorkoutsResponse {
@@ -86,7 +86,17 @@ class TrainingPeaksCalendarSync(
 
         val athlete = target.athleteId
         val previousKeys = legacyDestinationIds(sourceAccount, target)
-        val workouts = source.getWorkoutsFromCalendar(sourceAccount, request.startDate, request.endDate)
+        val (workouts, receivedCount) = if (approval == null) {
+            val calendar = source.getWorkoutsFromCalendar(sourceAccount, request.startDate, request.endDate)
+            calendar to calendar.size
+        } else {
+            val planned = source.getPlannedCalendarEntries(sourceAccount, request.startDate, request.endDate)
+            val eligible = planned.filter {
+                it.workoutDay.toLocalDate() in request.startDate..request.endDate &&
+                    it.getWorkoutType() in request.types && !it.id.isBlank()
+            }.map { source.toCalendarWorkout(sourceAccount, it) }
+            eligible to planned.size
+        }
         val reviews = mutableListOf<WorkoutSyncReview>()
         val legacyMatches by lazy {
             findCandidates(sourceAccount, athlete, request.startDate, request.endDate)
@@ -152,7 +162,7 @@ class TrainingPeaksCalendarSync(
             }
         }
 
-        return CopyWorkoutsResponse(copied, workouts.size - copied, request.startDate, request.endDate, ExternalData.empty(), reviews)
+        return CopyWorkoutsResponse(copied, receivedCount - copied, request.startDate, request.endDate, ExternalData.empty(), reviews)
     }
 
     private data class Inventory(

@@ -31,11 +31,11 @@ class WorkoutService(
         return copyCalendar(request)
     }
 
-    fun copyScheduledWorkouts(request: CopyFromCalendarToCalendarRequest) {
-        if (request.sourcePlatform == Platform.TRAINING_PEAKS && request.targetPlatform == Platform.INTERVALS) {
-            trainingPeaksCalendarLock.withLock { trainingPeaksCalendarSync.copyScheduled(request) }
+    fun copyScheduledWorkouts(request: CopyFromCalendarToCalendarRequest, today: LocalDate): ScheduledCopyOutcome {
+        return if (request.sourcePlatform == Platform.TRAINING_PEAKS && request.targetPlatform == Platform.INTERVALS) {
+            trainingPeaksCalendarLock.withLock { trainingPeaksCalendarSync.copyScheduled(request, today) }
         } else {
-            copyWorkoutsC2C(request)
+            ScheduledCopyOutcome(result = copyWorkoutsC2C(request))
         }
     }
 

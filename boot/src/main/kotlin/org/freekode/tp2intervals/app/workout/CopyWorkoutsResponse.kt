@@ -24,3 +24,9 @@ data class WorkoutSyncReview(val sourceWorkoutId: String, val reason: Reason, va
         LINKED_EVENT_CHANGED,
     }
 }
+
+
+data class ScheduledCopyOutcome(
+    val result: CopyWorkoutsResponse? = null,
+    val blockedReason: String? = null,
+)

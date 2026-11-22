@@ -49,6 +49,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import java.nio.file.Path
 import java.time.LocalDate
+import java.time.ZoneOffset
 import java.time.LocalDateTime
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.CyclicBarrier
@@ -139,7 +140,7 @@ class TrainingPeaksSyncFailureTest {
         val app = node()
         intervals.loseNextPostResponse = true
 
-        assertThrows(UncheckedIOException::class.java) { runScheduled(app) }
+        runScheduled(app)
         assertEquals(State.PENDING, database.newLedger().find(key)?.state)
         runScheduled(app)
 
@@ -153,7 +154,7 @@ class TrainingPeaksSyncFailureTest {
         intervals.loseNextPostResponse = true
         intervals.hideNewEventsFromNextSnapshots = true
 
-        assertThrows(UncheckedIOException::class.java) { runScheduled(app) }
+        runScheduled(app)
         val review = runManual(app).syncReview.single()
 
         assertCalendar(expectedSyncedEventId = 2, expectedPosts = 1)
@@ -178,7 +179,7 @@ class TrainingPeaksSyncFailureTest {
         val app = node()
         intervals.nextGetFailure = UncheckedIOException(SocketTimeoutException("GET timed out"))
 
-        assertThrows(UncheckedIOException::class.java) { runScheduled(app) }
+        runScheduled(app)
 
         assertCalendar(expectedSyncedEventId = null, expectedPosts = 0)
     }
@@ -190,7 +191,7 @@ class TrainingPeaksSyncFailureTest {
         val response = Response.builder().request(request).status(503).reason("Unavailable").build()
         intervals.nextGetFailure = FeignException.errorStatus("getEvents", response)
 
-        assertEquals(503, assertThrows(FeignException::class.java) { runScheduled(app) }.status())
+        runScheduled(app)
 
         assertCalendar(expectedSyncedEventId = null, expectedPosts = 0)
     }
@@ -216,7 +217,7 @@ class TrainingPeaksSyncFailureTest {
         intervals.loseNextPostResponse = true
         intervals.hideNewEventsFromNextSnapshots = true
 
-        assertThrows(UncheckedIOException::class.java) { runScheduled(node()) }
+        runScheduled(node())
         // Recreate all application objects, keeping the SQLite file, stored request and fake remote calendar.
         val restarted = node()
         runScheduled(restarted)
@@ -290,7 +291,7 @@ class TrainingPeaksSyncFailureTest {
         val app = node()
         intervals.snapshotStatus = HttpStatus.NOT_FOUND
 
-        assertThrows(PlatformException::class.java) { runScheduled(app) }
+        runScheduled(app)
 
         assertCalendar(expectedSyncedEventId = null, expectedPosts = 0)
     }
@@ -301,7 +302,7 @@ class TrainingPeaksSyncFailureTest {
         intervals.hideNewEventsFromNextSnapshots = true
         intervals.omitNextPostBody = true
 
-        assertThrows(PlatformException::class.java) { runScheduled(app) }
+        runScheduled(app)
         assertEquals(WorkoutSyncReview.Reason.UNRESOLVED_WRITE, runManual(app).syncReview.single().reason)
 
         assertCalendar(expectedSyncedEventId = 2, expectedPosts = 1)
@@ -329,6 +330,12 @@ class TrainingPeaksSyncFailureTest {
                 )
             )
         )
+        val entry = org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.TPWorkoutCalendarResponseDTO(
+            today.atStartOfDay(), SOURCE_ID, 2, "Threshold", 70.0 / 60, null, null, null, null,
+        )
+        `when`(source.getPlannedCalendarEntries(SOURCE_ACCOUNT, today, today)).thenReturn(listOf(entry))
+        val planned = source.getWorkoutsFromCalendar(SOURCE_ACCOUNT, today, today).single()
+        `when`(source.toCalendarWorkout(SOURCE_ACCOUNT, entry)).thenReturn(planned)
         val config = mock(IntervalsConfigurationRepository::class.java)
         `when`(config.getConfiguration()).thenReturn(IntervalsConfiguration("unused", ATHLETE_ID, 0.1f, 0.2f, 0.3f))
         `when`(config.resolveCalendarIdentity()).thenReturn(CalendarIdentity(ATHLETE_ID, "synthetic"))
@@ -341,7 +348,10 @@ class TrainingPeaksSyncFailureTest {
         return App(WorkoutScheduledJob(service, schedules, objectMapper, scheduledForwardEnabled = true, mode = PreviewOnly(false)), WorkoutController(service))
     }
 
-    private fun runScheduled(app: App) = withToday { app.job.job() }
+    private fun runScheduled(app: App) {
+        val start = today.atTime(12, 0).toInstant(ZoneOffset.UTC)
+        app.job.runDue(start.plusSeconds(3600L * app.tick++))
+    }
 
     private fun <T> withToday(action: () -> T): T =
         mockStatic(LocalDate::class.java, CALLS_REAL_METHODS).use { clock ->
@@ -394,7 +404,7 @@ class TrainingPeaksSyncFailureTest {
             "WORKOUT", "Ride", 4200, null, null
         )
 
-    private data class App(val job: WorkoutScheduledJob, val controller: WorkoutController)
+    private data class App(val job: WorkoutScheduledJob, val controller: WorkoutController, var tick: Int = 0)
 
     private class StatefulIntervalsApi(manualEdit: IntervalsEventDTO) : IntervalsApiClient by mock(IntervalsApiClient::class.java) {
         private val events = mutableListOf(manualEdit)
