@@ -1,3 +1,8 @@
+### 0.13.0
+- Fixed the changed TrainerRoad calendar API integration
+- Added TrainerRoad and TrainingPeaks connection checks
+- Updated TrainerRoad workout target and metadata parsing
+
 ### 0.12.3
 - Updated Java to 21.0.3
 

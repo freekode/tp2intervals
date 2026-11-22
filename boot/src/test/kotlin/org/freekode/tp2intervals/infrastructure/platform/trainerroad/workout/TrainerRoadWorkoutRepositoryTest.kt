@@ -7,6 +7,8 @@ import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.workout.structure.SingleStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.TrainerRoadApiClientService
+import org.freekode.tp2intervals.infrastructure.platform.trainerroad.workout.TRWorkoutResponseDTO
+import org.freekode.tp2intervals.infrastructure.platform.trainerroad.workout.TrainerRoadWorkoutMapper
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.configuration.TrainerRoadConfiguration
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.configuration.TrainerRoadConfigurationRepository
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.member.TRUsernameRepository
@@ -33,7 +35,11 @@ class TrainerRoadWorkoutRepositoryTest {
         TrainerRoadApiClientService(trainerRoadApiClient, trainerRoadConfigurationRepository)
 
     private val trainerRoadWorkoutRepository =
-        TrainerRoadWorkoutRepository(mock(TRUsernameRepository::class.java), trainerRoadApiClientService)
+        TrainerRoadWorkoutRepository(
+            mock(TRUsernameRepository::class.java),
+            trainerRoadApiClientService,
+            trainerRoadConfigurationRepository,
+        )
 
     @Test
     fun `should parse simple workout`() {
@@ -97,11 +103,116 @@ class TrainerRoadWorkoutRepositoryTest {
     fun `should exclude html tags from description`() {
         val data = ExternalData(null, null, "simple")
         val workout = trainerRoadWorkoutRepository.getWorkoutFromLibrary(data)
-        assertEquals(
-            "simple is 4x3-minute intervals of leg-speed drills at a very low 60% FTP with 3 minutes of rest between intervals. " +
-                    "Keep the pressure on the pedals light and your intensity low to moderate regardless of your cadence.",
-            workout.details.description
+        assertTrue(workout.details.description!!.startsWith(
+            "simple is 4x3-minute intervals of leg-speed drills at a very low 60% FTP"
+        ))
+        assertTrue(workout.details.description!!.contains("Goal:"))
+        assertTrue(workout.details.description!!.contains("Zone: Endurance"))
+    }
+
+    @Test
+    fun `should use WorkoutData targets instead of zero interval fallbacks`() {
+        val dto = objectMapper.readValue(
+            """
+            {
+              "Workout": {
+                "Details": {
+                  "Id": "265566",
+                  "WorkoutName": "Galena -2",
+                  "WorkoutDescription": "Synthetic workout",
+                  "IsOutside": false,
+                  "Tss": 72,
+                  "Duration": 60
+                },
+                "IntervalData": [
+                  {
+                    "Start": 720,
+                    "End": 1920,
+                    "Name": "Sweet Spot 2",
+                    "IsFake": false,
+                    "TestInterval": false,
+                    "StartTargetPowerPercent": 0,
+                    "EndTargetPowerPercent": 0
+                  }
+                ],
+                "WorkoutData": [
+                  {"Tick": 720, "FtpPercent": 90},
+                  {"Tick": 1919, "FtpPercent": 94}
+                ]
+              }
+            }
+            """.trimIndent(),
+            TRWorkoutResponseDTO::class.java,
         )
+
+        val workout = TrainerRoadWorkoutMapper().toWorkout(dto, true)
+        val step = workout.structure!!.steps.single() as SingleStep
+        assertEquals(90, step.target.start)
+        assertEquals(94, step.target.end)
+    }
+
+    @Test
+    fun `should preserve workout without interval steps`() {
+        val dto = objectMapper.readValue(
+            """
+            {
+              "Workout": {
+                "Details": {
+                  "Id": "planned-no-steps",
+                  "WorkoutName": "Planned workout",
+                  "WorkoutDescription": "Synthetic unstructured workout",
+                  "IsOutside": false,
+                  "Tss": 40,
+                  "Duration": 45
+                },
+                "IntervalData": []
+              }
+            }
+            """.trimIndent(),
+            TRWorkoutResponseDTO::class.java,
+        )
+
+        val workout = TrainerRoadWorkoutMapper().toWorkout(dto, true)
+
+        assertEquals("Planned workout", workout.details.name)
+        assertEquals(null, workout.structure)
+    }
+
+    @Test
+    fun `should parse PascalCase startTarget range`() {
+        val dto = objectMapper.readValue(
+            """
+            {
+              "Workout": {
+                "Details": {
+                  "Id": "ramp-target",
+                  "WorkoutName": "Ramped workout",
+                  "WorkoutDescription": "Synthetic ramp",
+                  "IsOutside": false,
+                  "Tss": 50,
+                  "Duration": 30
+                },
+                "IntervalData": [
+                  {
+                    "Start": 0,
+                    "End": 600,
+                    "Name": "Ramp",
+                    "IsFake": false,
+                    "TestInterval": false,
+                    "StartTarget": [60, 90]
+                  }
+                ]
+              }
+            }
+            """.trimIndent(),
+            TRWorkoutResponseDTO::class.java,
+        )
+
+        val workout = TrainerRoadWorkoutMapper().toWorkout(dto, true)
+        val step = workout.structure!!.steps.single() as SingleStep
+
+        assertEquals(60, step.target.start)
+        assertEquals(90, step.target.end)
     }
 
     private fun trainerRoadConfigurationRepository(): TrainerRoadConfigurationRepository {

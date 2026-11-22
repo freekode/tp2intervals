@@ -1,5 +1,7 @@
-tp2intervals.sqlite
+*.sqlite
+*.sqlite-*
 *.log*
+boot/src/main/resources/static/
 node_modules
 
 .idea

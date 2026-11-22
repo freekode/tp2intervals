@@ -8,6 +8,7 @@ import org.freekode.tp2intervals.domain.workout.WorkoutDetails
 import org.freekode.tp2intervals.domain.workout.WorkoutRepository
 import org.freekode.tp2intervals.infrastructure.PlatformException
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.TrainerRoadApiClientService
+import org.freekode.tp2intervals.infrastructure.platform.trainerroad.configuration.TrainerRoadConfigurationRepository
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.member.TRUsernameRepository
 import org.springframework.stereotype.Repository
 import java.time.LocalDate
@@ -17,11 +18,13 @@ import java.time.LocalDate
 class TrainerRoadWorkoutRepository(
     private val trUsernameRepository: TRUsernameRepository,
     private val trainerRoadApiClientService: TrainerRoadApiClientService,
+    private val trainerRoadConfigurationRepository: TrainerRoadConfigurationRepository,
 ) : WorkoutRepository {
     override fun platform() = Platform.TRAINER_ROAD
 
     override fun getWorkoutFromLibrary(externalData: ExternalData): Workout {
-        return trainerRoadApiClientService.getWorkout(externalData.trainerRoadId!!)
+        val removeHtmlTags = trainerRoadConfigurationRepository.getConfiguration().removeHtmlTags
+        return trainerRoadApiClientService.getWorkout(externalData.trainerRoadId!!, removeHtmlTags)
     }
 
     override fun findWorkoutsFromLibraryByName(name: String): List<WorkoutDetails> {
@@ -29,8 +32,12 @@ class TrainerRoadWorkoutRepository(
     }
 
     override fun getWorkoutsFromCalendar(startDate: LocalDate, endDate: LocalDate): List<Workout> {
-        val username = trUsernameRepository.getUsername()
-        return trainerRoadApiClientService.getWorkoutsFromCalendar(startDate, endDate, username)
+        val memberId = trUsernameRepository.getMemberId()
+        return trainerRoadApiClientService.getWorkoutsFromCalendar(
+            startDate,
+            endDate,
+            memberId,
+        )
     }
 
     override fun saveWorkoutsToCalendar(workouts: List<Workout>) {

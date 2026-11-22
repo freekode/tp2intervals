@@ -24,18 +24,20 @@ class TrainerRoadApiClientService(
             .map { TrainerRoadWorkoutMapper().toWorkoutDetails(it, removeHtmlTags) }
     }
 
-    fun getWorkoutsFromCalendar(startDate: LocalDate, endDate: LocalDate, username: String): List<Workout> {
-        return trainerRoadApiClient.getActivities(username, startDate.toString(), endDate.toString())
-            .filter { it.activity != null }
-            .map { activity ->
-                getWorkout(activity.activity!!.id)
-                    .withDate(activity.date.toLocalDate())
+    fun getWorkoutsFromCalendar(startDate: LocalDate, endDate: LocalDate, memberId: Long): List<Workout> {
+        val removeHtmlTags = trainerRoadConfigurationRepository.getConfiguration().removeHtmlTags
+        return trainerRoadApiClient.getCalendarTimeline(memberId)
+            .plannedActivities
+            .filter { it.workoutId != null }
+            .filter { it.date.toLocalDate() in startDate..endDate }
+            .map { plannedActivity ->
+                getWorkout(plannedActivity.workoutId!!.toString(), removeHtmlTags)
+                    .withDate(plannedActivity.date.toLocalDate())
             }
     }
 
-    @Cacheable
-    fun getWorkout(trWorkoutId: String): Workout {
-        val removeHtmlTags = trainerRoadConfigurationRepository.getConfiguration().removeHtmlTags
+    @Cacheable(key = "#trWorkoutId + ':' + #removeHtmlTags")
+    fun getWorkout(trWorkoutId: String, removeHtmlTags: Boolean): Workout {
         val trainerRoadWorkoutMapper = TrainerRoadWorkoutMapper()
         return trainerRoadApiClient.getWorkout(trWorkoutId)
             .let { trainerRoadWorkoutMapper.toWorkout(it, removeHtmlTags) }

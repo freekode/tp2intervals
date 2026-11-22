@@ -23,3 +23,23 @@ form {
 .form-checkbox {
   padding-bottom: 22px
 }
+
+.test-connection-row {
+  margin-bottom: 8px;
+}
+
+.test-connection-result {
+  margin: 0 0 14px;
+  padding: 8px 10px;
+  border-radius: 4px;
+
+  &.success {
+    color: #137333;
+    background: #e6f4ea;
+  }
+
+  &.error {
+    color: #b3261e;
+    background: #fce8e6;
+  }
+}

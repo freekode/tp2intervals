@@ -18,6 +18,11 @@ import org.springframework.web.bind.annotation.RequestBody
     configuration = [TrainerRoadApiClientConfig::class]
 )
 interface TrainerRoadApiClient {
+    @GetMapping("/app/api/react-calendar/{memberId}/timeline")
+    fun getCalendarTimeline(
+        @PathVariable("memberId") memberId: Long,
+    ): TrainerRoadCalendarTimelineDTO
+
     @GetMapping("/app/api/calendar/activities/{username}?startDate={startDate}&endDate={endDate}")
     fun getActivities(
         @PathVariable("username") username: String,
