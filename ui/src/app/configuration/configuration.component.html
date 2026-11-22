@@ -15,7 +15,7 @@
       <mat-label>Intervals API Key</mat-label>
       <input matInput placeholder="123456qwerty123456qwerty1" type="password" autocomplete="off" formControlName="intervals.api-key">
       @if (storedCredentials['intervals.api-key'] === true) {
-        <mat-hint>Stored. Leave blank to keep it.</mat-hint>
+        <mat-hint class="stored-credential-hint">Stored. Leave blank to keep it.</mat-hint>
       } @else if (storedCredentials['intervals.api-key'] === false) {
         <mat-hint>Missing</mat-hint>
       }
@@ -66,7 +66,7 @@
       <mat-label>TrainingPeaks Auth Cookie</mat-label>
       <input matInput placeholder="Production_tpAuth=very_long_string" type="password" autocomplete="off" formControlName="training-peaks.auth-cookie">
       @if (storedCredentials['training-peaks.auth-cookie'] === true) {
-        <mat-hint>Stored. Leave blank to keep it.</mat-hint>
+        <mat-hint class="stored-credential-hint">Stored. Leave blank to keep it.</mat-hint>
       } @else if (storedCredentials['training-peaks.auth-cookie'] === false) {
         <mat-hint>Missing</mat-hint>
       }
