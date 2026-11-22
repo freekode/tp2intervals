@@ -18,6 +18,14 @@ interface WorkoutRepository {
 
     fun saveWorkoutsToCalendar(workouts: List<Workout>)
 
+    fun getWorkoutsForReconciliation(startDate: LocalDate, endDate: LocalDate): List<Workout> {
+        throw UnsupportedOperationException("Calendar reconciliation is not supported for ${platform()}")
+    }
+
+    fun deleteSyncedWorkout(workout: Workout) {
+        throw UnsupportedOperationException("Deleting synced workouts is not supported for ${platform()}")
+    }
+
     fun saveWorkoutsToLibrary(libraryContainer: LibraryContainer, workouts: List<Workout>)
 
     fun deleteWorkoutsFromCalendar(startDate: LocalDate, endDate: LocalDate)

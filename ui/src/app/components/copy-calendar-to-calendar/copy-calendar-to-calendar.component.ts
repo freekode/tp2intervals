@@ -95,9 +95,10 @@ export class CopyCalendarToCalendarComponent implements OnInit {
     let trainingTypes = this.formGroup.value.trainingTypes
     let skipSynced = this.formGroup.value.skipSynced
     let defaultStartTime = this.formGroup.value.defaultStartTime || null
+    let removeStaleTrainerRoad = this.isReconciliationSupported(direction) && this.formGroup.value.removeStaleTrainerRoad
 
     this.inProgress = true
-    this.workoutClient.scheduleCopyCalendarToCalendar(startDate, endDate, trainingTypes, skipSynced, defaultStartTime, direction).pipe(
+    this.workoutClient.scheduleCopyCalendarToCalendar(startDate, endDate, trainingTypes, skipSynced, defaultStartTime, removeStaleTrainerRoad, direction).pipe(
       switchMap(() => this.loadScheduleRequests()),
       finalize(() => this.inProgress = false)
     ).subscribe(() => {
@@ -118,14 +119,19 @@ export class CopyCalendarToCalendarComponent implements OnInit {
     let trainingTypes = this.formGroup.value.trainingTypes
     let skipSynced = this.formGroup.value.skipSynced
     let defaultStartTime = this.formGroup.value.defaultStartTime || null
+    let removeStaleTrainerRoad = this.isReconciliationSupported(direction) && this.formGroup.value.removeStaleTrainerRoad
 
     this.inProgress = true
-    this.workoutClient.copyCalendarToCalendar(startDate, endDate, trainingTypes, skipSynced, defaultStartTime, direction).pipe(
+    this.workoutClient.copyCalendarToCalendar(startDate, endDate, trainingTypes, skipSynced, defaultStartTime, removeStaleTrainerRoad, direction).pipe(
       finalize(() => this.inProgress = false)
     ).subscribe((response) => {
       this.notificationService.success(
-        `Planned: ${response.copied}\n Filtered out: ${response.filteredOut}\n From ${response.startDate} to ${response.endDate}`)
+        `Copied: ${response.copied}<br>Already synced: ${response.alreadySynced}${removeStaleTrainerRoad ? `<br>Removed: ${response.removed}<br>Ambiguous, skipped: ${response.skipped}` : ''}<br>Filtered out by workout type: ${response.filteredOut}<br>From ${response.startDate} to ${response.endDate}`)
     })
+  }
+
+  isReconciliationSupported(direction: {sourcePlatform: string, targetPlatform: string}): boolean {
+    return direction?.sourcePlatform === Platform.TRAINER_ROAD.key && direction?.targetPlatform === Platform.INTERVALS.key
   }
 
   private getFormGroup() {
@@ -135,6 +141,7 @@ export class CopyCalendarToCalendarComponent implements OnInit {
       startDate: [this.todayDate, Validators.required],
       endDate: [this.tomorrowDate, Validators.required],
       skipSynced: [true, Validators.required],
+      removeStaleTrainerRoad: [false],
       defaultStartTime: [null, Validators.pattern('^([01][0-9]|2[0-3]):[0-5][0-9]$')],
     })
   }

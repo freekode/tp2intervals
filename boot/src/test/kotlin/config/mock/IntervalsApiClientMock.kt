@@ -27,6 +27,10 @@ class IntervalsApiClientMock(
         TODO("Not yet implemented")
     }
 
+    override fun deleteEvent(athleteId: String, eventId: String) {
+        TODO("Not yet implemented")
+    }
+
     override fun getEvents(
         athleteId: String,
         startDate: String,

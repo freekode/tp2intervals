@@ -16,7 +16,9 @@ export const httpErrorInterceptor: HttpInterceptorFn = (
       let platform = err.error?.platform
 
       let errorMessage
-      if (!!platform) {
+      if (err.status === 0) {
+        errorMessage = 'Could not reach the tp2intervals server. Check that the application is running.'
+      } else if (!!platform) {
         errorMessage = `${platform}: ${message}`
       } else {
         errorMessage = message

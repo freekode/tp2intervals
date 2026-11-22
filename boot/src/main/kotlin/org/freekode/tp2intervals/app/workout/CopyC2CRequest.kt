@@ -12,4 +12,6 @@ data class CopyFromCalendarToCalendarRequest(
     val sourcePlatform: Platform,
     val targetPlatform: Platform,
     val defaultStartTime: String? = null,
+    val refreshSynced: Boolean = false,
+    val removeStaleTrainerRoad: Boolean = false,
 )

@@ -8,5 +8,8 @@ data class CopyWorkoutsResponse(
     val filteredOut: Int,
     val startDate: LocalDate,
     val endDate: LocalDate,
-    val externalData: ExternalData
+    val externalData: ExternalData,
+    val alreadySynced: Int = 0,
+    val removed: Int = 0,
+    val skipped: Int = 0,
 )

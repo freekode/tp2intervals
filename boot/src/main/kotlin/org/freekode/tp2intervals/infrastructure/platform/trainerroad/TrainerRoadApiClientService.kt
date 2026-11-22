@@ -1,12 +1,14 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainerroad
 
 import org.freekode.tp2intervals.domain.activity.Activity
+import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutDetails
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.activity.TrainerRoadActivityDTO
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.activity.TrainerRoadActivityMapper
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.configuration.TrainerRoadConfigurationRepository
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.workout.TrainerRoadWorkoutMapper
+import org.freekode.tp2intervals.infrastructure.PlatformException
 import org.springframework.cache.annotation.CacheConfig
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Repository
@@ -24,15 +26,29 @@ class TrainerRoadApiClientService(
             .map { TrainerRoadWorkoutMapper().toWorkoutDetails(it, removeHtmlTags) }
     }
 
-    fun getWorkoutsFromCalendar(startDate: LocalDate, endDate: LocalDate, memberId: Long): List<Workout> {
+    fun getWorkoutsFromCalendar(
+        startDate: LocalDate,
+        endDate: LocalDate,
+        memberId: Long,
+        requireCompleteTimeline: Boolean = false,
+    ): List<Workout> {
         val removeHtmlTags = trainerRoadConfigurationRepository.getConfiguration().removeHtmlTags
-        return trainerRoadApiClient.getCalendarTimeline(memberId)
-            .plannedActivities
+        val timeline = trainerRoadApiClient.getCalendarTimeline(memberId)
+        if (requireCompleteTimeline &&
+            (timeline.start == null || timeline.end == null ||
+                timeline.start > startDate.atStartOfDay() || timeline.end < endDate.plusDays(1).atStartOfDay())) {
+            throw PlatformException(Platform.TRAINER_ROAD, "TrainerRoad calendar does not cover the requested date range; no workouts were deleted")
+        }
+        return timeline.plannedActivities
             .filter { it.workoutId != null }
             .filter { it.date.toLocalDate() in startDate..endDate }
             .map { plannedActivity ->
-                getWorkout(plannedActivity.workoutId!!.toString(), removeHtmlTags)
-                    .withDate(plannedActivity.date.toLocalDate())
+                val id = plannedActivity.workoutId!!.toString()
+                val workout = getWorkout(id, removeHtmlTags)
+                if (requireCompleteTimeline && workout.details.externalData.trainerRoadId != id) {
+                    throw PlatformException(Platform.TRAINER_ROAD, "TrainerRoad returned a workout with an unexpected ID; no workouts were deleted")
+                }
+                workout.withDate(plannedActivity.date.toLocalDate())
             }
     }
 

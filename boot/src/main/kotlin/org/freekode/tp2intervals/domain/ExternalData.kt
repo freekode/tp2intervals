@@ -58,11 +58,11 @@ data class ExternalData(
 
         other as ExternalData
 
-        if (trainingPeaksId != null && trainingPeaksId == other.trainingPeaksId) return true
-        if (intervalsId != null && intervalsId == other.intervalsId) return true
-        if (trainerRoadId != null && trainerRoadId == other.trainerRoadId) return true
+        if (trainingPeaksId != other.trainingPeaksId) return false
+        if (intervalsId != other.intervalsId) return false
+        if (trainerRoadId != other.trainerRoadId) return false
 
-        return false
+        return true
     }
 
     override fun hashCode(): Int {

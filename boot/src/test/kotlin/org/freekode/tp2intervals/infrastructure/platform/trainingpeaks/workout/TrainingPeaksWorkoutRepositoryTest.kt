@@ -3,7 +3,10 @@ package org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout
 import config.TestUtils
 import config.mock.ObjectMapperFactory
 import config.mock.TrainingPeaksApiClientMock
+import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.TrainingType
+import org.freekode.tp2intervals.domain.workout.Workout
+import org.freekode.tp2intervals.domain.workout.WorkoutDetails
 import org.freekode.tp2intervals.domain.workout.structure.StepLength
 import org.freekode.tp2intervals.domain.workout.structure.MultiStep
 import org.freekode.tp2intervals.domain.workout.structure.SingleStep
@@ -85,20 +88,37 @@ class TrainingPeaksWorkoutRepositoryTest {
         assertEquals(10, structure.steps.size)
     }
 
+    @Test
+    fun `finds library workout when only one external id is supplied`() {
+        val library = mock(TPWorkoutLibraryRepository::class.java)
+        val workout = Workout(
+            WorkoutDetails(TrainingType.BIKE, "Workout", null, null, null,
+                ExternalData.empty().withTrainingPeaks("123").withTrainerRoad("456")),
+            LocalDate.of(2026, 11, 23), null,
+        )
+        `when`(library.getAllWorkouts()).thenReturn(listOf(workout))
+        val repository = trainingPeaksWorkoutRepository(mock(TrainingPeaksApiClient::class.java), library)
+
+        assertEquals(workout, repository.getWorkoutFromLibrary(ExternalData.empty().withTrainingPeaks("123")))
+    }
+
     private fun trainingPeaksUserRepository(): TrainingPeaksUserRepository {
         val mock = mock(TrainingPeaksUserRepository::class.java)
         `when`(mock.getUser()).thenReturn(TrainingPeaksUser("123", true, false))
         return mock
     }
 
-    private fun trainingPeaksWorkoutRepository(trainingPeaksApiClient: TrainingPeaksApiClient) =
+    private fun trainingPeaksWorkoutRepository(
+        trainingPeaksApiClient: TrainingPeaksApiClient,
+        library: TPWorkoutLibraryRepository = mock(TPWorkoutLibraryRepository::class.java),
+    ) =
         TrainingPeaksWorkoutRepository(
             trainingPeaksApiClient,
             mock(TrainingPeaksPlanCoachApiClient::class.java),
             TPToWorkoutConverter(),
             mock(TrainingPeaksPlanRepository::class.java),
             trainingPeaksUserRepository,
-            mock(TPWorkoutLibraryRepository::class.java),
+            library,
             mock(TPAttachmentService::class.java),
             mock(TrainingPeaksConfigurationRepository::class.java),
             objectMapper

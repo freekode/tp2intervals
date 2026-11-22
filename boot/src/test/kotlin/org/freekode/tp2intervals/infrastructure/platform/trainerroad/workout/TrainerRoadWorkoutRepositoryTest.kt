@@ -3,10 +3,13 @@ package org.freekode.tp2intervals.infrastructure.platform.trainerroad.workout
 import config.mock.ObjectMapperFactory
 import config.mock.TrainerRoadApiClientMock
 import org.freekode.tp2intervals.domain.ExternalData
+import org.freekode.tp2intervals.infrastructure.PlatformException
 import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.workout.structure.SingleStep
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.TrainerRoadApiClientService
+import org.freekode.tp2intervals.infrastructure.platform.trainerroad.TrainerRoadApiClient
+import org.freekode.tp2intervals.infrastructure.platform.trainerroad.TrainerRoadCalendarTimelineDTO
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.workout.TRWorkoutResponseDTO
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.workout.TrainerRoadWorkoutMapper
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.configuration.TrainerRoadConfiguration
@@ -14,10 +17,14 @@ import org.freekode.tp2intervals.infrastructure.platform.trainerroad.configurati
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.member.TRUsernameRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
 import org.springframework.util.ResourceUtils
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.LocalDateTime
 
 class TrainerRoadWorkoutRepositoryTest {
     private val objectMapper = ObjectMapperFactory.objectMapper()
@@ -62,6 +69,71 @@ class TrainerRoadWorkoutRepositoryTest {
         assertEquals(13 * 60.toLong(), (structure.steps[2] as SingleStep).length.value)
         assertEquals(50, (structure.steps[2] as SingleStep).target.start)
         assertEquals(50, (structure.steps[2] as SingleStep).target.end)
+    }
+
+    @Test
+    fun `calendar retains planned activity identity through start time assignment`() {
+        val api = mock(TrainerRoadApiClient::class.java)
+        val date = LocalDate.of(2026, 11, 23)
+        val timeline = TrainerRoadCalendarTimelineDTO(listOf(
+            TrainerRoadCalendarTimelineDTO.PlannedActivityDTO(
+                "occurrence-1", "Workout", TrainerRoadCalendarTimelineDTO.CalendarDateDTO(2026, 11, 23), 5460,
+            ),
+        ))
+        val details = objectMapper.readValue(
+            ResourceUtils.getFile("classpath:tr-workoutsdetails-simple.json"), TRWorkoutResponseDTO::class.java,
+        )
+        `when`(api.getCalendarTimeline(123)).thenReturn(timeline)
+        `when`(api.getWorkout("5460")).thenReturn(details)
+        val service = TrainerRoadApiClientService(api, trainerRoadConfigurationRepository)
+
+        val workout = service.getWorkoutsFromCalendar(date, date, 123).single().withStartTime(LocalTime.NOON)
+
+        assertEquals(date, workout.date)
+    }
+
+    @Test
+    fun `reconciliation requires full timeline coverage even for an empty day`() {
+        val api = mock(TrainerRoadApiClient::class.java)
+        val date = LocalDate.of(2026, 11, 23)
+        val service = TrainerRoadApiClientService(api, trainerRoadConfigurationRepository)
+        val start = date.atStartOfDay()
+        val timeline = objectMapper.readValue(
+            """{"Start":"2026-11-23T00:00:00","End":"2026-11-24T00:00:00","PlannedActivities":[]}""",
+            TrainerRoadCalendarTimelineDTO::class.java,
+        )
+        `when`(api.getCalendarTimeline(123)).thenReturn(timeline)
+        assertTrue(service.getWorkoutsFromCalendar(date, date, 123, true).isEmpty())
+
+        `when`(api.getCalendarTimeline(123)).thenReturn(
+            TrainerRoadCalendarTimelineDTO(emptyList(), start, LocalDateTime.of(2026, 11, 23, 23, 59)),
+        )
+        assertThrows(PlatformException::class.java) {
+            service.getWorkoutsFromCalendar(date, date, 123, true)
+        }
+        `when`(api.getCalendarTimeline(123)).thenReturn(TrainerRoadCalendarTimelineDTO(emptyList()))
+        assertThrows(PlatformException::class.java) {
+            service.getWorkoutsFromCalendar(date, date, 123, true)
+        }
+    }
+
+    @Test
+    fun `reconciliation rejects mismatched workout detail ID`() {
+        val api = mock(TrainerRoadApiClient::class.java)
+        val date = LocalDate.of(2026, 11, 23)
+        val activity = TrainerRoadCalendarTimelineDTO.PlannedActivityDTO(
+            "occurrence", "Workout", TrainerRoadCalendarTimelineDTO.CalendarDateDTO(2026, 11, 23), 123,
+        )
+        val timeline = TrainerRoadCalendarTimelineDTO(listOf(activity), date.atStartOfDay(), date.plusDays(1).atStartOfDay())
+        val details = objectMapper.readValue(
+            ResourceUtils.getFile("classpath:tr-workoutsdetails-simple.json"), TRWorkoutResponseDTO::class.java,
+        )
+        `when`(api.getCalendarTimeline(123)).thenReturn(timeline)
+        `when`(api.getWorkout("123")).thenReturn(details)
+        val service = TrainerRoadApiClientService(api, trainerRoadConfigurationRepository)
+        assertThrows(PlatformException::class.java) {
+            service.getWorkoutsFromCalendar(date, date, 123, true)
+        }
     }
 
     @Test

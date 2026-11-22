@@ -9,6 +9,7 @@ import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.multipart.MultipartFile
@@ -32,6 +33,12 @@ interface IntervalsApiClient {
     fun createEvent(
         @PathVariable athleteId: String,
         @RequestBody createEventRequestDTO: CreateEventRequestDTO
+    )
+
+    @DeleteMapping("/api/v1/athlete/{athleteId}/events/{eventId}")
+    fun deleteEvent(
+        @PathVariable athleteId: String,
+        @PathVariable eventId: String,
     )
 
     @GetMapping(

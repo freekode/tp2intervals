@@ -39,10 +39,18 @@
        matTooltipPosition="right"></i>
   </div>
 
-  <div class="row" style="margin-bottom: 10px">
+  <div class="row" style="margin-bottom: 10px" *ngIf="!isReconciliationSupported(direction.value) || !formGroup.controls['removeStaleTrainerRoad'].value">
     <mat-checkbox formControlName="skipSynced">
       Skip already synced workouts
     </mat-checkbox>
+  </div>
+
+  <div class="row" style="margin-bottom: 10px" *ngIf="isReconciliationSupported(direction.value)">
+    <mat-checkbox formControlName="removeStaleTrainerRoad"
+                  matTooltip="Keep matching IDs, copy missing selected types, and delete TrainerRoad-synced events no longer on that day.">
+      Remove stale TrainerRoad workouts from Intervals
+    </mat-checkbox>
+    <div>On each selected day, deletes identifiable TrainerRoad-synced workouts missing from TrainerRoad, including on empty days and for unselected workout types. Matching IDs are kept unchanged.</div>
   </div>
 
   <div class="row">
@@ -102,7 +110,12 @@
             <i class="bi bi-trash"></i>
           </button>
           Types: {{ mapTrainingTypesToTitles(request.request.types) }},
-          Skip synced: {{ request.request.skipSynced }},
+          @if (!request.request.removeStaleTrainerRoad) {
+            Skip synced: {{ request.request.skipSynced }},
+          }
+          @if (request.request.removeStaleTrainerRoad) {
+            Remove stale TrainerRoad workouts: yes,
+          }
           @if (request.request.defaultStartTime) {
             Start time: {{ request.request.defaultStartTime }},
           }
@@ -117,7 +130,7 @@
       mat-raised-button
       color="primary"
       type="button"
-      matTooltip="Scheduled job runs every 20 minutes and will sync workouts for today. Jobs won't persist after app restart"
+      matTooltip="Runs every 20 minutes for today, including stale workout removal if selected. Jobs won't persist after app restart."
       [disabled]="formGroup.invalid || inProgress"
       (click)="scheduleToday()"
     >

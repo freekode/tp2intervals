@@ -32,6 +32,15 @@ class IntervalsWorkoutRepository(
         }
     }
 
+    override fun deleteSyncedWorkout(workout: Workout) {
+        if (workout.details.externalData.trainerRoadId.isNullOrBlank()) {
+            throw PlatformException(Platform.INTERVALS, "Cannot delete a workout without a TrainerRoad ID")
+        }
+        val eventId = workout.details.externalData.intervalsId?.takeIf { it.isNotBlank() }
+            ?: throw PlatformException(Platform.INTERVALS, "Cannot delete a workout without an Intervals.icu event ID")
+        intervalsApiClient.deleteEvent(intervalsConfigurationRepository.getConfiguration().athleteId, eventId)
+    }
+
     override fun saveWorkoutsToLibrary(libraryContainer: LibraryContainer, workouts: List<Workout>) {
         val toIntervalsWorkoutConverter = ToIntervalsWorkoutConverter()
         for (fromIndex in workouts.indices step maxWorkoutsToSave) {
@@ -45,7 +54,13 @@ class IntervalsWorkoutRepository(
         }
     }
 
-    override fun getWorkoutsFromCalendar(startDate: LocalDate, endDate: LocalDate): List<Workout> {
+    override fun getWorkoutsFromCalendar(startDate: LocalDate, endDate: LocalDate): List<Workout> =
+        getCalendarWorkouts(startDate, endDate, strict = false)
+
+    override fun getWorkoutsForReconciliation(startDate: LocalDate, endDate: LocalDate): List<Workout> =
+        getCalendarWorkouts(startDate, endDate, strict = true)
+
+    private fun getCalendarWorkouts(startDate: LocalDate, endDate: LocalDate, strict: Boolean): List<Workout> {
         val configuration = intervalsConfigurationRepository.getConfiguration()
         val events = intervalsApiClient.getEvents(
             configuration.athleteId,
@@ -57,7 +72,7 @@ class IntervalsWorkoutRepository(
         )
         return events
             .filter { it.isWorkout() }
-            .mapNotNull { toWorkout(it) }
+            .mapNotNull { if (strict) FromIntervalsWorkoutConverter(it).toWorkout() else toWorkout(it) }
     }
 
     override fun getWorkoutFromLibrary(externalData: ExternalData): Workout {

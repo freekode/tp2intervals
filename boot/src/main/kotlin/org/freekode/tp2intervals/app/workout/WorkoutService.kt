@@ -4,6 +4,7 @@ import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.librarycontainer.LibraryContainerRepository
 import org.freekode.tp2intervals.domain.workout.WorkoutDetails
+import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutRepository
 import org.freekode.tp2intervals.rest.workout.DeleteWorkoutRequestDTO
 import org.freekode.tp2intervals.infrastructure.PlatformException
@@ -23,11 +24,26 @@ class WorkoutService(
 
     fun copyWorkoutsC2C(request: CopyFromCalendarToCalendarRequest): CopyWorkoutsResponse {
         log.info("Received request for copy calendar to calendar: $request")
+        if (request.refreshSynced) {
+            throw PlatformException(request.targetPlatform, "The old refresh option is no longer supported; select the new removal option explicitly")
+        }
+        if (request.removeStaleTrainerRoad && (request.sourcePlatform != Platform.TRAINER_ROAD || request.targetPlatform != Platform.INTERVALS)) {
+            throw PlatformException(request.targetPlatform, "Removing stale TrainerRoad workouts is supported only from TrainerRoad to Intervals.icu")
+        }
         val sourceWorkoutRepository = workoutRepositoryMap[request.sourcePlatform]!!
         val targetWorkoutRepository = workoutRepositoryMap[request.targetPlatform]!!
 
-        val allWorkoutsToSync = sourceWorkoutRepository.getWorkoutsFromCalendar(request.startDate, request.endDate)
-        var filteredWorkoutsToSync = allWorkoutsToSync.filter { request.types.contains(it.details.type) }
+        if (request.startDate > request.endDate) {
+            throw PlatformException(request.sourcePlatform, "Start date must not be after end date")
+        }
+        val allWorkoutsToSync = if (request.removeStaleTrainerRoad) {
+            sourceWorkoutRepository.getWorkoutsForReconciliation(request.startDate, request.endDate)
+        } else {
+            sourceWorkoutRepository.getWorkoutsFromCalendar(request.startDate, request.endDate)
+        }
+        val workoutsMatchingTypes = allWorkoutsToSync.filter { request.types.contains(it.details.type) }
+        val filteredOutCount = allWorkoutsToSync.size - workoutsMatchingTypes.size
+        var filteredWorkoutsToSync = workoutsMatchingTypes
         val defaultStartTime = request.defaultStartTime?.takeIf { it.isNotBlank() }?.let {
             try {
                 LocalTime.parse(it)
@@ -36,19 +52,71 @@ class WorkoutService(
             }
         }
         filteredWorkoutsToSync = filteredWorkoutsToSync.map { it.withStartTime(defaultStartTime) }
-        if (request.skipSynced) {
+        var alreadySyncedCount = 0
+        var removedCount = 0
+        var skippedCount = 0
+        var workoutsToRemove = emptyList<Workout>()
+        if (request.removeStaleTrainerRoad) {
+            if (allWorkoutsToSync.any {
+                    it.date == null || it.date !in request.startDate..request.endDate ||
+                        it.details.externalData.trainerRoadId.isNullOrBlank()
+                }) {
+                throw PlatformException(request.sourcePlatform, "TrainerRoad returned a workout without a valid ID and date; no workouts were deleted")
+            }
+            val plannedWorkouts = targetWorkoutRepository.getWorkoutsForReconciliation(request.startDate, request.endDate)
+            val sourceGroups = allWorkoutsToSync.groupBy { it.date to it.details.externalData.trainerRoadId }
+            val targetGroups = plannedWorkouts
+                .filter { it.date != null && it.date in request.startDate..request.endDate && !it.details.externalData.trainerRoadId.isNullOrBlank() }
+                .groupBy { it.date to it.details.externalData.trainerRoadId }
+            filteredWorkoutsToSync = filteredWorkoutsToSync.filter { source ->
+                val key = source.date to source.details.externalData.trainerRoadId
+                val matches = targetGroups[key].orEmpty()
+                when {
+                    sourceGroups.getValue(key).size != 1 || matches.size > 1 -> {
+                        skippedCount++
+                        false
+                    }
+                    matches.isNotEmpty() -> {
+                        alreadySyncedCount++
+                        false
+                    }
+                    else -> true
+                }
+            }
+            workoutsToRemove = targetGroups.flatMap { (key, targets) ->
+                when {
+                    key in sourceGroups -> emptyList()
+                    targets.size == 1 -> targets
+                    else -> {
+                        skippedCount += targets.size
+                        emptyList()
+                    }
+                }
+            }
+        } else if (request.skipSynced) {
             val plannedWorkouts = targetWorkoutRepository.getWorkoutsFromCalendar(request.startDate, request.endDate)
-            filteredWorkoutsToSync = filteredWorkoutsToSync.filter { !plannedWorkouts.contains(it) }
+            val notSyncedWorkouts = filteredWorkoutsToSync.filter { source ->
+                plannedWorkouts.none { target -> target.isSameForSync(source) }
+            }
+            alreadySyncedCount = filteredWorkoutsToSync.size - notSyncedWorkouts.size
+            filteredWorkoutsToSync = notSyncedWorkouts
         }
 
+        targetWorkoutRepository.saveWorkoutsToCalendar(filteredWorkoutsToSync)
+        workoutsToRemove.forEach {
+            targetWorkoutRepository.deleteSyncedWorkout(it)
+            removedCount++
+        }
         val response = CopyWorkoutsResponse(
             filteredWorkoutsToSync.size,
-            allWorkoutsToSync.size - filteredWorkoutsToSync.size,
+            filteredOutCount,
             request.startDate,
             request.endDate,
-            ExternalData.empty() // TODO figure smth better
+            ExternalData.empty(), // TODO figure smth better
+            alreadySyncedCount,
+            removed = removedCount,
+            skipped = skippedCount,
         )
-        targetWorkoutRepository.saveWorkoutsToCalendar(filteredWorkoutsToSync)
         log.info("Saved workouts to calendar successfully: $response")
         return response
     }

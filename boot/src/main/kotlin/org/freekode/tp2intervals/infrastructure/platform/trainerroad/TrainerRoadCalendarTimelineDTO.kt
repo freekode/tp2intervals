@@ -2,10 +2,15 @@ package org.freekode.tp2intervals.infrastructure.platform.trainerroad
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 class TrainerRoadCalendarTimelineDTO(
     @JsonProperty("PlannedActivities")
     val plannedActivities: List<PlannedActivityDTO>,
+    @JsonProperty("Start")
+    val start: LocalDateTime? = null,
+    @JsonProperty("End")
+    val end: LocalDateTime? = null,
 ) {
     class PlannedActivityDTO(
         @JsonProperty("Id")

@@ -63,6 +63,15 @@ Coach account
 Automatically schedule workouts for today, by checking your calendar every 20 minutes.
 To clear up scheduled jobs just restart the application.
 
+For TrainerRoad to Intervals.icu, **Remove stale TrainerRoad workouts from Intervals** compares
+TrainerRoad IDs for each day in the selected range. Matching workouts are kept unchanged and missing
+workouts of the selected types are copied. Identifiable TrainerRoad-synced Intervals workouts absent
+from TrainerRoad on that day are deleted, including on empty days and regardless of the type filter.
+Other Intervals events are untouched. Ambiguous IDs on the same day are skipped. Matching IDs do not
+update changed workout details, and events without a readable TrainerRoad ID cannot be identified.
+Deletion requires the TrainerRoad timeline to cover the full selected date range. Scheduled jobs
+with this option apply the same deletion rule each time they run.
+
 
 ## Configuration
 Before using the application you need to configure access to platforms.

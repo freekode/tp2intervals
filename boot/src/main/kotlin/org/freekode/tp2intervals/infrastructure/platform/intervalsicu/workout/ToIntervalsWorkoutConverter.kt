@@ -48,7 +48,6 @@ class ToIntervalsWorkoutConverter {
         )
     }
 
-
     private fun getDescription(workout: Workout, workoutString: String?): String {
         var description = workout.details.description
             .orEmpty()

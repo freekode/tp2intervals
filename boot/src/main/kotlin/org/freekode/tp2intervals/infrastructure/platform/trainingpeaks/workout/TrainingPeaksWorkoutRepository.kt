@@ -101,7 +101,12 @@ class TrainingPeaksWorkoutRepository(
 
     override fun getWorkoutFromLibrary(externalData: ExternalData): Workout {
         return tpWorkoutLibraryRepository.getAllWorkouts()
-            .find { it.details.externalData == externalData }!!
+            .find {
+                val data = it.details.externalData
+                (externalData.trainingPeaksId != null && externalData.trainingPeaksId == data.trainingPeaksId) ||
+                    (externalData.intervalsId != null && externalData.intervalsId == data.intervalsId) ||
+                    (externalData.trainerRoadId != null && externalData.trainerRoadId == data.trainerRoadId)
+            }!!
     }
 
     override fun saveWorkoutsToLibrary(libraryContainer: LibraryContainer, workouts: List<Workout>) {

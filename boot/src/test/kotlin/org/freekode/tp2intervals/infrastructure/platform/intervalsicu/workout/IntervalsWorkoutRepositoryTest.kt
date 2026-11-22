@@ -4,7 +4,9 @@ import config.TestUtils
 import config.mock.IntervalsApiClientMock
 import config.mock.ObjectMapperFactory
 import org.freekode.tp2intervals.domain.TrainingType
+import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.workout.Workout
+import org.freekode.tp2intervals.domain.workout.WorkoutDetails
 import org.freekode.tp2intervals.domain.workout.structure.SingleStep
 import org.freekode.tp2intervals.domain.workout.structure.StepLength
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
@@ -13,6 +15,7 @@ import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configurat
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfigurationRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
@@ -186,6 +189,62 @@ class IntervalsWorkoutRepositoryTest {
         assertEquals(32, workout.details.load)
         assertEquals(null, workout.structure)
     }
+
+    @Test
+    fun `deletes only an identified TrainerRoad event`() {
+        val api = RecordingClient()
+        val repository = IntervalsWorkoutRepository(api, intervalsConfigurationRepository)
+        val source = trainerRoadWorkout("Original")
+        val target = source.copy(details = source.details.copy(externalData = source.details.externalData.withIntervals("42")))
+
+        repository.deleteSyncedWorkout(target)
+
+        assertEquals("42", api.deletedEventIds.single())
+    }
+
+    @Test
+    fun `refuses deletion without both IDs`() {
+        val api = RecordingClient()
+        val repository = IntervalsWorkoutRepository(api, intervalsConfigurationRepository)
+        val source = trainerRoadWorkout("Workout")
+        val missingTrainerRoadId = source.copy(details = source.details.copy(externalData = ExternalData.empty().withIntervals("42")))
+        assertThrows(org.freekode.tp2intervals.infrastructure.PlatformException::class.java) {
+            repository.deleteSyncedWorkout(missingTrainerRoadId)
+        }
+        assertThrows(org.freekode.tp2intervals.infrastructure.PlatformException::class.java) {
+            repository.deleteSyncedWorkout(source)
+        }
+        assertTrue(api.deletedEventIds.isEmpty())
+    }
+
+    @Test
+    fun `delete failure propagates`() {
+        val api = RecordingClient(failDelete = true)
+        val repository = IntervalsWorkoutRepository(api, intervalsConfigurationRepository)
+        val source = trainerRoadWorkout("Workout")
+        val target = source.copy(details = source.details.copy(externalData = source.details.externalData.withIntervals("42")))
+        assertThrows(IllegalStateException::class.java) {
+            repository.deleteSyncedWorkout(target)
+        }
+    }
+
+    private class RecordingClient(
+        private val failDelete: Boolean = false,
+    ) :
+        IntervalsApiClient by mock(IntervalsApiClient::class.java) {
+        val deletedEventIds = mutableListOf<String>()
+
+        override fun deleteEvent(athleteId: String, eventId: String) {
+            if (failDelete) throw IllegalStateException("delete failed")
+            deletedEventIds.add(eventId)
+        }
+    }
+
+    private fun trainerRoadWorkout(name: String) = Workout(
+        WorkoutDetails(TrainingType.BIKE, name, null, null, null, ExternalData.empty().withTrainerRoad("123")),
+        LocalDate.of(2026, 11, 23),
+        null,
+    )
 
     private fun findWorkoutWithName(name: String, workouts: List<Workout>): Workout {
         return workouts.find { it.details.name == name }!!
