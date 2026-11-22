@@ -11,13 +11,6 @@ Runs on MacOS (DMG), Windows (EXE installer), Linux (AppImage). Alternatively th
 
 All files are available for download on [Release page](https://github.com/freekode/tp2intervals/releases/latest).
 
-## Repository workflow
-
-Development changes and pull requests are pushed to the fork at
-https://github.com/christianpetri/tp2intervals.
-Do not push branches or create pull requests in the upstream repository unless the maintainer
-explicitly requests it.
-
 **Only for educational purposes**
 
 <img src="https://github.com/freekode/tp2intervals/blob/main/docs/tp.png?raw=true" width="25%"><img src="https://github.com/freekode/tp2intervals/blob/main/docs/tr.png?raw=true" width="25%">
