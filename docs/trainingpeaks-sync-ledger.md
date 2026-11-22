@@ -98,7 +98,7 @@ receive HTTP 400 with `SKIP_SYNCED_REQUIRED_FOR_FORWARD_COPY`.
 4. Keep the scheduler paused. If you independently verified that a held
    workout exists in TrainingPeaks and has never been synced to intervals.icu,
    take a fresh preview while the workout is still accessible. Confirm that
-   individual row and use **Create this workout once**. For Basic accounts,
+   individual row and use **Resolve unsynchronized hold**. For Basic accounts,
    use today's or tomorrow's source workout date. Verify the returned event ID
    in intervals.icu, then preview again to check that the link is verified.
    If the response is lost or uncertain, inspect the destination and the
@@ -220,3 +220,34 @@ adapting the override. Compose 2.24.4 or newer supports `!override`.
   event, especially with the Basic source window. A previously unobserved
   ID can therefore still look new. Keep the rollout paused if that residual
   risk is unacceptable for the reviewed inventory.
+
+## Repair a deleted linked workout
+
+A deleted confirmed event is reported as `LINK_MISSING`. Ordinary scheduled
+and manual forward sync leave the ledger link intact. Use **Preview sync
+(read-only)** with the source workout still visible. In writable mode with
+scheduled forward sync paused and an approved baseline for the current
+accounts, eligible rows offer **Repair missing link**.
+
+- If one account-scoped replacement verifies by remote ID, the dialog names
+  both event IDs. Confirming updates the local link without a provider POST.
+- If no replacement was observed, independently check the destination before
+  confirming recreation. Listings can be stale, bounded or silently incomplete.
+  A conflicting marker, multiple replacements, or an explicit partial or
+  malformed response blocks repair.
+- Review the target athlete, source workout and missing event ID in the
+  confirmation dialog. The server rechecks the preview revision, source
+  visibility and both account identities, reads the old event by ID, and
+  repeats the candidate search. Reopen preview after a stale decision.
+- Verify the returned ID in intervals.icu and run preview again to confirm
+  the link. If the outcome is uncertain, stop and investigate. Do not
+  submit another create or edit the ledger manually. A pending repair
+  stays reserved even if an apparent candidate becomes visible.
+
+Additive migration `0011` creates `trainingpeaks_link_repair`. SQLite
+atomically records the old event ID, reviewed revision, baseline and action
+along with the link change or pending claim. Confirming a recreation records
+the new ID and completion time in the same ledger transition. Back up the
+database before upgrade. Keep older binaries preview-only after rollback
+because they are unaware of the pending-repair policy. Keep the migrated
+database and reconcile any remote writes before deciding how to restore data.

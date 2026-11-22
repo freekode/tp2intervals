@@ -16,7 +16,11 @@ data class TrainingPeaksSyncPreview(
     val reason: Reason,
     val candidates: List<Candidate> = emptyList(),
     val canResolveUnmatchedHold: Boolean = false,
+    val missingLinkRepair: MissingLinkRepair? = null,
+    val repairBlockedReason: String? = null,
 ) {
+    data class MissingLinkRepair(val oldEventId: Long, val replacement: Candidate?)
+
     data class Candidate(val eventId: Long, val date: LocalDate?)
 
     enum class Status {
@@ -76,3 +80,15 @@ data class TrainingPeaksHoldResolutionRequest(
 )
 
 data class TrainingPeaksHoldResolution(val eventId: Long)
+
+data class TrainingPeaksLinkRepairRequest(
+    val selection: TrainingPeaksPreviewRequest,
+    val revision: String,
+    val sourceWorkoutId: String,
+    val oldEventId: Long,
+    val replacementEventId: Long?,
+    val acknowledgeRepair: Boolean,
+    val acknowledgeInconclusive: Boolean,
+)
+
+data class TrainingPeaksLinkRepair(val eventId: Long, val recreated: Boolean)

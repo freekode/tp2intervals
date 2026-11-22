@@ -2,10 +2,14 @@ package org.freekode.tp2intervals.infrastructure.sync
 
 import org.freekode.tp2intervals.config.PreviewOnly
 import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.jdbc.support.JdbcTransactionManager
+import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.stereotype.Repository
 
 @Repository
 class TrainingPeaksSyncLedger(private val jdbc: JdbcTemplate, private val mode: PreviewOnly) {
+    private val transaction = TransactionTemplate(JdbcTransactionManager(checkNotNull(jdbc.dataSource)))
+
     data class Key(val sourceAccountId: String, val destinationAthleteId: String, val sourceWorkoutId: String)
 
     enum class State { PENDING, CONFIRMED, AMBIGUOUS }
@@ -84,6 +88,81 @@ class TrainingPeaksSyncLedger(private val jdbc: JdbcTemplate, private val mode: 
             ON CONFLICT (source_account_id, destination_athlete_id, source_workout_id) DO NOTHING
             """.trimIndent(),
             key.sourceAccountId, key.destinationAthleteId, key.sourceWorkoutId, approval.id, inventoryVersion
+        ) == 1
+    }
+
+    fun hasPendingRepair(key: Key): Boolean = jdbc.queryForObject(
+        """
+        SELECT EXISTS (SELECT 1 FROM trainingpeaks_link_repair
+          WHERE source_account_id = ? AND destination_athlete_id = ? AND source_workout_id = ?
+            AND confirmed_at IS NULL)
+        """.trimIndent(), Int::class.java, key.sourceAccountId, key.destinationAthleteId, key.sourceWorkoutId,
+    ) == 1
+
+    fun claimLinkRepair(
+        key: Key, approval: TrainingPeaksLegacyBaselineRepository.Approval, inventoryVersion: Long,
+        revision: String, oldEventId: Long, replacementEventId: Long?,
+    ): Boolean {
+        mode.requireWritable()
+        return transaction.execute {
+            val updated = jdbc.update(
+                """
+                UPDATE trainingpeaks_sync_ledger SET state = ?, remote_event_id = ?
+                WHERE source_account_id = ? AND destination_athlete_id = ? AND source_workout_id = ?
+                  AND state = 'CONFIRMED' AND remote_event_id = ?
+                  AND EXISTS (
+                    SELECT 1 FROM trainingpeaks_legacy_baseline b JOIN trainingpeaks_sync_generation g
+                      ON b.generation = g.generation
+                    WHERE b.id = ? AND b.state = 'APPROVED'
+                      AND b.source_account_id = ? AND b.destination_athlete_id = ?
+                      AND b.id = (SELECT MAX(id) FROM trainingpeaks_legacy_baseline)
+                      AND g.inventory_version = ?
+                  )
+                  AND NOT EXISTS (
+                    SELECT 1 FROM trainingpeaks_sync_ledger other
+                    WHERE other.destination_athlete_id = ? AND other.remote_event_id = ?
+                  )
+                """.trimIndent(),
+                if (replacementEventId == null) State.PENDING.name else State.CONFIRMED.name, replacementEventId,
+                key.sourceAccountId, key.destinationAthleteId, key.sourceWorkoutId, oldEventId,
+                approval.id, key.sourceAccountId, key.destinationAthleteId, inventoryVersion,
+                key.destinationAthleteId, replacementEventId,
+            )
+            if (updated != 1) return@execute false
+            jdbc.update(
+                """
+                INSERT INTO trainingpeaks_link_repair
+                  (source_account_id, destination_athlete_id, source_workout_id, old_event_id,
+                   new_event_id, action, baseline_id, reviewed_revision, confirmed_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, CASE WHEN ? IS NOT NULL THEN CURRENT_TIMESTAMP END)
+                """.trimIndent(),
+                key.sourceAccountId, key.destinationAthleteId, key.sourceWorkoutId, oldEventId,
+                replacementEventId, if (replacementEventId == null) "RECREATE" else "RELINK",
+                approval.id, revision, replacementEventId,
+            )
+            true
+        } == true
+    }
+
+    fun confirmLinkRepair(key: Key, eventId: Long): Boolean {
+        mode.requireWritable()
+        return jdbc.update(
+            """
+            UPDATE trainingpeaks_sync_ledger SET state = 'CONFIRMED', remote_event_id = ?
+            WHERE source_account_id = ? AND destination_athlete_id = ? AND source_workout_id = ?
+              AND state = 'PENDING'
+              AND EXISTS (
+                SELECT 1 FROM trainingpeaks_link_repair
+                WHERE source_account_id = ? AND destination_athlete_id = ? AND source_workout_id = ?
+                  AND confirmed_at IS NULL AND old_event_id <> ?
+              )
+              AND NOT EXISTS (
+                SELECT 1 FROM trainingpeaks_sync_ledger WHERE destination_athlete_id = ? AND remote_event_id = ?
+              )
+            """.trimIndent(),
+            eventId, key.sourceAccountId, key.destinationAthleteId, key.sourceWorkoutId,
+            key.sourceAccountId, key.destinationAthleteId, key.sourceWorkoutId, eventId,
+            key.destinationAthleteId, eventId,
         ) == 1
     }
 

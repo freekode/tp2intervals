@@ -1,6 +1,7 @@
 package org.freekode.tp2intervals.app.workout
 
 import org.freekode.tp2intervals.app.workout.TrainingPeaksSyncPreview.Candidate
+import org.freekode.tp2intervals.app.workout.TrainingPeaksSyncPreview.MissingLinkRepair
 import org.freekode.tp2intervals.app.workout.TrainingPeaksSyncPreview.Reason
 import org.freekode.tp2intervals.app.workout.TrainingPeaksSyncPreview.Status
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -259,6 +260,87 @@ class TrainingPeaksCalendarSync(
         }
     }
 
+    fun repairMissingLink(
+        request: TrainingPeaksLinkRepairRequest, today: LocalDate = LocalDate.now(),
+    ): TrainingPeaksLinkRepair {
+        mode.requireWritable()
+        if (scheduledForwardEnabled) throw InvalidTrainingPeaksPreview("PAUSE_SCHEDULING_BEFORE_REPAIR")
+        if (!request.acknowledgeRepair ||
+            (request.replacementEventId == null && !request.acknowledgeInconclusive)
+        ) throw InvalidTrainingPeaksPreview("ACKNOWLEDGEMENT_REQUIRED")
+        check(!TransactionSynchronizationManager.isActualTransactionActive()) {
+            "The repair claim must commit before calling Intervals.icu"
+        }
+
+        val reviewed = inventory(request.selection, today)
+        if (request.revision != reviewed.revision) throw StaleTrainingPeaksInventory()
+        val approval = reviewed.approval ?: throw InvalidTrainingPeaksPreview("BASELINE_REQUIRED")
+        val id = request.sourceWorkoutId
+        val option = reviewed.rows.singleOrNull { it.sourceWorkoutId == id }?.missingLinkRepair
+            ?: throw InvalidTrainingPeaksPreview("REPAIR_NOT_ELIGIBLE")
+        if (option.oldEventId != request.oldEventId || option.replacement?.eventId != request.replacementEventId) {
+            throw StaleTrainingPeaksInventory()
+        }
+
+        val account = reviewed.accounts
+        val entry = reviewed.sourceEntries.single { it.id == id }
+        val workout = if (option.replacement == null) previewStage(PreviewStage.SOURCE_ROWS, PreviewProvider.TRAINING_PEAKS) {
+            source.toCalendarWorkout(account.source, entry)
+        } else null
+        val user = previewStage(PreviewStage.TRAINING_PEAKS_ACCOUNT, PreviewProvider.TRAINING_PEAKS) { source.calendarUser() }
+        val target = previewStage(PreviewStage.INTERVALS_ACCOUNT, PreviewProvider.INTERVALS) { destination.resolveCalendarIdentity() }
+        if (!user.isAthlete || user.userId != account.source || target.athleteId != account.destination ||
+            (!user.isPremium && entry.workoutDay.toLocalDate() !in today..today.plusDays(1)) ||
+            id in legacyDestinationIds(account.source, target)
+        ) throw StaleTrainingPeaksInventory()
+
+        val key = Key(account.source, account.destination, id)
+        val (start, end) = request.selection
+        val current = previewStage(PreviewStage.INTERVALS_CALENDAR_RANGE, PreviewProvider.INTERVALS) {
+            destination.getCalendarSnapshot(account.destination, start, end)
+        }
+        val surrounding = previewStage(PreviewStage.INTERVALS_CALENDAR_LEGACY_WINDOW, PreviewProvider.INTERVALS) {
+            destination.getCalendarSnapshot(account.destination, start.minusDays(365), end.plusDays(365))
+        }
+        val oldEvent = previewStage(PreviewStage.INTERVALS_EVENT_LOOKUP, PreviewProvider.INTERVALS) {
+            destination.getCalendarEvent(account.destination, option.oldEventId)
+        }
+        if (oldEvent != null || repairOption(key, option.oldEventId, current + surrounding) != option ||
+            !ledger.claimLinkRepair(key, approval, reviewed.inventoryVersion, request.revision,
+                option.oldEventId, option.replacement?.eventId)
+        ) throw StaleTrainingPeaksInventory()
+
+        option.replacement?.let { return TrainingPeaksLinkRepair(it.eventId, recreated = false) }
+        if (!baselines.isCurrent(approval)) throw StaleTrainingPeaksInventory()
+        return try {
+            val eventId = destination.createScopedCalendarEvent(target, account.source, checkNotNull(workout))
+            check(ledger.confirmLinkRepair(key, eventId))
+            TrainingPeaksLinkRepair(eventId, recreated = true)
+        } catch (failure: RuntimeException) {
+            log.warn("TrainingPeaks link repair needs review: code=REPAIR_WRITE_UNCERTAIN exception={}", failure.javaClass.simpleName)
+            throw ResponseStatusException(HttpStatus.BAD_GATEWAY, "REPAIR_WRITE_UNCERTAIN")
+        }
+    }
+
+    private fun repairOption(key: Key, oldEventId: Long, events: List<IntervalsCalendarEventDTO>): MissingLinkRepair? {
+        // Look for conflicting ownership or duplicate markers too. Normal matching deliberately filters these out.
+        if (events.any { it.id == oldEventId }) return null
+        val relevant = events.filter { event ->
+            event.description.orEmpty().lineSequence().any { line ->
+                line.trim() == "trainingPeaksId=${key.sourceWorkoutId}"
+            }
+        }
+        if (relevant.isEmpty()) return MissingLinkRepair(oldEventId, null)
+        val candidate = relevant.map { it.id }.distinct().singleOrNull() ?: return null
+        val copies = events.filter { it.id == candidate }
+        if (copies.any { it.trainingPeaksId(key.sourceAccountId, allowLegacy = false) != key.sourceWorkoutId } ||
+            copies.map { it.start_date_local }.distinct().size != 1
+        ) return null
+        val verified = previewVerifiedEvent(key, candidate, allowLegacy = false) ?: return null
+        if (verified.start_date_local != copies.first().start_date_local) return null
+        return MissingLinkRepair(oldEventId, verified.previewCandidate())
+    }
+
     private fun inventory(request: TrainingPeaksPreviewRequest, today: LocalDate): Inventory {
         val (start, end, types) = request
         if (start > end || start < LocalDate.MIN.plusDays(365) || end > LocalDate.MAX.minusDays(365)) {
@@ -303,7 +385,13 @@ class TrainingPeaksCalendarSync(
                 val matches = candidates[id].orEmpty()
                 return if (id in previousKeys && ledger.find(key) == null) unverifiedPreviousKey(id, date, matches)
                 else previewWorkout(key, date) { matches }.let { row ->
-                    if (date != null && approval != null && !scheduledForwardEnabled &&
+                    if (row.reason == Reason.LINK_MISSING && date != null && approval != null &&
+                        !scheduledForwardEnabled && id !in previousKeys && selectedById[id]?.size == 1
+                    ) {
+                        val option = repairOption(key, row.candidates.single().eventId, current + surrounding)
+                        row.copy(missingLinkRepair = option, repairBlockedReason =
+                            if (option == null) "REPAIR_REPLACEMENT_UNVERIFIED" else null)
+                    } else if (date != null && approval != null && !scheduledForwardEnabled &&
                         row.reason == Reason.PREVIOUS_REVIEW_HOLD && matches.isEmpty() &&
                         selectedById[id]?.size == 1 && ledger.find(key) == null &&
                         baselines.holdReason(key) == Reason.LISTINGS_INCONCLUSIVE.name
@@ -331,7 +419,7 @@ class TrainingPeaksCalendarSync(
             val stableRows = (rows + additionalRows).map { it.copy(candidates = it.candidates.sortedBy { candidate -> candidate.eventId }) }
                 .sortedWith(compareBy({ it.sourceDate }, { it.sourceWorkoutId }, { it.status }, { it.reason }))
             val previousId = previous?.id ?: 0
-            val resolvable = stableRows.filter { it.canResolveUnmatchedHold }.map { selectedById.getValue(it.sourceWorkoutId!!).single() }
+            val resolvable = stableRows.filter { it.canResolveUnmatchedHold || it.missingLinkRepair != null }.map { selectedById.getValue(it.sourceWorkoutId!!).single() }
             val content = objectMapper.writeValueAsBytes(listOf(
                 accounts, previousId, inventoryVersion, previous?.state, start, end, types.distinct().sorted(), stableRows, resolvable,
             ))
@@ -382,7 +470,8 @@ class TrainingPeaksCalendarSync(
             TrainingPeaksSyncPreview(key.sourceWorkoutId, date, status, reason, events)
 
         if (entry?.state == State.PENDING) {
-            val verified = single?.let { previewVerifiedEvent(key, it.id, allowLegacy = false) }
+            val verified = if (ledger.hasPendingRepair(key)) null
+            else single?.let { previewVerifiedEvent(key, it.id, allowLegacy = false) }
             val reason = if (verified == null) Reason.CLAIM_PENDING else Reason.CLAIM_CANDIDATE_VERIFIED
             return result(Status.UNRESOLVED_CLAIM, reason, verified?.let { listOf(it.previewCandidate()) } ?: candidateDetails)
         }
@@ -444,6 +533,7 @@ class TrainingPeaksCalendarSync(
                 }
             }
             State.PENDING -> {
+                if (ledger.hasPendingRepair(key)) return review(key, WorkoutSyncReview.Reason.UNRESOLVED_WRITE)
                 val matches = candidates()
                 val candidate = matches.singleOrNull()
                 if (candidate != null &&
@@ -467,9 +557,7 @@ class TrainingPeaksCalendarSync(
 
     private fun IntervalsCalendarEventDTO.trainingPeaksId(sourceAccountId: String, allowLegacy: Boolean = true): String? {
         if (category != "WORKOUT" || type == "NOTE") return null
-        val footer = description.orEmpty().substringAfterLast("//////////", missingDelimiterValue = "")
-        val markers = footer.lineSequence().map { it.trim().split('=', limit = 2) }
-            .filter { it.size == 2 }.groupBy({ it[0] }, { it[1] })
+        val markers = markers()
         val accounts = markers["trainingPeaksAccountId"].orEmpty()
         if (accounts.isEmpty()) {
             if (!allowLegacy) return null
@@ -478,4 +566,10 @@ class TrainingPeaksCalendarSync(
         }
         return markers["trainingPeaksId"]?.singleOrNull()?.takeIf { it.isNotBlank() }
     }
+
+    private fun IntervalsCalendarEventDTO.markers(): Map<String, List<String>> =
+        description.orEmpty().substringAfterLast("//////////", missingDelimiterValue = "")
+            .lineSequence().map { it.trim().split('=', limit = 2) }
+            .filter { it.size == 2 }.groupBy({ it[0] }, { it[1] })
+
 }

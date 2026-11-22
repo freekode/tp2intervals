@@ -6,6 +6,8 @@ import org.freekode.tp2intervals.app.workout.TrainingPeaksPreviewRequest
 import org.freekode.tp2intervals.app.workout.TrainingPeaksPreviewInventory
 import org.freekode.tp2intervals.app.workout.TrainingPeaksBaselineApproval
 import org.freekode.tp2intervals.app.workout.TrainingPeaksBaselineApprovalRequest
+import org.freekode.tp2intervals.app.workout.TrainingPeaksLinkRepair
+import org.freekode.tp2intervals.app.workout.TrainingPeaksLinkRepairRequest
 import org.freekode.tp2intervals.app.workout.TrainingPeaksHoldResolutionRequest
 import org.freekode.tp2intervals.app.workout.TrainingPeaksHoldResolution
 import org.freekode.tp2intervals.app.workout.StaleTrainingPeaksInventory
@@ -50,6 +52,13 @@ class TrainingPeaksPreviewController(
         @RequestBody request: TrainingPeaksHoldResolutionRequest,
     ): ResponseEntity<TrainingPeaksHoldResolution> =
         respond(authorization, "resolveHold") { sync.resolveUnmatchedHold(request) }
+
+    @PostMapping("/api/workout/trainingpeaks-sync/links/repair")
+    fun repairLink(
+        @RequestHeader(HttpHeaders.AUTHORIZATION, required = false) authorization: String?,
+        @RequestBody request: TrainingPeaksLinkRepairRequest,
+    ): ResponseEntity<TrainingPeaksLinkRepair> =
+        respond(authorization, "repairLink") { sync.repairMissingLink(request) }
 
     private fun <T> respond(authorization: String?, operation: String, action: () -> T): ResponseEntity<T> {
         if (token.isBlank()) throw ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "PREVIEW_DISABLED")

@@ -405,6 +405,132 @@ class TrainingPeaksLegacyBaselineTest {
         verify(destination, never()).createScopedCalendarEvent(target, "source", workout("new", day))
     }
 
+    @Test
+    fun `repair relinks one account-scoped replacement without writing to the provider`() {
+        val replacement = ownedReplacement(502)
+        val decision = missingLinkDecision(listOf(replacement))
+        assertEquals(TrainingPeaksLinkRepair(502, false), sync().repairMissingLink(decision, day))
+        assertEquals(502L, db.newLedger().find(key("new"))?.remoteEventId)
+        assertEquals(501L, db.jdbc().queryForObject("SELECT old_event_id FROM trainingpeaks_link_repair", Long::class.java))
+        assertEquals("RELINK", db.jdbc().queryForObject("SELECT action FROM trainingpeaks_link_repair", String::class.java))
+        assertThrows(StaleTrainingPeaksInventory::class.java) { sync().repairMissingLink(decision, day) }
+        verify(destination, never()).createScopedCalendarEvent(target, "source", workout("new", day))
+    }
+
+    @Test
+    fun `automatic and concurrent manual sync cannot restore a missing link or duplicate an explicit repair`() {
+        val decision = missingLinkDecision()
+        val planned = workout("new", day)
+        sync(enabled = true).copyScheduled(request(day), day)
+        assertEquals(501L, db.newLedger().find(key("new"))?.remoteEventId)
+        verify(destination, never()).createScopedCalendarEvent(target, "source", planned)
+
+        val insidePost = CountDownLatch(1)
+        val releasePost = CountDownLatch(1)
+        val sourceEntry = source.getPlannedCalendarEntries("source", day, day).single()
+        doReturn(planned).`when`(source).toCalendarWorkout("source", sourceEntry)
+        doAnswer {
+            insidePost.countDown()
+            check(releasePost.await(5, TimeUnit.SECONDS))
+            doReturn(ownedReplacement(503)).`when`(destination).getCalendarEvent(target.athleteId, 503L)
+            503L
+        }.`when`(destination).createScopedCalendarEvent(target, "source", planned)
+        val executor = Executors.newSingleThreadExecutor()
+        try {
+            val resolution = executor.submit<TrainingPeaksLinkRepair> { sync().repairMissingLink(decision, day) }
+            assertTrue(insidePost.await(5, TimeUnit.SECONDS))
+            assertTrue(db.newLedger().hasPendingRepair(key("new")))
+            assertEquals(State.PENDING, db.newLedger().find(key("new"))?.state)
+            assertEquals(0, sync().copy(request(day)).copied)
+            assertThrows(StaleTrainingPeaksInventory::class.java) { sync().repairMissingLink(decision, day) }
+            releasePost.countDown()
+            assertEquals(TrainingPeaksLinkRepair(503, true), resolution.get(5, TimeUnit.SECONDS))
+        } finally {
+            releasePost.countDown()
+            executor.shutdownNow()
+        }
+        assertEquals(TrainingPeaksSyncPreview.Status.VERIFIED_LINK, sync().preview(dates, day).workouts.single().status)
+        assertEquals(503L, db.jdbc().queryForObject("SELECT new_event_id FROM trainingpeaks_link_repair", Long::class.java))
+        assertFalse(db.newLedger().hasPendingRepair(key("new")))
+        verify(destination).createScopedCalendarEvent(target, "source", planned)
+    }
+
+    @Test
+    fun `an uncertain repair stays pending after restart even when a candidate becomes visible`() {
+        val decision = missingLinkDecision()
+        val sourceEntry = source.getPlannedCalendarEntries("source", day, day).single()
+        val planned = workout("new", day)
+        doReturn(planned).`when`(source).toCalendarWorkout("source", sourceEntry)
+        doThrow(IllegalStateException("synthetic secret")).`when`(destination).createScopedCalendarEvent(target, "source", planned)
+        val failure = assertThrows(ResponseStatusException::class.java) { sync().repairMissingLink(decision, day) }
+        assertEquals("REPAIR_WRITE_UNCERTAIN", failure.reason)
+        assertNull(failure.cause)
+        listCalendar(day, listOf(ownedReplacement(503)))
+        assertEquals(0, sync().copy(request(day)).copied)
+        assertEquals(State.PENDING, db.newLedger().find(key("new"))?.state)
+        assertTrue(db.newLedger().hasPendingRepair(key("new")))
+        assertThrows(StaleTrainingPeaksInventory::class.java) { sync().repairMissingLink(decision, day) }
+        verify(destination).createScopedCalendarEvent(target, "source", planned)
+    }
+
+    @Test
+    fun `repair fails closed on multiple conflicting or malformed destination observations`() {
+        val decision = missingLinkDecision()
+        for (events in listOf(
+            listOf(ownedReplacement(502), ownedReplacement(503)),
+            listOf(event(502, "new")),
+            listOf(ownedReplacement(502).let {
+                IntervalsCalendarEventDTO(it.id, it.description + "\ntrainingPeaksId=ambiguous", it.start_date_local, it.category, it.type)
+            }),
+        )) {
+            listCalendar(day, events)
+            val row = sync().preview(dates, day).workouts.single()
+            assertNull(row.missingLinkRepair)
+            assertEquals("REPAIR_REPLACEMENT_UNVERIFIED", row.repairBlockedReason)
+            assertThrows(StaleTrainingPeaksInventory::class.java) { sync().repairMissingLink(decision, day) }
+        }
+        doThrow(org.freekode.tp2intervals.infrastructure.ProviderReadFailure(
+            Platform.INTERVALS, org.freekode.tp2intervals.infrastructure.ProviderReadFailure.Kind.RESPONSE, 206
+        )).`when`(destination).getCalendarSnapshot(target.athleteId, day.minusDays(365), day.plusDays(365))
+        assertThrows(TrainingPeaksPreviewFailure::class.java) { sync().repairMissingLink(decision, day) }
+        assertEquals(501L, db.newLedger().find(key("new"))?.remoteEventId)
+        verify(destination, never()).createScopedCalendarEvent(target, "source", workout("new", day))
+    }
+
+    @Test
+    fun `repair rejects stale identity expired Basic visibility and an original event that reappears`() {
+        val decision = missingLinkDecision()
+        assertThrows(ResponseStatusException::class.java) { sync(previewOnly = true).repairMissingLink(decision, day) }
+        assertThrows(InvalidTrainingPeaksPreview::class.java) { sync(enabled = true).repairMissingLink(decision, day) }
+        assertThrows(InvalidTrainingPeaksPreview::class.java) { sync().repairMissingLink(decision, day.plusDays(1)) }
+        assertThrows(InvalidTrainingPeaksPreview::class.java) {
+            sync().repairMissingLink(decision.copy(acknowledgeInconclusive = false), day)
+        }
+        doReturn(TrainingPeaksUser("other", true, false)).`when`(source).calendarUser()
+        assertThrows(StaleTrainingPeaksInventory::class.java) { sync().repairMissingLink(decision, day) }
+        doReturn(TrainingPeaksUser("source", true, false)).`when`(source).calendarUser()
+        doReturn(null, ownedReplacement(501)).`when`(destination).getCalendarEvent(target.athleteId, 501L)
+        assertThrows(StaleTrainingPeaksInventory::class.java) { sync().repairMissingLink(decision, day) }
+        assertEquals(501L, db.newLedger().find(key("new"))?.remoteEventId)
+        verify(destination, never()).createScopedCalendarEvent(target, "source", workout("new", day))
+    }
+
+    private fun missingLinkDecision(replacements: List<IntervalsCalendarEventDTO> = emptyList()): TrainingPeaksLinkRepairRequest {
+        stub(day, listOf("new"))
+        db.seedBaseline("source", target.athleteId)
+        assertTrue(db.newLedger().recordLegacyMatch(key("new"), 501))
+        listCalendar(day, replacements)
+        replacements.forEach { doReturn(it).`when`(destination).getCalendarEvent(target.athleteId, it.id) }
+        val preview = sync().preview(dates, day)
+        val repair = checkNotNull(preview.workouts.single().missingLinkRepair)
+        assertEquals(501L, repair.oldEventId)
+        return TrainingPeaksLinkRepairRequest(dates, preview.revision, "new", 501, repair.replacement?.eventId, true, true)
+    }
+
+    private fun ownedReplacement(id: Long) = IntervalsCalendarEventDTO(
+        id, "//////////\ntrainingPeaksId=new\ntrainingPeaksAccountId=source", day.atStartOfDay(), "WORKOUT", "Ride"
+    )
+
     private fun decision(id: String): TrainingPeaksHoldResolutionRequest {
         val preview = sync().preview(dates, day)
         assertTrue(preview.workouts.single { it.sourceWorkoutId == id }.canResolveUnmatchedHold)
