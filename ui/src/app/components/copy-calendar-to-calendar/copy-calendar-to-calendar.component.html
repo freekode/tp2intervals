@@ -40,9 +40,11 @@
   </div>
 
   <div class="row" style="margin-bottom: 10px">
-    <mat-checkbox formControlName="skipSynced">
-      Skip already synced workouts
-    </mat-checkbox>
+    @if (isTrainingPeaksForward) {
+      <p>Forward copy always checks existing links and holds. Use individual hold resolution for an eligible held workout.</p>
+    } @else {
+      <mat-checkbox formControlName="skipSynced">Skip already synced workouts</mat-checkbox>
+    }
   </div>
 
   @if (isTrainingPeaksForward) {
@@ -155,9 +157,6 @@
           (click)="approveBaseline(previewToken)">Approve legacy baseline</button>
       </section>
     }
-    @if (!formGroup.value.skipSynced) {
-      <p role="alert">Manual force copy can create duplicate workouts.</p>
-    }
     @if (syncReview.length) {
       <section aria-label="Workouts requiring review" role="status">
         <p>Workouts requiring review from the last copy</p>
@@ -241,7 +240,7 @@
       color="primary"
       type="button"
       matTooltip="Scheduled jobs run every three minutes for today and persist after restart"
-      [disabled]="formGroup.invalid || inProgress || (isTrainingPeaksForward && !formGroup.value.skipSynced)"
+      [disabled]="formGroup.invalid || inProgress"
       (click)="scheduleToday()"
     >
       Schedule for today

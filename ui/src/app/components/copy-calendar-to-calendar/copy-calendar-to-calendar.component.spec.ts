@@ -4,6 +4,7 @@ import {CopyCalendarToCalendarComponent} from './copy-calendar-to-calendar.compo
 import {TrainingPeaksSyncPreview, WorkoutClient} from 'infrastructure/client/workout.client';
 import {ConfigurationClient} from 'infrastructure/client/configuration.client';
 import {NotificationService} from 'infrastructure/notification.service';
+import {Platform} from 'infrastructure/platform';
 
 describe('TrainingPeaks legacy review', () => {
   const held: TrainingPeaksSyncPreview = {
@@ -44,6 +45,19 @@ describe('TrainingPeaks legacy review', () => {
     expect([...component.selectedLegacyLinks.keys()]).toEqual(['old-2', 'old-1']);
     component.selectVisibleLegacyLinks(false);
     expect(component.selectedLegacyLinks.size).toBe(0);
+  });
+
+  it('always sends skip synced for forward copy and preserves the reverse preference', () => {
+    const {component} = setup();
+    component.formGroup = new FormBuilder().group({
+      direction: {sourcePlatform: Platform.TRAINING_PEAKS.key, targetPlatform: Platform.INTERVALS.key},
+      skipSynced: false,
+    });
+    expect(component.effectiveSkipSynced).toBeTrue();
+    component.formGroup.controls['direction'].setValue({
+      sourcePlatform: Platform.INTERVALS.key, targetPlatform: Platform.TRAINING_PEAKS.key,
+    });
+    expect(component.effectiveSkipSynced).toBeFalse();
   });
 
   it('submits only the individually acknowledged hold with the reviewed revision', () => {

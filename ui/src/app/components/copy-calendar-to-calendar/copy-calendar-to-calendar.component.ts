@@ -225,7 +225,7 @@ export class CopyCalendarToCalendarComponent implements OnInit {
           const code = error.error?.detail ?? error.error?.message;
           this.previewResult = undefined;
           this.previewError = code === 'HOLD_WRITE_UNCERTAIN'
-            ? 'The write outcome is uncertain. Check the destination and preview again. Do not retry or force copy.'
+            ? 'The write outcome is uncertain. Check the destination and preview again. Do not retry the create.'
             : error.status === 401
               ? 'The preview token was rejected.'
               : 'Resolution was blocked. Check the account, source date and server settings, then run a fresh preview.';
@@ -271,12 +271,16 @@ export class CopyCalendarToCalendarComponent implements OnInit {
     });
   }
 
+  get effectiveSkipSynced(): boolean {
+    return this.isTrainingPeaksForward || this.formGroup.value.skipSynced;
+  }
+
   scheduleToday() {
     let startDate = null
     let endDate = null
     let direction = this.formGroup.value.direction
     let trainingTypes = this.formGroup.value.trainingTypes
-    let skipSynced = this.formGroup.value.skipSynced
+    const skipSynced = this.effectiveSkipSynced
 
     this.inProgress = true
     this.workoutClient.scheduleCopyCalendarToCalendar(startDate, endDate, trainingTypes, skipSynced, direction).pipe(
@@ -298,7 +302,7 @@ export class CopyCalendarToCalendarComponent implements OnInit {
   private copyWorkouts(startDate, endDate) {
     let direction = this.formGroup.value.direction
     let trainingTypes = this.formGroup.value.trainingTypes
-    let skipSynced = this.formGroup.value.skipSynced
+    const skipSynced = this.effectiveSkipSynced
 
     this.inProgress = true
     this.syncReview = [];
