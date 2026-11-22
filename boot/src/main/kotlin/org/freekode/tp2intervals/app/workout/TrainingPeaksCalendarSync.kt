@@ -67,6 +67,9 @@ class TrainingPeaksCalendarSync(
 
     fun copy(request: CopyFromCalendarToCalendarRequest): CopyWorkoutsResponse {
         mode.requireWritable()
+        if (!request.skipSynced) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "SKIP_SYNCED_REQUIRED_FOR_FORWARD_COPY")
+        }
         return copy(request, source.calendarUser().userId, destination.resolveCalendarIdentity(), null)
     }
 
@@ -92,7 +95,7 @@ class TrainingPeaksCalendarSync(
         var copied = 0
         for (workout in workouts.filter { it.details.type in request.types }) {
             val sourceId = workout.details.externalData.trainingPeaksId
-            if (sourceId.isNullOrBlank() || workout.details.type == TrainingType.NOTE) {
+            if (workout.details.type == TrainingType.NOTE) {
                 if (approval == null && workout !in plannedWorkouts) {
                     destination.saveWorkoutsToCalendar(listOf(workout))
                     copied++
@@ -100,6 +103,7 @@ class TrainingPeaksCalendarSync(
                 continue
             }
 
+            if (sourceId.isNullOrBlank()) continue
             val key = Key(sourceAccount, athlete, sourceId)
             val existing = ledger.find(key)
             if (existing != null) {

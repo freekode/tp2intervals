@@ -29,6 +29,8 @@ import org.freekode.tp2intervals.infrastructure.schedule.ScheduleRequestReposito
 import org.junit.jupiter.api.Assertions.assertAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertSame
+import org.junit.jupiter.api.Assertions.assertThrows
+import org.springframework.web.server.ResponseStatusException
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import org.mockito.Mockito.CALLS_REAL_METHODS
@@ -98,20 +100,36 @@ class TrainingPeaksCalendarSyncTest {
     }
 
     @Test
-    fun `manual sync with skip synced disabled still creates another copy`() {
+    fun `manual sync with skip synced disabled preserves existing events`() {
         intervals.events.add(existingEvent("12345"))
         scheduledJob("12345")
         val request = CopyFromCalendarToCalendarRequest(
             today, today, listOf(TrainingType.BIKE), false, Platform.TRAINING_PEAKS, Platform.INTERVALS
         )
 
-        repeat(2) { service.copyWorkoutsC2C(request) }
+        repeat(2) {
+            val failure = assertThrows(ResponseStatusException::class.java) { service.copyWorkoutsC2C(request) }
+            assertEquals("SKIP_SYNCED_REQUIRED_FOR_FORWARD_COPY", failure.reason)
+        }
 
         assertAll(
-            { assertEquals(3, intervals.events.size) },
-            { assertEquals(2, intervals.posts) },
+            { assertEquals(1, intervals.events.size) },
+            { assertEquals(0, intervals.posts) },
             { assertEquals(0, intervals.reads) },
         )
+    }
+
+    @Test
+    fun `a planned workout without a stable source ID cannot be created manually`() {
+        scheduledJob("")
+        val request = CopyFromCalendarToCalendarRequest(
+            today, today, listOf(TrainingType.BIKE), true, Platform.TRAINING_PEAKS, Platform.INTERVALS
+        )
+
+        val result = service.copyWorkoutsC2C(request)
+        assertEquals(0, result.copied)
+        assertEquals(0, intervals.posts)
+        assertEquals(0, intervals.reads)
     }
 
     private fun scheduledJob(vararg sourceIds: String): WorkoutScheduledJob {

@@ -25,7 +25,7 @@ class WorkoutService(
     private val trainingPeaksCalendarLock = ReentrantLock()
 
     fun copyWorkoutsC2C(request: CopyFromCalendarToCalendarRequest): CopyWorkoutsResponse {
-        if (request.skipSynced && request.sourcePlatform == Platform.TRAINING_PEAKS && request.targetPlatform == Platform.INTERVALS) {
+        if (request.sourcePlatform == Platform.TRAINING_PEAKS && request.targetPlatform == Platform.INTERVALS) {
             return trainingPeaksCalendarLock.withLock { trainingPeaksCalendarSync.copy(request) }
         }
         return copyCalendar(request)

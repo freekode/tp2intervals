@@ -71,8 +71,9 @@ Schedule rows report unsafe, invalid, or paused states in the calendar form.
 A forward schedule must contain the JSON boolean `true` for `skipSynced`.
 False, missing, malformed, or ambiguous JSON cannot execute a forward job.
 Correct an unsafe entry by deleting it and registering it again with
-**Skip already synced workouts** checked. Manual force copy still works
-and can bypass the ledger and create duplicates.
+**Skip already synced workouts** checked. Manual TrainingPeaks → intervals.icu
+calendar copy also requires `skipSynced=true`. REST clients sending false
+receive HTTP 400 with `SKIP_SYNCED_REQUIRED_FOR_FORWARD_COPY`.
 
 ## First deployment with existing imports
 
@@ -101,7 +102,7 @@ and can bypass the ledger and create duplicates.
    use today's or tomorrow's source workout date. Verify the returned event ID
    in intervals.icu, then preview again to check that the link is verified.
    If the response is lost or uncertain, inspect the destination and the
-   unresolved claim. Do not retry the create or use force copy.
+   unresolved claim. Do not retry the create.
 5. Review the audit and enable the writer by setting
    `TP2INTERVALS_ENABLE_SCHEDULED_FORWARD_SYNC=true` only on the intended
    instances and restarting. The current account pair must have an approved
@@ -196,7 +197,8 @@ adapting the override. Compose 2.24.4 or newer supports `!override`.
   and pins the destination authorization used to resolve the athlete.
   A revoked claim stays pending. A request already in flight can finish,
   so stop and drain all writers before configuration changes or rollback.
-  Manual force-copy remains a separate deliberate action outside preview mode.
+  Forward manual copy checks the same ledger and holds. Use individual hold
+  resolution for an eligible workout you have independently verified.
 - Missing linked events stay linked for review. Claims never time out into
   an automatic retry. Baseline holds survive restarts and subsequent
   approvals. Preview alone neither confirms an unresolved claim nor clears a hold.

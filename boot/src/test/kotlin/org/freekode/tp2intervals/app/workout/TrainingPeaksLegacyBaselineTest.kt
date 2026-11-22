@@ -28,6 +28,13 @@ import org.mockito.Mockito.*
 import org.springframework.web.server.ResponseStatusException
 import java.nio.file.Path
 import java.time.LocalDate
+import org.freekode.tp2intervals.rest.workout.WorkoutController
+import org.springframework.http.MediaType
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import java.util.concurrent.CountDownLatch
 import java.util.concurrent.CyclicBarrier
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -43,6 +50,29 @@ class TrainingPeaksLegacyBaselineTest {
     private val destination = mock(IntervalsWorkoutRepository::class.java)
     private val target = CalendarIdentity("iCanonical", "Synthetic")
     private val mapper = ObjectMapperFactory.objectMapper()
+
+    @Test
+    fun `direct REST forward force copy is rejected before calling either provider and reverse remains supported`() {
+        doReturn(Platform.TRAINING_PEAKS).`when`(source).platform()
+        doReturn(Platform.INTERVALS).`when`(destination).platform()
+        val service = WorkoutService(listOf(source, destination), emptyList(), sync())
+        val mvc = MockMvcBuilders.standaloneSetup(WorkoutController(service))
+            .setMessageConverters(MappingJackson2HttpMessageConverter(mapper)).build()
+        clearInvocations(source, destination)
+        val forward = request(day).copy(skipSynced = false)
+        mvc.perform(post("/api/workout/copy-calendar-to-calendar").contentType(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsString(forward)))
+            .andExpect(status().isBadRequest)
+            .andExpect(status().reason("SKIP_SYNCED_REQUIRED_FOR_FORWARD_COPY"))
+        verifyNoInteractions(source, destination)
+
+        val reverse = forward.copy(sourcePlatform = Platform.INTERVALS, targetPlatform = Platform.TRAINING_PEAKS)
+        val imported = workout("reverse", day)
+        doReturn(listOf(imported)).`when`(destination).getWorkoutsFromCalendar(day, day)
+        mvc.perform(post("/api/workout/copy-calendar-to-calendar").contentType(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsString(reverse))).andExpect(status().isOk)
+        verify(source).saveWorkoutsToCalendar(listOf(imported))
+    }
 
     @Test
     fun `an enabled writer without approval cannot read or post and a paused approved writer cannot post`() {
@@ -226,6 +256,50 @@ class TrainingPeaksLegacyBaselineTest {
         assertNull(db.newLedger().find(key("old-75")))
         assertThrows(StaleTrainingPeaksInventory::class.java) { sync().resolveUnmatchedHold(decision, day) }
         verify(destination, times(1)).createScopedCalendarEvent(target, "source", workout("new", day))
+    }
+
+    @Test
+    fun `manual copy overlapping resolution respects pending and confirmed state ahead of retained hold`() {
+        stub(day, listOf("new"))
+        approve(sync())
+        prepareCreate("new")
+        val reviewed = decision("new")
+        val insidePost = CountDownLatch(1)
+        val release = CountDownLatch(1)
+        val planned = workout("new", day)
+        doAnswer {
+            insidePost.countDown()
+            check(release.await(5, TimeUnit.SECONDS))
+            doReturn(event(501, "new")).`when`(destination).getCalendarEvent(target.athleteId, 501)
+            501L
+        }.`when`(destination).createScopedCalendarEvent(target, "source", planned)
+        val executor = Executors.newSingleThreadExecutor()
+        try {
+            val resolved = executor.submit<TrainingPeaksHoldResolution> { sync().resolveUnmatchedHold(reviewed, day) }
+            assertTrue(insidePost.await(5, TimeUnit.SECONDS))
+            assertEquals(State.PENDING, db.newLedger().find(key("new"))?.state)
+            assertEquals(WorkoutSyncReview.Reason.UNRESOLVED_WRITE, sync().copy(request(day)).syncReview.single().reason)
+            release.countDown()
+            assertEquals(501L, resolved.get(5, TimeUnit.SECONDS).eventId)
+            assertTrue(db.baselines().isHeld(key("new")))
+            assertEquals(TrainingPeaksSyncPreview.Status.VERIFIED_LINK, sync().preview(dates, day).workouts.single().status)
+            assertTrue(sync().copy(request(day)).syncReview.isEmpty())
+            verify(destination).createScopedCalendarEvent(target, "source", planned)
+        } finally {
+            release.countDown()
+            executor.shutdownNow()
+        }
+    }
+
+    @Test
+    fun `configuration generation changes invalidate outstanding resolution reviews`() {
+        stub(day, listOf("new"))
+        approve(sync())
+        val reviewed = decision("new")
+        db.jdbc().update("INSERT INTO config(key,value) VALUES ('intervals.api-key','synthetic-replacement')")
+        assertThrows(StaleTrainingPeaksInventory::class.java) { sync().resolveUnmatchedHold(reviewed, day) }
+        assertNull(db.newLedger().find(key("new")))
+        verify(destination, never()).createScopedCalendarEvent(target, "source", workout("new", day))
     }
 
     @Test
