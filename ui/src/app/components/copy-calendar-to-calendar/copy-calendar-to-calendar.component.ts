@@ -1,5 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
+import {MatDialog, MatDialogModule} from '@angular/material/dialog';
+import {CalendarWriteConfirmation, CalendarWriteDialogComponent} from './calendar-write-dialog.component';
 import {MatButtonModule} from "@angular/material/button";
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatInputModule} from "@angular/material/input";
@@ -27,6 +29,7 @@ import {TrainingTypes} from "infrastructure/training-types";
   imports: [
     FormsModule,
     MatButtonModule,
+    MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
     ReactiveFormsModule,
@@ -94,7 +97,8 @@ export class CopyCalendarToCalendarComponent implements OnInit {
     private formBuilder: FormBuilder,
     private configurationClient: ConfigurationClient,
     private workoutClient: WorkoutClient,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private dialog: MatDialog
   ) {
   }
 
@@ -206,32 +210,80 @@ export class CopyCalendarToCalendarComponent implements OnInit {
     const id = row.sourceWorkoutId;
     if (!result || !id || !row.canResolveUnmatchedHold || this.acknowledgedHold !== id ||
         result.inventory.previewOnly || result.inventory.activationEnabled || this.inProgress) return;
-    const token = tokenInput.value.trim();
-    tokenInput.value = '';
-    if (!token) {
-      this.previewError = 'Enter the preview access token again to resolve this hold.';
-      return;
-    }
-    this.previewError = '';
-    this.approvalMessage = '';
-    this.inProgress = true;
-    this.workoutClient.resolveTrainingPeaksHold(result.selection, result.inventory.revision, id, token)
-      .pipe(finalize(() => this.inProgress = false)).subscribe({
-        next: reply => {
-          this.previewResult = undefined;
-          this.approvalMessage = `Created Intervals.icu event ${reply.eventId}. Preview again to verify the link.`;
-        },
-        error: error => {
-          const code = error.error?.detail ?? error.error?.message;
-          this.previewResult = undefined;
-          this.previewError = code === 'HOLD_WRITE_UNCERTAIN'
-            ? 'The write outcome is uncertain. Check the destination and preview again. Do not retry the create.'
-            : error.status === 401
-              ? 'The preview token was rejected.'
-              : 'Resolution was blocked. Check the account, source date and server settings, then run a fresh preview.';
-        },
+    this.authorizeWrite({
+      action: 'Create held workout',
+      destination: `Intervals.icu athlete ${result.inventory.destinationAthleteId}`,
+      details: `Create one event for TrainingPeaks workout ${id} on ${row.sourceDate}. Calendar listings can omit events.`,
+    }, () => {
+      const token = this.readWriteToken(tokenInput);
+      if (!token) return;
+      this.acknowledgedHold = undefined;
+      this.inProgress = true;
+      this.workoutClient.resolveTrainingPeaksHold(result.selection, result.inventory.revision, id, token)
+        .pipe(finalize(() => this.inProgress = false)).subscribe({
+          next: reply => this.finishWrite(`Created Intervals.icu event ${reply.eventId}.`),
+          error: error => this.handleWriteFailure(error, 'HOLD_WRITE_UNCERTAIN'),
+        });
+    });
+  }
+
+  repairLink(row: TrainingPeaksSyncPreview, tokenInput: HTMLInputElement) {
+    const result = this.previewResult;
+    const id = row.sourceWorkoutId;
+    const repair = row.missingLinkRepair;
+    if (!result || !id || !repair || result.inventory.previewOnly || result.inventory.activationEnabled) return;
+    const replacement = repair.replacement?.eventId ?? null;
+    this.authorizeWrite({
+      action: replacement === null ? 'Recreate missing workout' : 'Relink existing event',
+      destination: `Intervals.icu athlete ${result.inventory.destinationAthleteId}`,
+      details: replacement === null
+        ? `Create one event for TrainingPeaks workout ${id} on ${row.sourceDate} to replace missing event ${repair.oldEventId}. No replacement was observed. Confirm that you checked the destination and accept that calendar listings can omit events.`
+        : `Replace the local link from missing event ${repair.oldEventId} to existing event ${replacement} for TrainingPeaks workout ${id}. This leaves the provider event unchanged.`,
+    }, () => {
+      const token = this.readWriteToken(tokenInput);
+      if (!token) return;
+      this.inProgress = true;
+      this.workoutClient.repairTrainingPeaksLink(
+        result.selection, result.inventory.revision, id, repair.oldEventId, replacement, replacement === null, token
+      ).pipe(finalize(() => this.inProgress = false)).subscribe({
+        next: reply => this.finishWrite(reply.recreated
+          ? `Created Intervals.icu event ${reply.eventId}.`
+          : `Linked existing Intervals.icu event ${reply.eventId}.`),
+        error: error => this.handleWriteFailure(error, 'REPAIR_WRITE_UNCERTAIN'),
       });
-    this.acknowledgedHold = undefined;
+    });
+  }
+
+  private readWriteToken(input: HTMLInputElement): string {
+    const token = input.value.trim();
+    input.value = '';
+    this.approvalMessage = '';
+    this.previewError = token ? '' : 'Enter the preview access token again to continue.';
+    return token;
+  }
+
+  private finishWrite(message: string) {
+    this.previewResult = undefined;
+    this.approvalMessage = `${message} Preview again to verify the link.`;
+  }
+
+  private handleWriteFailure(error, uncertainCode: string) {
+    const code = error.error?.detail ?? error.error?.message;
+    this.previewResult = undefined;
+    this.previewError = code === uncertainCode
+      ? 'The write outcome is uncertain. Check the destination and preview again. Do not retry the create.'
+      : error.status === 401
+        ? 'The preview token was rejected.'
+        : 'The operation was blocked. Check the account, source date and server settings, then run a fresh preview.';
+  }
+
+  private authorizeWrite(data: CalendarWriteConfirmation, action: () => void) {
+    if (this.inProgress) return;
+    this.inProgress = true;
+    this.dialog.open(CalendarWriteDialogComponent, {data}).afterClosed().subscribe(confirmed => {
+      this.inProgress = false;
+      if (confirmed === true) action();
+    });
   }
 
   selectLegacyLink(sourceId: string, eventId: number, selected: boolean) {
@@ -282,13 +334,17 @@ export class CopyCalendarToCalendarComponent implements OnInit {
     let trainingTypes = this.formGroup.value.trainingTypes
     const skipSynced = this.effectiveSkipSynced
 
-    this.inProgress = true
-    this.workoutClient.scheduleCopyCalendarToCalendar(startDate, endDate, trainingTypes, skipSynced, direction).pipe(
-      switchMap(() => this.loadScheduleRequests()),
-      finalize(() => this.inProgress = false)
-    ).subscribe(() => {
-      this.notificationService.success(`Scheduled sync job`)
-    })
+    this.authorizeWrite({
+      action: 'Schedule workout synchronization',
+      destination: Platform.getTitle(direction.targetPlatform) ?? direction.targetPlatform,
+      details: 'Add a recurring job for the current day. When enabled, it may create or update provider events.',
+    }, () => {
+      this.inProgress = true;
+      this.workoutClient.scheduleCopyCalendarToCalendar(startDate, endDate, trainingTypes, skipSynced, direction).pipe(
+        switchMap(() => this.loadScheduleRequests()),
+        finalize(() => this.inProgress = false)
+      ).subscribe(() => this.notificationService.success('Scheduled sync job'));
+    });
   }
 
   mapTrainingTypesToTitles(values) {
@@ -304,15 +360,22 @@ export class CopyCalendarToCalendarComponent implements OnInit {
     let trainingTypes = this.formGroup.value.trainingTypes
     const skipSynced = this.effectiveSkipSynced
 
-    this.inProgress = true
-    this.syncReview = [];
-    this.workoutClient.copyCalendarToCalendar(startDate, endDate, trainingTypes, skipSynced, direction).pipe(
-      finalize(() => this.inProgress = false)
-    ).subscribe((response) => {
-      this.syncReview = response.syncReview ?? [];
-      this.notificationService.success(
-        `Planned: ${response.copied}\n Filtered out: ${response.filteredOut}\n From ${response.startDate} to ${response.endDate}`)
-    })
+    this.authorizeWrite({
+      action: 'Synchronize workouts',
+      destination: Platform.getTitle(direction.targetPlatform) ?? direction.targetPlatform,
+      details: `Synchronize ${this.mapTrainingTypesToTitles(trainingTypes).join(', ')} from ${Platform.getTitle(direction.sourcePlatform)} for ${startDate} through ${endDate}. This may create or update provider events.`,
+    }, () => {
+      this.inProgress = true;
+      this.syncReview = [];
+      this.workoutClient.copyCalendarToCalendar(startDate, endDate, trainingTypes, skipSynced, direction).pipe(
+        finalize(() => this.inProgress = false)
+      ).subscribe(response => {
+        this.previewResult = undefined;
+        this.syncReview = response.syncReview ?? [];
+        this.notificationService.success(
+          `Planned: ${response.copied}\n Filtered out: ${response.filteredOut}\n From ${response.startDate} to ${response.endDate}`);
+      });
+    });
   }
 
   private getFormGroup() {

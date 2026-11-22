@@ -1,5 +1,6 @@
 import {of} from 'rxjs';
 import {FormBuilder} from '@angular/forms';
+import {MatDialog} from '@angular/material/dialog';
 import {CopyCalendarToCalendarComponent} from './copy-calendar-to-calendar.component';
 import {TrainingPeaksSyncPreview, WorkoutClient} from 'infrastructure/client/workout.client';
 import {ConfigurationClient} from 'infrastructure/client/configuration.client';
@@ -18,9 +19,13 @@ describe('TrainingPeaks legacy review', () => {
 
   function setup() {
     const resolve = jasmine.createSpy('resolveTrainingPeaksHold').and.returnValue(of({eventId: 71}));
+    const repair = jasmine.createSpy('repairTrainingPeaksLink').and.returnValue(of({eventId: 72, recreated: false}));
+    const copy = jasmine.createSpy('copyCalendarToCalendar').and.returnValue(of({copied: 1}));
+    const open = jasmine.createSpy('open').and.returnValue({afterClosed: () => of(true)});
     const component = new CopyCalendarToCalendarComponent(
       new FormBuilder(), {} as ConfigurationClient,
-      {resolveTrainingPeaksHold: resolve} as unknown as WorkoutClient, {} as NotificationService,
+      {resolveTrainingPeaksHold: resolve, repairTrainingPeaksLink: repair, copyCalendarToCalendar: copy} as unknown as WorkoutClient,
+      {success: () => {}} as unknown as NotificationService, {open} as unknown as MatDialog,
     );
     component.previewResult = {
       selection: {startDate: '2026-11-21', endDate: '2026-11-22', types: ['BIKE']},
@@ -29,7 +34,7 @@ describe('TrainingPeaks legacy review', () => {
         workouts: [...historical, held], previewOnly: false, activationEnabled: false,
       },
     };
-    return {component, resolve};
+    return {component, resolve, repair, copy, open};
   }
 
   it('groups and sorts historical candidates and bulk-selects the visible filter', () => {
@@ -76,4 +81,46 @@ describe('TrainingPeaks legacy review', () => {
     expect(token.value).toBe('');
     expect(component.previewResult).toBeUndefined();
   });
+
+  it('requires a destination-specific confirmation before manual synchronization', () => {
+    const {component, copy, open} = setup();
+    component.formGroup = new FormBuilder().group({
+      direction: Platform.DIRECTION_TP_INT,
+      trainingTypes: [['BIKE']],
+      skipSynced: true,
+      startDate: new Date(2026, 10, 22),
+      endDate: new Date(2026, 10, 22),
+    });
+    open.and.returnValue({afterClosed: () => of(false)});
+    component.submit();
+    expect(copy).not.toHaveBeenCalled();
+    expect(open.calls.mostRecent().args[1].data).toEqual(jasmine.objectContaining({
+      action: 'Synchronize workouts', destination: 'Intervals.icu',
+    }));
+    open.and.returnValue({afterClosed: () => of(true)});
+    component.submit();
+    expect(copy).toHaveBeenCalledOnceWith('2026-11-22', '2026-11-22', ['BIKE'], true, Platform.DIRECTION_TP_INT);
+  });
+
+  it('names the workout and exact event IDs before allowing a repair', () => {
+    const {component, repair, open} = setup();
+    const missing: TrainingPeaksSyncPreview = {
+      ...held, reason: 'LINK_MISSING',
+      missingLinkRepair: {oldEventId: 71, replacement: {eventId: 72}},
+    };
+    const token = {value: 'synthetic-token'} as HTMLInputElement;
+    open.and.returnValue({afterClosed: () => of(false)});
+    component.repairLink(missing, token);
+    expect(repair).not.toHaveBeenCalled();
+    const data = open.calls.mostRecent().args[1].data;
+    expect(data.destination).toBe('Intervals.icu athlete destination');
+    expect(data.details).toContain('missing event 71 to existing event 72');
+    expect(data.details).toContain('workout new');
+    const selection = component.previewResult!.selection;
+    open.and.returnValue({afterClosed: () => of(true)});
+    component.repairLink(missing, token);
+    expect(repair).toHaveBeenCalledOnceWith(selection, 'reviewed', 'new', 71, 72, false, 'synthetic-token');
+    expect(token.value).toBe('');
+  });
+
 });

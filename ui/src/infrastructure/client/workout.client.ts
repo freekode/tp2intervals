@@ -10,6 +10,8 @@ export interface TrainingPeaksSyncPreview {
   reason: string;
   candidates: {eventId: number; date?: string}[];
   canResolveUnmatchedHold?: boolean;
+  missingLinkRepair?: {oldEventId: number; replacement?: {eventId: number; date?: string}};
+  repairBlockedReason?: string;
 }
 
 export interface TrainingPeaksPreviewSelection {
@@ -72,6 +74,17 @@ export class WorkoutClient {
     return this.httpClient.post<{eventId: number}>(
       '/api/workout/trainingpeaks-sync/holds/resolve',
       {selection, revision, sourceWorkoutId, acknowledgeManualVerification: true},
+      {headers: {Authorization: 'Bearer ' + token}}
+    );
+  }
+
+  repairTrainingPeaksLink(
+    selection: TrainingPeaksPreviewSelection, revision: string, sourceWorkoutId: string,
+    oldEventId: number, replacementEventId: number | null, acknowledgeInconclusive: boolean, token: string
+  ) {
+    return this.httpClient.post<{eventId: number; recreated: boolean}>(
+      '/api/workout/trainingpeaks-sync/links/repair',
+      {selection, revision, sourceWorkoutId, oldEventId, replacementEventId, acknowledgeRepair: true, acknowledgeInconclusive},
       {headers: {Authorization: 'Bearer ' + token}}
     );
   }

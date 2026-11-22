@@ -54,7 +54,7 @@
         <input matInput #previewToken type="password" autocomplete="off">
       </mat-form-field>
       <button mat-stroked-button type="button" [disabled]="formGroup.invalid || inProgress"
-              (click)="preview(previewToken)">Preview sync</button>
+              (click)="preview(previewToken)">Preview sync (read-only)</button>
     </div>
     @if (previewError) {
       <p role="alert">{{ previewError }}</p>
@@ -136,8 +136,21 @@
                     </mat-checkbox>
                     <button mat-stroked-button type="button"
                       [disabled]="inProgress || acknowledgedHold !== workout.sourceWorkoutId"
-                      (click)="resolveHold(workout, previewToken)">Create this workout once</button>
+                      (click)="resolveHold(workout, previewToken)">Resolve unsynchronized hold…</button>
                   </div>
+                }
+                @if (workout.repairBlockedReason) {
+                  <p>Repair blocked: a replacement or its ownership could not be verified.</p>
+                }
+                @if (workout.missingLinkRepair; as repair) {
+                  @if (repair.replacement; as replacement) {
+                    <p>Missing event {{ repair.oldEventId }} · verified replacement {{ replacement.eventId }}.</p>
+                  } @else {
+                    <p>No replacement for event {{ repair.oldEventId }} was observed. Calendar listings can omit events.</p>
+                  }
+                  <button mat-stroked-button type="button"
+                    [disabled]="inProgress || result.inventory.previewOnly || result.inventory.activationEnabled"
+                    (click)="repairLink(workout, previewToken)">Repair missing link…</button>
                 }
               </li>
             }
@@ -146,12 +159,12 @@
         <p>Unlinked and inconclusive entries are held to prevent duplicates. An unmatched hold can be resolved individually
           after approval while its source workout is still visible. Pending writes and ambiguous links require investigation.</p>
         @if (result.inventory.previewOnly || result.inventory.activationEnabled) {
-          <p>Approval and hold resolution require preview-only mode off and scheduled forward sync paused.</p>
+          <p>Approval, hold resolution and link repair require preview-only mode off and scheduled forward sync paused.</p>
         }
         <mat-checkbox [checked]="acknowledgeInconclusive" (change)="acknowledgeInconclusive = $event.checked">
           I reviewed this inventory and understand that no match observed is not proof of absence.
         </mat-checkbox>
-        <p>Unlinked legacy candidates and inconclusive workouts in this review will be held.</p>
+        <p>Unlinked legacy candidates and inconclusive workouts in this review will be held. Approval changes only local reconciliation records.</p>
         <button mat-stroked-button type="button"
           [disabled]="inProgress || !acknowledgeInconclusive || result.inventory.previewOnly || result.inventory.activationEnabled"
           (click)="approveBaseline(previewToken)">Approve legacy baseline</button>
@@ -181,7 +194,7 @@
       [disabled]="formGroup.invalid || inProgress"
       (click)="submit()"
     >
-      Confirm
+      Synchronize workouts…
     </button>
     <button
       mat-raised-button
@@ -191,7 +204,7 @@
       [disabled]="formGroup.invalid || inProgress"
       (click)="today()"
     >
-      Only today
+      Synchronize today…
     </button>
     <button
       mat-raised-button
@@ -201,7 +214,7 @@
       [disabled]="formGroup.invalid || inProgress"
       (click)="tomorrow()"
     >
-      Only tomorrow
+      Synchronize tomorrow…
     </button>
   </div>
 
