@@ -1,0 +1,33 @@
+{
+  "Start": "2026-11-22T00:00:00",
+  "End": "2026-11-29T00:00:00",
+  "PlannedActivities": [
+    {
+      "Id": "planned-example-1",
+      "Title": "Sweet Spot Example",
+      "Date": {
+        "Year": 2026,
+        "Month": 11,
+        "Day": 24
+      },
+      "Tss": 72,
+      "ActualTss": 0,
+      "Type": 32767,
+      "EventType": 2,
+      "WorkoutId": 265566,
+      "Status": 0
+    }
+  ],
+  "Activities": [
+    {
+      "Id": 149555402,
+      "Type": 1,
+      "Started": "2026-11-22T06:30:00",
+      "Tss": 72,
+      "PlannedTss": 72,
+      "EventType": 2
+    }
+  ],
+  "Events": [],
+  "Annotations": []
+}

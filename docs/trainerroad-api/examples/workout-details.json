@@ -1,0 +1,76 @@
+{
+  "Workout": {
+    "Details": {
+      "Id": "265566",
+      "WorkoutName": "Example Sweet Spot Workout",
+      "WorkoutDescription": "<p>Synthetic example description.</p>",
+      "GoalDescription": "<p>Synthetic example goal.</p>",
+      "IsOutside": false,
+      "TSS": 72,
+      "Duration": 60,
+      "ProfileName": "Example Profile",
+      "Difficulty": 5,
+      "WorkoutDifficultyRating": 5,
+      "Zones": [
+        {
+          "Id": 701,
+          "Description": "SweetSpot"
+        }
+      ],
+      "Progression": {
+        "Text": "SweetSpot"
+      },
+      "ProgressionLevel": 5.5,
+      "Levels": [
+        {
+          "Level": 5.5,
+          "IsPrimary": true
+        }
+      ]
+    },
+    "IntervalData": [
+      {
+        "Start": 0,
+        "End": 150,
+        "Name": "Fake",
+        "IsFake": true,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 50,
+        "EndTargetPowerPercent": 50
+      },
+      {
+        "Start": 150,
+        "End": 300,
+        "Name": "Endurance 1",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 71,
+        "EndTargetPowerPercent": 71
+      },
+      {
+        "Start": 720,
+        "End": 1920,
+        "Name": "Sweet Spot 2",
+        "IsFake": false,
+        "TestInterval": false,
+        "StartTargetPowerPercent": 0,
+        "EndTargetPowerPercent": 0
+      }
+    ],
+    "WorkoutData": [
+      {
+        "Tick": 720,
+        "MemberFtpPercent": 112.5,
+        "FtpPercent": 90
+      },
+      {
+        "Tick": 1919,
+        "MemberFtpPercent": 112.5,
+        "FtpPercent": 94
+      }
+    ],
+    "Plans": [],
+    "Tags": [],
+    "Alternates": []
+  }
+}

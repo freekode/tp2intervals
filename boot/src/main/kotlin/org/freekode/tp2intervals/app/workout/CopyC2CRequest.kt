@@ -10,5 +10,6 @@ data class CopyFromCalendarToCalendarRequest(
     val types: List<TrainingType>,
     val skipSynced: Boolean,
     val sourcePlatform: Platform,
-    val targetPlatform: Platform
+    val targetPlatform: Platform,
+    val defaultStartTime: String? = null,
 )

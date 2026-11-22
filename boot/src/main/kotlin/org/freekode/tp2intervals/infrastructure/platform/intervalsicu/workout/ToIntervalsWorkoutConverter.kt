@@ -36,7 +36,11 @@ class ToIntervalsWorkoutConverter {
         val workoutString = getWorkoutString(workout)
         val description = getDescription(workout, workoutString)
         return CreateEventRequestDTO(
-            (workout.date ?: LocalDate.now()).atStartOfDay().toString(),
+            if (workout.startTime != null) {
+                Date.toIsoLocalDateTime(workout.date ?: LocalDate.now(), workout.startTime)
+            } else {
+                Date.toIsoLocalDateTime(workout.date ?: LocalDate.now())
+            },
             workout.details.name,
             IntervalsTrainingTypeMapper.getByTrainingType(workout.details.type),
             "WORKOUT",

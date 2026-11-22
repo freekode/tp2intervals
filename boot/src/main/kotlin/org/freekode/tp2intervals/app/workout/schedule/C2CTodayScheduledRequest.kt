@@ -9,7 +9,8 @@ data class C2CTodayScheduledRequest(
     val types: List<TrainingType>,
     val skipSynced: Boolean,
     val sourcePlatform: Platform,
-    val targetPlatform: Platform
+    val targetPlatform: Platform,
+    val defaultStartTime: String? = null,
 ) : Schedulable {
     fun forToday() = CopyFromCalendarToCalendarRequest(
         LocalDate.now(),
@@ -17,6 +18,7 @@ data class C2CTodayScheduledRequest(
         types,
         skipSynced,
         sourcePlatform,
-        targetPlatform
+        targetPlatform,
+        defaultStartTime,
     )
 }

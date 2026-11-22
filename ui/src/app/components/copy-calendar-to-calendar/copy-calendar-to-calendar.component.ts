@@ -94,9 +94,10 @@ export class CopyCalendarToCalendarComponent implements OnInit {
     let direction = this.formGroup.value.direction
     let trainingTypes = this.formGroup.value.trainingTypes
     let skipSynced = this.formGroup.value.skipSynced
+    let defaultStartTime = this.formGroup.value.defaultStartTime || null
 
     this.inProgress = true
-    this.workoutClient.scheduleCopyCalendarToCalendar(startDate, endDate, trainingTypes, skipSynced, direction).pipe(
+    this.workoutClient.scheduleCopyCalendarToCalendar(startDate, endDate, trainingTypes, skipSynced, defaultStartTime, direction).pipe(
       switchMap(() => this.loadScheduleRequests()),
       finalize(() => this.inProgress = false)
     ).subscribe(() => {
@@ -116,9 +117,10 @@ export class CopyCalendarToCalendarComponent implements OnInit {
     let direction = this.formGroup.value.direction
     let trainingTypes = this.formGroup.value.trainingTypes
     let skipSynced = this.formGroup.value.skipSynced
+    let defaultStartTime = this.formGroup.value.defaultStartTime || null
 
     this.inProgress = true
-    this.workoutClient.copyCalendarToCalendar(startDate, endDate, trainingTypes, skipSynced, direction).pipe(
+    this.workoutClient.copyCalendarToCalendar(startDate, endDate, trainingTypes, skipSynced, defaultStartTime, direction).pipe(
       finalize(() => this.inProgress = false)
     ).subscribe((response) => {
       this.notificationService.success(
@@ -133,6 +135,7 @@ export class CopyCalendarToCalendarComponent implements OnInit {
       startDate: [this.todayDate, Validators.required],
       endDate: [this.tomorrowDate, Validators.required],
       skipSynced: [true, Validators.required],
+      defaultStartTime: [null, Validators.pattern('^([01][0-9]|2[0-3]):[0-5][0-9]$')],
     })
   }
 

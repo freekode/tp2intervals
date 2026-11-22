@@ -4,7 +4,6 @@ import feign.RequestInterceptor
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.infrastructure.PlatformException
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.configuration.TrainerRoadConfigurationRepository
-import org.freekode.tp2intervals.infrastructure.platform.trainerroad.cookie.TRCookieRepository
 import org.springframework.context.annotation.Bean
 import org.springframework.http.HttpHeaders
 

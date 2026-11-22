@@ -11,6 +11,13 @@ Runs on MacOS (DMG), Windows (EXE installer), Linux (AppImage). Alternatively th
 
 All files are available for download on [Release page](https://github.com/freekode/tp2intervals/releases/latest).
 
+## Repository workflow
+
+Development changes and pull requests are pushed to the fork at
+https://github.com/christianpetri/tp2intervals.
+Do not push branches or create pull requests in the upstream repository unless the maintainer
+explicitly requests it.
+
 **Only for educational purposes**
 
 <img src="https://github.com/freekode/tp2intervals/blob/main/docs/tp.png?raw=true" width="25%"><img src="https://github.com/freekode/tp2intervals/blob/main/docs/tr.png?raw=true" width="25%">
@@ -91,6 +98,9 @@ Configuration is very similar to TrainingPeaks. Copy all cookies from request `h
 The app automatically will remove redundant parts and only require cookie will remain. Follow guide below how to do that.
 
 Cookie `SharedTrainerRoadAuth` (key and value, smth like `SharedTrainerRoadAuth=very_long_string`) is required for the app.
+
+The unofficial, reverse-engineered API notes and sanitized example responses are documented in
+[docs/trainerroad-api/](docs/trainerroad-api/README.md).
 
 <img src="https://github.com/freekode/tp2intervals/blob/main/docs/tr_guide.png?raw=true">
 

@@ -6,6 +6,7 @@ import org.freekode.tp2intervals.domain.activity.Activity
 import org.freekode.tp2intervals.domain.activity.ActivityRepository
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsApiClient
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfigurationRepository
+import org.freekode.tp2intervals.infrastructure.utils.Date
 import org.freekode.tp2intervals.infrastructure.utils.MyMultipartFile
 import org.springframework.stereotype.Repository
 import java.time.LocalDate
@@ -31,8 +32,8 @@ class IntervalsActivityRepository(
         val activities =
             intervalsApiClient.getActivities(
                 intervalsConfigurationRepository.getConfiguration().athleteId,
-                startDate.atStartOfDay().toString(),
-                endDate.atStartOfDay().plusDays(1).minusSeconds(1).toString()
+                Date.toIsoLocalDateTime(startDate),
+                endDate.plusDays(1).atStartOfDay().minusSeconds(1).let(Date::toIsoLocalDateTime)
             )
         return activities
             .map { IntervalsToActivityMapper(it).mapToActivity() }

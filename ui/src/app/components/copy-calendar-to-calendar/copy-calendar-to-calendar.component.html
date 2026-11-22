@@ -45,6 +45,14 @@
     </mat-checkbox>
   </div>
 
+  <div class="row">
+    <mat-form-field class="form-field">
+      <mat-label>Default start time (optional)</mat-label>
+      <input matInput type="time" step="60" formControlName="defaultStartTime">
+      <mat-hint>Local workout time, for example 18:00</mat-hint>
+    </mat-form-field>
+  </div>
+
   <div class="action-button-section">
     <button
       mat-raised-button
@@ -95,6 +103,9 @@
           </button>
           Types: {{ mapTrainingTypesToTitles(request.request.types) }},
           Skip synced: {{ request.request.skipSynced }},
+          @if (request.request.defaultStartTime) {
+            Start time: {{ request.request.defaultStartTime }},
+          }
           {{ Platform.getTitle(request.request.sourcePlatform) }} -> {{ Platform.getTitle(request.request.targetPlatform) }}
         </mat-list-item>
       }
