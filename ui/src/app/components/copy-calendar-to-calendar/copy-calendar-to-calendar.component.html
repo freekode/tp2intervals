@@ -14,14 +14,18 @@
     <p>TrainerRoad's next 4 weeks are a live AI simulation and will change. Choose how strictly Intervals should follow the current version.</p>
     <p id="sync-mode-label">Sync behaviour</p>
     <mat-radio-group formControlName="trainerRoadSyncMode" aria-labelledby="sync-mode-label" class="sync-mode-options">
-      <div>
-        <mat-radio-button value="ADD_MISSING">Skip already synced workouts (default)</mat-radio-button>
-        <p class="sync-hint sync-mode-description">Add missing selected workouts; never update or remove existing events.</p>
-      </div>
-      <div>
-        <mat-radio-button value="MIRROR">Mirror current TR simulation</mat-radio-button>
-        <p class="sync-hint sync-mode-description">Update matching workouts, add missing workouts, and remove stale tracked TrainerRoad workouts with your permission.</p>
-      </div>
+      <mat-radio-button value="ADD_MISSING" class="sync-mode-option"
+                        [class.sync-mode-selected]="formGroup.value.trainerRoadSyncMode === 'ADD_MISSING'"
+                        aria-label="Skip already synced workouts (default)" aria-describedby="add-missing-description">
+        <span class="sync-mode-title">Skip already synced workouts (default)</span>
+        <span id="add-missing-description" class="sync-mode-description">Add missing selected workouts; never update or remove existing events.</span>
+      </mat-radio-button>
+      <mat-radio-button value="MIRROR" class="sync-mode-option"
+                        [class.sync-mode-selected]="formGroup.value.trainerRoadSyncMode === 'MIRROR'"
+                        aria-label="Mirror current TR simulation" aria-describedby="mirror-description">
+        <span class="sync-mode-title">Mirror current TR simulation</span>
+        <span id="mirror-description" class="sync-mode-description">Update matching workouts, add missing workouts, and remove stale tracked TrainerRoad workouts with your permission.</span>
+      </mat-radio-button>
     </mat-radio-group>
     <div *ngIf="formGroup.value.trainerRoadSyncMode === 'MIRROR'">
       <mat-checkbox formControlName="allowStaleRemoval">

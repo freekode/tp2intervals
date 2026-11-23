@@ -11,10 +11,30 @@
 .sync-mode-options {
   display: flex;
   flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.sync-mode-option {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 8px;
+}
+
+.sync-mode-selected {
+  border-color: #c2185b;
+  background-color: #fdf4f7;
+}
+
+.sync-mode-title,
+.sync-mode-description {
+  display: block;
 }
 
 .sync-mode-description {
-  margin-left: 40px;
+  color: #555;
+  font-size: 0.9em;
+  line-height: 1.4;
 }
 
 .sync-hint {
