@@ -1,56 +1,30 @@
 # Third Party to Intervals.icu
 
 Copy workouts and training plans between TrainingPeaks, TrainerRoad, and
-Intervals.icu. This fork of [freekode/tp2intervals](https://github.com/freekode/tp2intervals)
-adds persistent duplicate protection and reviewed recovery for planned workouts
-copied from TrainingPeaks to Intervals.icu. Original project and releases by
-[freekode](https://github.com/freekode). Licensed under [GPL-3.0](LICENSE).
-The original project's [support page](https://ko-fi.com/E1E6W6XZP) and
-[community thread](https://forum.intervals.icu/t/tp2intervals-copy-trainingpeaks-and-trainerroad-workouts-plans-to-intervals/63375)
-remain available.
+Intervals.icu. The original project is maintained at
+[freekode/tp2intervals](https://github.com/freekode/tp2intervals) and is licensed
+under [GPL-3.0](LICENSE). See the [release downloads](https://github.com/freekode/tp2intervals/releases),
+[project support page](https://ko-fi.com/E1E6W6XZP), and
+[community thread](https://forum.intervals.icu/t/tp2intervals-copy-trainingpeaks-and-trainerroad-workouts-plans-to-intervals/63375).
 
 ## Install and configure
 
-Use Docker Engine with Docker Compose v2 and a verified image built from this
-fork. The current fork release was validated on `linux/amd64`. Use a matching
-image for your host and validate other platforms separately. The
-[upstream releases](https://github.com/freekode/tp2intervals/releases) include
-desktop distributions, an executable JAR, and upstream container builds. Those
-are separate from this fork's release artifacts.
+Release downloads include desktop builds and an executable JAR. The JAR
+requires JDK 21 and runs with `java -jar tp2intervals.jar`. It defaults to
+port 8080 and `jdbc:sqlite:tp2intervals.sqlite`.
 
-For a local Compose installation, load the verified fork image first, then:
+With Docker Engine and Docker Compose v2, run `docker compose up -d` for
+the existing [upstream installation](docker-compose.yml). It uses
+`ghcr.io/freekode/tp2intervals:latest`, mounts
+`./tp2intervals.sqlite` at the existing path, and publishes port 8080. Keep
+this service on a trusted network. The features below require a build
+containing these changes.
 
-```sh
-umask 077
-cp .env.example .env
-mkdir -p data
-```
-
-Set the loaded image reference in `.env`. Set a private preview bearer token if
-you intend to run preview or review operations. For example, generate a secret
-with `openssl rand -hex 32` and store it privately. Validate the configuration
-without displaying resolved secrets, then start the service.
-
-```sh
-docker compose -f docker-compose.yaml config --quiet
-docker compose -f docker-compose.yaml up -d
-```
-
-Open `http://127.0.0.1:8080`. The example binds the host port to loopback and
-persists SQLite under `./data`. Use the [optional proxy overlay](docker-compose.proxy.yaml)
-with Compose 2.24.4 or newer to remove the host port and attach to an existing
-private proxy network. Verify the app's address and actual proxy peer before
-using the overlay. The app itself listens on port 8080.
-
-For a standalone executable JAR with the bundled web UI, use JDK 21:
-`java -jar tp2intervals.jar`. It defaults to port 8080 and
-`jdbc:sqlite:tp2intervals.sqlite`. To build from source, use JDK 21, Node.js and
-the checked-in Gradle wrapper and npm lockfile. Build the UI with
-`npm ci --prefix ui` and `npm run build --prefix ui`, copy the contents of
-`ui/dist/ui/browser` into `boot/src/main/resources/static` in a build directory,
-then run `(cd boot && ./gradlew bootJar)`. The repository Dockerfile packages
-the resulting JAR. See [AGENTS.md](AGENTS.md) for test commands and restrictions
-on live integration tests.
+For a private installation, follow the [optional deployment guide](docs/deployment.md).
+It covers a loopback-bound service, a dedicated SQLite directory, trusted
+reverse proxies, verified images, and building the project from source. Existing
+Compose installations can keep their image and storage configuration until
+they explicitly opt in.
 
 ### Provider credentials
 
@@ -72,17 +46,16 @@ Leaving a stored credential input blank retains its value.
 | Setting | Application default | Purpose |
 |---|---|---|
 | `TP2INTERVALS_PREFLIGHT_TOKEN` | unset | Enables bearer-protected preview, approval, hold resolution, and link repair. |
-| `TP2INTERVALS_PREVIEW_ONLY` | `false` | Blocks provider writes, scheduled execution, ledger mutations, and mutating HTTP operations except the read-only preview POST. The generic Compose example defaults to `true`. Startup can still apply migrations. |
+| `TP2INTERVALS_PREVIEW_ONLY` | `false` | Blocks provider writes, scheduled execution, ledger mutations, and mutating HTTP operations except the read-only preview POST. The optional private example defaults to `true`. Startup can still apply migrations. |
 | `TP2INTERVALS_ENABLE_SCHEDULED_FORWARD_SYNC` | `false` | Separately enables unattended TrainingPeaks → Intervals.icu writes for approved account pairs. |
 | `TP2INTERVALS_SCHEDULE_INTERVAL_MINUTES` | `60` | Forward cadence in whole minutes, from 5 to 1440. |
-| `TP2INTERVALS_SCHEDULE_TIMEZONE` | `Europe/Amsterdam` | IANA zone for the forward schedule's rolling dates. |
-| `SPRING_DATASOURCE_URL` | `jdbc:sqlite:tp2intervals.sqlite` | SQLite location. The Compose example uses `jdbc:sqlite:/data/tp2intervals.sqlite`. |
+| `TP2INTERVALS_SCHEDULE_TIMEZONE` | JVM default IANA zone, or UTC if the JVM zone is a non-IANA offset | Shared calendar zone for forward preview, approval, hold resolution, repair, and scheduling. Set an IANA name such as `Europe/Amsterdam` to pin it. |
+| `SPRING_DATASOURCE_URL` | `jdbc:sqlite:tp2intervals.sqlite` | SQLite location. The optional private example uses `jdbc:sqlite:/data/tp2intervals.sqlite`. |
 | `SERVER_FORWARD_HEADERS_STRATEGY` | `none` | Enable `native` only behind an explicitly trusted proxy. |
 | `SERVER_TOMCAT_REMOTEIP_INTERNAL_PROXIES` | `(?!)` | Java regex for the trusted immediate proxy peer. The default matches nothing. |
 
-`TP2INTERVALS_FORK_IMAGE`, `TP2INTERVALS_HOST_PORT`, and
-`TP2INTERVALS_PROXY_NETWORK` are Compose example inputs. They are not
-application properties.
+The [optional Compose examples](docs/deployment.md) document their
+image, port, and proxy network inputs.
 
 ### Upgrade and backup
 
@@ -90,7 +63,7 @@ Stop all writers and make a consistent SQLite backup, including committed WAL
 contents. If moving from a file bind mount, use the SQLite backup to seed
 `data/tp2intervals.sqlite`. Check for sidecars in the old container before
 taking the backup. Verify the copy and rehearse the upgrade on disposable
-data before changing the installed image. Fork migrations 0009–0011 add the
+data before changing the installed image. Migrations 0009–0011 add the
 ledger, baseline and holds, and repair history without rewriting existing
 records. The unchanged upstream migration 0008 rebuilds the schedule table,
 so installations older than 0008 should inventory their schedules before
@@ -119,8 +92,8 @@ destination link remains protected until explicitly repaired.
 TrainingPeaks Basic preview and scheduled forward sync use a rolling window
 of today and tomorrow. Provider access and its day boundary can further
 restrict the results. Scheduled runs fail closed on rejected reads and never
-expand the window. Basic preview uses the backend's local date. Scheduled
-forward sync uses its configured timezone. Provider limits on future writes
+expand the window. Preview, approval, hold resolution, repair, and scheduled forward sync
+use the same calendar timezone. Provider limits on future writes
 to TrainingPeaks also apply to the reverse direction.
 
 ### Review existing imports before activating scheduling
@@ -163,9 +136,8 @@ result pending for investigation. [Detailed review and repair runbook](docs/trai
 tomorrow** is available for TrainingPeaks → Intervals.icu and saves a rolling
 two-day request. Older requests retain their one-day window. Saving does not
 start a sync. When active, the first scan can run shortly after startup, and
-missed runs are not replayed. Forward sync defaults to every 60 minutes in
-Europe/Amsterdam. Other directions retain their three-minute cadence and use
-the JVM's timezone.
+missed runs are not replayed. Forward sync defaults to every 60 minutes using the shared forward calendar zone.
+Other directions retain their three-minute cadence and use the JVM's timezone.
 
 Run one scheduling instance. Requests survive restart in SQLite, and the
 calendar page lists and deletes them. Edit a request by deleting and

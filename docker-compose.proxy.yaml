@@ -1,4 +1,4 @@
-# Optional. Apply after docker-compose.yaml. The existing private proxy
+# Optional. Apply after docker-compose.private.yaml. The existing private proxy
 # network must already exist. Configure the proxy route separately.
 services:
   app:

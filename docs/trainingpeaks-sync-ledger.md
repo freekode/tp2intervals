@@ -60,8 +60,9 @@ The endpoint is `POST /api/workout/trainingpeaks-sync/preview` with
 `startDate`, `endDate` (ISO dates), and optionally `types` (workout-type enum
 names). It uses only provider reads and ledger lookups, creates no claims or
 links, and returns `Cache-Control: no-store`. A Basic athlete account can
-preview today and tomorrow as measured by the backend's calendar day.
-Provider availability and time zones can still limit the returned workouts.
+preview today and tomorrow in the same calendar timezone used by approval,
+hold resolution, repair and forward scheduling. Provider availability and
+its calendar-day boundary can still limit the returned workouts.
 The response includes an inventory revision, an account pair, and workout rows
 with source and candidate IDs, dates where known, and reason codes. Submit the
 reviewed selection, revision, acknowledgement and selected legacy links to
@@ -253,9 +254,10 @@ database and reconcile any remote writes before deciding how to restore data.
 ## Rolling TrainingPeaks scheduling
 
 Use one app instance for scheduling. An enabled forward schedule defaults to
-60 minutes in Europe/Amsterdam. Set `TP2INTERVALS_SCHEDULE_INTERVAL_MINUTES`
-to an integer from 5 to 1440 and `TP2INTERVALS_SCHEDULE_TIMEZONE` to an IANA
-timezone. These settings do not change the JVM timezone. Other directions
+60 minutes. Set `TP2INTERVALS_SCHEDULE_INTERVAL_MINUTES` to an integer from 5
+to 1440. Set `TP2INTERVALS_SCHEDULE_TIMEZONE` to an IANA timezone such as
+`Europe/Amsterdam` to pin the forward calendar. When unset, it uses the JVM
+default IANA zone, with UTC as the fallback for a non-IANA offset. These settings do not change the JVM timezone. Other directions
 retain their three-minute cadence and JVM timezone. One timer checks which
 cadence is due every minute. It serializes scans and does not replay missed
 ticks after downtime. The first scan after restart is due immediately.
@@ -274,7 +276,7 @@ Use the same Compose project and files as your installation. Add any
 existing overlays to the command in their installed order:
 
 ```sh
-dc() { docker compose -f docker-compose.yaml "$@"; }
+dc() { docker compose -f docker-compose.yml "$@"; }
 dc config --format json | jq '.services.app | {
   image, platform, ports: (.ports // []),
   sqlite: .environment.SPRING_DATASOURCE_URL,
@@ -295,7 +297,7 @@ dc config --format json | jq '.services.app | {
    `blockedReason=FORWARD_SYNC_PAUSED`. Saving a row does not trigger a run.
 3. Separately set the forward gate true in the effective override and check the
    merged configuration. Recreate only the app service during a monitored window.
-   Check the scheduled request ID, dates, and copied/skipped counts in
+   Check the scheduled request ID, dates, and `copied` / `filteredOut` counts in
    `dc logs --since 10m app`. Compare the ledger and destination calendar with
    the pre-run snapshot. A block or error has its own log record.
 4. To pause, stop the app if immediate containment is needed. Restore the gate
@@ -303,6 +305,15 @@ dc config --format json | jq '.services.app | {
    SQLite database and claims. An in-flight write may already have committed.
    Inspect it before resuming. A rollback to an older image should remain
    paused, and its UI may not understand the optional rolling-window field.
+
+### Reading copy counts
+
+`copied` counts source items copied in a completed request. `filteredOut`
+counts received source items that were not copied. It includes items
+already linked or reconciled, held or unresolved items, type exclusions,
+missing IDs, and out-of-window rows. It does not count confirmed duplicates
+separately. For a blocked or failed run, use the block or error code rather
+than inferring counts. Use the preview and ledger to verify linked event IDs.
 
 ## Schedule deletion behind HTTPS termination
 
@@ -312,7 +323,7 @@ port. With forwarding disabled, Spring MVC treats the request as cross-origin
 and rejects DELETE under the existing API method policy.
 
 Use [the optional proxy overlay](../docker-compose.proxy.yaml) after the
-generic Compose example, or configure an equivalent environment in a local
+[private Compose example](../docker-compose.private.yaml), or configure an equivalent environment in a local
 override. Confirm the app port is unpublished and the immediate proxy peer
 is on the expected private network:
 

@@ -1,6 +1,6 @@
 services:
   app:
-    image: ${TP2INTERVALS_FORK_IMAGE:?Set a verified fork image in .env}
+    image: ${TP2INTERVALS_IMAGE:?Set a verified local tp2intervals image in .env}
     pull_policy: never
     restart: unless-stopped
     ports:
@@ -13,4 +13,4 @@ services:
       TP2INTERVALS_PREVIEW_ONLY: "${TP2INTERVALS_PREVIEW_ONLY:-true}"
       TP2INTERVALS_ENABLE_SCHEDULED_FORWARD_SYNC: "${TP2INTERVALS_ENABLE_SCHEDULED_FORWARD_SYNC:-false}"
       TP2INTERVALS_SCHEDULE_INTERVAL_MINUTES: "${TP2INTERVALS_SCHEDULE_INTERVAL_MINUTES:-60}"
-      TP2INTERVALS_SCHEDULE_TIMEZONE: "${TP2INTERVALS_SCHEDULE_TIMEZONE:-Europe/Amsterdam}"
+      TP2INTERVALS_SCHEDULE_TIMEZONE: "${TP2INTERVALS_SCHEDULE_TIMEZONE:-}"
