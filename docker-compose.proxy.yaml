@@ -1,0 +1,14 @@
+# Optional. Apply after docker-compose.yaml. The existing private proxy
+# network must already exist. Configure the proxy route separately.
+services:
+  app:
+    ports: !reset []
+    networks:
+      - proxy
+    environment:
+      SERVER_FORWARD_HEADERS_STRATEGY: native
+      SERVER_TOMCAT_REMOTEIP_INTERNAL_PROXIES: "${SERVER_TOMCAT_REMOTEIP_INTERNAL_PROXIES:?Set the exact trusted proxy peer IP regex}"
+networks:
+  proxy:
+    external: true
+    name: ${TP2INTERVALS_PROXY_NETWORK:?Set the existing private proxy network name}
