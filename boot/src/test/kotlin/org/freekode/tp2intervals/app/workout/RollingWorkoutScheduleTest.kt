@@ -142,7 +142,7 @@ class RollingWorkoutScheduleTest {
             verify(service).copyScheduledWorkouts(legacy.forToday(today), today)
             val messages = events.list.joinToString("\n") { it.formattedMessage }
             assertTrue("Scheduled sync failed id=1" in messages && "upstreamStatus=403" in messages)
-            assertTrue("Scheduled sync finished id=2" in messages && "copied=0 skipped=1" in messages)
+            assertTrue("Scheduled sync finished id=2" in messages && "copied=0 filteredOut=1" in messages)
             assertFalse(secret in messages)
             assertTrue(events.list.all { it.throwableProxy == null })
         } finally {

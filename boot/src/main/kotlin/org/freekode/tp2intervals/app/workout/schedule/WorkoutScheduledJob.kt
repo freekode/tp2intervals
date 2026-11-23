@@ -108,7 +108,7 @@ class WorkoutScheduledJob(
             try {
                 val outcome = workoutService.copyScheduledWorkouts(copy, today)
                 val result = outcome.result
-                log.info("Scheduled sync finished id={} source={} target={} start={} end={} blocked={} copied={} skipped={}",
+                log.info("Scheduled sync finished id={} source={} target={} start={} end={} blocked={} copied={} filteredOut={}",
                     entry.id, copy.sourcePlatform, copy.targetPlatform, copy.startDate, copy.endDate,
                     outcome.blockedReason, result?.copied, result?.filteredOut)
             } catch (error: RuntimeException) {

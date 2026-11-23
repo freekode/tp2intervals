@@ -391,7 +391,7 @@ export class CopyCalendarToCalendarComponent implements OnInit {
         this.previewResult = undefined;
         this.syncReview = response.syncReview ?? [];
         this.notificationService.success(
-          `Planned: ${response.copied}\n Filtered out: ${response.filteredOut}\n From ${response.startDate} to ${response.endDate}`);
+          `Copied: ${response.copied}\n Not copied (all exclusions): ${response.filteredOut}\n From ${response.startDate} to ${response.endDate}`);
       });
     });
   }
