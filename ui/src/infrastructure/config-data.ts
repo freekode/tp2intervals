@@ -1,10 +1,10 @@
-const requiredConfigKeys = ['intervals.api-key', 'intervals.athlete-id']
+export const credentialKeys = ['intervals.api-key', 'training-peaks.auth-cookie', 'trainer-road.auth-cookie'];
 
 export class ConfigData {
   config: { [id: string]: string | boolean | null; }
 
 
-  constructor(config: { [id: string]: string; }) {
+  constructor(config: { [id: string]: string; }, readonly storedCredentials: Record<string, boolean> = {}) {
     this.config = {}
     Object.keys(config).forEach(key => {
       if (config[key] === '' || config[key] === null || config[key] === undefined) {
@@ -20,6 +20,6 @@ export class ConfigData {
   }
 
   hasRequiredConfig(): boolean {
-    return Object.keys(this.config).filter(key => requiredConfigKeys.indexOf(key) > -1).length == 2
+    return !!this.config['intervals.athlete-id'] && !!this.storedCredentials['intervals.api-key'];
   }
 }

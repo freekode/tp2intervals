@@ -15,13 +15,13 @@ export class ConfigurationClient {
   getConfig(): Observable<ConfigData> {
     return this.httpClient.get(`/api/configuration`).pipe(
       map((response: any) =>
-        new ConfigData(response?.config))
+        new ConfigData(response?.config, response?.storedCredentials))
     )
   }
 
   updateConfig(configData: ConfigData): Observable<any> {
     return this.httpClient
-      .put(`/api/configuration`, configData)
+      .put(`/api/configuration`, {config: configData.config})
   }
 
   getAllPlatformInfo(): Observable<any> {

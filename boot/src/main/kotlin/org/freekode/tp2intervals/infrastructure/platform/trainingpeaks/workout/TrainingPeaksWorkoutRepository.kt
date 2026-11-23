@@ -8,6 +8,7 @@ import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutDetails
 import org.freekode.tp2intervals.domain.workout.WorkoutRepository
 import org.freekode.tp2intervals.infrastructure.PlatformException
+import org.freekode.tp2intervals.infrastructure.ProviderReadFailure
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.TrainingPeaksApiClient
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.configuration.TrainingPeaksConfigurationRepository
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.library.TPWorkoutLibraryRepository
@@ -78,16 +79,23 @@ class TrainingPeaksWorkoutRepository(
         return workouts + notes
     }
 
-    override fun getWorkoutsFromCalendar(startDate: LocalDate, endDate: LocalDate): List<Workout> {
-        val userId = trainingPeaksUserRepository.getUser().userId
-        val tpWorkouts = trainingPeaksApiClient.getWorkouts(userId, startDate.toString(), endDate.toString())
+    fun calendarUser() = trainingPeaksUserRepository.resolveUser()
+
+    fun calendarAccountId(): String = trainingPeaksUserRepository.getUser().userId
+
+    fun getPlannedCalendarEntries(userId: String, startDate: LocalDate, endDate: LocalDate) =
+        trainingPeaksApiClient.getWorkouts(userId, startDate.toString(), endDate.toString())
+            ?: throw ProviderReadFailure(Platform.TRAINING_PEAKS, ProviderReadFailure.Kind.RESPONSE)
+
+    override fun getWorkoutsFromCalendar(startDate: LocalDate, endDate: LocalDate): List<Workout> =
+        getWorkoutsFromCalendar(calendarAccountId(), startDate, endDate)
+
+    fun getWorkoutsFromCalendar(userId: String, startDate: LocalDate, endDate: LocalDate): List<Workout> {
+        val tpWorkouts = getPlannedCalendarEntries(userId, startDate, endDate)
 
         val noteEndDate = getNoteEndDateForFilter(startDate, endDate)
         val tpNotes = trainingPeaksApiClient.getNotes(userId, startDate.toString(), noteEndDate.toString())
-        val workouts = tpWorkouts.map {
-            val attachments = tpAttachmentService.getAttachments(userId, it.id)
-            tpToWorkoutConverter.toWorkout(it, attachments)
-        }
+        val workouts = tpWorkouts.map { toCalendarWorkout(userId, it) }
 
         val notes = tpNotes.map { tpToWorkoutConverter.toWorkout(it) }
         return workouts + notes
@@ -98,6 +106,9 @@ class TrainingPeaksWorkoutRepository(
             .map { it.details }
             .filter { it.name.contains(name) }
     }
+
+    fun toCalendarWorkout(userId: String, entry: TPWorkoutCalendarResponseDTO): Workout =
+        tpToWorkoutConverter.toWorkout(entry, tpAttachmentService.getAttachments(userId, entry.id))
 
     override fun getWorkoutFromLibrary(externalData: ExternalData): Workout {
         return tpWorkoutLibraryRepository.getAllWorkouts()

@@ -9,17 +9,37 @@ import org.freekode.tp2intervals.rest.workout.DeleteWorkoutRequestDTO
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.time.LocalDate
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 @Service
 class WorkoutService(
     workoutRepositories: List<WorkoutRepository>,
     planRepositories: List<LibraryContainerRepository>,
+    private val trainingPeaksCalendarSync: TrainingPeaksCalendarSync,
 ) {
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val workoutRepositoryMap = workoutRepositories.associateBy { it.platform() }
     private val planRepositoryMap = planRepositories.associateBy { it.platform() }
 
+    private val trainingPeaksCalendarLock = ReentrantLock()
+
     fun copyWorkoutsC2C(request: CopyFromCalendarToCalendarRequest): CopyWorkoutsResponse {
+        if (request.sourcePlatform == Platform.TRAINING_PEAKS && request.targetPlatform == Platform.INTERVALS) {
+            return trainingPeaksCalendarLock.withLock { trainingPeaksCalendarSync.copy(request) }
+        }
+        return copyCalendar(request)
+    }
+
+    fun copyScheduledWorkouts(request: CopyFromCalendarToCalendarRequest, today: LocalDate): ScheduledCopyOutcome {
+        return if (request.sourcePlatform == Platform.TRAINING_PEAKS && request.targetPlatform == Platform.INTERVALS) {
+            trainingPeaksCalendarLock.withLock { trainingPeaksCalendarSync.copyScheduled(request, today) }
+        } else {
+            ScheduledCopyOutcome(result = copyWorkoutsC2C(request))
+        }
+    }
+
+    private fun copyCalendar(request: CopyFromCalendarToCalendarRequest): CopyWorkoutsResponse {
         log.info("Received request for copy calendar to calendar: $request")
         val sourceWorkoutRepository = workoutRepositoryMap[request.sourcePlatform]!!
         val targetWorkoutRepository = workoutRepositoryMap[request.targetPlatform]!!
@@ -28,7 +48,7 @@ class WorkoutService(
         var filteredWorkoutsToSync = allWorkoutsToSync.filter { request.types.contains(it.details.type) }
         if (request.skipSynced) {
             val plannedWorkouts = targetWorkoutRepository.getWorkoutsFromCalendar(request.startDate, request.endDate)
-            filteredWorkoutsToSync = filteredWorkoutsToSync.filter { !plannedWorkouts.contains(it) }
+            filteredWorkoutsToSync = filteredWorkoutsToSync.filter { it !in plannedWorkouts }
         }
 
         val response = CopyWorkoutsResponse(

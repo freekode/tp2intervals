@@ -7,6 +7,6 @@ class TrainingPeaksUserTokenDTO(
 ) {
     @JsonProperty("token")
     private fun mapAccessToken(map: Map<String, Any>) {
-        this.accessToken = map["access_token"].toString()
+        this.accessToken = map["access_token"] as? String
     }
 }

@@ -1,3 +1,13 @@
+@use '@angular/material' as mat;
+
+$stored-credential-light: mat.get-color-from-palette(mat.$red-palette, 800);
+$stored-credential-dark: mat.get-color-from-palette(mat.$red-palette, 200);
+
+.stored-credential-hint {
+  color: $stored-credential-light;
+  color: light-dark(#{$stored-credential-light}, #{$stored-credential-dark});
+}
+
 .full-width {
   width: 100%;
 }

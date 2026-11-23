@@ -18,5 +18,5 @@ interface IntervalsAthleteApiClient {
     fun getAthlete(
         @PathVariable("athleteId") athleteId: String,
         @RequestHeader(HttpHeaders.AUTHORIZATION) authorization: String
-    ): Map<String, Any>
+    ): Map<String, Any>?
 }

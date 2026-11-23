@@ -1,0 +1,32 @@
+databaseChangeLog:
+  - changeSet:
+      id: trainingpeaks-link-repair
+      author: tp2intervals
+      changes:
+        - sql:
+            sql: |
+              CREATE TABLE trainingpeaks_link_repair (
+                id INTEGER PRIMARY KEY,
+                source_account_id TEXT NOT NULL,
+                destination_athlete_id TEXT NOT NULL,
+                source_workout_id TEXT NOT NULL,
+                old_event_id INTEGER NOT NULL CHECK (old_event_id > 0),
+                new_event_id INTEGER CHECK (new_event_id > 0),
+                action TEXT NOT NULL CHECK (action IN ('RELINK', 'RECREATE')),
+                baseline_id INTEGER NOT NULL REFERENCES trainingpeaks_legacy_baseline(id),
+                reviewed_revision TEXT NOT NULL,
+                started_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                confirmed_at TEXT
+              );
+              CREATE INDEX trainingpeaks_link_repair_key ON trainingpeaks_link_repair
+                (source_account_id, destination_athlete_id, source_workout_id);
+        - sql:
+            splitStatements: false
+            sql: |
+              CREATE TRIGGER trainingpeaks_link_repair_confirm AFTER UPDATE ON trainingpeaks_sync_ledger
+              WHEN OLD.state = 'PENDING' AND NEW.state = 'CONFIRMED'
+              BEGIN
+                UPDATE trainingpeaks_link_repair SET new_event_id = NEW.remote_event_id, confirmed_at = CURRENT_TIMESTAMP
+                WHERE source_account_id = NEW.source_account_id AND destination_athlete_id = NEW.destination_athlete_id
+                  AND source_workout_id = NEW.source_workout_id AND confirmed_at IS NULL;
+              END

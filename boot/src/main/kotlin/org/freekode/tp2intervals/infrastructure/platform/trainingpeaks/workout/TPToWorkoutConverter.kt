@@ -59,8 +59,8 @@ class TPToWorkoutConverter {
                 throw IllegalArgumentException("There is no structure")
             }
             FromTPStructureConverter.toWorkoutStructure(tpWorkout.structure)
-        } catch (e: IllegalArgumentException) {
-            log.warn("Error during TP Workout conversion, skipping, id: ${tpWorkout.id}, name: ${tpWorkout.title}, error - ${e.message}'")
+        } catch (_: IllegalArgumentException) {
+            log.debug("TrainingPeaks workout structure unavailable: WORKOUT_STRUCTURE_UNAVAILABLE")
             null
         }
 

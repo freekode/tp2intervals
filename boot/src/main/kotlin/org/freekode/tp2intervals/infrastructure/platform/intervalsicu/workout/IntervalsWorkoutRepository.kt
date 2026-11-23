@@ -1,5 +1,6 @@
 package org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout
 
+import feign.FeignException
 import java.time.LocalDate
 import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.Platform
@@ -10,7 +11,11 @@ import org.freekode.tp2intervals.domain.workout.WorkoutRepository
 import org.freekode.tp2intervals.infrastructure.PlatformException
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsApiClient
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfigurationRepository
+import org.freekode.tp2intervals.infrastructure.ProviderReadFailure
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Repository
 
 @Repository
@@ -31,6 +36,48 @@ class IntervalsWorkoutRepository(
             intervalsApiClient.createEvent(intervalsConfigurationRepository.getConfiguration().athleteId, request)
         }
     }
+
+    fun resolveCalendarIdentity() = intervalsConfigurationRepository.resolveCalendarIdentity()
+
+    fun createScopedCalendarEvent(
+        identity: IntervalsConfigurationRepository.CalendarIdentity, sourceAccountId: String, workout: Workout,
+    ): Long = confirmedId(intervalsApiClient.createScheduledEvent(
+        identity.athleteId, identity.authorization, ToIntervalsWorkoutConverter().createEventRequestDTO(workout, sourceAccountId)
+    ))
+
+    private fun confirmedId(response: ResponseEntity<CreatedIntervalsEvent>): Long {
+        return response.body?.id?.takeIf { response.statusCode.is2xxSuccessful && it > 0 }
+            ?: throw PlatformException(Platform.INTERVALS, "Calendar create did not confirm an event ID")
+    }
+
+    fun getCalendarEvent(athleteId: String, eventId: Long): IntervalsCalendarEventDTO? {
+        val response = try {
+            intervalsApiClient.getEvent(athleteId, eventId)
+        } catch (error: FeignException) {
+            if (error.status() == HttpStatus.NOT_FOUND.value()) return null
+            throw error
+        }
+        if (response.statusCode == HttpStatus.NOT_FOUND) return null
+        return response.body?.takeIf { response.statusCode == HttpStatus.OK && it.isValid() && it.id == eventId }
+            ?: throw calendarReadFailure(response.statusCode.value())
+    }
+
+    fun getCalendarSnapshot(athleteId: String, startDate: LocalDate, endDate: LocalDate): List<IntervalsCalendarEventDTO> {
+        val response = intervalsApiClient.getCalendarSnapshot(athleteId, startDate.toString(), endDate.toString())
+        val events = response.body
+        if (response.statusCode != HttpStatus.OK || response.headers.containsKey(HttpHeaders.CONTENT_RANGE) || events == null) {
+            throw calendarReadFailure(response.statusCode.value())
+        }
+        return events.map { event ->
+            event?.takeIf { it.isValid() } ?: throw calendarReadFailure(response.statusCode.value())
+        }
+    }
+
+    private fun calendarReadFailure(status: Int) = ProviderReadFailure(
+        Platform.INTERVALS,
+        if (status in 200..299) ProviderReadFailure.Kind.RESPONSE else ProviderReadFailure.Kind.HTTP,
+        status,
+    )
 
     override fun saveWorkoutsToLibrary(libraryContainer: LibraryContainer, workouts: List<Workout>) {
         val toIntervalsWorkoutConverter = ToIntervalsWorkoutConverter()

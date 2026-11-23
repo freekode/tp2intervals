@@ -24,9 +24,9 @@ class CatchFeignExceptionAspect {
         try {
             return joinPoint.proceed()
         } catch (e: FeignException) {
-            log.warn("HTTP request exception", e)
+            log.warn("Provider request failed: {} (status {})", platform, e.status())
 
-            var message = e.message ?: "Unknown error"
+            var message = "Provider request failed"
             if (e.status() == HttpStatus.FORBIDDEN.value() || e.status() == HttpStatus.UNAUTHORIZED.value()) {
                 message = "Access denied"
             }

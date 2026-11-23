@@ -13,6 +13,10 @@ on:
         required: false
         type: boolean
         default: true
+      provider-free:
+        description: Build and run synthetic tests without provider credentials or live integration steps
+        type: boolean
+        default: false
 
 jobs:
   build-jar:
@@ -41,7 +45,13 @@ jobs:
       - name: Copy UI
         run: cp -r ui/dist/ui/browser boot/src/main/resources/static
 
+      - name: Build and run synthetic backend tests
+        if: ${{ inputs.provider-free }}
+        working-directory: boot
+        run: ./gradlew bootJar test --tests '*Test'
+
       - name: Build boot
+        if: ${{ !inputs.provider-free }}
         env:
           APP_DEFAULT_CONFIG_INTERVALS_API_KEY: ${{ secrets.INTERVALS_API_KEY }}
           APP_DEFAULT_CONFIG_INTERVALS_ATHLETE_ID: ${{ secrets.INTERVALS_ATHLETE_ID }}
@@ -53,6 +63,7 @@ jobs:
           ./gradlew build
 
       - name: Cypress tests
+        if: ${{ !inputs.provider-free }}
         run: |
           npm ci --prefix cypress
           java -jar boot/build/libs/tp2intervals.jar \

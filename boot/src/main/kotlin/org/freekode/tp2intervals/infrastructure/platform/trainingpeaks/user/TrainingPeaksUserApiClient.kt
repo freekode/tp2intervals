@@ -13,5 +13,5 @@ import org.springframework.web.bind.annotation.GetMapping
 )
 interface TrainingPeaksUserApiClient {
     @GetMapping("/users/v3/user")
-    fun getUser(): TrainingPeaksUserDTO
+    fun getUser(): TrainingPeaksUserDTO?
 }

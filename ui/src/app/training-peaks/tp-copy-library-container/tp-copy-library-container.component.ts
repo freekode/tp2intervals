@@ -7,7 +7,7 @@ import {MatInputModule} from "@angular/material/input";
 import {MatProgressBarModule} from "@angular/material/progress-bar";
 import {AsyncPipe, NgIf} from "@angular/common";
 import {MatDatepickerModule} from "@angular/material/datepicker";
-import {MatNativeDateModule} from "@angular/material/core";
+import {IsoDateModule} from "utils/iso-date.module";
 import {MatSnackBarModule} from "@angular/material/snack-bar";
 import {MatSelectModule} from "@angular/material/select";
 import {MatCheckboxModule} from "@angular/material/checkbox";
@@ -37,7 +37,7 @@ import {StepModifier} from "app/training-peaks/tp-copy-library-container/step-mo
     MatProgressBarModule,
     NgIf,
     MatDatepickerModule,
-    MatNativeDateModule,
+    IsoDateModule,
     MatSnackBarModule,
     MatSelectModule,
     MatCheckboxModule,
@@ -48,7 +48,7 @@ import {StepModifier} from "app/training-peaks/tp-copy-library-container/step-mo
   styleUrl: './tp-copy-library-container.component.scss'
 })
 export class TpCopyLibraryContainerComponent implements OnInit {
-  private readonly mondayDate = formatDate(this.getMonday(new Date()))
+  private readonly mondayDate = this.getMonday(new Date())
 
   formGroup: FormGroup = this.formBuilder.group({
     plan: [null, Validators.required],
@@ -96,7 +96,7 @@ export class TpCopyLibraryContainerComponent implements OnInit {
     this.submitInProgress = true
     let plan = this.formGroup.value.plan
     let newName = this.formGroup.value.newName
-    let newStartDate = this.formGroup.value.newStartDate
+    const newStartDate = formatDate(this.formGroup.value.newStartDate)
     let stepModifier = this.formGroup.value.stepModifier
     let direction = Platform.DIRECTION_TP_INT
     this.planClient.copyLibraryContainer(plan, newName, newStartDate, stepModifier, direction).pipe(

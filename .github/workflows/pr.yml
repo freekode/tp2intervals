@@ -4,6 +4,9 @@ on:
   pull_request:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -11,18 +14,23 @@ concurrency:
 jobs:
   jar:
     uses: ./.github/workflows/workflow-jar.yml
-    secrets: inherit
     with:
       jar-name: tp2intervals
       jar-artifact-name: tp2intervals-jar
+      dry-run: true
+      provider-free: true
 
   docker-image:
-    needs:
-      - jar
-    uses: ./.github/workflows/workflow-docker-image-new.yml
-    with:
-      jar-name: tp2intervals
-      jar-artifact-name: tp2intervals-jar
+    needs: jar
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: tp2intervals-jar
+          path: artifact
+      - name: Build local image
+        run: docker build --build-arg JAR_PATH=artifact/tp2intervals.jar .
 
   electron:
     needs:
@@ -36,4 +44,5 @@ jobs:
     with:
       jar-name: tp2intervals
       jar-artifact-name: tp2intervals-jar
+      dry-run: true
       os: ${{ matrix.environment.os }}

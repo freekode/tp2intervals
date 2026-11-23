@@ -26,8 +26,8 @@
       <mat-label>Date Range</mat-label>
       <mat-date-range-input
         [rangePicker]="copyPlanDatePicker">
-        <input matStartDate placeholder="Start Date" formControlName="startDate">
-        <input matEndDate placeholder="End Date" formControlName="endDate">
+        <input matStartDate placeholder="YYYY-MM-DD" aria-label="Start date" formControlName="startDate">
+        <input matEndDate placeholder="YYYY-MM-DD" aria-label="End date" formControlName="endDate">
       </mat-date-range-input>
       <mat-datepicker-toggle matIconSuffix [for]="copyPlanDatePicker"></mat-datepicker-toggle>
       <mat-date-range-picker #copyPlanDatePicker></mat-date-range-picker>
@@ -40,10 +40,150 @@
   </div>
 
   <div class="row" style="margin-bottom: 10px">
-    <mat-checkbox formControlName="skipSynced">
-      Skip already synced workouts
-    </mat-checkbox>
+    @if (isTrainingPeaksForward) {
+      <p>Forward copy always checks existing links and holds. Use individual hold resolution for an eligible held workout.</p>
+    } @else {
+      <mat-checkbox formControlName="skipSynced">Skip already synced workouts</mat-checkbox>
+    }
   </div>
+
+  @if (isTrainingPeaksForward) {
+    <div class="row">
+      <mat-form-field class="form-field">
+        <mat-label>Preview access token</mat-label>
+        <input matInput #previewToken type="password" autocomplete="off">
+      </mat-form-field>
+      <button mat-stroked-button type="button" [disabled]="formGroup.invalid || inProgress"
+              (click)="preview(previewToken)">Preview sync (read-only)</button>
+    </div>
+    @if (previewError) {
+      <p role="alert">{{ previewError }}</p>
+    }
+    @if (approvalMessage) { <p role="status">{{ approvalMessage }}</p> }
+    @if (previewResult; as result) {
+      <section aria-label="Sync preview" aria-live="polite">
+        <p>TrainingPeaks source dates {{ result.selection.startDate }} through {{ result.selection.endDate }}.
+          The intervals.icu search also covers 365 days before and after that range to find historical or moved events.</p>
+        <p>TrainingPeaks {{ result.inventory.sourceAccountId }} → Intervals.icu {{ result.inventory.destinationAthleteId }}</p>
+        <p><strong>Preview-only {{ result.inventory.previewOnly ? 'on' : 'off' }}</strong> ·
+          <strong>Scheduled forward sync {{ result.inventory.activationEnabled ? 'enabled' : 'paused' }}</strong></p>
+        @if (result.inventory.approvedAt) {
+          <p>Current baseline approved {{ result.inventory.approvedAt }} UTC</p>
+        }
+        <ul class="inventory-counts" aria-label="Inventory counts">
+          @for (item of classificationCounts; track item.status) {
+            <li>{{ item.label }}: {{ item.count }}</li>
+          }
+        </ul>
+        <div class="inventory-controls">
+          <mat-form-field>
+            <mat-label>Classification</mat-label>
+            <mat-select [(ngModel)]="classification" [ngModelOptions]="{standalone: true}">
+              <mat-option value="">All classifications</mat-option>
+              @for (item of classificationCounts; track item.status) {
+                <mat-option [value]="item.status">{{ item.label }} ({{ item.count }})</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Sort inventory</mat-label>
+            <mat-select [(ngModel)]="inventorySort" [ngModelOptions]="{standalone: true}">
+              <mat-option value="date-desc">Date, newest first</mat-option>
+              <mat-option value="date-asc">Date, oldest first</mat-option>
+              <mat-option value="status">Classification</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="inventory-controls">
+          <button mat-stroked-button type="button" [disabled]="inProgress" (click)="selectVisibleLegacyLinks(true)">
+            Select visible single candidates
+          </button>
+          <button mat-stroked-button type="button" [disabled]="inProgress" (click)="selectVisibleLegacyLinks(false)">
+            Deselect visible single candidates
+          </button>
+          <span>{{ selectedLegacyLinks.size }} selected across all filters</span>
+        </div>
+        <p>Verify that each selected event belongs to this TrainingPeaks account before approving links.</p>
+        @for (group of visibleInventoryGroups; track group.title) {
+          <h3>{{ group.title }}</h3>
+          @if (!group.rows.length) { <p>No entries in this view.</p> }
+          <ul>
+            @for (workout of group.rows; track workout) {
+              <li>
+                <strong>{{ previewLabels[workout.status] }}</strong>
+                · TrainingPeaks {{ workout.sourceWorkoutId ?? 'ID unavailable' }}
+                @if (workout.sourceDate) { · {{ workout.sourceDate }} }
+                <small>({{ workout.reason }})</small>
+                @if (workout.candidates.length) {
+                  <ul>
+                    @for (candidate of workout.candidates; track candidate.eventId) {
+                      <li>Intervals.icu event {{ candidate.eventId }} · {{ candidate.date ?? 'date unavailable' }}</li>
+                    }
+                  </ul>
+                }
+                @if (workout.status === 'SINGLE_LEGACY_CANDIDATE' && workout.sourceWorkoutId) {
+                  <mat-checkbox [checked]="selectedLegacyLinks.has(workout.sourceWorkoutId)" [disabled]="inProgress"
+                    (change)="selectLegacyLink(workout.sourceWorkoutId, workout.candidates[0].eventId, $event.checked)">
+                    Link this event after verifying its source account
+                  </mat-checkbox>
+                }
+                @if (workout.canResolveUnmatchedHold && !result.inventory.previewOnly && !result.inventory.activationEnabled) {
+                  <div>
+                    <mat-checkbox [checked]="acknowledgedHold === workout.sourceWorkoutId" [disabled]="inProgress"
+                      (change)="acknowledgedHold = $event.checked ? workout.sourceWorkoutId : undefined">
+                      I checked intervals.icu and confirmed this workout has never been synchronized.
+                      Calendar listings can omit events.
+                    </mat-checkbox>
+                    <button mat-stroked-button type="button"
+                      [disabled]="inProgress || acknowledgedHold !== workout.sourceWorkoutId"
+                      (click)="resolveHold(workout, previewToken)">Resolve unsynchronized hold…</button>
+                  </div>
+                }
+                @if (workout.repairBlockedReason) {
+                  <p>Repair blocked: a replacement or its ownership could not be verified.</p>
+                }
+                @if (workout.missingLinkRepair; as repair) {
+                  @if (repair.replacement; as replacement) {
+                    <p>Missing event {{ repair.oldEventId }} · verified replacement {{ replacement.eventId }}.</p>
+                  } @else {
+                    <p>No replacement for event {{ repair.oldEventId }} was observed. Calendar listings can omit events.</p>
+                  }
+                  <button mat-stroked-button type="button"
+                    [disabled]="inProgress || result.inventory.previewOnly || result.inventory.activationEnabled"
+                    (click)="repairLink(workout, previewToken)">Repair missing link…</button>
+                }
+              </li>
+            }
+          </ul>
+        }
+        <p>Unlinked and inconclusive entries are held to prevent duplicates. An unmatched hold can be resolved individually
+          after approval while its source workout is still visible. Pending writes and ambiguous links require investigation.</p>
+        @if (result.inventory.previewOnly || result.inventory.activationEnabled) {
+          <p>Approval, hold resolution and link repair require preview-only mode off and scheduled forward sync paused.</p>
+        }
+        <mat-checkbox [checked]="acknowledgeInconclusive" (change)="acknowledgeInconclusive = $event.checked">
+          I reviewed this inventory and understand that no match observed is not proof of absence.
+        </mat-checkbox>
+        <p>Unlinked legacy candidates and inconclusive workouts in this review will be held. Approval changes only local reconciliation records.</p>
+        <button mat-stroked-button type="button"
+          [disabled]="inProgress || !acknowledgeInconclusive || result.inventory.previewOnly || result.inventory.activationEnabled"
+          (click)="approveBaseline(previewToken)">Approve legacy baseline</button>
+      </section>
+    }
+    @if (syncReview.length) {
+      <section aria-label="Workouts requiring review" role="status">
+        <p>Workouts requiring review from the last copy</p>
+        <ul>
+          @for (item of syncReview; track $index) {
+            <li>
+              TrainingPeaks {{ item.sourceWorkoutId }} · {{ item.reason }}
+              @if (item.remoteEventId) { · Intervals.icu event {{ item.remoteEventId }} }
+            </li>
+          }
+        </ul>
+      </section>
+    }
+  }
 
   <div class="action-button-section">
     <button
@@ -54,7 +194,7 @@
       [disabled]="formGroup.invalid || inProgress"
       (click)="submit()"
     >
-      Confirm
+      Synchronize workouts…
     </button>
     <button
       mat-raised-button
@@ -64,7 +204,7 @@
       [disabled]="formGroup.invalid || inProgress"
       (click)="today()"
     >
-      Only today
+      Synchronize today…
     </button>
     <button
       mat-raised-button
@@ -74,9 +214,11 @@
       [disabled]="formGroup.invalid || inProgress"
       (click)="tomorrow()"
     >
-      Only tomorrow
+      Synchronize tomorrow…
     </button>
   </div>
+
+  @if (scheduleError) { <p role="alert">{{ scheduleError }}</p> }
 
   <div *ngIf="scheduleRequests.length > 0" style="margin-bottom: 10px">
     <mat-list>
@@ -90,12 +232,20 @@
             mat-raised-button
             color="primary"
             type="button"
+            [attr.aria-label]="'Delete schedule ' + request.id"
+            [disabled]="inProgress || scheduleSettings?.previewOnly"
             (click)="deleteJob(request.id)">
             <i class="bi bi-trash"></i>
           </button>
-          Types: {{ mapTrainingTypesToTitles(request.request.types) }},
-          Skip synced: {{ request.request.skipSynced }},
-          {{ Platform.getTitle(request.request.sourcePlatform) }} -> {{ Platform.getTitle(request.request.targetPlatform) }}
+          @if (request.request; as job) {
+            {{ mapTrainingTypesToTitles(job.types) }} ·
+            {{ Platform.getTitle(job.sourcePlatform) }} → {{ Platform.getTitle(job.targetPlatform) }} · Skip synced: {{ job.skipSynced }} · {{ scheduleDescription(job) }}
+          } @else {
+            Job {{ request.id }}
+          }
+          @if (request.blockedReason) {
+            <span>{{ scheduleWarnings[request.blockedReason] }}</span>
+          }
         </mat-list-item>
       }
     </mat-list>
@@ -106,12 +256,22 @@
       mat-raised-button
       color="primary"
       type="button"
-      matTooltip="Scheduled job runs every 20 minutes and will sync workouts for today. Jobs won't persist after app restart"
-      [disabled]="formGroup.invalid || inProgress"
+      [disabled]="formGroup.invalid || inProgress || !scheduleSettings || scheduleSettings.previewOnly"
       (click)="scheduleToday()"
     >
       Schedule for today
     </button>
+    @if (isTrainingPeaksForward) {
+      <button mat-raised-button color="primary" type="button"
+        [disabled]="formGroup.invalid || inProgress || !scheduleSettings || scheduleSettings.previewOnly"
+        (click)="scheduleToday('TODAY_AND_TOMORROW')">Schedule today + tomorrow</button>
+      @if (scheduleSettings; as settings) {
+        <p>Scheduled forward sync {{ settings.forwardEnabled ? 'enabled' : 'paused' }} · every {{ settings.intervalMinutes }}
+          minutes · {{ settings.timezone }}. Saved requests roll forward each day and do not run on save.
+          @if (settings.previewOnly) { Preview-only blocks scheduled writes. }
+        </p>
+      }
+    }
     <i class="bi bi-stars beta-icon"
        matTooltip="Beta feature"
        matTooltipPosition="right"></i>

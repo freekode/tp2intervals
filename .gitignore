@@ -4,3 +4,26 @@ node_modules
 
 .idea
 .vscode
+
+# Local configuration, credentials, SQLite state and release artifacts.
+.env
+.env.*
+!.env.example
+*.local.env
+*.key
+*.pem
+*.p12
+*.token
+*.tokens
+secrets/
+tokens/
+*.sqlite*
+*.db
+*.db-*
+*.bak
+*.backup
+*.har
+*.tar
+*.tar.gz
+/backups/
+/data/

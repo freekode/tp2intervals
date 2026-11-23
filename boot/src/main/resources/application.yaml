@@ -1,6 +1,11 @@
 app:
+  preview-only: ${TP2INTERVALS_PREVIEW_ONLY:false}
   training-peaks:
     api-url: https://tpapi.trainingpeaks.com
+    preflight-token: ${TP2INTERVALS_PREFLIGHT_TOKEN:}
+    schedule-interval-minutes: ${TP2INTERVALS_SCHEDULE_INTERVAL_MINUTES:60}
+    schedule-timezone: ${TP2INTERVALS_SCHEDULE_TIMEZONE:}
+    scheduled-forward-sync-enabled: ${TP2INTERVALS_ENABLE_SCHEDULED_FORWARD_SYNC:false}
   intervals:
     api-url: https://intervals.icu
   trainer-road:
@@ -14,7 +19,7 @@ spring:
       client:
         config:
           default:
-            loggerLevel: full
+            loggerLevel: none
   jackson:
     default-property-inclusion: non_null
     serialization:
@@ -30,6 +35,11 @@ spring:
       config: classpath:ehcache.xml
 
 server:
+  forward-headers-strategy: none
+  tomcat:
+    remoteip:
+      # Opt-in native forwarding must name the trusted immediate proxy.
+      internal-proxies: '(?!)'
   error:
     include-message: always
 

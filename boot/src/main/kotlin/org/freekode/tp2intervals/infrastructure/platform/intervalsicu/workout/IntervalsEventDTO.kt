@@ -22,3 +22,5 @@ class IntervalsEventDTO(
 
     fun isWorkout() = category == "WORKOUT"
 }
+
+class CreatedIntervalsEvent(val id: Long)
