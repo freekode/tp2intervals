@@ -11,7 +11,7 @@
   </div>
 
   <div *ngIf="isReconciliationSupported(direction.value)" class="sync-options">
-    <p>TrainerRoad's next 4 weeks are a live AI simulation and will change. Choose how strictly Intervals should follow the current version.</p>
+    <p>TrainerRoad's next 4 weeks are a live AI simulation and may change. Choose how strictly Intervals should follow the current version.</p>
     <p id="sync-mode-label">Sync behaviour</p>
     <mat-radio-group formControlName="trainerRoadSyncMode" aria-labelledby="sync-mode-label" class="sync-mode-options">
       <mat-radio-button value="ADD_MISSING" class="sync-mode-option"
@@ -35,16 +35,16 @@
       <p class="sync-warning" *ngIf="isMirrorBlocked()">Allow removal to use Mirror mode.</p>
     </div>
     <mat-form-field class="form-field">
-      <mat-label>Horizon</mat-label>
+      <mat-label>Sync range</mat-label>
       <mat-select formControlName="horizon" (selectionChange)="applyHorizon()">
-        <mat-option value="7">Next 7 days (including today)</mat-option>
-        <mat-option value="14">Next 14 days (including today)</mat-option>
-        <mat-option value="28">Next 4 weeks (including today)</mat-option>
+        <mat-option value="2">Next 2 days (recommended)</mat-option>
+        <mat-option value="7">Next 7 days (may change)</mat-option>
+        <mat-option value="28">Next 4 weeks (simulation may change)</mat-option>
         <mat-option value="custom">Custom range</mat-option>
       </mat-select>
     </mat-form-field>
     <p class="sync-hint" *ngIf="formGroup.value.horizon !== 'custom'">
-      {{formGroup.value.startDate | date:'mediumDate'}} - {{formGroup.value.endDate | date:'mediumDate'}}
+      Includes today: {{formGroup.value.startDate | date:'mediumDate'}} - {{formGroup.value.endDate | date:'mediumDate'}}
     </p>
   </div>
 
@@ -92,69 +92,81 @@
   </div>
 
   <div class="action-button-section">
-    <button
-      mat-raised-button
-      id="btn-confirm"
-      color="primary"
-      type="button"
-      [disabled]="formGroup.invalid || inProgress || isMirrorBlocked()"
-      (click)="submit()"
-    >
-      {{isReconciliationSupported(direction.value) ? 'Preview sync' : 'Confirm'}}
-    </button>
-    <button
-      mat-raised-button
-      color="primary"
-      type="button"
-      style="margin-left: 10px"
-      [disabled]="formGroup.invalid || inProgress || isMirrorBlocked()"
-      (click)="today()"
-    >
-      Only today
-    </button>
-    <button
-      mat-raised-button
-      color="primary"
-      type="button"
-      style="margin-left: 10px"
-      [disabled]="formGroup.invalid || inProgress || isMirrorBlocked()"
-      (click)="tomorrow()"
-    >
-      Only tomorrow
-    </button>
+    <p>One-time sync</p>
+    <p class="sync-hint" *ngIf="isReconciliationSupported(direction.value)">
+      Review the preview before confirming. Today and tomorrow use only that day, regardless of the selected range.
+    </p>
+    <div class="sync-action-buttons">
+      <button
+        mat-raised-button
+        id="btn-confirm"
+        color="primary"
+        type="button"
+        [disabled]="formGroup.invalid || inProgress || isMirrorBlocked()"
+        (click)="submit()"
+      >
+        {{isReconciliationSupported(direction.value) ? 'Preview selected range' : 'Sync selected range'}}
+      </button>
+      <button
+        mat-stroked-button
+        color="primary"
+        type="button"
+        [disabled]="formGroup.invalid || inProgress || isMirrorBlocked()"
+        (click)="today()"
+      >
+        {{isReconciliationSupported(direction.value) ? 'Preview today' : 'Sync today'}}
+      </button>
+      <button
+        mat-stroked-button
+        color="primary"
+        type="button"
+        [disabled]="formGroup.invalid || inProgress || isMirrorBlocked()"
+        (click)="tomorrow()"
+      >
+        {{isReconciliationSupported(direction.value) ? 'Preview tomorrow' : 'Sync tomorrow'}}
+      </button>
+    </div>
   </div>
 
-  <div *ngIf="scheduleRequests.length > 0" style="margin-bottom: 10px">
-    <mat-list>
-      <mat-list-item>
-        Scheduled jobs
-      </mat-list-item>
-      <mat-divider></mat-divider>
+  <div *ngIf="scheduleRequests.length > 0" class="scheduled-jobs">
+    <p>Scheduled jobs</p>
+    <mat-divider></mat-divider>
+    <ul class="scheduled-job-list">
       @for (request of scheduleRequests; track request) {
-        <mat-list-item>
+        <li class="scheduled-job">
           <button
             mat-raised-button
             color="primary"
             type="button"
+            aria-label="Delete scheduled job"
             (click)="deleteJob(request.id)">
-            <i class="bi bi-trash"></i>
+            <i class="bi bi-trash" aria-hidden="true"></i>
           </button>
-          Types: {{ mapTrainingTypesToTitles(request.request.types) }},
-          @if (request.request.trainerRoadSyncMode) {
-            Mode: {{request.request.trainerRoadSyncMode}},
-            Removal allowed: {{request.request.allowStaleRemoval}},
-          } @else if (!request.request.removeStaleTrainerRoad) {
-            Skip synced: {{ request.request.skipSynced }},
-          } @else {
-            Remove stale TrainerRoad workouts: yes,
-          }
-          @if (request.request.defaultStartTime) {
-            Start time: {{ request.request.defaultStartTime }},
-          }
-          {{ Platform.getTitle(request.request.sourcePlatform) }} -> {{ Platform.getTitle(request.request.targetPlatform) }}
-        </mat-list-item>
+          <div class="scheduled-job-details">
+            <div>{{ Platform.getTitle(request.request.sourcePlatform) }} -> {{ Platform.getTitle(request.request.targetPlatform) }}</div>
+            <div>Date range: Today only (current day at each run)</div>
+            <div>Frequency: Every 3 minutes</div>
+            <div>Workout types: {{ mapTrainingTypesToTitles(request.request.types).join(', ') }}</div>
+            @if (request.request.trainerRoadSyncMode === 'ADD_MISSING') {
+              <div>Sync behaviour: Skip already synced workouts</div>
+            } @else if (request.request.trainerRoadSyncMode === 'MIRROR') {
+              <div>Sync behaviour: Mirror current TR simulation</div>
+              <div>Stale workout removal: {{ request.request.allowStaleRemoval ? 'Allowed' : 'Not allowed' }}</div>
+            } @else if (request.request.trainerRoadSyncMode) {
+              <div>Sync behaviour: {{ request.request.trainerRoadSyncMode }}</div>
+              <div>Stale workout removal: {{ request.request.allowStaleRemoval ? 'Allowed' : 'Not allowed' }}</div>
+            } @else if (!request.request.removeStaleTrainerRoad) {
+              <div>Skip already synced workouts: {{ request.request.skipSynced ? 'Yes' : 'No' }}</div>
+            } @else {
+              <div>Remove stale TrainerRoad workouts: Yes</div>
+            }
+            @if (request.request.defaultStartTime) {
+              <div>Start time: {{ request.request.defaultStartTime }}</div>
+            }
+          </div>
+        </li>
       }
-    </mat-list>
+    </ul>
   </div>
 
   <div class="action-button-section">

@@ -14,7 +14,6 @@ import {MatDialog} from "@angular/material/dialog";
 import {Platform} from "infrastructure/platform";
 import {formatDate} from "utils/date-formatter";
 import {MatDividerModule} from "@angular/material/divider";
-import {MatListModule} from "@angular/material/list";
 import {DatePipe, NgIf} from "@angular/common";
 import {ConfigurationClient} from "infrastructure/client/configuration.client";
 import {filter, finalize, switchMap, tap} from "rxjs";
@@ -41,7 +40,6 @@ import {SyncPreviewDialogComponent} from "./sync-preview-dialog.component";
     MatCheckboxModule,
     MatRadioModule,
     MatDividerModule,
-    MatListModule,
     NgIf,
     DatePipe,
     MatTooltipModule,
@@ -182,7 +180,7 @@ export class CopyCalendarToCalendarComponent implements OnInit {
       skipSynced: [true, Validators.required],
       trainerRoadSyncMode: ['ADD_MISSING', Validators.required],
       allowStaleRemoval: [false],
-      horizon: ['7', Validators.required],
+      horizon: ['2', Validators.required],
       defaultStartTime: [null, Validators.pattern('^([01][0-9]|2[0-3]):[0-5][0-9]$')],
     })
   }

@@ -78,7 +78,8 @@ description, it remains protected and is not copied again. A conflicting ID stop
 Mirror can remove stale tracked events on
 empty days and for unselected workout types; other events are untouched. The TrainerRoad timeline
 must cover the selected range, and reconciliation stops if any planned activity in the range has
-no workout ID because it cannot be identified safely. Choose 7, 14 or 28 days (including today), or a custom range.
+no workout ID because it cannot be identified safely. Choose 2 days (the recommended default), 7 days,
+4 weeks (all including today), or a custom range. TrainerRoad's simulated plans may change.
 Manual sync previews the affected workouts; if that list changes before confirmation, sync stops.
 Scheduled jobs use the selected behaviour and removal permission, but always run for today only.
 Overlapping TrainerRoad syncs are serialized within one application instance; do not run multiple

@@ -46,3 +46,31 @@
 .sync-warning {
   color: #a33;
 }
+
+.sync-action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.scheduled-jobs {
+  margin-bottom: 10px;
+}
+
+.scheduled-job-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.scheduled-job {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+}
+
+.scheduled-job-details {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
