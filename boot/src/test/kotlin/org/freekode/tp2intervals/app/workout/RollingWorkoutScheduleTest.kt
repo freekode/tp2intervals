@@ -22,9 +22,12 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.*
 import org.slf4j.LoggerFactory
+import java.time.Clock
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
+import java.time.ZoneOffset
+import java.util.TimeZone
 
 class RollingWorkoutScheduleTest {
     private val mapper = ObjectMapperFactory.objectMapper()
@@ -38,12 +41,18 @@ class RollingWorkoutScheduleTest {
     @Test
     fun `operational settings validate cadence and IANA zone`() {
         assertEquals(60L, ForwardScheduleSettings().intervalMinutes)
-        assertEquals("Europe/Amsterdam", ForwardScheduleSettings().timezone)
+        val original = TimeZone.getDefault()
+        try {
+            TimeZone.setDefault(TimeZone.getTimeZone("America/Los_Angeles"))
+            assertEquals("America/Los_Angeles", ForwardScheduleSettings().timezone)
+        } finally {
+            TimeZone.setDefault(original)
+        }
         assertEquals(30L, ForwardScheduleSettings(30).intervalMinutes)
         for (minutes in listOf(0L, 4L, 1441L)) assertThrows(IllegalArgumentException::class.java) {
             ForwardScheduleSettings(minutes)
         }
-        for (zone in listOf("", "+02:00", "Amsterdam")) assertThrows(IllegalArgumentException::class.java) {
+        for (zone in listOf("+02:00", "Amsterdam")) assertThrows(IllegalArgumentException::class.java) {
             ForwardScheduleSettings(timezone = zone)
         }
     }
@@ -88,7 +97,10 @@ class RollingWorkoutScheduleTest {
             clearInvocations(service)
             rows(rolling)
             val expected = LocalDate.parse(date)
-            job().runDue(Instant.parse(instant))
+            val clock = Clock.fixed(Instant.parse(instant), ZoneOffset.UTC)
+            val calendarSettings = ForwardScheduleSettings(20, "Europe/Amsterdam", clock)
+            assertEquals(expected, calendarSettings.today())
+            WorkoutScheduledJob(service, repo, mapper, true, PreviewOnly(false), calendarSettings).job()
             verify(service).copyScheduledWorkouts(rolling.forToday(expected), expected)
         }
     }

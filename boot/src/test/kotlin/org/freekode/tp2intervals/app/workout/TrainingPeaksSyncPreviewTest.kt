@@ -32,10 +32,8 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
-import org.mockito.Mockito.CALLS_REAL_METHODS
 import org.mockito.Mockito.doThrow
 import org.mockito.Mockito.mock
-import org.mockito.Mockito.mockStatic
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoInteractions
 import org.mockito.Mockito.verifyNoMoreInteractions
@@ -51,7 +49,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.nio.file.Files
 import java.nio.file.Path
+import java.time.Clock
 import java.time.LocalDate
+import java.time.ZoneOffset
+import org.freekode.tp2intervals.app.workout.schedule.ForwardScheduleSettings
 
 class TrainingPeaksSyncPreviewTest {
     @TempDir
@@ -95,7 +96,7 @@ class TrainingPeaksSyncPreviewTest {
         }
         `when`(intervals.getEvent(DESTINATION, 106)).thenReturn(ResponseEntity.notFound().build())
 
-        val reply = fixedToday {
+        val reply = run {
             mvc.perform(request("Bearer preview-test-token"))
                 .andExpect(status().isOk)
                 .andExpect(header().string("Cache-Control", "no-store"))
@@ -138,7 +139,7 @@ class TrainingPeaksSyncPreviewTest {
     @Test
     fun `Basic account range outside today and tomorrow is rejected before calendar requests`() {
         val mvc = mvc()
-        fixedToday {
+        run {
             for ((start, end) in listOf(today.minusDays(1) to today, tomorrow to tomorrow.plusDays(1))) {
                 mvc.perform(request("Bearer preview-test-token", start, end))
                     .andExpect(status().isBadRequest)
@@ -219,7 +220,7 @@ class TrainingPeaksSyncPreviewTest {
         val appender = ListAppender<ILoggingEvent>().apply { start() }
         logger.addAppender(appender)
         try {
-            val result = fixedToday {
+            val result = run {
                 mvc.perform(request("Bearer preview-test-token"))
                     .andExpect(status().`is`(expectedStatus))
                     .andExpect(status().reason(code)).andReturn()
@@ -259,7 +260,9 @@ class TrainingPeaksSyncPreviewTest {
         val mode = PreviewOnly(true)
         val controller = TrainingPeaksPreviewController(TrainingPeaksCalendarSync(
             source, io, database.newLedger(readOnly = true), baselines,
-            objectMapper, mode, false
+            objectMapper, mode, false,
+            ForwardScheduleSettings(timezone = "Europe/Amsterdam",
+                clock = Clock.fixed(today.minusDays(1).atTime(23, 30).toInstant(ZoneOffset.UTC), ZoneOffset.UTC)),
         ), token)
         return MockMvcBuilders.standaloneSetup(controller)
             .setMessageConverters(MappingJackson2HttpMessageConverter(objectMapper))
@@ -271,12 +274,6 @@ class TrainingPeaksSyncPreviewTest {
         post("/api/workout/trainingpeaks-sync/preview").contentType(MediaType.APPLICATION_JSON)
             .content("""{"startDate":"$start","endDate":"$end","types":["BIKE"]}""")
             .apply { if (authorization != null) header("Authorization", authorization) }
-
-    private fun <T> fixedToday(block: () -> T): T =
-        mockStatic(LocalDate::class.java, CALLS_REAL_METHODS).use { clock ->
-            clock.`when`<LocalDate> { LocalDate.now() }.thenReturn(today)
-            block()
-        }
 
     private fun workout(id: String, date: LocalDate = today) =
         TPWorkoutCalendarResponseDTO(date.atStartOfDay(), id, 2, "Synthetic", 1.0, null, null, null, null)

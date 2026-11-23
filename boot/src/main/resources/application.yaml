@@ -4,7 +4,7 @@ app:
     api-url: https://tpapi.trainingpeaks.com
     preflight-token: ${TP2INTERVALS_PREFLIGHT_TOKEN:}
     schedule-interval-minutes: ${TP2INTERVALS_SCHEDULE_INTERVAL_MINUTES:60}
-    schedule-timezone: ${TP2INTERVALS_SCHEDULE_TIMEZONE:Europe/Amsterdam}
+    schedule-timezone: ${TP2INTERVALS_SCHEDULE_TIMEZONE:}
     scheduled-forward-sync-enabled: ${TP2INTERVALS_ENABLE_SCHEDULED_FORWARD_SYNC:false}
   intervals:
     api-url: https://intervals.icu

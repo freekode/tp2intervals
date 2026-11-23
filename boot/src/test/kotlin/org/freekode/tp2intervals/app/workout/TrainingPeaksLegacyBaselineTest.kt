@@ -27,7 +27,11 @@ import org.junit.jupiter.api.io.TempDir
 import org.mockito.Mockito.*
 import org.springframework.web.server.ResponseStatusException
 import java.nio.file.Path
+import java.time.Clock
 import java.time.LocalDate
+import java.time.ZoneOffset
+import java.util.TimeZone
+import org.freekode.tp2intervals.app.workout.schedule.ForwardScheduleSettings
 import org.freekode.tp2intervals.rest.workout.WorkoutController
 import org.springframework.http.MediaType
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
@@ -561,6 +565,41 @@ class TrainingPeaksLegacyBaselineTest {
         assertEquals(0, db.jdbc().queryForObject("SELECT COUNT(*) FROM trainingpeaks_sync_ledger", Int::class.java))
     }
 
+    @Test
+    fun `review approval hold and repair share the configured date when the JVM is still on yesterday`() {
+        val original = TimeZone.getDefault()
+        try {
+            TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
+            val utc = day.minusDays(1).atTime(23, 0).toInstant(ZoneOffset.UTC)
+            val calendar = ForwardScheduleSettings(timezone = "Europe/Amsterdam", clock = Clock.fixed(utc, ZoneOffset.UTC))
+            val app = sync(settings = calendar)
+            stub(day, listOf("new"))
+            val yesterday = dates.copy(startDate = day.minusDays(1), endDate = day.minusDays(1))
+            val afterTomorrow = dates.copy(endDate = day.plusDays(2))
+            for (outside in listOf(yesterday, afterTomorrow)) {
+                assertEquals("BASIC_TODAY_OR_TOMORROW_ONLY",
+                    assertThrows(InvalidTrainingPeaksPreview::class.java) { app.preview(outside) }.reason)
+            }
+            listCalendar(day, emptyList())
+            val revision = app.preview(dates).revision
+            assertEquals(1, app.approve(TrainingPeaksBaselineApprovalRequest(dates, revision, true)).heldWorkouts)
+            prepareCreate("new")
+            val reviewed = app.preview(dates)
+            assertTrue(reviewed.workouts.single().canResolveUnmatchedHold)
+            assertEquals(501L, app.resolveUnmatchedHold(
+                TrainingPeaksHoldResolutionRequest(dates, reviewed.revision, "new", true)
+            ).eventId)
+            val missing = app.preview(dates)
+            assertEquals(501L, missing.workouts.single().missingLinkRepair?.oldEventId)
+            doReturn(502L).`when`(destination).createScopedCalendarEvent(target, "source", workout("new", day))
+            assertEquals(502L, app.repairMissingLink(
+                TrainingPeaksLinkRepairRequest(dates, missing.revision, "new", 501, null, true, true)
+            ).eventId)
+        } finally {
+            TimeZone.setDefault(original)
+        }
+    }
+
     private fun missingLinkDecision(replacements: List<IntervalsCalendarEventDTO> = emptyList()): TrainingPeaksLinkRepairRequest {
         stub(day, listOf("new"))
         db.seedBaseline("source", target.athleteId)
@@ -594,9 +633,11 @@ class TrainingPeaksLegacyBaselineTest {
         return app.approve(TrainingPeaksBaselineApprovalRequest(dates, preview.revision, true), day)
     }
 
-    private fun sync(enabled: Boolean = false, previewOnly: Boolean = false): TrainingPeaksCalendarSync {
+    private fun sync(
+        enabled: Boolean = false, previewOnly: Boolean = false, settings: ForwardScheduleSettings = ForwardScheduleSettings(),
+    ): TrainingPeaksCalendarSync {
         val mode = PreviewOnly(previewOnly)
-        return TrainingPeaksCalendarSync(source, destination, db.newLedger(mode = mode), db.baselines(mode = mode), mapper, mode, enabled)
+        return TrainingPeaksCalendarSync(source, destination, db.newLedger(mode = mode), db.baselines(mode = mode), mapper, mode, enabled, settings)
     }
 
     private fun stub(date: LocalDate, ids: List<String>) {

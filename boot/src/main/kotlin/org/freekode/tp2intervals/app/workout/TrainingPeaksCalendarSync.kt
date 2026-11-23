@@ -5,6 +5,7 @@ import org.freekode.tp2intervals.app.workout.TrainingPeaksSyncPreview.MissingLin
 import org.freekode.tp2intervals.app.workout.TrainingPeaksSyncPreview.Reason
 import org.freekode.tp2intervals.app.workout.TrainingPeaksSyncPreview.Status
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.freekode.tp2intervals.app.workout.schedule.ForwardScheduleSettings
 import org.freekode.tp2intervals.config.PreviewOnly
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfigurationRepository.CalendarIdentity
 import org.freekode.tp2intervals.infrastructure.sync.TrainingPeaksLegacyBaselineRepository
@@ -40,6 +41,7 @@ class TrainingPeaksCalendarSync(
     private val mode: PreviewOnly,
     @Value("\${app.training-peaks.scheduled-forward-sync-enabled:false}")
     private val scheduledForwardEnabled: Boolean,
+    private val forwardSettings: ForwardScheduleSettings = ForwardScheduleSettings(),
 ) {
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -175,7 +177,7 @@ class TrainingPeaksCalendarSync(
         val sourceEntries: List<TPWorkoutCalendarResponseDTO>,
     )
 
-    fun preview(request: TrainingPeaksPreviewRequest, today: LocalDate = LocalDate.now()): TrainingPeaksPreviewInventory {
+    fun preview(request: TrainingPeaksPreviewRequest, today: LocalDate = forwardSettings.today()): TrainingPeaksPreviewInventory {
         val inventory = inventory(request, today)
         return TrainingPeaksPreviewInventory(
             inventory.revision, inventory.accounts.source, inventory.accounts.destination,
@@ -183,7 +185,7 @@ class TrainingPeaksCalendarSync(
         )
     }
 
-    fun approve(request: TrainingPeaksBaselineApprovalRequest, today: LocalDate = LocalDate.now()): TrainingPeaksBaselineApproval {
+    fun approve(request: TrainingPeaksBaselineApprovalRequest, today: LocalDate = forwardSettings.today()): TrainingPeaksBaselineApproval {
         mode.requireWritable()
         if (!request.acknowledgeInconclusive) throw InvalidTrainingPeaksPreview("ACKNOWLEDGEMENT_REQUIRED")
         // Make a distinct, reviewable cutover step before starting unattended work.
@@ -221,7 +223,7 @@ class TrainingPeaksCalendarSync(
     }
 
     fun resolveUnmatchedHold(
-        request: TrainingPeaksHoldResolutionRequest, today: LocalDate = LocalDate.now(),
+        request: TrainingPeaksHoldResolutionRequest, today: LocalDate = forwardSettings.today(),
     ): TrainingPeaksHoldResolution {
         mode.requireWritable()
         if (scheduledForwardEnabled) throw InvalidTrainingPeaksPreview("PAUSE_SCHEDULING_BEFORE_RESOLUTION")
@@ -271,7 +273,7 @@ class TrainingPeaksCalendarSync(
     }
 
     fun repairMissingLink(
-        request: TrainingPeaksLinkRepairRequest, today: LocalDate = LocalDate.now(),
+        request: TrainingPeaksLinkRepairRequest, today: LocalDate = forwardSettings.today(),
     ): TrainingPeaksLinkRepair {
         mode.requireWritable()
         if (scheduledForwardEnabled) throw InvalidTrainingPeaksPreview("PAUSE_SCHEDULING_BEFORE_REPAIR")

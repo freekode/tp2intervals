@@ -74,7 +74,7 @@ class WorkoutScheduledJob(
     )
 
     @Scheduled(fixedRate = 1, timeUnit = TimeUnit.MINUTES)
-    fun job() = runDue(Instant.now())
+    fun job() = runDue(forwardSettings.now())
 
     @Synchronized
     internal fun runDue(now: Instant) {
@@ -101,7 +101,7 @@ class WorkoutScheduledJob(
                 continue
             }
             val scheduled = checkNotNull(request)
-            val today = now.atZone(if (forward) forwardSettings.zone else ZoneId.systemDefault()).toLocalDate()
+            val today = if (forward) forwardSettings.today(now) else now.atZone(ZoneId.systemDefault()).toLocalDate()
             val copy = scheduled.forToday(today)
             log.info("Scheduled sync started id={} source={} target={} start={} end={}",
                 entry.id, copy.sourcePlatform, copy.targetPlatform, copy.startDate, copy.endDate)
