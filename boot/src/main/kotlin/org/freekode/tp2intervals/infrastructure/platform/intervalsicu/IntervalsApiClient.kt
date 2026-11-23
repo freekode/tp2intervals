@@ -4,6 +4,7 @@ import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.activity.C
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.CreateEventRequestDTO
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.CreateWorkoutRequestDTO
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsEventDTO
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsEventIdentityDTO
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.EventWriteResponseDTO
 import org.springframework.cloud.openfeign.FeignClient
 import org.springframework.http.MediaType
@@ -67,6 +68,13 @@ interface IntervalsApiClient {
         @PathVariable hrRange: Float,
         @PathVariable paceRange: Float,
     ): List<IntervalsEventDTO>
+
+    @GetMapping("/api/v1/athlete/{athleteId}/events?oldest={startDate}&newest={endDate}")
+    fun getEventsForReconciliation(
+        @PathVariable athleteId: String,
+        @PathVariable startDate: String,
+        @PathVariable endDate: String,
+    ): List<IntervalsEventIdentityDTO>
 
     @GetMapping("/api/v1/athlete/{athleteId}/activities?oldest={startDate}&newest={endDate}")
     fun getActivities(

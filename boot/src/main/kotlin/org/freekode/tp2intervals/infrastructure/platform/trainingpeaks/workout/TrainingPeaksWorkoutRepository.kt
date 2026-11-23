@@ -103,9 +103,12 @@ class TrainingPeaksWorkoutRepository(
         return tpWorkoutLibraryRepository.getAllWorkouts()
             .find {
                 val data = it.details.externalData
-                (externalData.trainingPeaksId != null && externalData.trainingPeaksId == data.trainingPeaksId) ||
-                    (externalData.intervalsId != null && externalData.intervalsId == data.intervalsId) ||
-                    (externalData.trainerRoadId != null && externalData.trainerRoadId == data.trainerRoadId)
+                when {
+                    externalData.trainingPeaksId != null -> externalData.trainingPeaksId == data.trainingPeaksId
+                    externalData.intervalsId != null -> externalData.intervalsId == data.intervalsId
+                    externalData.trainerRoadId != null -> externalData.trainerRoadId == data.trainerRoadId
+                    else -> false
+                }
             }!!
     }
 

@@ -10,6 +10,8 @@ import org.freekode.tp2intervals.domain.workout.WorkoutDetails
 import org.freekode.tp2intervals.domain.workout.WorkoutRepository
 import org.freekode.tp2intervals.infrastructure.PlatformException
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.doThrow
@@ -19,6 +21,11 @@ import org.mockito.Mockito.never
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import java.time.LocalDate
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicReference
 
 class WorkoutServiceTest {
     private val date = LocalDate.of(2026, 11, 23)
@@ -349,6 +356,55 @@ class WorkoutServiceTest {
     }
 
     @Test
+    fun `overlapping syncs recheck the calendar after the first finishes`() {
+        val sourceWorkout = workout("1")
+        val existing = AtomicReference<Workout?>(null)
+        val firstSave = CountDownLatch(1)
+        val releaseSave = CountDownLatch(1)
+        val secondStarted = CountDownLatch(1)
+        val secondRead = CountDownLatch(1)
+        val reads = AtomicInteger()
+        `when`(source.getWorkoutsForReconciliation(date, date)).thenReturn(listOf(sourceWorkout))
+        `when`(target.getWorkoutsForReconciliation(date, date)).thenAnswer {
+            if (reads.incrementAndGet() == 2) secondRead.countDown()
+            listOfNotNull(existing.get())
+        }
+        org.mockito.Mockito.doAnswer { invocation ->
+            val toSave = invocation.getArgument<List<Workout>>(0)
+            if (toSave.isNotEmpty()) {
+                firstSave.countDown()
+                check(releaseSave.await(5, TimeUnit.SECONDS))
+                existing.set(sourceWorkout.copy(details = sourceWorkout.details.copy(
+                    externalData = sourceWorkout.details.externalData.withIntervals("10"),
+                )))
+            }
+            null
+        }.`when`(target).saveTrainerRoadWorkoutsToCalendar(org.mockito.ArgumentMatchers.anyList())
+        val service = service()
+        val request = request().copy(removeStaleTrainerRoad = false, trainerRoadSyncMode = TrainerRoadSyncMode.ADD_MISSING)
+        val executor = Executors.newFixedThreadPool(2)
+        try {
+            val first = executor.submit<CopyWorkoutsResponse> { service.copyWorkoutsC2C(request) }
+            assertTrue(firstSave.await(5, TimeUnit.SECONDS))
+            val second = executor.submit<CopyWorkoutsResponse> {
+                secondStarted.countDown()
+                service.copyWorkoutsC2C(request)
+            }
+            assertTrue(secondStarted.await(5, TimeUnit.SECONDS))
+            assertFalse(secondRead.await(300, TimeUnit.MILLISECONDS))
+            releaseSave.countDown()
+
+            assertEquals(1, first.get(5, TimeUnit.SECONDS).copied)
+            val result = second.get(5, TimeUnit.SECONDS)
+            assertEquals(0, result.copied)
+            assertEquals(1, result.alreadySynced)
+        } finally {
+            releaseSave.countDown()
+            executor.shutdownNow()
+        }
+    }
+
+    @Test
     fun `legacy stale removal protects untracked events`() {
         val untracked = target(workout("1"), "10", tracked = false)
         `when`(source.getWorkoutsForReconciliation(date, date)).thenReturn(emptyList())
@@ -359,6 +415,19 @@ class WorkoutServiceTest {
         assertEquals(0, result.removed)
         assertEquals(1, result.skipped)
         verify(target, never()).deleteSyncedWorkout(untracked)
+    }
+
+    @Test
+    fun `legacy skip synced uses recovered tracked identity`() {
+        val sourceWorkout = workout("1")
+        val tracked = target(sourceWorkout, "10", "Renamed", tracked = false)
+        `when`(source.getWorkoutsFromCalendar(date, date)).thenReturn(listOf(sourceWorkout))
+        `when`(target.getWorkoutsForReconciliation(date, date)).thenReturn(listOf(tracked))
+
+        val result = service().copyWorkoutsC2C(request().copy(removeStaleTrainerRoad = false))
+
+        assertEquals(0, result.copied)
+        assertEquals(1, result.alreadySynced)
     }
 
     private fun request() = CopyFromCalendarToCalendarRequest(

@@ -27,6 +27,8 @@ class TrainerRoadSyncedEvent(
 
 @Repository
 interface TrainerRoadSyncedEventRepository : CrudRepository<TrainerRoadSyncedEvent, Long> {
+    fun findByAthleteIdAndEventId(athleteId: String, eventId: String): TrainerRoadSyncedEvent?
+
     fun findByAthleteIdAndEventIdAndTrainerRoadId(
         athleteId: String, eventId: String, trainerRoadId: String,
     ): TrainerRoadSyncedEvent?

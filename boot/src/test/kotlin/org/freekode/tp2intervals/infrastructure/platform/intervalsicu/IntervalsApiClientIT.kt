@@ -3,10 +3,15 @@ package org.freekode.tp2intervals.infrastructure.platform.intervalsicu
 import com.github.tomakehurst.wiremock.client.WireMock.*
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension
+import org.freekode.tp2intervals.app.workout.CopyFromCalendarToCalendarRequest
+import org.freekode.tp2intervals.app.workout.TrainerRoadSyncMode
+import org.freekode.tp2intervals.app.workout.WorkoutService
 import org.freekode.tp2intervals.domain.ExternalData
+import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutDetails
+import org.freekode.tp2intervals.domain.workout.WorkoutRepository
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.CreateEventRequestDTO
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsWorkoutRepository
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.TrainerRoadSyncedEventRepository
@@ -17,6 +22,8 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.RegisterExtension
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.`when`
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
@@ -73,7 +80,10 @@ class IntervalsApiClientIT {
             WorkoutDetails(TrainingType.BIKE, "Workout", null, null, null, ExternalData.empty().withTrainerRoad("123")),
             LocalDate.of(2026, 11, 23), null,
         )
-        val target = source.copy(details = source.details.copy(externalData = source.details.externalData.withIntervals("142")))
+        val target = source.copy(details = source.details.copy(
+            description = source.details.externalData.toSimpleString(),
+            externalData = source.details.externalData.withIntervals("142"),
+        ))
 
         workouts.saveTrainerRoadWorkoutsToCalendar(listOf(source))
 
@@ -84,6 +94,22 @@ class IntervalsApiClientIT {
         assertFalse(workouts.isTrackedTrainerRoadWorkout(target.copy(details = target.details.copy(
             externalData = ExternalData.empty().withTrainerRoad("other").withIntervals("142"),
         ))))
+
+        wireMock.stubFor(get(urlPathEqualTo(collection)).willReturn(okJson(
+            """[{"id":142,"name":"Edited","description":"No sync metadata","start_date_local":"2026-11-23T18:00:00","category":"WORKOUT","type":"Ride","workout_doc":{"steps":"unsupported"}}]""",
+        )))
+        val origin = mock(WorkoutRepository::class.java)
+        val date = requireNotNull(source.date)
+        `when`(origin.platform()).thenReturn(Platform.TRAINER_ROAD)
+        `when`(origin.getWorkoutsForReconciliation(date, date)).thenReturn(listOf(source))
+        val service = WorkoutService(listOf(origin, workouts), emptyList())
+        val preview = service.previewTrainerRoadSync(CopyFromCalendarToCalendarRequest(
+            date, date, listOf(TrainingType.BIKE), true, Platform.TRAINER_ROAD, Platform.INTERVALS,
+            trainerRoadSyncMode = TrainerRoadSyncMode.MIRROR, allowStaleRemoval = true,
+        ))
+        assertEquals(0, preview.copied)
+        assertEquals(0, preview.updated)
+        assertEquals(1, preview.skipped)
 
         workouts.deleteSyncedWorkout(target)
 

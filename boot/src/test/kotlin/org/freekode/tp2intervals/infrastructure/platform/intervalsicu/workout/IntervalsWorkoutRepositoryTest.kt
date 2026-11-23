@@ -327,6 +327,51 @@ class IntervalsWorkoutRepositoryTest {
         assertTrue(api.deletedEventIds.isEmpty())
     }
 
+    @Test
+    fun `reconciliation uses registry identity without parsing unrelated workout structures`() {
+        val api = mock(IntervalsApiClient::class.java)
+        val repository = IntervalsWorkoutRepository(api, intervalsConfigurationRepository, trackingRepository)
+        val event = objectMapper.readValue(
+            """{"id":42,"name":"Edited","description":"No sync metadata","start_date_local":"2026-11-23T18:00:00","category":"WORKOUT","type":"Ride","workout_doc":{"target":"UNKNOWN","steps":[{}]}}""",
+            IntervalsEventIdentityDTO::class.java,
+        )
+        val unrelated = objectMapper.readValue(
+            """{"id":43,"name":"Other","description":"//////////\ntrainerRoadId","start_date_local":"2026-11-23T19:00:00","category":"WORKOUT","type":"Ride","workout_doc":{"target":"UNKNOWN","steps":[{}]}}""",
+            IntervalsEventIdentityDTO::class.java,
+        )
+        val date = LocalDate.of(2026, 11, 23)
+        `when`(api.getEventsForReconciliation("athleteId", date.toString(), date.toString()))
+            .thenReturn(listOf(event, unrelated))
+        val tracked = markTracked()
+        `when`(trackingRepository.findByAthleteIdAndEventId("athleteId", "42")).thenReturn(tracked)
+
+        val results = repository.getWorkoutsForReconciliation(date, date)
+
+        assertEquals(2, results.size)
+        assertEquals("123", results[0].details.externalData.trainerRoadId)
+        assertEquals(null, results[0].structure)
+        assertTrue(!repository.isTrackedTrainerRoadWorkout(results[0]))
+        assertEquals(null, results[1].details.externalData.trainerRoadId)
+    }
+
+    @Test
+    fun `reconciliation rejects conflicting metadata on a tracked event`() {
+        val api = mock(IntervalsApiClient::class.java)
+        val repository = IntervalsWorkoutRepository(api, intervalsConfigurationRepository, trackingRepository)
+        val event = objectMapper.readValue(
+            """{"id":42,"name":"Edited","description":"//////////\ntrainerRoadId=999","start_date_local":"2026-11-23T18:00:00","category":"WORKOUT","type":"Ride"}""",
+            IntervalsEventIdentityDTO::class.java,
+        )
+        val date = LocalDate.of(2026, 11, 23)
+        `when`(api.getEventsForReconciliation("athleteId", date.toString(), date.toString())).thenReturn(listOf(event))
+        val tracked = markTracked()
+        `when`(trackingRepository.findByAthleteIdAndEventId("athleteId", "42")).thenReturn(tracked)
+
+        assertThrows(org.freekode.tp2intervals.infrastructure.PlatformException::class.java) {
+            repository.getWorkoutsForReconciliation(date, date)
+        }
+    }
+
     private class RecordingClient(
         private val failDelete: Boolean = false,
         private val confirmUpdate: Boolean = true,
@@ -357,7 +402,7 @@ class IntervalsWorkoutRepositoryTest {
     }
 
     private fun trainerRoadWorkout(name: String) = Workout(
-        WorkoutDetails(TrainingType.BIKE, name, null, null, null, ExternalData.empty().withTrainerRoad("123")),
+        WorkoutDetails(TrainingType.BIKE, name, ExternalData.empty().withTrainerRoad("123").toSimpleString(), null, null, ExternalData.empty().withTrainerRoad("123")),
         LocalDate.of(2026, 11, 23),
         null,
     )

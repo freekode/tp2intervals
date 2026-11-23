@@ -102,6 +102,23 @@ class TrainingPeaksWorkoutRepositoryTest {
         assertEquals(workout, repository.getWorkoutFromLibrary(ExternalData.empty().withTrainingPeaks("123")))
     }
 
+    @Test
+    fun `library lookup prioritizes the selected TrainingPeaks ID over shared source IDs`() {
+        val library = mock(TPWorkoutLibraryRepository::class.java)
+        val first = Workout(
+            WorkoutDetails(TrainingType.BIKE, "First", null, null, null,
+                ExternalData.empty().withTrainingPeaks("1").withTrainerRoad("456")),
+            null, null,
+        )
+        val selected = first.copy(details = first.details.copy(
+            name = "Selected", externalData = ExternalData.empty().withTrainingPeaks("2").withTrainerRoad("456"),
+        ))
+        `when`(library.getAllWorkouts()).thenReturn(listOf(first, selected))
+        val repository = trainingPeaksWorkoutRepository(mock(TrainingPeaksApiClient::class.java), library)
+
+        assertEquals(selected, repository.getWorkoutFromLibrary(selected.details.externalData))
+    }
+
     private fun trainingPeaksUserRepository(): TrainingPeaksUserRepository {
         val mock = mock(TrainingPeaksUserRepository::class.java)
         `when`(mock.getUser()).thenReturn(TrainingPeaksUser("123", true, false))

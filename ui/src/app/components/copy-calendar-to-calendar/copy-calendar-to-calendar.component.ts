@@ -9,6 +9,7 @@ import {MatNativeDateModule} from "@angular/material/core";
 import {MatSnackBarModule} from "@angular/material/snack-bar";
 import {MatSelectModule} from "@angular/material/select";
 import {MatCheckboxModule} from "@angular/material/checkbox";
+import {MatRadioModule} from "@angular/material/radio";
 import {MatDialog} from "@angular/material/dialog";
 import {Platform} from "infrastructure/platform";
 import {formatDate} from "utils/date-formatter";
@@ -38,6 +39,7 @@ import {SyncPreviewDialogComponent} from "./sync-preview-dialog.component";
     MatSnackBarModule,
     MatSelectModule,
     MatCheckboxModule,
+    MatRadioModule,
     MatDividerModule,
     MatListModule,
     NgIf,
@@ -104,7 +106,7 @@ export class CopyCalendarToCalendarComponent implements OnInit {
     let skipSynced = this.formGroup.value.skipSynced
     let defaultStartTime = this.formGroup.value.defaultStartTime || null
     let trainerRoadSyncMode = this.isReconciliationSupported(direction) ? this.formGroup.value.trainerRoadSyncMode : null
-    let allowStaleRemoval = !!trainerRoadSyncMode && this.formGroup.value.allowStaleRemoval
+    let allowStaleRemoval = trainerRoadSyncMode === 'MIRROR' && this.formGroup.value.allowStaleRemoval
 
     this.inProgress = true
     this.workoutClient.scheduleCopyCalendarToCalendar(startDate, endDate, trainingTypes, skipSynced, defaultStartTime, trainerRoadSyncMode, allowStaleRemoval, direction).pipe(
@@ -129,7 +131,7 @@ export class CopyCalendarToCalendarComponent implements OnInit {
     let skipSynced = this.formGroup.value.skipSynced
     let defaultStartTime = this.formGroup.value.defaultStartTime || null
     let trainerRoadSyncMode = this.isReconciliationSupported(direction) ? this.formGroup.value.trainerRoadSyncMode : null
-    let allowStaleRemoval = !!trainerRoadSyncMode && this.formGroup.value.allowStaleRemoval
+    let allowStaleRemoval = trainerRoadSyncMode === 'MIRROR' && this.formGroup.value.allowStaleRemoval
 
     this.inProgress = true
     const execute = (expectedActions = null) => this.workoutClient.copyCalendarToCalendar(startDate, endDate, trainingTypes, skipSynced, defaultStartTime, trainerRoadSyncMode, allowStaleRemoval, direction, expectedActions)

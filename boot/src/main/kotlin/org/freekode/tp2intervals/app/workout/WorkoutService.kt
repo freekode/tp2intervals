@@ -21,6 +21,7 @@ class WorkoutService(
     private val log = LoggerFactory.getLogger(this.javaClass)
     private val workoutRepositoryMap = workoutRepositories.associateBy { it.platform() }
     private val planRepositoryMap = planRepositories.associateBy { it.platform() }
+    private val trainerRoadCalendarLock = Any()
 
     fun validateCalendarRequest(request: CopyFromCalendarToCalendarRequest) {
         if (request.refreshSynced) {
@@ -42,6 +43,14 @@ class WorkoutService(
     }
 
     fun copyWorkoutsC2C(request: CopyFromCalendarToCalendarRequest): CopyWorkoutsResponse {
+        return if (request.sourcePlatform == Platform.TRAINER_ROAD && request.targetPlatform == Platform.INTERVALS) {
+            synchronized(trainerRoadCalendarLock) { executeCalendarCopy(request) }
+        } else {
+            executeCalendarCopy(request)
+        }
+    }
+
+    private fun executeCalendarCopy(request: CopyFromCalendarToCalendarRequest): CopyWorkoutsResponse {
         log.info("Received request for copy calendar to calendar: $request")
         validateCalendarRequest(request)
         if (request.trainerRoadSyncMode != null) {
@@ -116,7 +125,11 @@ class WorkoutService(
                 }
             }
         } else if (request.skipSynced) {
-            val plannedWorkouts = targetWorkoutRepository.getWorkoutsFromCalendar(request.startDate, request.endDate)
+            val plannedWorkouts = if (request.sourcePlatform == Platform.TRAINER_ROAD && request.targetPlatform == Platform.INTERVALS) {
+                targetWorkoutRepository.getWorkoutsForReconciliation(request.startDate, request.endDate)
+            } else {
+                targetWorkoutRepository.getWorkoutsFromCalendar(request.startDate, request.endDate)
+            }
             val notSyncedWorkouts = filteredWorkoutsToSync.filter { source ->
                 plannedWorkouts.none { target -> target.isSameForSync(source) }
             }

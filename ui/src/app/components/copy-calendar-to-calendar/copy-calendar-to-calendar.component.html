@@ -12,15 +12,18 @@
 
   <div *ngIf="isReconciliationSupported(direction.value)" class="sync-options">
     <p>TrainerRoad's next 4 weeks are a live AI simulation and will change. Choose how strictly Intervals should follow the current version.</p>
-    <mat-form-field class="form-field">
-      <mat-label>Sync behaviour</mat-label>
-      <mat-select formControlName="trainerRoadSyncMode">
-        <mat-option value="ADD_MISSING">Add missing only</mat-option>
-        <mat-option value="MIRROR">Mirror current TR simulation</mat-option>
-      </mat-select>
-    </mat-form-field>
-    <p class="sync-hint" *ngIf="formGroup.value.trainerRoadSyncMode === 'MIRROR'">Recommended for pure TrainerRoad users.</p>
-    <div>
+    <p id="sync-mode-label">Sync behaviour</p>
+    <mat-radio-group formControlName="trainerRoadSyncMode" aria-labelledby="sync-mode-label" class="sync-mode-options">
+      <div>
+        <mat-radio-button value="ADD_MISSING">Skip already synced workouts (default)</mat-radio-button>
+        <p class="sync-hint sync-mode-description">Add missing selected workouts; never update or remove existing events.</p>
+      </div>
+      <div>
+        <mat-radio-button value="MIRROR">Mirror current TR simulation</mat-radio-button>
+        <p class="sync-hint sync-mode-description">Update matching workouts, add missing workouts, and remove stale tracked TrainerRoad workouts with your permission.</p>
+      </div>
+    </mat-radio-group>
+    <div *ngIf="formGroup.value.trainerRoadSyncMode === 'MIRROR'">
       <mat-checkbox formControlName="allowStaleRemoval">
         Allow removal of stale TrainerRoad workouts
       </mat-checkbox>

@@ -8,6 +8,15 @@
   margin-bottom: 12px;
 }
 
+.sync-mode-options {
+  display: flex;
+  flex-direction: column;
+}
+
+.sync-mode-description {
+  margin-left: 40px;
+}
+
 .sync-hint {
   color: #555;
   font-size: 0.9em;

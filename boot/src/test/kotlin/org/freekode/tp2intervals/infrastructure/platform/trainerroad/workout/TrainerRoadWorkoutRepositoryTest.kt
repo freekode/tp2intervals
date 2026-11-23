@@ -137,6 +137,24 @@ class TrainerRoadWorkoutRepositoryTest {
     }
 
     @Test
+    fun `reconciliation rejects a planned activity without a workout ID in the selected range`() {
+        val api = mock(TrainerRoadApiClient::class.java)
+        val date = LocalDate.of(2026, 11, 23)
+        val activity = TrainerRoadCalendarTimelineDTO.PlannedActivityDTO(
+            "unknown", "Planned activity", TrainerRoadCalendarTimelineDTO.CalendarDateDTO(2026, 11, 23), null,
+        )
+        `when`(api.getCalendarTimeline(123)).thenReturn(
+            TrainerRoadCalendarTimelineDTO(listOf(activity), date.atStartOfDay(), date.plusDays(2).atStartOfDay()),
+        )
+        val service = TrainerRoadApiClientService(api, trainerRoadConfigurationRepository)
+
+        assertThrows(PlatformException::class.java) {
+            service.getWorkoutsFromCalendar(date, date, 123, true)
+        }
+        assertTrue(service.getWorkoutsFromCalendar(date.plusDays(1), date.plusDays(1), 123, true).isEmpty())
+    }
+
+    @Test
     fun `should parse complex workout`() {
         // when
         val data = ExternalData(null, null, "complex")

@@ -39,9 +39,12 @@ class TrainerRoadApiClientService(
                 timeline.start > startDate.atStartOfDay() || timeline.end < endDate.plusDays(1).atStartOfDay())) {
             throw PlatformException(Platform.TRAINER_ROAD, "TrainerRoad calendar does not cover the requested date range; no workouts were deleted")
         }
-        return timeline.plannedActivities
+        val plannedActivities = timeline.plannedActivities.filter { it.date.toLocalDate() in startDate..endDate }
+        if (requireCompleteTimeline && plannedActivities.any { it.workoutId == null }) {
+            throw PlatformException(Platform.TRAINER_ROAD, "A planned TrainerRoad activity has no workout ID; cannot safely reconcile this date range")
+        }
+        return plannedActivities
             .filter { it.workoutId != null }
-            .filter { it.date.toLocalDate() in startDate..endDate }
             .map { plannedActivity ->
                 val id = plannedActivity.workoutId!!.toString()
                 val workout = getWorkout(id, removeHtmlTags)

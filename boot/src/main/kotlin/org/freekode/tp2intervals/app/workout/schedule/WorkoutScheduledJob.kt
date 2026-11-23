@@ -35,11 +35,15 @@ class WorkoutScheduledJob(
 
     @Scheduled(fixedRate = 3, timeUnit = TimeUnit.MINUTES)
     fun job() {
-        val requests = getRequests().map { it.toSchedulable() }
+        val requests = getRequests()
         log.info("Starting processing scheduled requests. There are ${requests.size} requests")
 
         for (request in requests) {
-            handleCopyCalendarToCalendarRequest(request)
+            try {
+                handleCopyCalendarToCalendarRequest(request.toSchedulable())
+            } catch (e: Exception) {
+                log.error("Failed to process scheduled request {}", request.id, e)
+            }
         }
 
         log.info("Finished processing scheduled requests");

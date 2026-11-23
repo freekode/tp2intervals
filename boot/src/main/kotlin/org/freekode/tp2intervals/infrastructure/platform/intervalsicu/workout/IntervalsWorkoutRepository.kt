@@ -63,6 +63,8 @@ class IntervalsWorkoutRepository(
         val external = workout.details.externalData
         val eventId = external.intervalsId?.takeIf { it.isNotBlank() } ?: return null
         val trainerRoadId = external.trainerRoadId?.takeIf { it.isNotBlank() } ?: return null
+        val descriptionId = ExternalData.empty().fromSimpleString(workout.details.description.orEmpty()).trainerRoadId
+        if (descriptionId != trainerRoadId) return null
         return trainerRoadSyncedEventRepository.findByAthleteIdAndEventIdAndTrainerRoadId(
             intervalsConfigurationRepository.getConfiguration().athleteId, eventId, trainerRoadId,
         )
@@ -111,12 +113,30 @@ class IntervalsWorkoutRepository(
     }
 
     override fun getWorkoutsFromCalendar(startDate: LocalDate, endDate: LocalDate): List<Workout> =
-        getCalendarWorkouts(startDate, endDate, strict = false)
+        getCalendarWorkouts(startDate, endDate)
 
-    override fun getWorkoutsForReconciliation(startDate: LocalDate, endDate: LocalDate): List<Workout> =
-        getCalendarWorkouts(startDate, endDate, strict = true)
+    override fun getWorkoutsForReconciliation(startDate: LocalDate, endDate: LocalDate): List<Workout> {
+        val configuration = intervalsConfigurationRepository.getConfiguration()
+        return intervalsApiClient.getEventsForReconciliation(configuration.athleteId, startDate.toString(), endDate.toString())
+            .filter { it.isWorkout() }
+            .map { event ->
+                var externalData = ExternalData.empty().withIntervals(event.id.toString())
+                    .fromSimpleString(event.description.orEmpty())
+                val tracked = trainerRoadSyncedEventRepository.findByAthleteIdAndEventId(configuration.athleteId, event.id.toString())
+                if (tracked != null) {
+                    if (!externalData.trainerRoadId.isNullOrBlank() && externalData.trainerRoadId != tracked.trainerRoadId) {
+                        throw PlatformException(Platform.INTERVALS, "TrainerRoad ID on event ${event.id} conflicts with its recorded identity; no workouts were changed")
+                    }
+                    externalData = externalData.withTrainerRoad(tracked.trainerRoadId)
+                }
+                Workout(
+                    WorkoutDetails(event.mapType(), event.name, event.description, event.mapDuration(), event.icu_training_load, externalData),
+                    event.start_date_local.toLocalDate(), null, event.start_date_local.toLocalTime(),
+                )
+            }
+    }
 
-    private fun getCalendarWorkouts(startDate: LocalDate, endDate: LocalDate, strict: Boolean): List<Workout> {
+    private fun getCalendarWorkouts(startDate: LocalDate, endDate: LocalDate): List<Workout> {
         val configuration = intervalsConfigurationRepository.getConfiguration()
         val events = intervalsApiClient.getEvents(
             configuration.athleteId,
@@ -126,9 +146,7 @@ class IntervalsWorkoutRepository(
             configuration.hrRange,
             configuration.paceRange,
         )
-        return events
-            .filter { it.isWorkout() }
-            .mapNotNull { if (strict) FromIntervalsWorkoutConverter(it).toWorkout() else toWorkout(it) }
+        return events.filter { it.isWorkout() }.mapNotNull { toWorkout(it) }
     }
 
     override fun getWorkoutFromLibrary(externalData: ExternalData): Workout {

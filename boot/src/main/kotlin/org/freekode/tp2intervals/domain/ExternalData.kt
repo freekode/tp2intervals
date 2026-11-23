@@ -27,8 +27,9 @@ data class ExternalData(
 
         val fields = split[1].trim().split("\n")
         var externalData = this
-        fields.map {
-            val field = it.split("=")
+        fields.forEach {
+            val field = it.split("=", limit = 2)
+            if (field.size != 2) return@forEach
             if (field[0] == "trainingPeaksId" && externalData.trainingPeaksId == null) {
                 externalData = externalData.withTrainingPeaks(field[1])
             } else if (field[0] == "intervalsId" && externalData.intervalsId == null) {
