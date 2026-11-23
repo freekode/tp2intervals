@@ -1,172 +1,205 @@
-[![Build branches](https://github.com/freekode/tp2intervals/actions/workflows/branch.yml/badge.svg)](https://github.com/freekode/tp2intervals/actions/workflows/branch.yml)
-[![release](https://img.shields.io/github/release/freekode/tp2intervals)](https://github.com/freekode/tp2intervals/releases/latest)
-
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/E1E6W6XZP)
-
 # Third Party to Intervals.icu
 
-App to sync workouts between TrainingPeaks, TrainerRoad and Intervals.icu.
+Copy workouts and training plans between TrainingPeaks, TrainerRoad, and
+Intervals.icu. This fork of [freekode/tp2intervals](https://github.com/freekode/tp2intervals)
+adds persistent duplicate protection and reviewed recovery for planned workouts
+copied from TrainingPeaks to Intervals.icu. Original project and releases by
+[freekode](https://github.com/freekode). Licensed under [GPL-3.0](LICENSE).
+The original project's [support page](https://ko-fi.com/E1E6W6XZP) and
+[community thread](https://forum.intervals.icu/t/tp2intervals-copy-trainingpeaks-and-trainerroad-workouts-plans-to-intervals/63375)
+remain available.
 
-Runs on MacOS (DMG), Windows (EXE installer), Linux (AppImage). Alternatively there is Docker image and executable JAR.
+## Install and configure
 
-All files are available for download on [Release page](https://github.com/freekode/tp2intervals/releases/latest).
+Use Docker Engine with Docker Compose v2 and a verified image built from this
+fork. The current fork release was validated on `linux/amd64`. Use a matching
+image for your host and validate other platforms separately. The
+[upstream releases](https://github.com/freekode/tp2intervals/releases) include
+desktop distributions, an executable JAR, and upstream container builds. Those
+are separate from this fork's release artifacts.
 
-**Only for educational purposes**
+For a local Compose installation, load the verified fork image first, then:
 
-<img src="https://github.com/freekode/tp2intervals/blob/main/docs/tp.png?raw=true" width="25%"><img src="https://github.com/freekode/tp2intervals/blob/main/docs/tr.png?raw=true" width="25%">
-
-* [List of features](#list-of-features)
-* [Configuration](#configuration)
-    + [Intervals.icu](#intervalsicu)
-    + [TrainingPeaks](#trainingpeaks)
-    + [TrainerRoad](#trainerroad)
-* [Other ways to run the app](#other-ways-to-run-the-app)
-    + [Executable JAR](#executable-jar)
-    + [Docker](#docker)
-* [FAQ](#faq)
-    + [General](#general)
-    + [Info regarding scheduling for the next day with TrainingPeaks free account](#info-regarding-scheduling-for-the-next-day-with-trainingpeaks-free-account)
-* [Troubleshooting](#troubleshooting)
-    + [How to get logs](#how-to-get-logs)
-    + [How to record HAR file](#how-to-record-har-file)
-
-
-
-**New Docker image location ⚠️**
-
-**New image url: `ghcr.io/freekode/tp2intervals`**
-
-Old image url: `ghcr.io/freekode/tp2intervals/tp2intervals`
-
-**TrainerRoad Updates**
-
-I don't have access to TrainerRoad anymore. Account, which I used, cancelled subscription. I don't use the platform and it's too expensive to have it for occasional fixes.
-To fix issues I can only relay on logs and HAR files from you.
-
-## List of features
-
-**TrainingPeaks**
-
-Athlete account
-* Sync planned workouts in calendar between Intervals.icu and TrainingPeaks (for today and tomorrow with free TP account)
-* Copy whole training plan from TrainingPeaks
-* Create training plan or workout folder on Intervals.icu from planned workouts on TrainingPeaks
-
-Coach account
-* Copy whole training plan and workout library from TrainingPeaks
-
-**TrainerRoad**
-* Sync planned workouts in calendar from TrainerRoad to TrainingPeaks or Intervals.icu
-* Copy workouts from TrainerRoad library to Intervals
-* Create training plan or workout folder on Intervals.icu from planned workouts on TrainerRoad
-
-Schedule planned workouts for today or for today and tomorrow. TrainingPeaks → intervals.icu forward scheduling is paused by default and requires a reviewed baseline. When enabled, the default cadence is 60 minutes in Europe/Amsterdam. Other scheduling directions retain their three-minute cadence. See the [rolling schedule runbook](docs/trainingpeaks-sync-ledger.md#rolling-trainingpeaks-scheduling).
-To clear up scheduled jobs just restart the application.
-
-
-## Configuration
-Before using the application you need to configure access to platforms.
-Access to Intervals.icu is required, access to other platforms is optional.
-
-After you gathered all required configuration, you can click Confirm button.
-If everything is fine, you will be redirected to the home page.
-
-If your configuration is wrong. You will see an error that there is no access to particular platform.
-Check all your values and save configuration again.
-
-### Intervals.icu
-Copy API key and Athlete Id from [Settings page](https://intervals.icu/settings) in Developer Settings section on Intervals.icu web page.
-
-### TrainingPeaks
-To use TrainingPeaks copy all cookies from request `https://tpapi.trainingpeaks.com/users/v3/token` and put it on Configuration page.
-The app automatically will remove redundant parts and only require cookie will remain. Follow guide below how to do that.
-
-The app requires `Production_tpAuth` cookie (key and value, smth like `Production_tpAuth=very_long_string`).
-Another guide is [available here](https://forum.intervals.icu/t/implemented-push-workout-to-wahoo/783/87)
-
-<img src="https://github.com/freekode/tp2intervals/blob/main/docs/tp_guide.png?raw=true">
-
-### TrainerRoad
-Configuration is very similar to TrainingPeaks. Copy all cookies from request `https://tpapi.trainingpeaks.com/users/v3/token` and put it on Configuration page.
-The app automatically will remove redundant parts and only require cookie will remain. Follow guide below how to do that.
-
-Cookie `SharedTrainerRoadAuth` (key and value, smth like `SharedTrainerRoadAuth=very_long_string`) is required for the app.
-
-<img src="https://github.com/freekode/tp2intervals/blob/main/docs/tr_guide.png?raw=true">
-
-Be aware, Firefox cuts long strings in Dev Tool window. Copy cookie value with right click -> Copy Value.
-
-## Other ways to run the app
-### Executable JAR
-The project has executable jar with web UI. It requires JDK 21. To run jar:
-```shell
-java -jar tp2intervals.jar
+```sh
+umask 077
+cp .env.example .env
+mkdir -p data
 ```
 
-By default, UI is available on `http://localhost:8080`. To change port start jar with parameter:
-```shell
-java -Dserver.port=9090 -jar tp2intervals.jar
+Set the loaded image reference in `.env`. Set a private preview bearer token if
+you intend to run preview or review operations. For example, generate a secret
+with `openssl rand -hex 32` and store it privately. Validate the configuration
+without displaying resolved secrets, then start the service.
+
+```sh
+docker compose -f docker-compose.yaml config --quiet
+docker compose -f docker-compose.yaml up -d
 ```
 
-### Docker
-Docker image also built for every release
+Open `http://127.0.0.1:8080`. The example binds the host port to loopback and
+persists SQLite under `./data`. Use the [optional proxy overlay](docker-compose.proxy.yaml)
+with Compose 2.24.4 or newer to remove the host port and attach to an existing
+private proxy network. Verify the app's address and actual proxy peer before
+using the overlay. The app itself listens on port 8080.
 
-```yaml
-services:
-  app:
-    image: ghcr.io/freekode/tp2intervals:latest
-    container_name: tp2intervals
-    volumes:
-      - ./tp2intervals.sqlite:/tp2intervals.sqlite
-    ports:
-      - '8080:8080'
-```
+For a standalone executable JAR with the bundled web UI, use JDK 21:
+`java -jar tp2intervals.jar`. It defaults to port 8080 and
+`jdbc:sqlite:tp2intervals.sqlite`. To build from source, use JDK 21, Node.js and
+the checked-in Gradle wrapper and npm lockfile. Build the UI with
+`npm ci --prefix ui` and `npm run build --prefix ui`, copy the contents of
+`ui/dist/ui/browser` into `boot/src/main/resources/static` in a build directory,
+then run `(cd boot && ./gradlew bootJar)`. The repository Dockerfile packages
+the resulting JAR. See [AGENTS.md](AGENTS.md) for test commands and restrictions
+on live integration tests.
 
-## FAQ
+### Provider credentials
 
-### General
-* Ramp steps in TrainerRoad are not supported
-* **MacOS arm64** Error: `"tp2intervals" is damaged and can’t be opened.`
-  Run command in terminal `xattr -d com.apple.quarantine /Applications/tp2intervals.app` and then open app again
-* **MacOS** app is not signed. Usually you need to open it twice
-* **Windows** The app will ask to access local network and Internet, you need to allow it. After all it makes HTTP requests
-* More info you can find on the forum https://forum.intervals.icu/t/tp2intervals-copy-trainingpeaks-and-trainerroad-workouts-plans-to-intervals/63375
+Enter credentials in **Configuration** on a trusted connection. Set writable
+mode to save configuration, then return to preview-only if desired. Saved
+credentials are shown as present or missing, with blank password inputs.
+Leaving a stored credential input blank retains its value.
 
-### Info regarding scheduling for the next day with TrainingPeaks free account
-Officially if you have a free TP account, you can't plan workouts for future dates, but practically you can.
-You can plan a workout for the next day relative to TrainingPeaks server local time. The server is in UTC-6 time zone. Let's check some examples:
+- **Intervals.icu:** enter the athlete ID and API key from
+  [Developer Settings](https://intervals.icu/settings).
+- **TrainingPeaks:** enter the `Production_tpAuth` cookie as a name/value
+  pair. The browser's network inspector for the TrainingPeaks token request
+  can show it. Keep it private.
+- **TrainerRoad:** enter the `SharedTrainerRoadAuth` cookie as a name/value
+  pair from a TrainerRoad request. TrainerRoad ramp steps remain unsupported.
 
-Example 1. Your TZ is UTC+2 and current local date time 20.05.2024 06:00. It means at this moment TP server local date time is 19.05.2024 22:00.
-Therefore, you can plan workouts for 20.05.2024. But you can't plan workouts for 21.05.2024, you can do it in 2 hours, because in 2 hours server local time will be 20.05.2024 00:00.
+### Runtime configuration
 
-Example 2. Your TZ is UTC+12, current local date time 20.05.2024 18:00. TP server local date time is 20.05.2024 00:00. At this moment, you can plan workouts for 21.05.2024.
+| Setting | Application default | Purpose |
+|---|---|---|
+| `TP2INTERVALS_PREFLIGHT_TOKEN` | unset | Enables bearer-protected preview, approval, hold resolution, and link repair. |
+| `TP2INTERVALS_PREVIEW_ONLY` | `false` | Blocks provider writes, scheduled execution, ledger mutations, and mutating HTTP operations except the read-only preview POST. The generic Compose example defaults to `true`. Startup can still apply migrations. |
+| `TP2INTERVALS_ENABLE_SCHEDULED_FORWARD_SYNC` | `false` | Separately enables unattended TrainingPeaks → Intervals.icu writes for approved account pairs. |
+| `TP2INTERVALS_SCHEDULE_INTERVAL_MINUTES` | `60` | Forward cadence in whole minutes, from 5 to 1440. |
+| `TP2INTERVALS_SCHEDULE_TIMEZONE` | `Europe/Amsterdam` | IANA zone for the forward schedule's rolling dates. |
+| `SPRING_DATASOURCE_URL` | `jdbc:sqlite:tp2intervals.sqlite` | SQLite location. The Compose example uses `jdbc:sqlite:/data/tp2intervals.sqlite`. |
+| `SERVER_FORWARD_HEADERS_STRATEGY` | `none` | Enable `native` only behind an explicitly trusted proxy. |
+| `SERVER_TOMCAT_REMOTEIP_INTERNAL_PROXIES` | `(?!)` | Java regex for the trusted immediate proxy peer. The default matches nothing. |
 
-Visible time difference with [worldtimebuddy](https://www.worldtimebuddy.com/?pl=1&lid=206,100,756135,2193733&h=206&hf=0)
+`TP2INTERVALS_FORK_IMAGE`, `TP2INTERVALS_HOST_PORT`, and
+`TP2INTERVALS_PROXY_NETWORK` are Compose example inputs. They are not
+application properties.
 
-## Troubleshooting
-To identify the problems with any platform, logs from the users helps very much.
+### Upgrade and backup
 
-Gather logs from [guide below](#how-to-get-logs). And in case of TrainerRoad platform try to [record HAR file](#how-to-record-har-file). Send the files directly to me.
+Stop all writers and make a consistent SQLite backup, including committed WAL
+contents. If moving from a file bind mount, use the SQLite backup to seed
+`data/tp2intervals.sqlite`. Check for sidecars in the old container before
+taking the backup. Verify the copy and rehearse the upgrade on disposable
+data before changing the installed image. Fork migrations 0009–0011 add the
+ledger, baseline and holds, and repair history without rewriting existing
+records. The unchanged upstream migration 0008 rebuilds the schedule table,
+so installations older than 0008 should inventory their schedules before
+upgrading. Keep the latest ledger when switching images. Rolling back to older
+code or older data can lose protections for remote writes. See the
+[cutover and rollback runbook](docs/trainingpeaks-sync-ledger.md#first-deployment-with-existing-imports).
 
-#### How to get logs
-1. Go to Configuration
-2. In General section check Debug Mode, click Confirm
-3. Reproduce your issue
-4. Find log file according to your system
+## TrainingPeaks synchronization
 
-* Linux: ~/.config/tp2intervals/logs/main.log
-* MacOS: ~/Library/Logs/tp2intervals/main.log
-* Windows: %USERPROFILE%\AppData\Roaming\tp2intervals\logs\main.log
-* JAR: ./tp2intervals.log
+Planned calendar copy supports **TrainingPeaks → Intervals.icu** and
+**Intervals.icu → TrainingPeaks**. TrainerRoad calendar copy supports
+**TrainerRoad → Intervals.icu** and **TrainerRoad → TrainingPeaks**. TrainingPeaks
+library and plan copy and TrainerRoad library-to-Intervals.icu remain
+available subject to provider account permissions. The TrainingPeaks
+calendar form offers Ride, MTB, Virtual Ride, Run, Swim, Walk, Weight Training,
+and Any other.
 
-#### How to record HAR file
-1. Open new tab in your browser
-2. Open dev tools, check Preserve log (Firefox Cog -> Persist Logs)
+The ledger applies to planned workouts copied from TrainingPeaks to
+Intervals.icu. **Skip already synced** is mandatory in that direction,
+including manual copy. Each claim is keyed by TrainingPeaks account,
+Intervals.icu athlete, and source workout ID. Uncertain POSTs remain pending.
+Ordinary synchronization is additive. It preserves manually edited events
+and does not mirror later source edits, moves, or deletions. A missing
+destination link remains protected until explicitly repaired.
 
-   <img src="https://github.com/freekode/tp2intervals/blob/main/docs/har-1.png?raw=true" width="70%">
-3. Next steps are very important, as they simulate what the app does.
-   Open TrainerRoad page, open workout library, find any workout, open workout page (the page where you have chart with workout steps, description, alternatives, etc.)
-4. In dev tools, click Export HAR (Firefox - Cog -> Save All as HAR), save the file and send it to me
+TrainingPeaks Basic preview and scheduled forward sync use a rolling window
+of today and tomorrow. Provider access and its day boundary can further
+restrict the results. Scheduled runs fail closed on rejected reads and never
+expand the window. Basic preview uses the backend's local date. Scheduled
+forward sync uses its configured timezone. Provider limits on future writes
+to TrainingPeaks also apply to the reverse direction.
 
-   <img src="https://github.com/freekode/tp2intervals/blob/main/docs/har-2.png?raw=true" width="70%">
+### Review existing imports before activating scheduling
 
+Start with preview-only enabled and scheduled forward sync disabled. Select
+**TrainingPeaks → Intervals.icu**, choose the workout dates and types, enter
+the preview bearer token, and choose **Preview sync (read-only)**. The token
+authorizes the preview and three review operations below. It does not
+authenticate the rest of the application. The preview reads source workouts,
+destination events, and SQLite without creating links or calling a write API.
+
+| Classification | Meaning |
+|---|---|
+| Verified link | The linked destination event was found and its marker matched. |
+| Single legacy candidate | One historical match was found. Verify which account it belongs to before approving. |
+| Multiple legacy candidates | More than one candidate matched. Review the events before considering recovery. |
+| No match observed | The listings did not show a match. This does not prove absence. |
+| Unresolved claim | A previous attempt has no confirmed outcome. Investigate before taking further action. |
+| Broken or unverified link | The linked event is missing or changed, or the app cannot verify the relationship. |
+
+For **Approve legacy baseline**, turn preview-only off, leave the forward
+scheduler paused, and run a fresh preview. Select verified historical
+candidates and explicitly acknowledge that missing matches are inconclusive.
+Approval records local reconciliation decisions and holds. It makes no
+provider changes. An approved baseline is required for unattended forward
+sync. Unselected or unresolved entries remain protected as appropriate.
+
+**Resolve unsynchronized hold** is an individual decision for an eligible,
+currently visible held workout that you verified has never been synchronized.
+**Repair missing link** is an individual decision for a previously confirmed
+event that has disappeared. Repair relinks a single verified replacement
+locally, or allows one recreation attempt after explicit verification and
+acknowledgement. Both require a fresh preview, writable mode, the same
+approved account pair, and scheduled forward sync paused. Leave an uncertain
+result pending for investigation. [Detailed review and repair runbook](docs/trainingpeaks-sync-ledger.md)
+
+## Schedule workouts
+
+**Schedule for today** saves a recurring one-day request. **Schedule today +
+tomorrow** is available for TrainingPeaks → Intervals.icu and saves a rolling
+two-day request. Older requests retain their one-day window. Saving does not
+start a sync. When active, the first scan can run shortly after startup, and
+missed runs are not replayed. Forward sync defaults to every 60 minutes in
+Europe/Amsterdam. Other directions retain their three-minute cadence and use
+the JVM's timezone.
+
+Run one scheduling instance. Requests survive restart in SQLite, and the
+calendar page lists and deletes them. Edit a request by deleting and
+recreating it. Stage a request with preview-only off and the forward gate
+still disabled, and verify its paused status. Enable the forward gate
+separately after reviewing the account and baseline. To pause, stop the app
+if necessary, set the gate to false, recreate it, and verify the row stays
+paused. Keep the ledger for any in-flight write investigation.
+[Scheduling runbook](docs/trainingpeaks-sync-ledger.md#rolling-trainingpeaks-scheduling)
+
+## Reverse proxies and secrets
+
+Keep the app on loopback or a private access-controlled network. HTTPS
+termination changes the scheme seen by the application. For same-origin
+browser requests, including schedule DELETE, Tomcat must reconstruct the
+original scheme, host, and port. Enable native forwarding only for the
+exact immediate proxy peer and require the ingress to sanitize or overwrite
+client-supplied forwarding headers. Broad proxy trust can let clients spoof
+request metadata. Keep the existing CORS method checks, and leave the
+application's backend port unpublished when using a proxy.
+[Proxy example and deletion runbook](docs/trainingpeaks-sync-ledger.md#schedule-deletion-behind-https-termination)
+
+The app is designed for trusted clients. The preview bearer is scoped to the
+review routes, and ordinary sync and configuration depend on network access
+controls. SQLite includes provider credentials and workout identifiers.
+Protect `.env`, the database, and backups. Keep secrets out of Git, shell
+history, application logs, screenshots, and HAR captures. Use
+`docker compose config --quiet` or select only known public fields when
+checking Compose. A resolved Compose dump can contain the bearer token.
+If troubleshooting, share sanitized status and error codes and remove raw
+provider bodies, account data, cookies, and Authorization headers.
+
+## Follow-ups
+
+Possible future work includes Traefik IP monitoring or static proxy addresses,
+preview diagnostics UI improvements, explicit propagation of source edits,
+moves or deletions, additional sync directions, and unrelated visual work.

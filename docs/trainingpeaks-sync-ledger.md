@@ -1,7 +1,7 @@
 # TrainingPeaks calendar sync ledger
 
 The ledger protects planned workouts copied from TrainingPeaks to Intervals.icu
-with **Skip synced** enabled. Its key consists of the TrainingPeaks account ID,
+with mandatory **Skip already synced** protection. Its key consists of the TrainingPeaks account ID,
 Intervals.icu athlete ID, and TrainingPeaks workout ID. The existing API key is
 used with the calendar create, list and lookup endpoints.
 
@@ -22,11 +22,11 @@ used with the calendar create, list and lookup endpoints.
   recorded as `AMBIGUOUS`. When both reads find no match, the workout is eligible
   for a first create. Both reads can miss a legacy event if it lies outside the
   window, lacks its description marker, or the API silently omits it.
-- Sync preserves remote events and edits. **Skip synced** disabled still
-  creates copies through the original path without using the ledger.
+- Sync preserves remote events and edits. Forward calendar requests with
+  **Skip already synced** disabled are rejected.
 
 The calendar form displays manual copy warnings from the optional `syncReview`
-response property. Automatic runs log a warning with the workout ID and reason.
+response property. Automatic runs log stable review reasons and schedule-level counts.
 Pending and ambiguous rows remain available for local review even after their
 workouts leave the scheduler's date window. For example, inspect a protected
 database backup with:
@@ -51,8 +51,9 @@ form, choose **TrainingPeaks → Intervals.icu**, select the dates and workout
 types, and enter the token for **Preview sync**. The form clears the input after
 submission. Use localhost or HTTPS with a trusted reverse proxy. Protect the
 token and avoid recording Authorization headers. The token is separate from
-the provider credentials and protects only the preview endpoint. Keep the
-app's other controls on a trusted local network or behind access controls.
+the provider credentials. It protects preview, baseline approval, hold
+resolution and link repair. Keep other controls behind private network
+access controls.
 
 The endpoint is `POST /api/workout/trainingpeaks-sync/preview` with
 `Authorization: Bearer <preview token>` and a JSON body containing
@@ -128,14 +129,14 @@ the existing TrainingPeaks user and token caches are refreshed.
 Apply [the preview override](../docker-compose.preview.example.yml) after the
 installation's existing Compose file. It assumes the same `app` service key as
 the repository example. If the installed key differs, use that key in a local
-copy of the override. Keep the existing Traefik network, hostname, labels and
-proxy settings in the base file. The override supplies no routing rules or
+copy of the override. Keep the existing ingress network, hostname, labels
+and proxy settings in the base file. The override supplies no routing rules or
 additional authentication. Retain any existing non-database mounts when
 adapting the override. Compose 2.24.4 or newer supports `!override`.
 
 1. Set `TP2INTERVALS_FORK_IMAGE` to the verified, locally available fork image
-   reference. Use a digest or verify the local tag's image ID. The stock
-   Compose file's upstream `:latest` image does not select the fork.
+   reference. Use a digest or verify the local tag's image ID. Choose a fork
+   build that contains the preview functionality.
 2. Use a dedicated directory for `TP2INTERVALS_DATA_DIR` containing
    `tp2intervals.sqlite`. For rehearsals, use disposable data. For cutover,
    pause writers, make and verify a consistent SQLite backup, and seed the
@@ -153,17 +154,14 @@ adapting the override. Compose 2.24.4 or newer supports `!override`.
      -f /path/to/docker-compose.preview.example.yml config --images
    ```
 
-4. The overlay enables `TP2INTERVALS_PREVIEW_ONLY=true`. The server rejects
+4. The overlay defaults to `TP2INTERVALS_PREVIEW_ONLY=true`. The server rejects
    mutating HTTP requests except the authenticated preview POST, rejects
    provider requests with non-read methods, skips scheduled jobs in both
    directions, and rejects ledger writes. Startup can still apply Liquibase
    migrations to the mounted database. Keep the app on the existing private
-   LAN/WireGuard and Traefik routes. The preview token protects the preview
-   route only. Never include credentials in access logs or HAR files.
-5. Development uses sandbox `development-sandbox`, with backend port `8080`.
-   With the existing host mapping, open `http://127.0.0.1:8080` on the Mac.
-   For production, retain the installation's existing Traefik hostname.
-6. To roll back, stop writers and save the current database directory with its
+   LAN or private proxy routes. The token protects the review endpoints.
+   Never include credentials in access logs or HAR files.
+5. To roll back, stop writers and save the current database directory with its
    ledger. Restore the prior image configuration and preserve that database.
    An older image can ignore both preview mode and write claims. Keep it
    isolated from providers until schedules and post-backup writes have been
@@ -272,14 +270,11 @@ Provider workout rows outside the requested window are filtered before claims.
 This is additive sync. A moved or edited source workout does not update the
 already linked destination event. Confirmed deletions require explicit repair.
 
-For the existing production layout, use the same Compose project and files:
+Use the same Compose project and files as your installation. Add any
+existing overlays to the command in their installed order:
 
 ```sh
-cd /path/to/installation
-dc() {
-  docker compose -f /path/to/installation/docker-compose.yaml \
-    -f /path/to/compose-overrides/docker-compose.rc.yaml "$@"
-}
+dc() { docker compose -f docker-compose.yaml "$@"; }
 dc config --format json | jq '.services.app | {
   image, platform, ports: (.ports // []),
   sqlite: .environment.SPRING_DATASOURCE_URL,
@@ -291,8 +286,8 @@ dc config --format json | jq '.services.app | {
 ```
 
 1. Verify the image natively and back up the existing
-   `/path/to/installation/data/tp2intervals.sqlite` consistently. Retain
-   the existing Traefik network and data mount. Start the reviewed image with
+   SQLite database consistently. Retain the existing ingress network and
+   data mount. Start the reviewed image with
    the forward gate off and verify the preview, baseline and ledger.
 2. With preview-only off and the forward gate still false, save exactly one
    rolling forward schedule. Check the saved row has the intended types,
@@ -309,20 +304,21 @@ dc config --format json | jq '.services.app | {
    Inspect it before resuming. A rollback to an older image should remain
    paused, and its UI may not understand the optional rolling-window field.
 
-## Schedule deletion behind Traefik HTTPS
+## Schedule deletion behind HTTPS termination
 
-A browser includes its HTTPS Origin on a same-origin DELETE. Traefik forwards
-the request over HTTP, so Spring must reconstruct the original scheme, host and
+A browser includes its HTTPS Origin on a same-origin DELETE. A TLS-terminating
+reverse proxy may forward the request over HTTP, so Spring must reconstruct the original scheme, host and
 port. With forwarding disabled, Spring MVC treats the request as cross-origin
 and rejects DELETE under the existing API method policy.
 
-In `/path/to/compose-overrides/docker-compose.rc.yaml`, configure the
-application service environment after confirming that the application port is
-unpublished and that the immediate Traefik peer is on the expected network:
+Use [the optional proxy overlay](../docker-compose.proxy.yaml) after the
+generic Compose example, or configure an equivalent environment in a local
+override. Confirm the app port is unpublished and the immediate proxy peer
+is on the expected private network:
 
 ```yaml
 SERVER_FORWARD_HEADERS_STRATEGY: native
-SERVER_TOMCAT_REMOTEIP_INTERNAL_PROXIES: '192[.]0[.]2[.]10' # Example only. Use Traefik's actual peer IP.
+SERVER_TOMCAT_REMOTEIP_INTERNAL_PROXIES: '192[.]0[.]2[.]10' # Documentation address. Use the immediate proxy peer IP.
 ```
 
 Use the exact IP, expressed as a Java regular expression, or explicitly list
@@ -330,16 +326,16 @@ the exact peers when there is more than one. To identify the container's
 address on the shared network without reading environment variables:
 
 ```sh
-docker network inspect traefik --format '{{range .Containers}}{{println .Name .IPv4Address .IPv6Address}}{{end}}'
+docker network inspect "$TP2INTERVALS_PROXY_NETWORK" --format '{{range .Containers}}{{println .Name .IPv4Address .IPv6Address}}{{end}}'
 ```
 
-Verify that Traefik discards or overwrites client-supplied forwarded headers
+Verify that the proxy discards or overwrites client-supplied forwarded headers
 and that insecure forwarded-header trust is off. Any ingress trustedIPs must
 be limited to genuine upstream proxies. If these conditions cannot be
 verified, leave native forwarding disabled. The repository defaults to
 forwarding off and a deny-all internal-proxy pattern. Do not use framework
 forwarding or a broad private-network regex in this deployment. Recheck the
-peer address after Traefik recreation because Docker may change it.
+peer address after proxy recreation because Docker may change it.
 
 The existing CORS policy deliberately excludes cross-origin DELETE. HTTPS
 same-origin DELETE works with trusted forwarded scheme, host and port.
@@ -350,9 +346,9 @@ configuration write. Neither deletion nor schedule registration writes to
 either provider.
 
 After native smoke validation and separate authorization, use both existing
-Compose files and back up the database at
-`/path/to/installation/data/tp2intervals.sqlite`. Keep the gate off and the
-current data mount, token, Traefik settings, cadence and timezone. Verify the
+Compose files and back up the persistent SQLite database. Keep the gate
+off and retain the current data mount, token, proxy settings, cadence and
+timezone. Verify the
 saved ID survives the app image change before deleting it through the UI.
 Check the schedule list and SQLite read-only before saving one replacement
 rolling request. Verify the replacement is paused. Activation is a separate
