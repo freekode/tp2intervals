@@ -28,6 +28,7 @@ class FromIntervalsWorkoutConverter(
             ),
             eventDTO.start_date_local.toLocalDate(),
             workoutsStructure,
+            eventDTO.start_date_local.toLocalTime(),
         )
     }
 

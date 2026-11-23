@@ -9,6 +9,7 @@ import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.activity.C
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.CreateEventRequestDTO
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.CreateWorkoutRequestDTO
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsEventDTO
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.EventWriteResponseDTO
 import org.springframework.web.multipart.MultipartFile
 
 class IntervalsApiClientMock(
@@ -23,11 +24,15 @@ class IntervalsApiClientMock(
         TODO("Not yet implemented")
     }
 
-    override fun createEvent(athleteId: String, createEventRequestDTO: CreateEventRequestDTO) {
+    override fun createEvent(athleteId: String, createEventRequestDTO: CreateEventRequestDTO): EventWriteResponseDTO? {
         TODO("Not yet implemented")
     }
 
     override fun deleteEvent(athleteId: String, eventId: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateEvent(athleteId: String, eventId: String, request: CreateEventRequestDTO): EventWriteResponseDTO? {
         TODO("Not yet implemented")
     }
 

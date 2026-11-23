@@ -11,9 +11,14 @@ export class WorkoutClient {
   constructor(private httpClient: HttpClient) {
   }
 
-  copyCalendarToCalendar(startDate, endDate, types, skipSynced, defaultStartTime, removeStaleTrainerRoad, platformDirection): Observable<any> {
+  copyCalendarToCalendar(startDate, endDate, types, skipSynced, defaultStartTime, trainerRoadSyncMode, allowStaleRemoval, platformDirection, expectedActions = null): Observable<any> {
     return this.httpClient
-      .post(`/api/workout/copy-calendar-to-calendar`, {startDate, endDate, types, skipSynced, defaultStartTime, removeStaleTrainerRoad, ...platformDirection})
+      .post(`/api/workout/copy-calendar-to-calendar`, {startDate, endDate, types, skipSynced, defaultStartTime, trainerRoadSyncMode, allowStaleRemoval, expectedActions, ...platformDirection})
+  }
+
+  previewCalendarToCalendar(startDate, endDate, types, skipSynced, defaultStartTime, trainerRoadSyncMode, allowStaleRemoval, platformDirection): Observable<any> {
+    return this.httpClient
+      .post(`/api/workout/copy-calendar-to-calendar/preview`, {startDate, endDate, types, skipSynced, defaultStartTime, trainerRoadSyncMode, allowStaleRemoval, ...platformDirection})
   }
 
   copyCalendarToLibrary(name, startDate, endDate, types, platformDirection, isPlan): Observable<any> {
@@ -33,7 +38,7 @@ export class WorkoutClient {
     return this.httpClient.get(`/api/workout/find`, {params: {platform, name}})
   }
 
-  scheduleCopyCalendarToCalendar(startDate, endDate, types, skipSynced, defaultStartTime, removeStaleTrainerRoad, platformDirection): Observable<any> {
+  scheduleCopyCalendarToCalendar(startDate, endDate, types, skipSynced, defaultStartTime, trainerRoadSyncMode, allowStaleRemoval, platformDirection): Observable<any> {
     return this.httpClient
       .post(`/api/workout/copy-calendar-to-calendar/schedule`, {
         startDate,
@@ -41,7 +46,8 @@ export class WorkoutClient {
         types,
         skipSynced,
         defaultStartTime,
-        removeStaleTrainerRoad,
+        trainerRoadSyncMode,
+        allowStaleRemoval,
         ...platformDirection
       })
   }

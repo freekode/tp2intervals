@@ -9,17 +9,19 @@ import {MatNativeDateModule} from "@angular/material/core";
 import {MatSnackBarModule} from "@angular/material/snack-bar";
 import {MatSelectModule} from "@angular/material/select";
 import {MatCheckboxModule} from "@angular/material/checkbox";
+import {MatDialog} from "@angular/material/dialog";
 import {Platform} from "infrastructure/platform";
 import {formatDate} from "utils/date-formatter";
 import {MatDividerModule} from "@angular/material/divider";
 import {MatListModule} from "@angular/material/list";
-import {NgIf} from "@angular/common";
+import {DatePipe, NgIf} from "@angular/common";
 import {ConfigurationClient} from "infrastructure/client/configuration.client";
-import {finalize, switchMap, tap} from "rxjs";
+import {filter, finalize, switchMap, tap} from "rxjs";
 import {WorkoutClient} from "infrastructure/client/workout.client";
 import {NotificationService} from "infrastructure/notification.service";
 import {MatTooltipModule} from "@angular/material/tooltip";
 import {TrainingTypes} from "infrastructure/training-types";
+import {SyncPreviewDialogComponent} from "./sync-preview-dialog.component";
 
 @Component({
   selector: 'copy-calendar-to-calendar',
@@ -39,6 +41,7 @@ import {TrainingTypes} from "infrastructure/training-types";
     MatDividerModule,
     MatListModule,
     NgIf,
+    DatePipe,
     MatTooltipModule,
   ],
   templateUrl: './copy-calendar-to-calendar.component.html',
@@ -62,7 +65,8 @@ export class CopyCalendarToCalendarComponent implements OnInit {
     private formBuilder: FormBuilder,
     private configurationClient: ConfigurationClient,
     private workoutClient: WorkoutClient,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private dialog: MatDialog,
   ) {
   }
 
@@ -71,10 +75,14 @@ export class CopyCalendarToCalendarComponent implements OnInit {
       this.platformsInfo = value
     })
     this.formGroup = this.getFormGroup();
+    if (this.isReconciliationSupported(this.formGroup.value.direction)) {
+      this.applyHorizon();
+    }
     this.loadScheduleRequests().subscribe()
   }
 
   submit() {
+    if (this.isReconciliationSupported(this.formGroup.value.direction)) this.applyHorizon()
     let startDate = formatDate(this.formGroup.controls['startDate'].value)
     let endDate = formatDate(this.formGroup.controls['endDate'].value)
     this.copyWorkouts(startDate, endDate);
@@ -95,10 +103,11 @@ export class CopyCalendarToCalendarComponent implements OnInit {
     let trainingTypes = this.formGroup.value.trainingTypes
     let skipSynced = this.formGroup.value.skipSynced
     let defaultStartTime = this.formGroup.value.defaultStartTime || null
-    let removeStaleTrainerRoad = this.isReconciliationSupported(direction) && this.formGroup.value.removeStaleTrainerRoad
+    let trainerRoadSyncMode = this.isReconciliationSupported(direction) ? this.formGroup.value.trainerRoadSyncMode : null
+    let allowStaleRemoval = !!trainerRoadSyncMode && this.formGroup.value.allowStaleRemoval
 
     this.inProgress = true
-    this.workoutClient.scheduleCopyCalendarToCalendar(startDate, endDate, trainingTypes, skipSynced, defaultStartTime, removeStaleTrainerRoad, direction).pipe(
+    this.workoutClient.scheduleCopyCalendarToCalendar(startDate, endDate, trainingTypes, skipSynced, defaultStartTime, trainerRoadSyncMode, allowStaleRemoval, direction).pipe(
       switchMap(() => this.loadScheduleRequests()),
       finalize(() => this.inProgress = false)
     ).subscribe(() => {
@@ -119,19 +128,47 @@ export class CopyCalendarToCalendarComponent implements OnInit {
     let trainingTypes = this.formGroup.value.trainingTypes
     let skipSynced = this.formGroup.value.skipSynced
     let defaultStartTime = this.formGroup.value.defaultStartTime || null
-    let removeStaleTrainerRoad = this.isReconciliationSupported(direction) && this.formGroup.value.removeStaleTrainerRoad
+    let trainerRoadSyncMode = this.isReconciliationSupported(direction) ? this.formGroup.value.trainerRoadSyncMode : null
+    let allowStaleRemoval = !!trainerRoadSyncMode && this.formGroup.value.allowStaleRemoval
 
     this.inProgress = true
-    this.workoutClient.copyCalendarToCalendar(startDate, endDate, trainingTypes, skipSynced, defaultStartTime, removeStaleTrainerRoad, direction).pipe(
+    const execute = (expectedActions = null) => this.workoutClient.copyCalendarToCalendar(startDate, endDate, trainingTypes, skipSynced, defaultStartTime, trainerRoadSyncMode, allowStaleRemoval, direction, expectedActions)
+    const sync = trainerRoadSyncMode
+      ? this.workoutClient.previewCalendarToCalendar(startDate, endDate, trainingTypes, skipSynced, defaultStartTime, trainerRoadSyncMode, allowStaleRemoval, direction).pipe(
+          switchMap(preview => this.dialog.open(SyncPreviewDialogComponent, {data: preview}).afterClosed().pipe(
+            filter(confirmed => confirmed === true),
+            switchMap(() => execute(preview.previewActions)),
+          )),
+        )
+      : execute()
+    sync.pipe(
       finalize(() => this.inProgress = false)
     ).subscribe((response) => {
       this.notificationService.success(
-        `Copied: ${response.copied}<br>Already synced: ${response.alreadySynced}${removeStaleTrainerRoad ? `<br>Removed: ${response.removed}<br>Ambiguous, skipped: ${response.skipped}` : ''}<br>Filtered out by workout type: ${response.filteredOut}<br>From ${response.startDate} to ${response.endDate}`)
+        `Copied: ${response.copied}<br>Already synced: ${response.alreadySynced}${trainerRoadSyncMode ? `<br>Updated: ${response.updated}<br>Removed: ${response.removed}<br>Skipped (ambiguous or protected): ${response.skipped}` : ''}<br>Filtered out by workout type: ${response.filteredOut}<br>From ${response.startDate} to ${response.endDate}`)
     })
   }
 
   isReconciliationSupported(direction: {sourcePlatform: string, targetPlatform: string}): boolean {
     return direction?.sourcePlatform === Platform.TRAINER_ROAD.key && direction?.targetPlatform === Platform.INTERVALS.key
+  }
+
+  isMirrorBlocked(): boolean {
+    return this.isReconciliationSupported(this.formGroup.value.direction) &&
+      this.formGroup.value.trainerRoadSyncMode === 'MIRROR' && !this.formGroup.value.allowStaleRemoval
+  }
+
+  applyHorizon(): void {
+    const days = Number(this.formGroup.value.horizon)
+    if (!days) return
+    const start = new Date()
+    const end = new Date(start)
+    end.setDate(end.getDate() + days - 1)
+    this.formGroup.patchValue({startDate: start, endDate: end})
+  }
+
+  directionChanged(): void {
+    if (this.isReconciliationSupported(this.formGroup.value.direction)) this.applyHorizon()
   }
 
   private getFormGroup() {
@@ -141,7 +178,9 @@ export class CopyCalendarToCalendarComponent implements OnInit {
       startDate: [this.todayDate, Validators.required],
       endDate: [this.tomorrowDate, Validators.required],
       skipSynced: [true, Validators.required],
-      removeStaleTrainerRoad: [false],
+      trainerRoadSyncMode: ['ADD_MISSING', Validators.required],
+      allowStaleRemoval: [false],
+      horizon: ['7', Validators.required],
       defaultStartTime: [null, Validators.pattern('^([01][0-9]|2[0-3]):[0-5][0-9]$')],
     })
   }

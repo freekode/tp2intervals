@@ -12,4 +12,6 @@ data class CopyWorkoutsResponse(
     val alreadySynced: Int = 0,
     val removed: Int = 0,
     val skipped: Int = 0,
+    val updated: Int = 0,
+    val previewActions: List<SyncPlanAction> = emptyList(),
 )

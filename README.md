@@ -60,17 +60,25 @@ Coach account
 * Copy workouts from TrainerRoad library to Intervals
 * Create training plan or workout folder on Intervals.icu from planned workouts on TrainerRoad
 
-Automatically schedule workouts for today, by checking your calendar every 20 minutes.
-To clear up scheduled jobs just restart the application.
+Automatically schedule workouts for today, by checking your calendar every 3 minutes.
+Scheduled jobs persist across restarts; remove them using the delete button in the UI.
 
-For TrainerRoad to Intervals.icu, **Remove stale TrainerRoad workouts from Intervals** compares
-TrainerRoad IDs for each day in the selected range. Matching workouts are kept unchanged and missing
-workouts of the selected types are copied. Identifiable TrainerRoad-synced Intervals workouts absent
-from TrainerRoad on that day are deleted, including on empty days and regardless of the type filter.
-Other Intervals events are untouched. Ambiguous IDs on the same day are skipped. Matching IDs do not
-update changed workout details, and events without a readable TrainerRoad ID cannot be identified.
-Deletion requires the TrainerRoad timeline to cover the full selected date range. Scheduled jobs
-with this option apply the same deletion rule each time they run.
+For TrainerRoad to Intervals.icu, choose one of two sync behaviours:
+
+* **Add missing only** keeps matching events and copies missing selected workouts.
+* **Mirror current TR simulation** updates matches, copies missing workouts and removes stale
+  TrainerRoad events. You must explicitly allow stale workout removal before using this mode.
+
+Workouts are matched by TrainerRoad ID and day; ambiguous IDs are skipped. Updates and removal
+are limited to TrainerRoad events whose Intervals IDs this app recorded when creating them.
+Existing untracked events, including older app-created events, are protected; a copied text signature
+does not grant ownership. Ownership is stored in this installation's database, so retain it when
+migrating or restoring the application. Mirror can remove stale tracked events on
+empty days and for unselected workout types; other events are untouched. The TrainerRoad timeline
+must cover the selected range. Choose 7, 14 or 28 days (including today), or a custom range.
+Manual sync previews the affected workouts; if that list changes before confirmation, sync stops.
+Scheduled jobs use the selected behaviour and removal permission, but always run for today only.
+Changes are not transactional: if a request fails, earlier changes may already have succeeded.
 
 
 ## Configuration

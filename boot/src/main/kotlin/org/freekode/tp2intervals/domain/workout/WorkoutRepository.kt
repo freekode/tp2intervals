@@ -18,12 +18,22 @@ interface WorkoutRepository {
 
     fun saveWorkoutsToCalendar(workouts: List<Workout>)
 
+    fun saveTrainerRoadWorkoutsToCalendar(workouts: List<Workout>) {
+        throw UnsupportedOperationException("Saving tracked TrainerRoad workouts is not supported for ${platform()}")
+    }
+
+    fun isTrackedTrainerRoadWorkout(workout: Workout): Boolean = false
+
     fun getWorkoutsForReconciliation(startDate: LocalDate, endDate: LocalDate): List<Workout> {
         throw UnsupportedOperationException("Calendar reconciliation is not supported for ${platform()}")
     }
 
     fun deleteSyncedWorkout(workout: Workout) {
         throw UnsupportedOperationException("Deleting synced workouts is not supported for ${platform()}")
+    }
+
+    fun updateSyncedWorkout(source: Workout, target: Workout) {
+        throw UnsupportedOperationException("Updating synced workouts is not supported for ${platform()}")
     }
 
     fun saveWorkoutsToLibrary(libraryContainer: LibraryContainer, workouts: List<Workout>)

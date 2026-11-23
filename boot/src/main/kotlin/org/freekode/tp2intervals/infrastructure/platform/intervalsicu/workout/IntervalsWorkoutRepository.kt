@@ -11,12 +11,14 @@ import org.freekode.tp2intervals.infrastructure.PlatformException
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsApiClient
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfigurationRepository
 import org.slf4j.LoggerFactory
+import org.springframework.dao.DataAccessException
 import org.springframework.stereotype.Repository
 
 @Repository
 class IntervalsWorkoutRepository(
     private val intervalsApiClient: IntervalsApiClient,
     private val intervalsConfigurationRepository: IntervalsConfigurationRepository,
+    private val trainerRoadSyncedEventRepository: TrainerRoadSyncedEventRepository,
 ) : WorkoutRepository {
 
     private val log = LoggerFactory.getLogger(this.javaClass)
@@ -32,13 +34,67 @@ class IntervalsWorkoutRepository(
         }
     }
 
-    override fun deleteSyncedWorkout(workout: Workout) {
-        if (workout.details.externalData.trainerRoadId.isNullOrBlank()) {
-            throw PlatformException(Platform.INTERVALS, "Cannot delete a workout without a TrainerRoad ID")
+    override fun saveTrainerRoadWorkoutsToCalendar(workouts: List<Workout>) {
+        if (workouts.any { it.details.externalData.trainerRoadId.isNullOrBlank() || it.date == null }) {
+            throw PlatformException(Platform.TRAINER_ROAD, "Cannot track a workout without a TrainerRoad ID and date")
         }
+        val athleteId = intervalsConfigurationRepository.getConfiguration().athleteId
+        val converter = ToIntervalsWorkoutConverter()
+        workouts.forEach { workout ->
+            val response = intervalsApiClient.createEvent(athleteId, converter.createEventRequestDTO(workout))
+            if (response == null || response.id <= 0) {
+                throw PlatformException(Platform.INTERVALS, "Intervals.icu did not confirm the event ID; check the calendar before retrying")
+            }
+            try {
+                trainerRoadSyncedEventRepository.save(
+                    TrainerRoadSyncedEvent(null, athleteId, response.id.toString(), workout.details.externalData.trainerRoadId!!),
+                )
+            } catch (e: DataAccessException) {
+                log.error("Failed to track created Intervals.icu event {}", response.id, e)
+                throw PlatformException(Platform.INTERVALS, "Event ${response.id} was created but could not be tracked; it will remain protected")
+            }
+        }
+    }
+
+    override fun isTrackedTrainerRoadWorkout(workout: Workout): Boolean =
+        findTrackedTrainerRoadWorkout(workout) != null
+
+    private fun findTrackedTrainerRoadWorkout(workout: Workout): TrainerRoadSyncedEvent? {
+        val external = workout.details.externalData
+        val eventId = external.intervalsId?.takeIf { it.isNotBlank() } ?: return null
+        val trainerRoadId = external.trainerRoadId?.takeIf { it.isNotBlank() } ?: return null
+        return trainerRoadSyncedEventRepository.findByAthleteIdAndEventIdAndTrainerRoadId(
+            intervalsConfigurationRepository.getConfiguration().athleteId, eventId, trainerRoadId,
+        )
+    }
+
+    override fun deleteSyncedWorkout(workout: Workout) {
+        val tracked = findTrackedTrainerRoadWorkout(workout)
+            ?: throw PlatformException(Platform.INTERVALS, "Cannot delete an untracked TrainerRoad workout")
         val eventId = workout.details.externalData.intervalsId?.takeIf { it.isNotBlank() }
             ?: throw PlatformException(Platform.INTERVALS, "Cannot delete a workout without an Intervals.icu event ID")
         intervalsApiClient.deleteEvent(intervalsConfigurationRepository.getConfiguration().athleteId, eventId)
+        trainerRoadSyncedEventRepository.delete(tracked)
+    }
+
+    override fun updateSyncedWorkout(source: Workout, target: Workout) {
+        val sourceId = source.details.externalData.trainerRoadId
+        if (sourceId.isNullOrBlank() || !isTrackedTrainerRoadWorkout(target) ||
+            sourceId != target.details.externalData.trainerRoadId ||
+            source.date == null || source.date != target.date) {
+            throw PlatformException(Platform.INTERVALS, "Cannot update an event without a matching TrainerRoad ID and date")
+        }
+        val eventId = target.details.externalData.intervalsId?.takeIf { it.isNotBlank() }
+            ?: throw PlatformException(Platform.INTERVALS, "Cannot update a workout without an Intervals.icu event ID")
+        val workout = if (source.startTime == null) source.withStartTime(target.startTime) else source
+        val result = intervalsApiClient.updateEvent(
+            intervalsConfigurationRepository.getConfiguration().athleteId,
+            eventId,
+            ToIntervalsWorkoutConverter().createEventRequestDTO(workout),
+        )
+        if (result == null || result.id.toString() != eventId) {
+            throw PlatformException(Platform.INTERVALS, "Intervals.icu did not confirm the event update for $eventId")
+        }
     }
 
     override fun saveWorkoutsToLibrary(libraryContainer: LibraryContainer, workouts: List<Workout>) {

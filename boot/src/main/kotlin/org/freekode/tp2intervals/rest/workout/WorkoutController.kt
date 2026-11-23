@@ -22,6 +22,11 @@ class WorkoutController(
         return workoutService.copyWorkoutsC2C(request)
     }
 
+    @PostMapping("/api/workout/copy-calendar-to-calendar/preview")
+    fun previewCalendarSync(@RequestBody request: CopyFromCalendarToCalendarRequest): CopyWorkoutsResponse {
+        return workoutService.previewTrainerRoadSync(request)
+    }
+
     @PostMapping("/api/workout/copy-calendar-to-library")
     fun copyWorkoutsFromCalendarToLibrary(@RequestBody request: CopyFromCalendarToLibraryRequest): CopyWorkoutsResponse {
         return workoutService.copyWorkoutsC2L(request)

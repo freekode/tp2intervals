@@ -18,6 +18,9 @@ class WorkoutScheduledJob(
     private val log = LoggerFactory.getLogger(this.javaClass)
 
     fun addRequest(schedulable: Schedulable) {
+        if (schedulable is C2CTodayScheduledRequest) {
+            workoutService.validateCalendarRequest(schedulable.forToday())
+        }
         val requestJson = objectMapper.writeValueAsString(schedulable)
         if (scheduleRequestRepository.findByRequestJson(requestJson) != null) throw IllegalArgumentException("Request already exists")
         scheduleRequestRepository.save(ScheduleRequestEntity(requestJson))

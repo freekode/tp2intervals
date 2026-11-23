@@ -14,4 +14,23 @@ data class CopyFromCalendarToCalendarRequest(
     val defaultStartTime: String? = null,
     val refreshSynced: Boolean = false,
     val removeStaleTrainerRoad: Boolean = false,
+    val trainerRoadSyncMode: TrainerRoadSyncMode? = null,
+    val allowStaleRemoval: Boolean = false,
+    val expectedActions: List<SyncPlanAction>? = null,
 )
+
+enum class TrainerRoadSyncMode {
+    MIRROR, ADD_MISSING
+}
+
+data class SyncPlanAction(
+    val action: SyncAction,
+    val date: LocalDate,
+    val name: String,
+    val trainerRoadId: String,
+    val intervalsId: String?,
+)
+
+enum class SyncAction {
+    ADD, UPDATE, REMOVE
+}
