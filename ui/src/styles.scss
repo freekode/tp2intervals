@@ -30,7 +30,9 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 
 .form-field {
-  width: 450px
+  width: 450px;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .action-button-section {

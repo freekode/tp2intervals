@@ -7,10 +7,19 @@ data class ExternalData(
     val intervalsId: String?,
     val trainerRoadId: String?,
 ) : Serializable {
-    private val externalDataDescriptionSeparator = "//////////"
-
     companion object {
+        private const val externalDataDescriptionSeparator = "//////////"
+
         fun empty() = ExternalData(null, null, null)
+
+        fun trainerRoadIdsInDescription(description: String?): Set<String> =
+            description.orEmpty().split(externalDataDescriptionSeparator).drop(1)
+                .flatMap { it.lines() }
+                .map { it.trim() }
+                .filter { it.startsWith("trainerRoadId=") }
+                .map { it.substringAfter("=").trim() }
+                .filter { (it.toLongOrNull() ?: 0) > 0 }
+                .toSet()
     }
 
     fun withTrainingPeaks(trainingPeaksId: String) = ExternalData(trainingPeaksId, intervalsId, trainerRoadId)
@@ -18,6 +27,16 @@ data class ExternalData(
     fun withIntervals(intervalsId: String) = ExternalData(trainingPeaksId, intervalsId, trainerRoadId)
 
     fun withTrainerRoad(trainerRoadId: String) = ExternalData(trainingPeaksId, intervalsId, trainerRoadId)
+
+    fun hasClearTrainerRoadId(description: String?): Boolean {
+        val parts = description.orEmpty().split(externalDataDescriptionSeparator)
+        if (parts.size != 2) return false
+        val ids = parts[1].lines().map { it.trimEnd('\r') }
+            .filter { it.startsWith("trainerRoadId=") }
+            .map { it.substringAfter("=") }
+        val id = ids.singleOrNull() ?: return false
+        return (id.toLongOrNull() ?: 0) > 0 && id == trainerRoadId
+    }
 
     fun fromSimpleString(string: String): ExternalData {
         val split = string.split(externalDataDescriptionSeparator)

@@ -30,6 +30,7 @@ data class SyncPlanAction(
     val name: String,
     val trainerRoadId: String,
     val intervalsId: String?,
+    val trainingPeaksId: String? = null,
 )
 
 enum class SyncAction {

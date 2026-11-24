@@ -63,7 +63,7 @@ Coach account
 Automatically schedule workouts for today, by checking your calendar every 3 minutes.
 Scheduled jobs persist across restarts; remove them using the delete button in the UI.
 
-For TrainerRoad to Intervals.icu, choose one of two sync behaviours:
+For TrainerRoad to Intervals.icu or TrainingPeaks, choose one of two sync behaviours:
 
 * **Add missing only** keeps matching events and copies missing selected workouts.
 * **Mirror current TR simulation** updates changed matches, leaves unchanged workouts alone, copies missing workouts and removes stale
@@ -71,30 +71,44 @@ For TrainerRoad to Intervals.icu, choose one of two sync behaviours:
   The confirmation is cleared when you leave Mirror mode or switch to another direction.
 
 Workouts are matched by TrainerRoad ID and day, not by name or content; ambiguous matches are skipped.
-Mirror updates or removes Intervals.icu workout events with a single clear TrainerRoad ID in their
+Mirror updates or removes destination workouts with a single clear TrainerRoad ID in their
 description, regardless of who created them. An event is stale when no TrainerRoad workout with the
 same ID and day exists in the selected range, including workouts of unselected types.
-For matching workouts, it compares the event name, type and generated description (including workout
+For Intervals.icu matches, it compares the event name, type and generated description (including workout
 steps). It compares the TrainerRoad start time when present, otherwise the selected default time.
 It does not compare a separately edited workout file or `workout_doc`. When neither time is set,
 Mirror preserves existing Intervals event times, and new workouts have no start time in Intervals.icu.
 The API request uses `00:00` for an unset time, which Intervals.icu treats as not set; an explicitly
 selected midnight is therefore indistinguishable from an unset time. A default local time can be set
 for integrations such as Hexis.
+For TrainingPeaks, Mirror compares the name, mapped workout type, planned duration, load, description,
+converted workout structure, and TrainerRoad start time or the default when provided. If neither time
+is provided, it preserves the existing planned time; new workouts have no planned time. Times are local.
+TrainerRoad descriptions are copied to TrainingPeaks with an appended ID marker. If a description conflicts
+with that marker, syncing fails rather than creating a workout that cannot be reliably matched.
+It preserves unrelated workout fields when updating and skips workouts whose planned time is missing from
+the provider response or invalid, or whose non-empty structure cannot be read. It also skips workouts with
+available actual activity metrics, workouts that appear completed or whose completion data is missing, and rechecks
+each workout before changing it. The provider does not offer verified atomic conditional writes:
+a workout completed between that check and the write could still be changed. Future writes may require
+TrainingPeaks Premium.
+TrainingPeaks reconciliation uses unofficial API endpoints; planned time writes, update and create
+responses have not been verified against a disposable account.
 It can overwrite or delete manual edits; an ID does not prove app ownership. If the ID is removed
 from an event's description, the app cannot recognize that event and may copy the workout again.
 Mirror can remove stale eligible events on empty days and for unselected workout types;
 other events are untouched. The TrainerRoad timeline
 must cover the selected range. For now, TrainerRoad calendar entries with an explicitly blank title
-and no workout ID are assumed to be rest days. Intervals.icu titles are not used for this assumption.
+and no workout ID are assumed to be rest days. Destination titles are not used for this assumption.
 This relies on TrainerRoad's unofficial format and may change; a missing title is not treated as blank.
 Other TrainerRoad activities without a workout ID are reported for manual review but do not
 prevent stale removal. An unidentified or moved TrainerRoad workout can therefore
-cause its marked Intervals event to be considered stale; review the preview before syncing.
+cause its marked destination workout to be considered stale; review the preview before syncing.
 Activities outside the range are ignored.
 Choose 2 days (the recommended default), 7 days,
 4 weeks (all including today), or a custom range. TrainerRoad's simulated plans may change.
-Manual sync previews the affected workouts; if that list or, in Mirror mode, the unidentified
+Manual sync previews the affected workouts and identifies existing or unchanged matches by date, name,
+and TrainerRoad ID. If the action list or, in Mirror mode, the unidentified
 activity dates change before confirmation, sync stops.
 Scheduled jobs use the selected behaviour and removal permission, but always run for today only.
 Older scheduled Mirror and legacy removal jobs cannot sync under the current policy: delete and recreate them to explicitly

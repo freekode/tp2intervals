@@ -3,7 +3,7 @@ import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {MatDialog} from '@angular/material/dialog';
 import {MatTooltip} from '@angular/material/tooltip';
 import {By} from '@angular/platform-browser';
-import {of} from 'rxjs';
+import {of, throwError} from 'rxjs';
 import {ConfigurationClient} from 'infrastructure/client/configuration.client';
 import {WorkoutClient} from 'infrastructure/client/workout.client';
 import {NotificationService} from 'infrastructure/notification.service';
@@ -11,6 +11,66 @@ import {Platform} from 'infrastructure/platform';
 import {CopyCalendarToCalendarComponent} from './copy-calendar-to-calendar.component';
 
 describe('Mirror confirmation', () => {
+  it('uses the current local day for today and tomorrow after midnight', () => {
+    jasmine.clock().install();
+    try {
+      jasmine.clock().mockDate(new Date(2026, 10, 24, 23, 55));
+      const workoutClient = {
+        getScheduleRequests: () => of([]),
+        previewCalendarToCalendar: jasmine.createSpy().and.returnValue(of({})),
+      };
+      TestBed.configureTestingModule({
+        imports: [CopyCalendarToCalendarComponent, NoopAnimationsModule],
+        providers: [
+          {provide: ConfigurationClient, useValue: {getAllPlatformInfo: () => of({})}},
+          {provide: WorkoutClient, useValue: workoutClient},
+          {provide: NotificationService, useValue: {}},
+          {provide: MatDialog, useValue: {open: () => ({afterClosed: () => of(false)})}},
+        ],
+      });
+      const fixture = TestBed.createComponent(CopyCalendarToCalendarComponent);
+      fixture.componentInstance.directions = [{title: 'TrainerRoad to Intervals', value: Platform.DIRECTION_TR_INT}];
+      fixture.detectChanges();
+      jasmine.clock().mockDate(new Date(2026, 10, 25, 0, 5));
+
+      fixture.componentInstance.today();
+      fixture.componentInstance.tomorrow();
+
+      expect(workoutClient.previewCalendarToCalendar.calls.argsFor(0).slice(0, 2)).toEqual(['2026-11-25', '2026-11-25']);
+      expect(workoutClient.previewCalendarToCalendar.calls.argsFor(1).slice(0, 2)).toEqual(['2026-11-26', '2026-11-26']);
+      fixture.destroy();
+    } finally {
+      jasmine.clock().uninstall();
+    }
+  });
+
+  it('reports a created job even when refreshing the job list fails', () => {
+    const notification = {success: jasmine.createSpy('success'), error: jasmine.createSpy('error')};
+    const workoutClient = {
+      getScheduleRequests: jasmine.createSpy().and.returnValues(of([]), throwError(() => new Error('unavailable'))),
+      scheduleCopyCalendarToCalendar: jasmine.createSpy().and.returnValue(of(null)),
+    };
+    TestBed.configureTestingModule({
+      imports: [CopyCalendarToCalendarComponent, NoopAnimationsModule],
+      providers: [
+        {provide: ConfigurationClient, useValue: {getAllPlatformInfo: () => of({})}},
+        {provide: WorkoutClient, useValue: workoutClient},
+        {provide: NotificationService, useValue: notification},
+        {provide: MatDialog, useValue: {}},
+      ],
+    });
+    const fixture = TestBed.createComponent(CopyCalendarToCalendarComponent);
+    fixture.componentInstance.directions = [{title: 'TrainerRoad to Intervals', value: Platform.DIRECTION_TR_INT}];
+    fixture.detectChanges();
+
+    fixture.componentInstance.scheduleToday();
+
+    expect(notification.success).toHaveBeenCalledOnceWith('Scheduled sync job');
+    expect(notification.error).toHaveBeenCalledOnceWith(jasmine.stringMatching(/was scheduled.*will run until deleted/));
+    expect(fixture.componentInstance.inProgress).toBeFalse();
+    fixture.destroy();
+  });
+
   it('requires confirmation inside the selected option and clears it when leaving Mirror', () => {
     TestBed.configureTestingModule({
       imports: [CopyCalendarToCalendarComponent, NoopAnimationsModule],
@@ -24,14 +84,14 @@ describe('Mirror confirmation', () => {
     const fixture = TestBed.createComponent(CopyCalendarToCalendarComponent);
     fixture.componentInstance.directions = [
       {title: 'TrainerRoad to Intervals', value: Platform.DIRECTION_TR_INT},
-      {title: 'TrainerRoad to TrainingPeaks', value: Platform.DIRECTION_TR_TP},
+      {title: 'TrainingPeaks to Intervals', value: Platform.DIRECTION_TP_INT},
     ];
     fixture.componentInstance.trainingTypes = [{title: 'Ride', value: 'BIKE'}];
     fixture.detectChanges();
 
     const root: HTMLElement = fixture.nativeElement;
     const timeHelp = fixture.debugElement.query(By.css('button[aria-label="About the default start time"]'));
-    expect(timeHelp.injector.get(MatTooltip).message).toContain('TrainerRoad\'s start time always takes priority');
+    expect(timeHelp.injector.get(MatTooltip).message).toContain('TrainerRoad\'s time takes priority');
     const selectMode = (mode: string) => {
       root.querySelector<HTMLInputElement>(`mat-radio-button input[value="${mode}"]`)!.click();
       fixture.detectChanges();
@@ -59,7 +119,7 @@ describe('Mirror confirmation', () => {
 
     confirm().click();
     fixture.detectChanges();
-    fixture.componentInstance.formGroup.patchValue({direction: Platform.DIRECTION_TR_TP});
+    fixture.componentInstance.formGroup.patchValue({direction: Platform.DIRECTION_TP_INT});
     fixture.componentInstance.directionChanged();
     fixture.detectChanges();
     expect(root.querySelector('button[aria-label="About the default start time"]')).toBeNull();
@@ -110,6 +170,36 @@ describe('Mirror confirmation', () => {
     fixture.destroy();
   });
 
+  it('requires new Mirror consent when switching to TrainingPeaks', () => {
+    TestBed.configureTestingModule({
+      imports: [CopyCalendarToCalendarComponent, NoopAnimationsModule],
+      providers: [
+        {provide: ConfigurationClient, useValue: {getAllPlatformInfo: () => of({})}},
+        {provide: WorkoutClient, useValue: {getScheduleRequests: () => of([])}},
+        {provide: NotificationService, useValue: {}},
+        {provide: MatDialog, useValue: {}},
+      ],
+    });
+    const fixture = TestBed.createComponent(CopyCalendarToCalendarComponent);
+    fixture.componentInstance.directions = [
+      {title: 'TrainerRoad to Intervals', value: Platform.DIRECTION_TR_INT},
+      {title: 'TrainerRoad to TrainingPeaks', value: Platform.DIRECTION_TR_TP},
+    ];
+    fixture.detectChanges();
+    fixture.componentInstance.formGroup.patchValue({trainerRoadSyncMode: 'MIRROR', allowStaleRemoval: true});
+    fixture.componentInstance.formGroup.patchValue({direction: Platform.DIRECTION_TR_TP});
+    fixture.componentInstance.directionChanged();
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.isReconciliationSupported(Platform.DIRECTION_TR_TP)).toBeTrue();
+    expect(fixture.componentInstance.isMirrorBlocked()).toBeTrue();
+    expect(fixture.nativeElement.textContent).toContain('a concurrent completion may still race');
+    expect(fixture.nativeElement.textContent).toContain('TrainingPeaks Premium');
+    expect(fixture.nativeElement.textContent).toContain('keeps the existing TrainingPeaks planned time');
+    expect(fixture.nativeElement.textContent).not.toContain('Not used when syncing to TrainingPeaks');
+    fixture.destroy();
+  });
+
   it('sends previewed unidentified dates when confirming Mirror', () => {
     const preview = {
       copied: 0, updated: 0, removed: 1, alreadySynced: 0, skipped: 0, filteredOut: 0,
@@ -142,6 +232,41 @@ describe('Mirror confirmation', () => {
     expect(workoutClient.copyCalendarToCalendar).toHaveBeenCalled();
     expect(workoutClient.copyCalendarToCalendar.calls.mostRecent().args[8]).toEqual(preview.previewActions);
     expect(workoutClient.copyCalendarToCalendar.calls.mostRecent().args[9]).toEqual(preview.unidentifiedActivityDates);
+    fixture.destroy();
+  });
+
+  it('identifies unchanged workouts safely in the sync notification', () => {
+    const response = {
+      copied: 0, updated: 1, removed: 0, alreadySynced: 1, skipped: 0, filteredOut: 0,
+      startDate: '2026-11-24', endDate: '2026-11-24',
+      matchedWorkouts: [{date: '2026-11-24', name: '<Ride & recover>', trainerRoadId: '123'}],
+      previewActions: [], unidentifiedActivityDates: [],
+    };
+    const notification = {success: jasmine.createSpy('success')};
+    TestBed.configureTestingModule({
+      imports: [CopyCalendarToCalendarComponent, NoopAnimationsModule],
+      providers: [
+        {provide: ConfigurationClient, useValue: {getAllPlatformInfo: () => of({})}},
+        {provide: WorkoutClient, useValue: {
+          getScheduleRequests: () => of([]),
+          previewCalendarToCalendar: () => of(response),
+          copyCalendarToCalendar: () => of(response),
+        }},
+        {provide: NotificationService, useValue: notification},
+        {provide: MatDialog, useValue: {open: () => ({afterClosed: () => of(true)})}},
+      ],
+    });
+    const fixture = TestBed.createComponent(CopyCalendarToCalendarComponent);
+    fixture.componentInstance.directions = [{title: 'TrainerRoad to Intervals', value: Platform.DIRECTION_TR_INT}];
+    fixture.detectChanges();
+    fixture.componentInstance.formGroup.patchValue({trainerRoadSyncMode: 'MIRROR', allowStaleRemoval: true});
+
+    fixture.componentInstance.today();
+
+    expect(notification.success).toHaveBeenCalledOnceWith(jasmine.stringMatching(
+      /Unchanged matches: 1<br>2026-11-24 - &lt;Ride &amp; recover&gt;/,
+    ));
+    expect(notification.success.calls.mostRecent().args[0]).not.toContain('TrainerRoad ID');
     fixture.destroy();
   });
 });

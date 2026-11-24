@@ -27,7 +27,7 @@ class FromTPStructureConverter(
     private fun mapSingleStep(tPStepDTO: TPStepDTO): SingleStep {
         return SingleStep(
             tPStepDTO.name,
-            tPStepDTO.length!!.toStepLength(),
+            requireNotNull(tPStepDTO.length) { "Step has no length" }.toStepLength(),
             tPStepDTO.toMainTarget(),
             tPStepDTO.toSecondaryTarget(),
             false
@@ -37,7 +37,7 @@ class FromTPStructureConverter(
     private fun mapMultiStep(tPStructureStepDTO: TPStructureStepDTO): WorkoutStep {
         return MultiStep(
             null,
-            tPStructureStepDTO.length!!.reps().toInt(),
+            requireNotNull(tPStructureStepDTO.length) { "Repetition has no length" }.reps().toInt(),
             tPStructureStepDTO.steps.map { mapSingleStep(it) },
         )
     }

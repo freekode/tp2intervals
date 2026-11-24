@@ -11,9 +11,9 @@
   </div>
 
   <div *ngIf="isReconciliationSupported(direction.value)" class="sync-options">
-    <p>TrainerRoad's simulated plan may change. Choose how Intervals.icu should follow it. The TrainerRoad calendar must cover the selected range.</p>
+    <p>TrainerRoad's simulated plan may change. Choose how {{Platform.getTitle(direction.value.targetPlatform)}} should follow it. The TrainerRoad calendar must cover the selected range.</p>
     <p class="sync-hint">Workouts match by TrainerRoad ID and date, not by name or content. A moved workout or different ID may be treated as an addition and, in Mirror mode, a stale removal.</p>
-    <p class="sync-hint">For now, TrainerRoad calendar entries with no workout ID and an explicitly blank title are assumed to be rest days. This unofficial rule may change. TrainerRoad entries without an ID and with a missing or non-blank title are reported for review. Intervals.icu titles are not used for this assumption.</p>
+    <p class="sync-hint">For now, TrainerRoad calendar entries with no workout ID and an explicitly blank title are assumed to be rest days. This unofficial rule may change. TrainerRoad entries without an ID and with a missing or non-blank title are reported for review. Destination titles are not used for this assumption.</p>
     <p id="sync-mode-label">Sync behaviour</p>
     <mat-radio-group formControlName="trainerRoadSyncMode" (change)="syncModeChanged()" aria-labelledby="sync-mode-label" class="sync-mode-options">
       <div class="sync-mode-option" [class.sync-mode-selected]="formGroup.value.trainerRoadSyncMode === 'ADD_MISSING'">
@@ -25,14 +25,15 @@
       <div class="sync-mode-option" [class.sync-mode-selected]="formGroup.value.trainerRoadSyncMode === 'MIRROR'">
         <mat-radio-button value="MIRROR" aria-label="Mirror current TR simulation" aria-describedby="mirror-description">
           <span class="sync-mode-title">Mirror current TR simulation</span>
-          <span id="mirror-description" class="sync-mode-description">Add missing workouts of the selected types, update changed matches and remove eligible stale Intervals.icu workouts. Unchanged matches are left alone.</span>
+          <span id="mirror-description" class="sync-mode-description">Add missing workouts of the selected types, update changed matches and remove eligible stale {{Platform.getTitle(direction.value.targetPlatform)}} workouts. Unchanged matches are left alone.</span>
         </mat-radio-button>
         <div *ngIf="formGroup.value.trainerRoadSyncMode === 'MIRROR'" class="sync-mode-confirmation">
-          <p class="sync-hint">For matches, Mirror compares the name, type and generated description, including workout steps. It also compares the TrainerRoad start time, or the default if no TrainerRoad time is set. Otherwise it preserves the Intervals.icu time. Separately edited workout files and workout documents are not compared.</p>
-          <p class="sync-hint">An Intervals.icu workout is stale when no TrainerRoad workout with the same ID and date exists in the selected range, regardless of workout type. Duplicate or ambiguous matches are skipped.</p>
-          <p id="mirror-risk-details" class="sync-hint">Mirror may overwrite or remove Intervals.icu workouts with a clear TrainerRoad ID in their description, including manual edits and workouts not created by this app. Stale workouts may be removed on empty days, for unselected types or when a corresponding TrainerRoad activity has no ID. Workouts without a recognizable ID are not removed, but a corresponding TrainerRoad workout may be copied again.</p>
+          <p *ngIf="direction.value.targetPlatform === Platform.INTERVALS.key" class="sync-hint">For matches, Mirror compares the name, type and generated description, including workout steps. It also compares the TrainerRoad start time, or the default if no TrainerRoad time is set. If neither is set, Mirror keeps the existing Intervals.icu time when updating a match. Separately edited workout files and workout documents are not compared.</p>
+          <p *ngIf="direction.value.targetPlatform === Platform.TRAINING_PEAKS.key" class="sync-hint">Mirror compares the name, type, planned duration, load, description and workout steps. It also compares the TrainerRoad start time, or the default if no TrainerRoad time is set. If neither is set, Mirror keeps the existing TrainingPeaks planned time when updating a match. Workouts with a missing or invalid planned time field are protected. Completed workouts are protected based on available data and rechecked immediately before changes, but a concurrent completion may still race with a write.</p>
+          <p class="sync-hint">A destination workout is stale when no TrainerRoad workout with the same ID and date exists in the selected range, regardless of workout type. Duplicate or ambiguous matches are skipped.</p>
+          <p id="mirror-risk-details" class="sync-hint">Mirror may overwrite or remove {{Platform.getTitle(direction.value.targetPlatform)}} workouts with a clear TrainerRoad ID in their description, including manual edits and workouts not created by this app. Stale workouts may be removed on empty days, for unselected types or when a corresponding TrainerRoad activity has no ID. Workouts without a recognizable ID are not removed, but a corresponding TrainerRoad workout may be copied again.</p>
           <mat-checkbox formControlName="allowStaleRemoval" aria-describedby="mirror-risk-details">
-            I understand and allow Mirror to remove stale Intervals.icu workouts with a TrainerRoad ID and overwrite changed matches.
+            I understand and allow Mirror to remove stale {{Platform.getTitle(direction.value.targetPlatform)}} workouts with a TrainerRoad ID and overwrite changed matches.
           </mat-checkbox>
           <p class="sync-warning" *ngIf="isMirrorBlocked()">Confirm to preview or schedule Mirror.</p>
         </div>
@@ -80,6 +81,7 @@
        matTooltip="Syncing to future dates may require TrainingPeaks Premium."
        matTooltipPosition="right"></i>
   </div>
+  <p *ngIf="isReconciliationSupported(direction.value) && direction.value.targetPlatform === Platform.TRAINING_PEAKS.key" class="sync-hint">Syncing to future dates may require TrainingPeaks Premium.</p>
 
   <div class="row" style="margin-bottom: 10px" *ngIf="!isReconciliationSupported(direction.value)">
     <mat-checkbox formControlName="skipSynced">
@@ -91,13 +93,18 @@
     <mat-form-field class="form-field">
       <mat-label>Default start time (optional)</mat-label>
       <input matInput type="time" step="60" formControlName="defaultStartTime">
-      <button *ngIf="isReconciliationSupported(direction.value)" mat-icon-button matSuffix type="button"
+      <button *ngIf="isReconciliationSupported(direction.value) && direction.value.targetPlatform === Platform.INTERVALS.key" mat-icon-button matSuffix type="button"
               aria-label="About the default start time"
-              matTooltip="Used as a fallback when TrainerRoad has no start time. TrainerRoad's start time always takes priority. If neither is set, new workouts have no start time in Intervals.icu, and Mirror preserves existing event times.">
+              matTooltip="Used when TrainerRoad has no start time. TrainerRoad's time takes priority. If neither is set, Mirror keeps the existing Intervals.icu time when updating a matching event, and new events are sent with a time of 00:00.">
         <i class="bi bi-info-circle" aria-hidden="true"></i>
       </button>
-      <mat-hint *ngIf="direction.value.targetPlatform === Platform.INTERVALS.key">Local time (e.g. 18:00 for Hexis)</mat-hint>
-      <mat-hint *ngIf="direction.value.targetPlatform !== Platform.INTERVALS.key">Not used when syncing to TrainingPeaks</mat-hint>
+      <button *ngIf="isReconciliationSupported(direction.value) && direction.value.targetPlatform === Platform.TRAINING_PEAKS.key" mat-icon-button matSuffix type="button"
+              aria-label="About the default start time"
+              matTooltip="Used when TrainerRoad has no start time. TrainerRoad's time takes priority. If neither is set, Mirror keeps the existing TrainingPeaks planned time when updating a matching workout, and new workouts have no planned time.">
+        <i class="bi bi-info-circle" aria-hidden="true"></i>
+      </button>
+      <mat-hint *ngIf="direction.value.targetPlatform === Platform.INTERVALS.key || isReconciliationSupported(direction.value)">Local time (e.g. 18:00 for Hexis)</mat-hint>
+      <mat-hint *ngIf="direction.value.targetPlatform !== Platform.INTERVALS.key && !isReconciliationSupported(direction.value)">Not used when syncing to TrainingPeaks</mat-hint>
     </mat-form-field>
   </div>
 
@@ -149,6 +156,7 @@
             color="primary"
             type="button"
             aria-label="Delete scheduled job"
+            [disabled]="inProgress"
             (click)="deleteJob(request.id)">
             <i class="bi bi-trash" aria-hidden="true"></i>
           </button>

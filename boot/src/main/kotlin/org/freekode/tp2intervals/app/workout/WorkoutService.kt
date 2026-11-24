@@ -28,8 +28,9 @@ class WorkoutService(
             throw PlatformException(request.targetPlatform, "The old refresh option is no longer supported; select the new removal option explicitly")
         }
         if ((request.removeStaleTrainerRoad || request.trainerRoadSyncMode != null) &&
-            (request.sourcePlatform != Platform.TRAINER_ROAD || request.targetPlatform != Platform.INTERVALS)) {
-            throw PlatformException(request.targetPlatform, "TrainerRoad reconciliation is supported only from TrainerRoad to Intervals.icu")
+            (request.sourcePlatform != Platform.TRAINER_ROAD ||
+                request.targetPlatform !in listOf(Platform.INTERVALS, Platform.TRAINING_PEAKS))) {
+            throw PlatformException(request.targetPlatform, "TrainerRoad reconciliation is supported only to Intervals.icu or TrainingPeaks")
         }
         if (request.removeStaleTrainerRoad) {
             throw PlatformException(request.targetPlatform, "The old removal option is no longer supported; select Mirror and allow removal explicitly")
@@ -43,7 +44,8 @@ class WorkoutService(
     }
 
     fun copyWorkoutsC2C(request: CopyFromCalendarToCalendarRequest): CopyWorkoutsResponse {
-        return if (request.sourcePlatform == Platform.TRAINER_ROAD && request.targetPlatform == Platform.INTERVALS) {
+        return if (request.sourcePlatform == Platform.TRAINER_ROAD &&
+            request.targetPlatform in listOf(Platform.INTERVALS, Platform.TRAINING_PEAKS)) {
             synchronized(trainerRoadCalendarLock) { executeCalendarCopy(request) }
         } else {
             executeCalendarCopy(request)
@@ -51,7 +53,8 @@ class WorkoutService(
     }
 
     private fun executeCalendarCopy(request: CopyFromCalendarToCalendarRequest): CopyWorkoutsResponse {
-        log.info("Received request for copy calendar to calendar: $request")
+        log.info("Received calendar sync: source={}, target={}, mode={}",
+            request.sourcePlatform, request.targetPlatform, request.trainerRoadSyncMode)
         validateCalendarRequest(request)
         if (request.trainerRoadSyncMode != null) {
             val plan = prepareTrainerRoadSync(request)
@@ -128,25 +131,28 @@ class WorkoutService(
         val toCopy: List<Workout>,
         val toUpdate: List<Pair<Workout, Workout>>,
         val toRemove: List<Workout>,
-        val alreadySynced: Int,
+        val matchedWorkouts: List<MatchedSyncWorkout>,
         val filteredOut: Int,
         val skippedWorkouts: List<SkippedSyncWorkout>,
         val unidentifiedActivityDates: List<LocalDate>,
     ) {
         fun actions(): List<SyncPlanAction> {
-            fun action(kind: SyncAction, workout: Workout, eventId: String?) = SyncPlanAction(
+            fun action(kind: SyncAction, workout: Workout, target: Workout?) = SyncPlanAction(
                 kind, requireNotNull(workout.date), workout.details.name,
-                requireNotNull(workout.details.externalData.trainerRoadId), eventId,
+                requireNotNull(workout.details.externalData.trainerRoadId),
+                target?.details?.externalData?.intervalsId,
+                target?.details?.externalData?.trainingPeaksId,
             )
             return (toCopy.map { action(SyncAction.ADD, it, null) } +
-                toUpdate.map { (source, target) -> action(SyncAction.UPDATE, source, target.details.externalData.intervalsId) } +
-                toRemove.map { action(SyncAction.REMOVE, it, it.details.externalData.intervalsId) })
-                .sortedWith(compareBy({ it.date }, { it.action }, { it.trainerRoadId }, { it.intervalsId }))
+                toUpdate.map { (source, target) -> action(SyncAction.UPDATE, source, target) } +
+                toRemove.map { action(SyncAction.REMOVE, it, it) })
+                .sortedWith(compareBy({ it.date }, { it.action }, { it.trainerRoadId }, { it.intervalsId }, { it.trainingPeaksId }))
         }
 
         fun response(request: CopyFromCalendarToCalendarRequest) = CopyWorkoutsResponse(
             toCopy.size, filteredOut, request.startDate, request.endDate, ExternalData.empty(),
-            alreadySynced, toRemove.size, skippedWorkouts.size, toUpdate.size, actions(), unidentifiedActivityDates, skippedWorkouts,
+            matchedWorkouts.size, toRemove.size, skippedWorkouts.size, toUpdate.size, actions(), unidentifiedActivityDates, skippedWorkouts,
+            matchedWorkouts,
         )
     }
 
@@ -157,7 +163,7 @@ class WorkoutService(
         val source = sourceResult.workouts
         val unidentifiedDates = sourceResult.unidentifiedActivityDates.filter { it in request.startDate..request.endDate }
         if (unidentifiedDates.isNotEmpty()) {
-            log.warn("Skipping TrainerRoad activities without workout IDs on dates {}", unidentifiedDates.distinct().sorted())
+            log.warn("Skipping {} TrainerRoad activities without workout IDs", unidentifiedDates.size)
         }
         if (source.any {
                 it.date == null || it.date !in request.startDate..request.endDate ||
@@ -179,9 +185,17 @@ class WorkoutService(
         val targetGroups = targets
             .filter { it.date != null && it.date in request.startDate..request.endDate && !it.details.externalData.trainerRoadId.isNullOrBlank() }
             .groupBy { it.date to it.details.externalData.trainerRoadId }
+        val ambiguousTargetGroups = targets
+            .filter { it.date != null && it.date in request.startDate..request.endDate &&
+                !it.details.externalData.hasClearTrainerRoadId(it.details.description) }
+            .flatMap { target ->
+                ExternalData.trainerRoadIdsInDescription(target.details.description)
+                    .map { id -> (target.date to id) to target }
+            }
+            .groupBy({ it.first }, { it.second })
         val toCopy = mutableListOf<Workout>()
         val toUpdate = mutableListOf<Pair<Workout, Workout>>()
-        var alreadySynced = 0
+        val matched = mutableListOf<MatchedSyncWorkout>()
         val skipped = mutableListOf<SkippedSyncWorkout>()
         fun skip(workout: Workout, reason: SkippedSyncReason, matchingTargets: List<Workout>) {
             skipped.add(SkippedSyncWorkout(
@@ -189,6 +203,13 @@ class WorkoutService(
                 requireNotNull(workout.details.externalData.trainerRoadId),
                 matchingTargets.mapNotNull { it.details.externalData.intervalsId },
                 reason,
+                matchingTargets.mapNotNull { it.details.externalData.trainingPeaksId },
+            ))
+        }
+        fun recordMatch(workout: Workout) {
+            matched.add(MatchedSyncWorkout(
+                requireNotNull(workout.date), workout.details.name,
+                requireNotNull(workout.details.externalData.trainerRoadId),
             ))
         }
         val selected = source.filter { it.details.type in request.types }
@@ -196,13 +217,16 @@ class WorkoutService(
             val workout = sourceWorkout.withStartTime(sourceWorkout.startTime ?: startTime)
             val key = workout.date to workout.details.externalData.trainerRoadId
             val matches = targetGroups[key].orEmpty()
+            val ambiguousMatches = ambiguousTargetGroups[key].orEmpty()
             when {
                 sourceGroups.getValue(key).size != 1 -> skip(workout, SkippedSyncReason.DUPLICATE_TRAINERROAD_ID, matches)
+                ambiguousMatches.isNotEmpty() -> skip(workout, SkippedSyncReason.PROTECTED_EVENT,
+                    (matches + ambiguousMatches).distinctBy { it.details.externalData })
                 matches.size > 1 -> skip(workout, SkippedSyncReason.DUPLICATE_INTERVALS_ID, matches)
                 matches.isEmpty() -> toCopy.add(workout)
-                mode == TrainerRoadSyncMode.ADD_MISSING -> alreadySynced++
+                mode == TrainerRoadSyncMode.ADD_MISSING -> recordMatch(workout)
                 !eligible(matches.single()) -> skip(workout, SkippedSyncReason.PROTECTED_EVENT, matches)
-                targetRepository.isTrainerRoadWorkoutUpToDate(workout, matches.single()) -> alreadySynced++
+                targetRepository.isTrainerRoadWorkoutUpToDate(workout, matches.single()) -> recordMatch(workout)
                 else -> toUpdate.add(workout to matches.single())
             }
         }
@@ -210,6 +234,10 @@ class WorkoutService(
             targetGroups.flatMap { (key, matches) ->
                 when {
                     key in sourceGroups -> emptyList()
+                    ambiguousTargetGroups[key].orEmpty().isNotEmpty() -> {
+                        matches.forEach { skip(it, SkippedSyncReason.PROTECTED_EVENT, listOf(it)) }
+                        emptyList()
+                    }
                     matches.size == 1 && eligible(matches.single()) -> matches
                     else -> {
                         val reason = if (matches.size > 1) SkippedSyncReason.DUPLICATE_INTERVALS_ID else SkippedSyncReason.PROTECTED_EVENT
@@ -219,10 +247,16 @@ class WorkoutService(
                 }
             }
         } else emptyList()
-        if ((toUpdate.map { it.second } + toRemove).any { it.details.externalData.intervalsId.isNullOrBlank() }) {
-            throw PlatformException(request.targetPlatform, "An Intervals.icu event is missing its ID; no workouts were changed")
+        if ((toUpdate.map { it.second } + toRemove).any {
+                when (request.targetPlatform) {
+                    Platform.INTERVALS -> it.details.externalData.intervalsId.isNullOrBlank()
+                    Platform.TRAINING_PEAKS -> it.details.externalData.trainingPeaksId.isNullOrBlank()
+                    else -> true
+                }
+            }) {
+            throw PlatformException(request.targetPlatform, "A destination workout is missing its ID; no workouts were changed")
         }
-        return TrainerRoadSyncPlan(toCopy, toUpdate, toRemove, alreadySynced, source.size - selected.size, skipped, unidentifiedDates.distinct().sorted())
+        return TrainerRoadSyncPlan(toCopy, toUpdate, toRemove, matched, source.size - selected.size, skipped, unidentifiedDates.distinct().sorted())
     }
 
     fun copyWorkoutsC2L(request: CopyFromCalendarToLibraryRequest): CopyWorkoutsResponse {

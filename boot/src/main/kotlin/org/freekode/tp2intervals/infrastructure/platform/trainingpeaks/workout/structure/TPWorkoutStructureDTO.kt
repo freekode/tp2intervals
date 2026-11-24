@@ -8,5 +8,6 @@ class TPWorkoutStructureDTO(
     val primaryIntensityMetric: String?,
     val visualizationDistanceUnit: String?, // meter, ?
 ) {
-    fun toTargetUnit(): WorkoutStructure.TargetUnit = TPTargetMapper.getByIntensity(primaryIntensityMetric!!)
+    fun toTargetUnit(): WorkoutStructure.TargetUnit =
+        TPTargetMapper.getByIntensity(requireNotNull(primaryIntensityMetric) { "Structure has no intensity metric" })
 }

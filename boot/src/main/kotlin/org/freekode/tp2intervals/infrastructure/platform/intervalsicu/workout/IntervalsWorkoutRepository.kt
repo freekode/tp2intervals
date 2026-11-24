@@ -47,13 +47,7 @@ class IntervalsWorkoutRepository(
     }
 
     override fun hasExplicitTrainerRoadId(workout: Workout): Boolean {
-        val parts = workout.details.description.orEmpty().split("//////////")
-        if (parts.size != 2) return false
-        val ids = parts[1].lines().map { it.trimEnd('\r') }
-            .filter { it.startsWith("trainerRoadId=") }
-            .map { it.substringAfter("=") }
-        val id = ids.singleOrNull() ?: return false
-        return (id.toLongOrNull() ?: 0) > 0 && id == workout.details.externalData.trainerRoadId
+        return workout.details.externalData.hasClearTrainerRoadId(workout.details.description)
     }
 
     override fun isTrainerRoadWorkoutUpToDate(source: Workout, target: Workout): Boolean {

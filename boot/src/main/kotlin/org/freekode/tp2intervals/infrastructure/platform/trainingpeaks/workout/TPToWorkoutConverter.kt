@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.time.Duration
 import java.time.LocalDate
+import kotlin.math.roundToLong
 
 @Component
 class TPToWorkoutConverter {
@@ -43,7 +44,7 @@ class TPToWorkoutConverter {
                 tpWorkout.getWorkoutType()!!,
                 if (tpWorkout.title.isNullOrBlank()) "Workout" else tpWorkout.title,
                 description,
-                tpWorkout.totalTimePlanned?.let { Duration.ofMinutes((it * 60).toLong()) },
+                tpWorkout.totalTimePlanned?.let { Duration.ofSeconds((it * 3600).roundToLong()) },
                 tpWorkout.tssPlanned,
                 getWorkoutExternalData(tpWorkout),
                 attachments
@@ -60,7 +61,7 @@ class TPToWorkoutConverter {
             }
             FromTPStructureConverter.toWorkoutStructure(tpWorkout.structure)
         } catch (e: IllegalArgumentException) {
-            log.warn("Error during TP Workout conversion, skipping, id: ${tpWorkout.id}, name: ${tpWorkout.title}, error - ${e.message}'")
+            log.warn("Could not convert TrainingPeaks workout structure")
             null
         }
 

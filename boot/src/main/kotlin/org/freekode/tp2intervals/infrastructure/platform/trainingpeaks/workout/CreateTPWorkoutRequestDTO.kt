@@ -16,6 +16,7 @@ class CreateTPWorkoutRequestDTO(
     var tssPlanned: Int?,
     var structure: String?
 ) {
+    var startTimePlanned: String? = null
 
     companion object {
 

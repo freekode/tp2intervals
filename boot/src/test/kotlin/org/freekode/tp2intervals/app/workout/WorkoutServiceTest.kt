@@ -87,6 +87,7 @@ class WorkoutServiceTest {
         val preview = service.previewTrainerRoadSync(request)
         assertEquals(1, preview.copied)
         assertEquals(1, preview.alreadySynced)
+        assertEquals(listOf(MatchedSyncWorkout(date, "Workout 1", "1")), preview.matchedWorkouts)
         assertEquals(0, preview.updated)
         assertEquals(0, preview.removed)
         verify(target, never()).saveTrainerRoadWorkoutsToCalendar(listOf(new))
@@ -114,6 +115,7 @@ class WorkoutServiceTest {
         val result = service.copyWorkoutsC2C(request.copy(allowStaleRemoval = true))
         assertEquals(1, result.updated)
         assertEquals(1, result.removed)
+        assertTrue(result.matchedWorkouts.isEmpty())
         val order = inOrder(target)
         order.verify(target).saveTrainerRoadWorkoutsToCalendar(emptyList())
         order.verify(target).updateSyncedWorkout(matched, existing)
@@ -132,12 +134,72 @@ class WorkoutServiceTest {
 
         val preview = service.previewTrainerRoadSync(request)
         assertEquals(1, preview.alreadySynced)
+        assertEquals(listOf(MatchedSyncWorkout(date, "Workout 1", "1")), preview.matchedWorkouts)
         assertEquals(0, preview.updated)
         assertTrue(preview.previewActions.isEmpty())
         val result = service.copyWorkoutsC2C(request.copy(expectedActions = preview.previewActions, expectedUnidentifiedActivityDates = preview.unidentifiedActivityDates))
         assertEquals(preview, result)
         verify(target, never()).updateSyncedWorkout(matched, existing)
         verify(target, never()).deleteSyncedWorkout(existing)
+    }
+
+    @Test
+    fun `TrainingPeaks mirror previews and confirms destination IDs`() {
+        val matched = workout("1")
+        val stale = workout("2")
+        val existing = matched.copy(details = matched.details.copy(
+            externalData = matched.details.externalData.withTrainingPeaks("10"),
+        ))
+        val staleTarget = stale.copy(details = stale.details.copy(
+            externalData = stale.details.externalData.withTrainingPeaks("20"),
+        ))
+        `when`(source.platform()).thenReturn(Platform.TRAINER_ROAD)
+        `when`(target.platform()).thenReturn(Platform.TRAINING_PEAKS)
+        `when`(source.getTrainerRoadReconciliationSource(date, date))
+            .thenReturn(TrainerRoadReconciliationSource(listOf(matched), emptyList()))
+        `when`(target.getWorkoutsForReconciliation(date, date)).thenReturn(listOf(existing, staleTarget))
+        `when`(target.hasExplicitTrainerRoadId(existing)).thenReturn(true)
+        `when`(target.hasExplicitTrainerRoadId(staleTarget)).thenReturn(true)
+        val service = WorkoutService(listOf(source, target), emptyList())
+        val request = request().copy(targetPlatform = Platform.TRAINING_PEAKS,
+            trainerRoadSyncMode = TrainerRoadSyncMode.MIRROR, allowStaleRemoval = true)
+
+        val preview = service.previewTrainerRoadSync(request)
+
+        assertEquals(listOf("10", "20"), preview.previewActions.map { it.trainingPeaksId })
+        assertTrue(preview.previewActions.all { it.intervalsId == null })
+        service.copyWorkoutsC2C(request.copy(expectedActions = preview.previewActions, expectedUnidentifiedActivityDates = emptyList()))
+        verify(target).updateSyncedWorkout(matched, existing)
+        verify(target).deleteSyncedWorkout(staleTarget)
+    }
+
+    @Test
+    fun `TrainingPeaks mirror stops if a destination identity changes after preview`() {
+        val sourceWorkout = workout("1")
+        val first = sourceWorkout.copy(details = sourceWorkout.details.copy(
+            externalData = sourceWorkout.details.externalData.withTrainingPeaks("10"),
+        ))
+        val replacement = first.copy(details = first.details.copy(
+            externalData = first.details.externalData.withTrainingPeaks("11"),
+        ))
+        `when`(source.platform()).thenReturn(Platform.TRAINER_ROAD)
+        `when`(target.platform()).thenReturn(Platform.TRAINING_PEAKS)
+        `when`(source.getTrainerRoadReconciliationSource(date, date))
+            .thenReturn(TrainerRoadReconciliationSource(listOf(sourceWorkout), emptyList()))
+        `when`(target.getWorkoutsForReconciliation(date, date)).thenReturn(listOf(first), listOf(replacement))
+        `when`(target.hasExplicitTrainerRoadId(first)).thenReturn(true)
+        `when`(target.hasExplicitTrainerRoadId(replacement)).thenReturn(true)
+        val service = WorkoutService(listOf(source, target), emptyList())
+        val request = request().copy(targetPlatform = Platform.TRAINING_PEAKS,
+            trainerRoadSyncMode = TrainerRoadSyncMode.MIRROR, allowStaleRemoval = true)
+        val preview = service.previewTrainerRoadSync(request)
+
+        assertThrows(PlatformException::class.java) {
+            service.copyWorkoutsC2C(request.copy(expectedActions = preview.previewActions,
+                expectedUnidentifiedActivityDates = emptyList()))
+        }
+        verify(target, never()).saveTrainerRoadWorkoutsToCalendar(org.mockito.ArgumentMatchers.anyList())
+        verify(target, never()).updateSyncedWorkout(sourceWorkout, replacement)
     }
 
     @Test

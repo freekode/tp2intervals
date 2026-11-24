@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {MatGridListModule} from "@angular/material/grid-list";
-import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
+import {AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, Validators} from "@angular/forms";
 import {MatButtonModule} from "@angular/material/button";
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatInputModule} from "@angular/material/input";
@@ -13,10 +13,19 @@ import {MatSelectModule} from "@angular/material/select";
 import {MatCheckboxModule} from "@angular/material/checkbox";
 import {WorkoutClient} from "infrastructure/client/workout.client";
 import {NotificationService} from "infrastructure/notification.service";
-import {debounceTime, filter, finalize, map, Observable, switchMap, tap} from "rxjs";
+import {catchError, debounceTime, finalize, map, Observable, of, shareReplay, switchMap} from "rxjs";
 import {LibraryClient} from "infrastructure/client/library-client.service";
 import {Platform} from "infrastructure/platform";
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
+
+function selectedWorkout(control: AbstractControl): ValidationErrors | null {
+  const value: unknown = control.value
+  if (!value) return null
+  if (typeof value !== 'object') return {workoutNotSelected: true}
+  const workout = value as {externalData?: {trainerRoadId?: unknown}}
+  return typeof workout.externalData?.trainerRoadId === 'string' && workout.externalData.trainerRoadId.trim()
+    ? null : {workoutNotSelected: true}
+}
 
 @Component({
   selector: 'tr-copy-library-to-library',
@@ -44,12 +53,18 @@ import {MatAutocompleteModule} from "@angular/material/autocomplete";
 export class TrCopyLibraryToLibraryComponent implements OnInit {
 
   formGroup: FormGroup = this.formBuilder.group({
-    trWorkoutDetails: [null, [Validators.required, Validators.minLength(3)]],
+    trWorkoutDetails: [null, [Validators.required, selectedWorkout]],
     intervalsPlan: [null, Validators.required],
   });
 
   searchInProgress = false
+  searchFailed = false
   submitInProgress = false
+
+  get canSearch(): boolean {
+    const value: unknown = this.formGroup.controls['trWorkoutDetails'].value
+    return typeof value === 'string' && value.trim().length >= 3
+  }
 
   workouts: Observable<any[]>;
   intervalsLibraryItem: Observable<{ name: any; value: any }[]>;
@@ -73,7 +88,6 @@ export class TrCopyLibraryToLibraryComponent implements OnInit {
     this.submitInProgress = true
     let workoutDetails = this.formGroup.value.trWorkoutDetails
     let intervalsPlan = this.formGroup.value.intervalsPlan
-    console.log(this.formGroup.getRawValue())
     this.workoutClient.copyLibraryToLibrary(workoutDetails.externalData, intervalsPlan, this.direction).pipe(
       finalize(() => this.submitInProgress = false)
     ).subscribe((response) => {
@@ -85,6 +99,7 @@ export class TrCopyLibraryToLibraryComponent implements OnInit {
     if (!details) {
       return ''
     }
+    if (typeof details === 'string') return details
     return `${details.name} (Duration: ${details.duration || '0'}, Load: ${details.load})`
   }
 
@@ -104,15 +119,21 @@ export class TrCopyLibraryToLibraryComponent implements OnInit {
   private subscribeOnWorkoutNameChange() {
     this.workouts = this.formGroup.controls['trWorkoutDetails'].valueChanges.pipe(
       debounceTime(500),
-      filter(() => this.formGroup.controls['trWorkoutDetails'].valid),
-      tap(() => {
+      switchMap(value => {
+        this.searchFailed = false
+        if (typeof value !== 'string' || value.trim().length < 3) return of([])
         this.searchInProgress = true
+        return this.workoutClient.findWorkoutsByName(Platform.TRAINER_ROAD.key, value).pipe(
+          catchError(() => {
+            this.searchFailed = true
+            return of([])
+          }),
+          finalize(() => {
+            this.searchInProgress = false
+          })
+        )
       }),
-      switchMap(value => this.workoutClient.findWorkoutsByName(Platform.TRAINER_ROAD.key, value).pipe(
-        finalize(() => {
-          this.searchInProgress = false
-        })
-      ))
+      shareReplay({bufferSize: 1, refCount: true}),
     )
   }
 }

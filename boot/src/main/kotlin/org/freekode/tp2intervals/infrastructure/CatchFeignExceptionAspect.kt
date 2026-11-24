@@ -24,11 +24,11 @@ class CatchFeignExceptionAspect {
         try {
             return joinPoint.proceed()
         } catch (e: FeignException) {
-            log.warn("HTTP request exception", e)
-
-            var message = e.message ?: "Unknown error"
-            if (e.status() == HttpStatus.FORBIDDEN.value() || e.status() == HttpStatus.UNAUTHORIZED.value()) {
-                message = "Access denied"
+            log.warn("{} HTTP request failed with status {}", platform, e.status())
+            val message = if (e.status() == HttpStatus.FORBIDDEN.value() || e.status() == HttpStatus.UNAUTHORIZED.value()) {
+                "Access denied"
+            } else {
+                "HTTP request failed with status ${e.status()}"
             }
             throw PlatformException(platform, message)
         }

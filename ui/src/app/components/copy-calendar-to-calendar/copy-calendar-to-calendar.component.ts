@@ -22,7 +22,7 @@ import {WorkoutClient} from "infrastructure/client/workout.client";
 import {NotificationService} from "infrastructure/notification.service";
 import {MatTooltipModule} from "@angular/material/tooltip";
 import {TrainingTypes} from "infrastructure/training-types";
-import {describeSkippedWorkout, SyncPreviewDialogComponent} from "./sync-preview-dialog.component";
+import {describeSkippedWorkout, MatchedSyncWorkout, SyncPreviewDialogComponent} from "./sync-preview-dialog.component";
 
 @Component({
   selector: 'copy-calendar-to-calendar',
@@ -51,8 +51,15 @@ import {describeSkippedWorkout, SyncPreviewDialogComponent} from "./sync-preview
 export class CopyCalendarToCalendarComponent implements OnInit, OnDestroy {
   readonly Platform = Platform;
   readonly describeSkippedWorkout = describeSkippedWorkout;
-  readonly todayDate = new Date()
-  readonly tomorrowDate = new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
+  get todayDate(): Date {
+    return new Date()
+  }
+
+  get tomorrowDate(): Date {
+    const tomorrow = new Date()
+    tomorrow.setDate(tomorrow.getDate() + 1)
+    return tomorrow
+  }
 
   @Input() trainingTypes: any[] = []
   @Input() selectedTrainingTypes = ['BIKE', 'VIRTUAL_BIKE']
@@ -120,11 +127,15 @@ export class CopyCalendarToCalendarComponent implements OnInit, OnDestroy {
 
     this.inProgress = true
     this.workoutClient.scheduleCopyCalendarToCalendar(startDate, endDate, trainingTypes, skipSynced, defaultStartTime, trainerRoadSyncMode, allowStaleRemoval, direction).pipe(
-      switchMap(() => this.loadScheduleRequests()),
+      tap(() => this.notificationService.success('Scheduled sync job')),
+      switchMap(() => this.loadScheduleRequests().pipe(
+        catchError(() => {
+          this.notificationService.error('The job was scheduled, but the job list could not be refreshed. It will run until deleted.')
+          return EMPTY
+        }),
+      )),
       finalize(() => this.inProgress = false)
-    ).subscribe(() => {
-      this.notificationService.success(`Scheduled sync job`)
-    })
+    ).subscribe()
   }
 
   mapTrainingTypesToTitles(values) {
@@ -156,13 +167,18 @@ export class CopyCalendarToCalendarComponent implements OnInit, OnDestroy {
     sync.pipe(
       finalize(() => this.inProgress = false)
     ).subscribe((response) => {
+      const escapeHtml = (value: string) => value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const matches = (response.matchedWorkouts ?? []).map((workout: MatchedSyncWorkout) =>
+        `<br>${escapeHtml(workout.date)} - ${escapeHtml(workout.name)}`
+      ).join('');
       this.notificationService.success(
-        `Copied: ${response.copied}<br>${trainerRoadSyncMode === 'ADD_MISSING' ? 'Existing matches (not checked for changes)' : trainerRoadSyncMode === 'MIRROR' ? 'Unchanged matches' : 'Already synced'}: ${response.alreadySynced}${trainerRoadSyncMode ? `<br>Updated: ${response.updated}<br>Removed: ${response.removed}${response.skipped ? `<br>Skipped (ambiguous or protected): ${response.skipped}` : ''}` : ''}${response.unidentifiedActivityDates?.length ? `<br>Activities without workout IDs on ${response.unidentifiedActivityDates.join(', ')} require manual review.${trainerRoadSyncMode === 'MIRROR' ? ' Marked events may have been removed even if they correspond to these activities.' : ''}` : ''}<br>Filtered out by workout type: ${response.filteredOut}<br>From ${response.startDate} to ${response.endDate}`)
+        `Copied: ${response.copied}<br>${trainerRoadSyncMode === 'ADD_MISSING' ? 'Existing matches (not checked for changes)' : trainerRoadSyncMode === 'MIRROR' ? 'Unchanged matches' : 'Already synced'}: ${response.alreadySynced}${matches}${trainerRoadSyncMode ? `<br>Updated: ${response.updated}<br>Removed: ${response.removed}${response.skipped ? `<br>Skipped (ambiguous or protected): ${response.skipped}` : ''}` : ''}${response.unidentifiedActivityDates?.length ? `<br>Activities without workout IDs on ${response.unidentifiedActivityDates.join(', ')} require manual review.${trainerRoadSyncMode === 'MIRROR' ? ' Marked workouts may have been removed even if they correspond to these activities.' : ''}` : ''}<br>Filtered out by workout type: ${response.filteredOut}<br>From ${response.startDate} to ${response.endDate}`)
     })
   }
 
   isReconciliationSupported(direction: {sourcePlatform: string, targetPlatform: string}): boolean {
-    return direction?.sourcePlatform === Platform.TRAINER_ROAD.key && direction?.targetPlatform === Platform.INTERVALS.key
+    return direction?.sourcePlatform === Platform.TRAINER_ROAD.key &&
+      [Platform.INTERVALS.key, Platform.TRAINING_PEAKS.key].includes(direction?.targetPlatform)
   }
 
   isMirrorBlocked(): boolean {
@@ -180,9 +196,7 @@ export class CopyCalendarToCalendarComponent implements OnInit, OnDestroy {
   }
 
   directionChanged(): void {
-    if (!this.isReconciliationSupported(this.formGroup.value.direction)) {
-      this.formGroup.patchValue({allowStaleRemoval: false})
-    }
+    this.formGroup.patchValue({allowStaleRemoval: false})
     if (this.isReconciliationSupported(this.formGroup.value.direction)) this.applyHorizon()
   }
 
@@ -220,10 +234,14 @@ export class CopyCalendarToCalendarComponent implements OnInit, OnDestroy {
   deleteJob(jobId: any) {
     this.inProgress = true
     this.workoutClient.deleteScheduleRequest(jobId).pipe(
-      switchMap(() => this.loadScheduleRequests()),
+      tap(() => this.notificationService.success('Deleted job')),
+      switchMap(() => this.loadScheduleRequests().pipe(
+        catchError(() => {
+          this.notificationService.error('The job was deleted, but the job list could not be refreshed.')
+          return EMPTY
+        }),
+      )),
       finalize(() => this.inProgress = false)
-    ).subscribe(() => {
-      this.notificationService.success(`Deleted job`)
-    })
+    ).subscribe()
   }
 }

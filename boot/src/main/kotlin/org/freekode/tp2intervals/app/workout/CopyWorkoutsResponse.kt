@@ -16,6 +16,13 @@ data class SkippedSyncWorkout(
     val trainerRoadId: String,
     val intervalsIds: List<String>,
     val reason: SkippedSyncReason,
+    val trainingPeaksIds: List<String> = emptyList(),
+)
+
+data class MatchedSyncWorkout(
+    val date: LocalDate,
+    val name: String,
+    val trainerRoadId: String,
 )
 
 data class CopyWorkoutsResponse(
@@ -31,4 +38,5 @@ data class CopyWorkoutsResponse(
     val previewActions: List<SyncPlanAction> = emptyList(),
     val unidentifiedActivityDates: List<LocalDate> = emptyList(),
     val skippedWorkouts: List<SkippedSyncWorkout> = emptyList(),
+    val matchedWorkouts: List<MatchedSyncWorkout> = emptyList(),
 )

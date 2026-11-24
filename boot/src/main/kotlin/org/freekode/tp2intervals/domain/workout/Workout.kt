@@ -12,6 +12,7 @@ data class Workout(
     val date: LocalDate?,
     val structure: WorkoutStructure?,
     val startTime: LocalTime? = null,
+    val protectedFromTrainerRoadSync: Boolean = false,
 ) : Serializable {
     companion object {
         fun note(date: LocalDate, name: String, description: String?, externalData: ExternalData): Workout {

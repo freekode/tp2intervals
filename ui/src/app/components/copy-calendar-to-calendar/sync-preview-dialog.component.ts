@@ -7,18 +7,24 @@ export interface SkippedSyncWorkout {
   name: string;
   trainerRoadId: string;
   intervalsIds: string[];
+  trainingPeaksIds?: string[];
   reason: 'DUPLICATE_TRAINERROAD_ID' | 'DUPLICATE_INTERVALS_ID' | 'PROTECTED_EVENT' | 'UNIDENTIFIED_ACTIVITY';
+}
+
+export interface MatchedSyncWorkout {
+  date: string;
+  name: string;
+  trainerRoadId: string;
 }
 
 export function describeSkippedWorkout(workout: SkippedSyncWorkout): string {
   const reasons: Record<SkippedSyncWorkout['reason'], string> = {
     DUPLICATE_TRAINERROAD_ID: 'duplicate TrainerRoad ID on this day',
-    DUPLICATE_INTERVALS_ID: 'multiple Intervals events match this ID',
-    PROTECTED_EVENT: 'Intervals event does not have a clear TrainerRoad ID',
+    DUPLICATE_INTERVALS_ID: 'multiple destination workouts match this ID',
+    PROTECTED_EVENT: 'destination workout is protected or does not have a clear TrainerRoad ID',
     UNIDENTIFIED_ACTIVITY: 'stale removal was paused due to an activity without an ID (older policy)',
   };
-  const intervals = workout.intervalsIds.length ? `; Intervals ID: ${workout.intervalsIds.join(', ')}` : '';
-  return `${workout.date}: ${workout.name} (TrainerRoad ID: ${workout.trainerRoadId}${intervals}) - ${reasons[workout.reason]}`;
+  return `${workout.date}: ${workout.name} (TrainerRoad ID: ${workout.trainerRoadId}) - ${reasons[workout.reason]}`;
 }
 
 export interface SyncPreview {
@@ -33,6 +39,7 @@ export interface SyncPreview {
   filteredOut: number;
   unidentifiedActivityDates?: string[];
   skippedWorkouts?: SkippedSyncWorkout[];
+  matchedWorkouts?: MatchedSyncWorkout[];
   previewActions: Array<{action: string, date: string, name: string, trainerRoadId: string, intervalsId: string | null}>;
 }
 
@@ -48,7 +55,7 @@ export interface SyncPreview {
         <p>Add: {{data.copied}} | Update: {{data.updated}} | Remove: {{data.removed}}</p>
         <ul>
           @for (action of data.previewActions; track $index) {
-            <li>{{action.action}}: {{action.date}} - {{action.name}} (TrainerRoad ID {{action.trainerRoadId}}@if (action.intervalsId) {; Intervals ID {{action.intervalsId}}})</li>
+            <li>{{action.action}}: {{action.date}} - {{action.name}} (TrainerRoad ID {{action.trainerRoadId}})</li>
           }
         </ul>
       } @else {
@@ -56,6 +63,13 @@ export interface SyncPreview {
       }
       @if (data.alreadySynced) {
         <p>{{data.trainerRoadSyncMode === 'ADD_MISSING' ? 'Existing matches (not checked for changes)' : 'Unchanged matches'}}: {{data.alreadySynced}}</p>
+        @if (data.matchedWorkouts?.length) {
+          <ul>
+            @for (workout of data.matchedWorkouts; track $index) {
+              <li>{{workout.date}} - {{workout.name}} (TrainerRoad ID {{workout.trainerRoadId}})</li>
+            }
+          </ul>
+        }
       }
       @if (data.skipped) {
         <p><strong>{{data.skipped}} {{data.skipped === 1 ? 'entry was' : 'entries were'}} skipped due to ambiguity or protection.</strong> Please check manually.</p>
@@ -68,7 +82,7 @@ export interface SyncPreview {
         }
       }
       @if (data.unidentifiedActivityDates?.length) {
-        <p><strong>TrainerRoad activities without workout IDs were found on: {{data.unidentifiedActivityDates?.join(', ')}}.</strong> Please check manually.@if (data.trainerRoadSyncMode === 'MIRROR') { Marked Intervals events may be removed even if they correspond to these activities.}</p>
+        <p><strong>TrainerRoad activities without workout IDs were found on: {{data.unidentifiedActivityDates?.join(', ')}}.</strong> Please check manually.@if (data.trainerRoadSyncMode === 'MIRROR') { Marked destination workouts may be removed even if they correspond to these activities.}</p>
       }
       @if (data.filteredOut) {
         <p>TrainerRoad workouts filtered out by type: {{data.filteredOut}}</p>

@@ -14,7 +14,7 @@ spring:
       client:
         config:
           default:
-            loggerLevel: full
+            loggerLevel: none
   jackson:
     default-property-inclusion: non_null
     time-zone: UTC

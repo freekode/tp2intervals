@@ -5,8 +5,14 @@ import config.mock.IntervalsApiClientMock
 import config.mock.ObjectMapperFactory
 import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.ExternalData
+import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutDetails
+import org.freekode.tp2intervals.domain.workout.WorkoutRepository
+import org.freekode.tp2intervals.domain.workout.TrainerRoadReconciliationSource
+import org.freekode.tp2intervals.app.workout.CopyFromCalendarToCalendarRequest
+import org.freekode.tp2intervals.app.workout.TrainerRoadSyncMode
+import org.freekode.tp2intervals.app.workout.WorkoutService
 import org.freekode.tp2intervals.domain.workout.structure.SingleStep
 import org.freekode.tp2intervals.domain.workout.structure.StepLength
 import org.freekode.tp2intervals.domain.workout.structure.StepTarget
@@ -405,6 +411,70 @@ class IntervalsWorkoutRepositoryTest {
         assertEquals(null, results[1].details.externalData.trainerRoadId)
     }
 
+    @Test
+    fun `ambiguous metadata blocks copies and stale deletions for every candidate ID`() {
+        val ambiguousDescription = "//////////\ntrainerRoadId=1\n//////////\ntrainerRoadId=2"
+        fun event(id: Int, description: String) = objectMapper.readValue(
+            """{"id":$id,"name":"Workout","description":${objectMapper.writeValueAsString(description)},"start_date_local":"2026-11-23T18:00:00","category":"WORKOUT","type":"Ride"}""",
+            IntervalsEventIdentityDTO::class.java,
+        )
+        val api = RecordingClient(events = listOf(
+            event(42, ambiguousDescription),
+            event(43, "//////////\ntrainerRoadId=1"),
+        ))
+        val repository = IntervalsWorkoutRepository(api, intervalsConfigurationRepository)
+        val source = mock(WorkoutRepository::class.java)
+        val day = LocalDate.of(2026, 11, 23)
+        `when`(source.platform()).thenReturn(Platform.TRAINER_ROAD)
+        val service = WorkoutService(listOf(source, repository), emptyList())
+        val request = CopyFromCalendarToCalendarRequest(day, day, listOf(TrainingType.BIKE), true,
+            Platform.TRAINER_ROAD, Platform.INTERVALS, trainerRoadSyncMode = TrainerRoadSyncMode.MIRROR,
+            allowStaleRemoval = true)
+
+        for (id in listOf("1", "2")) {
+            val workout = Workout(WorkoutDetails(TrainingType.BIKE, "Workout $id", null, null, null,
+                ExternalData.empty().withTrainerRoad(id)), day, null)
+            `when`(source.getTrainerRoadReconciliationSource(day, day))
+                .thenReturn(TrainerRoadReconciliationSource(listOf(workout), emptyList()))
+            val result = service.copyWorkoutsC2C(request)
+            assertEquals(0, result.copied)
+            assertEquals(0, result.removed)
+            assertTrue(result.skipped > 0)
+            if (id == "1") {
+                assertEquals(setOf("42", "43"), result.skippedWorkouts.single().intervalsIds.toSet())
+            }
+            assertEquals(0, service.copyWorkoutsC2C(request).copied)
+        }
+        assertTrue(api.createdRequests.isEmpty())
+        assertTrue(api.updatedRequests.isEmpty())
+        assertTrue(api.deletedEventIds.isEmpty())
+        assertEquals(listOf(42L, 43L), api.getEventsForReconciliation("athleteId", day.toString(), day.toString()).map { it.id })
+    }
+
+    @Test
+    fun `ambiguous marker on another date does not block a copy`() {
+        val event = objectMapper.readValue(
+            """{"id":42,"name":"Workout","description":"//////////\ntrainerRoadId=1\ntrainerRoadId=2","start_date_local":"2026-11-22T18:00:00","category":"WORKOUT","type":"Ride"}""",
+            IntervalsEventIdentityDTO::class.java,
+        )
+        val api = RecordingClient(events = listOf(event))
+        val repository = IntervalsWorkoutRepository(api, intervalsConfigurationRepository)
+        val source = mock(WorkoutRepository::class.java)
+        val day = LocalDate.of(2026, 11, 23)
+        val workout = Workout(WorkoutDetails(TrainingType.BIKE, "Workout", null, null, null,
+            ExternalData.empty().withTrainerRoad("2")), day, null)
+        `when`(source.platform()).thenReturn(Platform.TRAINER_ROAD)
+        `when`(source.getTrainerRoadReconciliationSource(day, day))
+            .thenReturn(TrainerRoadReconciliationSource(listOf(workout), emptyList()))
+        val service = WorkoutService(listOf(source, repository), emptyList())
+        val request = CopyFromCalendarToCalendarRequest(day, day, listOf(TrainingType.BIKE), true,
+            Platform.TRAINER_ROAD, Platform.INTERVALS, trainerRoadSyncMode = TrainerRoadSyncMode.ADD_MISSING)
+
+        assertEquals(1, service.copyWorkoutsC2C(request).copied)
+        assertEquals(1, api.createdRequests.size)
+        assertTrue(api.deletedEventIds.isEmpty())
+    }
+
     private class RecordingClient(
         private val failDelete: Boolean = false,
         private val confirmUpdate: Boolean = true,
@@ -414,11 +484,14 @@ class IntervalsWorkoutRepositoryTest {
         IntervalsApiClient by mock(IntervalsApiClient::class.java) {
         val deletedEventIds = mutableListOf<String>()
         val updatedRequests = mutableListOf<Pair<String, CreateEventRequestDTO>>()
+        val createdRequests = mutableListOf<CreateEventRequestDTO>()
 
         override fun getEventsForReconciliation(athleteId: String, startDate: String, endDate: String) = events
 
-        override fun createEvent(athleteId: String, createEventRequestDTO: CreateEventRequestDTO): EventWriteResponseDTO? =
-            if (confirmCreate) EventWriteResponseDTO(42) else null
+        override fun createEvent(athleteId: String, createEventRequestDTO: CreateEventRequestDTO): EventWriteResponseDTO? {
+            createdRequests.add(createEventRequestDTO)
+            return if (confirmCreate) EventWriteResponseDTO(42) else null
+        }
 
         override fun deleteEvent(athleteId: String, eventId: String) {
             if (failDelete) throw IllegalStateException("delete failed")

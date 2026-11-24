@@ -51,6 +51,8 @@ export class ConfigurationComponent implements OnInit {
   });
 
   inProgress = false;
+  loadError = false;
+  configLoaded = false;
   trainerRoadTestInProgress = false;
   trainerRoadTestResult: string | null = null;
   trainerRoadTestSucceeded = false;
@@ -69,12 +71,20 @@ export class ConfigurationComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.listenTrainingPeaksCookie()
+    this.listenTrainerRoadCookie()
+    this.loadConfig()
+  }
+
+  loadConfig(): void {
     this.inProgress = true
-    this.configClient.getConfig().subscribe(config => {
-      this.formGroup.patchValue(config.config);
-      this.inProgress = false
-      this.listenTrainingPeaksCookie()
-      this.listenTrainerRoadCookie()
+    this.loadError = false
+    this.configClient.getConfig().pipe(finalize(() => this.inProgress = false)).subscribe({
+      next: config => {
+        this.formGroup.patchValue(config.config)
+        this.configLoaded = true
+      },
+      error: () => this.loadError = true,
     });
   }
 
@@ -171,6 +181,7 @@ export class ConfigurationComponent implements OnInit {
       this.trainerRoadTestResult = null
       this.trainerRoadTestInProgress = false
       this.trainerRoadTestSucceeded = false
+      if (typeof value !== 'string') return
       let split = value.split('SharedTrainerRoadAuth=');
       if (split.length != 2) {
         return
@@ -190,6 +201,7 @@ export class ConfigurationComponent implements OnInit {
       this.trainingPeaksTestResult = null
       this.trainingPeaksTestInProgress = false
       this.trainingPeaksTestSucceeded = false
+      if (typeof value !== 'string') return
       let split = value.split('Production_tpAuth=');
       if (split.length != 2) {
         return
