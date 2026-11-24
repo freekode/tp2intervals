@@ -192,13 +192,12 @@ services:
 * More info you can find on the forum https://forum.intervals.icu/t/tp2intervals-copy-trainingpeaks-and-trainerroad-workouts-plans-to-intervals/63375
 
 ### Info regarding scheduling for the next day with TrainingPeaks free account
-Officially if you have a free TP account, you can't plan workouts for future dates, but practically you can.
-You can plan a workout for the next day relative to TrainingPeaks server local time. The server is in UTC-6 time zone. Let's check some examples:
-
-Example 1. Your TZ is UTC+2 and current local date time 20.05.2024 06:00. It means at this moment TP server local date time is 19.05.2024 22:00.
-Therefore, you can plan workouts for 20.05.2024. But you can't plan workouts for 21.05.2024, you can do it in 2 hours, because in 2 hours server local time will be 20.05.2024 00:00.
-
-Example 2. Your TZ is UTC+12, current local date time 20.05.2024 18:00. TP server local date time is 20.05.2024 00:00. At this moment, you can plan workouts for 21.05.2024.
+TrainingPeaks lists planning future workouts as a
+[Premium feature](https://help.trainingpeaks.com/hc/en-us/articles/204074014-Basic-vs-Premium-Athlete-Accounts).
+Basic accounts may receive HTTP 402 when syncing future workouts. TrainingPeaks' timezone and exact
+boundary for this restriction are not verified; earlier observations suggested that some next-day
+workouts could be accepted, but do not rely on a specific time to unlock tomorrow.
+If a sync fails, check the target calendar before retrying because earlier workouts may already have been added.
 
 Visible time difference with [worldtimebuddy](https://www.worldtimebuddy.com/?pl=1&lid=206,100,756135,2193733&h=206&hf=0)
 

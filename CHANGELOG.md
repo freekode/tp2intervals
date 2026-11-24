@@ -4,6 +4,7 @@
 - Updated TrainerRoad workout target and metadata parsing
 - Added optional removal of stale TrainerRoad-synced workouts from Intervals.icu calendars
 - Added TrainerRoad sync modes, date horizons and a manual sync preview
+- Clarified TrainingPeaks HTTP 402 errors and future-workout restrictions
 
 ### 0.12.3
 - Updated Java to 21.0.3
