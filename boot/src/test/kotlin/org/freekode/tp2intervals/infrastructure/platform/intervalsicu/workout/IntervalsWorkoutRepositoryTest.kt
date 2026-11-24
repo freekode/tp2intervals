@@ -346,6 +346,33 @@ class IntervalsWorkoutRepositoryTest {
     }
 
     @Test
+    fun `mirror can change a marked event regardless of origin but protects an unmarked event`() {
+        fun event(id: Int, description: String) = objectMapper.readValue(
+            """{"id":$id,"name":"Manually edited","description":${objectMapper.writeValueAsString(description)},"start_date_local":"2026-11-23T18:00:00","category":"WORKOUT","type":"Ride"}""",
+            IntervalsEventIdentityDTO::class.java,
+        )
+        val api = RecordingClient(events = listOf(
+            event(42, "Manually edited\n//////////\ntrainerRoadId=123"),
+            event(43, "Manually created without a TrainerRoad ID"),
+        ))
+        val repository = IntervalsWorkoutRepository(api, intervalsConfigurationRepository)
+        val source = trainerRoadWorkout("Workout")
+        val date = requireNotNull(source.date)
+        val (marked, unmarked) = repository.getWorkoutsForReconciliation(date, date)
+
+        repository.updateSyncedWorkout(source, marked)
+        repository.deleteSyncedWorkout(marked)
+        assertThrows(org.freekode.tp2intervals.infrastructure.PlatformException::class.java) {
+            repository.updateSyncedWorkout(source, unmarked)
+        }
+        assertThrows(org.freekode.tp2intervals.infrastructure.PlatformException::class.java) {
+            repository.deleteSyncedWorkout(unmarked)
+        }
+        assertEquals(listOf("42"), api.updatedRequests.map { it.first })
+        assertEquals(listOf("42"), api.deletedEventIds)
+    }
+
+    @Test
     fun `missing create response fails`() {
         val api = RecordingClient(confirmCreate = false)
         val repository = IntervalsWorkoutRepository(api, intervalsConfigurationRepository)
@@ -382,10 +409,13 @@ class IntervalsWorkoutRepositoryTest {
         private val failDelete: Boolean = false,
         private val confirmUpdate: Boolean = true,
         private val confirmCreate: Boolean = true,
+        private val events: List<IntervalsEventIdentityDTO> = emptyList(),
     ) :
         IntervalsApiClient by mock(IntervalsApiClient::class.java) {
         val deletedEventIds = mutableListOf<String>()
         val updatedRequests = mutableListOf<Pair<String, CreateEventRequestDTO>>()
+
+        override fun getEventsForReconciliation(athleteId: String, startDate: String, endDate: String) = events
 
         override fun createEvent(athleteId: String, createEventRequestDTO: CreateEventRequestDTO): EventWriteResponseDTO? =
             if (confirmCreate) EventWriteResponseDTO(42) else null

@@ -44,6 +44,8 @@ describe('Mirror confirmation', () => {
     const mirrorCard = root.querySelectorAll('.sync-mode-option')[1];
     expect(mirrorCard.querySelector('mat-checkbox')).not.toBeNull();
     expect(mirrorCard.querySelector('mat-radio-button mat-checkbox')).toBeNull();
+    expect(root.querySelector('#mirror-risk-details')!.textContent)
+      .toContain('including manual edits and workouts not created by this app');
     expect(confirm().checked).toBeFalse();
     expect(preview().disabled).toBeTrue();
 
