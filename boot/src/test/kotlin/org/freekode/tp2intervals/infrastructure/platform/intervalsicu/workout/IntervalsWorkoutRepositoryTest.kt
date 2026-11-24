@@ -9,6 +9,7 @@ import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutDetails
 import org.freekode.tp2intervals.domain.workout.structure.SingleStep
 import org.freekode.tp2intervals.domain.workout.structure.StepLength
+import org.freekode.tp2intervals.domain.workout.structure.StepTarget
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsApiClient
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfiguration
@@ -18,7 +19,6 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
-import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.springframework.util.ResourceUtils
 import java.time.Duration
@@ -35,10 +35,8 @@ class IntervalsWorkoutRepositoryTest {
 
     private val intervalsConfigurationRepository: IntervalsConfigurationRepository =
         getIntervalsConfigurationRepository()
-    private val trackingRepository = mock(TrainerRoadSyncedEventRepository::class.java)
-
     private val intervalsWorkoutRepository =
-        IntervalsWorkoutRepository(intervalsApiClient, intervalsConfigurationRepository, trackingRepository)
+        IntervalsWorkoutRepository(intervalsApiClient, intervalsConfigurationRepository)
 
     @Test
     fun `should parse hr workout`() {
@@ -196,21 +194,19 @@ class IntervalsWorkoutRepositoryTest {
     @Test
     fun `deletes only an identified TrainerRoad event`() {
         val api = RecordingClient()
-        val repository = IntervalsWorkoutRepository(api, intervalsConfigurationRepository, trackingRepository)
+        val repository = IntervalsWorkoutRepository(api, intervalsConfigurationRepository)
         val source = trainerRoadWorkout("Original")
         val target = source.copy(details = source.details.copy(externalData = source.details.externalData.withIntervals("42")))
-        val tracked = markTracked()
 
         repository.deleteSyncedWorkout(target)
 
         assertEquals("42", api.deletedEventIds.single())
-        verify(trackingRepository).delete(tracked)
     }
 
     @Test
     fun `refuses deletion without both IDs`() {
         val api = RecordingClient()
-        val repository = IntervalsWorkoutRepository(api, intervalsConfigurationRepository, trackingRepository)
+        val repository = IntervalsWorkoutRepository(api, intervalsConfigurationRepository)
         val source = trainerRoadWorkout("Workout")
         val missingTrainerRoadId = source.copy(details = source.details.copy(externalData = ExternalData.empty().withIntervals("42")))
         assertThrows(org.freekode.tp2intervals.infrastructure.PlatformException::class.java) {
@@ -225,10 +221,9 @@ class IntervalsWorkoutRepositoryTest {
     @Test
     fun `delete failure propagates`() {
         val api = RecordingClient(failDelete = true)
-        val repository = IntervalsWorkoutRepository(api, intervalsConfigurationRepository, trackingRepository)
+        val repository = IntervalsWorkoutRepository(api, intervalsConfigurationRepository)
         val source = trainerRoadWorkout("Workout")
         val target = source.copy(details = source.details.copy(externalData = source.details.externalData.withIntervals("42")))
-        markTracked()
         assertThrows(IllegalStateException::class.java) {
             repository.deleteSyncedWorkout(target)
         }
@@ -237,13 +232,12 @@ class IntervalsWorkoutRepositoryTest {
     @Test
     fun `updates a matching event in place preserving time when no default is specified`() {
         val api = RecordingClient()
-        val repository = IntervalsWorkoutRepository(api, intervalsConfigurationRepository, trackingRepository)
+        val repository = IntervalsWorkoutRepository(api, intervalsConfigurationRepository)
         val source = trainerRoadWorkout("New")
         val target = source.copy(
             startTime = LocalTime.of(18, 30),
             details = source.details.copy(externalData = source.details.externalData.withIntervals("42")),
         )
-        markTracked()
 
         repository.updateSyncedWorkout(source, target)
 
@@ -255,12 +249,62 @@ class IntervalsWorkoutRepositoryTest {
     }
 
     @Test
+    fun `update preserves an existing midnight time when no default is specified`() {
+        val api = RecordingClient()
+        val repository = IntervalsWorkoutRepository(api, intervalsConfigurationRepository)
+        val source = trainerRoadWorkout("Workout")
+        val target = source.copy(
+            startTime = LocalTime.MIDNIGHT,
+            details = source.details.copy(externalData = source.details.externalData.withIntervals("42")),
+        )
+
+        repository.updateSyncedWorkout(source, target)
+        repository.updateSyncedWorkout(source.withStartTime(LocalTime.MIDNIGHT), target)
+
+        assertEquals("2026-11-23T00:00:00", api.updatedRequests[0].second.start_date_local)
+        assertEquals("2026-11-23T00:00:00", api.updatedRequests[1].second.start_date_local)
+    }
+
+    @Test
+    fun `comparison checks rendered workout content and preserves existing time by default`() {
+        val repository = IntervalsWorkoutRepository(RecordingClient(), intervalsConfigurationRepository)
+        val source = trainerRoadWorkout("Workout").copy(
+            details = trainerRoadWorkout("Workout").details.copy(description = "Description"),
+            structure = WorkoutStructure(
+                WorkoutStructure.TargetUnit.FTP_PERCENTAGE,
+                listOf(SingleStep("Warmup", StepLength.seconds(300), StepTarget(50, 50), null, false)),
+            ),
+        )
+        val time = LocalTime.of(18, 30)
+        val rendered = ToIntervalsWorkoutConverter().createEventRequestDTO(source.withStartTime(time))
+        val target = source.copy(
+            details = source.details.copy(
+                description = rendered.description.replace("\n", "\r\n"),
+                externalData = source.details.externalData.withIntervals("42"),
+            ),
+            structure = null,
+            startTime = time,
+        )
+
+        assertTrue(repository.isTrainerRoadWorkoutUpToDate(source, target))
+        assertTrue(repository.isTrainerRoadWorkoutUpToDate(source.withStartTime(time), target))
+        assertTrue(!repository.isTrainerRoadWorkoutUpToDate(source.withStartTime(LocalTime.NOON), target))
+        assertTrue(!repository.isTrainerRoadWorkoutUpToDate(source.copy(details = source.details.copy(name = "Changed")), target))
+        assertTrue(!repository.isTrainerRoadWorkoutUpToDate(source.copy(details = source.details.copy(type = TrainingType.RUN)), target))
+        assertTrue(!repository.isTrainerRoadWorkoutUpToDate(source.copy(details = source.details.copy(description = "Changed")), target))
+        val changedStep = source.copy(structure = WorkoutStructure(
+            WorkoutStructure.TargetUnit.FTP_PERCENTAGE,
+            listOf(SingleStep("Warmup", StepLength.seconds(301), StepTarget(50, 50), null, false)),
+        ))
+        assertTrue(!repository.isTrainerRoadWorkoutUpToDate(changedStep, target))
+    }
+
+    @Test
     fun `update requires matching IDs and a confirmed event response`() {
         val api = RecordingClient(confirmUpdate = false)
-        val repository = IntervalsWorkoutRepository(api, intervalsConfigurationRepository, trackingRepository)
+        val repository = IntervalsWorkoutRepository(api, intervalsConfigurationRepository)
         val source = trainerRoadWorkout("Workout")
         val target = source.copy(details = source.details.copy(externalData = source.details.externalData.withIntervals("42")))
-        markTracked()
         assertThrows(org.freekode.tp2intervals.infrastructure.PlatformException::class.java) {
             repository.updateSyncedWorkout(source.copy(date = source.date!!.plusDays(1)), target)
         }
@@ -272,65 +316,48 @@ class IntervalsWorkoutRepositoryTest {
     }
 
     @Test
-    fun `untracked events cannot be updated or deleted even with a TrainerRoad ID`() {
+    fun `operations require a single valid matching ID`() {
         val api = RecordingClient()
-        val repository = IntervalsWorkoutRepository(api, intervalsConfigurationRepository, trackingRepository)
+        val repository = IntervalsWorkoutRepository(api, intervalsConfigurationRepository)
         val source = trainerRoadWorkout("Workout")
         val target = source.copy(details = source.details.copy(externalData = source.details.externalData.withIntervals("42")))
+        repository.updateSyncedWorkout(source, target)
+        repository.deleteSyncedWorkout(target)
+        assertEquals("42", api.updatedRequests.single().first)
+        assertEquals(listOf("42"), api.deletedEventIds)
 
-        assertThrows(org.freekode.tp2intervals.infrastructure.PlatformException::class.java) {
-            repository.updateSyncedWorkout(source, target)
+        for (description in listOf(
+            "No metadata",
+            "//////////\ntrainerRoadId=999",
+            "//////////\ntrainerRoadId=123\ntrainerRoadId=999",
+            "//////////\ntrainerRoadId=not-a-number",
+        )) {
+            val invalid = target.copy(details = target.details.copy(description = description))
+            assertTrue(!repository.hasExplicitTrainerRoadId(invalid))
+            assertThrows(org.freekode.tp2intervals.infrastructure.PlatformException::class.java) {
+                repository.updateSyncedWorkout(source, invalid)
+            }
+            assertThrows(org.freekode.tp2intervals.infrastructure.PlatformException::class.java) {
+                repository.deleteSyncedWorkout(invalid)
+            }
         }
-        assertThrows(org.freekode.tp2intervals.infrastructure.PlatformException::class.java) {
-            repository.deleteSyncedWorkout(target)
-        }
-        assertTrue(api.updatedRequests.isEmpty())
-        assertTrue(api.deletedEventIds.isEmpty())
+        assertEquals(1, api.updatedRequests.size)
+        assertEquals(1, api.deletedEventIds.size)
     }
 
     @Test
-    fun `new TrainerRoad events are recorded against athlete event and source IDs`() {
-        val api = RecordingClient()
-        val repository = IntervalsWorkoutRepository(api, intervalsConfigurationRepository, trackingRepository)
-
-        repository.saveTrainerRoadWorkoutsToCalendar(listOf(trainerRoadWorkout("Workout")))
-
-        val captor = org.mockito.ArgumentCaptor.forClass(TrainerRoadSyncedEvent::class.java)
-        verify(trackingRepository).save(captor.capture())
-        assertEquals("athleteId", captor.value.athleteId)
-        assertEquals("42", captor.value.eventId)
-        assertEquals("123", captor.value.trainerRoadId)
-    }
-
-    @Test
-    fun `missing create response fails without recording ownership`() {
+    fun `missing create response fails`() {
         val api = RecordingClient(confirmCreate = false)
-        val repository = IntervalsWorkoutRepository(api, intervalsConfigurationRepository, trackingRepository)
+        val repository = IntervalsWorkoutRepository(api, intervalsConfigurationRepository)
         assertThrows(org.freekode.tp2intervals.infrastructure.PlatformException::class.java) {
             repository.saveTrainerRoadWorkoutsToCalendar(listOf(trainerRoadWorkout("Workout")))
         }
-        verify(trackingRepository, org.mockito.Mockito.never()).save(org.mockito.ArgumentMatchers.any())
     }
 
     @Test
-    fun `registration failure reports that created event remains protected`() {
-        val api = RecordingClient()
-        val repository = IntervalsWorkoutRepository(api, intervalsConfigurationRepository, trackingRepository)
-        org.mockito.Mockito.doThrow(org.springframework.dao.DataIntegrityViolationException("database failure"))
-            .`when`(trackingRepository).save(org.mockito.ArgumentMatchers.any())
-
-        val error = assertThrows(org.freekode.tp2intervals.infrastructure.PlatformException::class.java) {
-            repository.saveTrainerRoadWorkoutsToCalendar(listOf(trainerRoadWorkout("Workout")))
-        }
-
-        assertTrue(error.message!!.contains("created but could not be tracked"))
-        assertTrue(api.deletedEventIds.isEmpty())
-    }
-
-    @Test
-    fun `reconciliation uses registry identity without parsing unrelated workout structures`() {
+    fun `reconciliation uses description identity without parsing workout structures`() {
         val api = mock(IntervalsApiClient::class.java)
-        val repository = IntervalsWorkoutRepository(api, intervalsConfigurationRepository, trackingRepository)
+        val repository = IntervalsWorkoutRepository(api, intervalsConfigurationRepository)
         val event = objectMapper.readValue(
             """{"id":42,"name":"Edited","description":"No sync metadata","start_date_local":"2026-11-23T18:00:00","category":"WORKOUT","type":"Ride","workout_doc":{"target":"UNKNOWN","steps":[{}]}}""",
             IntervalsEventIdentityDTO::class.java,
@@ -342,34 +369,13 @@ class IntervalsWorkoutRepositoryTest {
         val date = LocalDate.of(2026, 11, 23)
         `when`(api.getEventsForReconciliation("athleteId", date.toString(), date.toString()))
             .thenReturn(listOf(event, unrelated))
-        val tracked = markTracked()
-        `when`(trackingRepository.findByAthleteIdAndEventId("athleteId", "42")).thenReturn(tracked)
 
         val results = repository.getWorkoutsForReconciliation(date, date)
 
         assertEquals(2, results.size)
-        assertEquals("123", results[0].details.externalData.trainerRoadId)
+        assertEquals(null, results[0].details.externalData.trainerRoadId)
         assertEquals(null, results[0].structure)
-        assertTrue(!repository.isTrackedTrainerRoadWorkout(results[0]))
         assertEquals(null, results[1].details.externalData.trainerRoadId)
-    }
-
-    @Test
-    fun `reconciliation rejects conflicting metadata on a tracked event`() {
-        val api = mock(IntervalsApiClient::class.java)
-        val repository = IntervalsWorkoutRepository(api, intervalsConfigurationRepository, trackingRepository)
-        val event = objectMapper.readValue(
-            """{"id":42,"name":"Edited","description":"//////////\ntrainerRoadId=999","start_date_local":"2026-11-23T18:00:00","category":"WORKOUT","type":"Ride"}""",
-            IntervalsEventIdentityDTO::class.java,
-        )
-        val date = LocalDate.of(2026, 11, 23)
-        `when`(api.getEventsForReconciliation("athleteId", date.toString(), date.toString())).thenReturn(listOf(event))
-        val tracked = markTracked()
-        `when`(trackingRepository.findByAthleteIdAndEventId("athleteId", "42")).thenReturn(tracked)
-
-        assertThrows(org.freekode.tp2intervals.infrastructure.PlatformException::class.java) {
-            repository.getWorkoutsForReconciliation(date, date)
-        }
     }
 
     private class RecordingClient(
@@ -393,12 +399,6 @@ class IntervalsWorkoutRepositoryTest {
             updatedRequests.add(eventId to request)
             return if (confirmUpdate) EventWriteResponseDTO(eventId.toLong()) else null
         }
-    }
-
-    private fun markTracked(): TrainerRoadSyncedEvent {
-        val event = TrainerRoadSyncedEvent(1, "athleteId", "42", "123")
-        `when`(trackingRepository.findByAthleteIdAndEventIdAndTrainerRoadId("athleteId", "42", "123")).thenReturn(event)
-        return event
     }
 
     private fun trainerRoadWorkout(name: String) = Workout(

@@ -1,4 +1,5 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {HttpErrorResponse} from '@angular/common/http';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {MatButtonModule} from "@angular/material/button";
 import {MatFormFieldModule} from "@angular/material/form-field";
@@ -16,12 +17,12 @@ import {formatDate} from "utils/date-formatter";
 import {MatDividerModule} from "@angular/material/divider";
 import {DatePipe, NgIf} from "@angular/common";
 import {ConfigurationClient} from "infrastructure/client/configuration.client";
-import {filter, finalize, switchMap, tap} from "rxjs";
+import {catchError, EMPTY, filter, finalize, Subscription, switchMap, tap, throwError, timer} from "rxjs";
 import {WorkoutClient} from "infrastructure/client/workout.client";
 import {NotificationService} from "infrastructure/notification.service";
 import {MatTooltipModule} from "@angular/material/tooltip";
 import {TrainingTypes} from "infrastructure/training-types";
-import {SyncPreviewDialogComponent} from "./sync-preview-dialog.component";
+import {describeSkippedWorkout, SyncPreviewDialogComponent} from "./sync-preview-dialog.component";
 
 @Component({
   selector: 'copy-calendar-to-calendar',
@@ -47,8 +48,9 @@ import {SyncPreviewDialogComponent} from "./sync-preview-dialog.component";
   templateUrl: './copy-calendar-to-calendar.component.html',
   styleUrl: './copy-calendar-to-calendar.component.scss'
 })
-export class CopyCalendarToCalendarComponent implements OnInit {
+export class CopyCalendarToCalendarComponent implements OnInit, OnDestroy {
   readonly Platform = Platform;
+  readonly describeSkippedWorkout = describeSkippedWorkout;
   readonly todayDate = new Date()
   readonly tomorrowDate = new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
 
@@ -60,6 +62,7 @@ export class CopyCalendarToCalendarComponent implements OnInit {
   formGroup: FormGroup
   platformsInfo: any
   scheduleRequests: any[] = []
+  private schedulePoll?: Subscription
 
   constructor(
     private formBuilder: FormBuilder,
@@ -79,6 +82,15 @@ export class CopyCalendarToCalendarComponent implements OnInit {
       this.applyHorizon();
     }
     this.loadScheduleRequests().subscribe()
+    this.schedulePoll = timer(30000, 30000).pipe(
+      switchMap(() => this.loadScheduleRequests().pipe(
+        catchError(error => error instanceof HttpErrorResponse ? EMPTY : throwError(() => error)),
+      )),
+    ).subscribe()
+  }
+
+  ngOnDestroy(): void {
+    this.schedulePoll?.unsubscribe()
   }
 
   submit() {
@@ -132,12 +144,12 @@ export class CopyCalendarToCalendarComponent implements OnInit {
     let allowStaleRemoval = trainerRoadSyncMode === 'MIRROR' && this.formGroup.value.allowStaleRemoval
 
     this.inProgress = true
-    const execute = (expectedActions = null) => this.workoutClient.copyCalendarToCalendar(startDate, endDate, trainingTypes, skipSynced, defaultStartTime, trainerRoadSyncMode, allowStaleRemoval, direction, expectedActions)
+    const execute = (expectedActions = null, expectedUnidentifiedActivityDates = null) => this.workoutClient.copyCalendarToCalendar(startDate, endDate, trainingTypes, skipSynced, defaultStartTime, trainerRoadSyncMode, allowStaleRemoval, direction, expectedActions, expectedUnidentifiedActivityDates)
     const sync = trainerRoadSyncMode
       ? this.workoutClient.previewCalendarToCalendar(startDate, endDate, trainingTypes, skipSynced, defaultStartTime, trainerRoadSyncMode, allowStaleRemoval, direction).pipe(
-          switchMap(preview => this.dialog.open(SyncPreviewDialogComponent, {data: preview}).afterClosed().pipe(
+          switchMap(preview => this.dialog.open(SyncPreviewDialogComponent, {data: {...preview, trainerRoadSyncMode}}).afterClosed().pipe(
             filter(confirmed => confirmed === true),
-            switchMap(() => execute(preview.previewActions)),
+            switchMap(() => execute(preview.previewActions, preview.unidentifiedActivityDates ?? [])),
           )),
         )
       : execute()
@@ -145,7 +157,7 @@ export class CopyCalendarToCalendarComponent implements OnInit {
       finalize(() => this.inProgress = false)
     ).subscribe((response) => {
       this.notificationService.success(
-        `Copied: ${response.copied}<br>Already synced: ${response.alreadySynced}${trainerRoadSyncMode ? `<br>Updated: ${response.updated}<br>Removed: ${response.removed}<br>Skipped (ambiguous or protected): ${response.skipped}` : ''}<br>Filtered out by workout type: ${response.filteredOut}<br>From ${response.startDate} to ${response.endDate}`)
+        `Copied: ${response.copied}<br>${trainerRoadSyncMode === 'ADD_MISSING' ? 'Existing matches (not checked for changes)' : trainerRoadSyncMode === 'MIRROR' ? 'Unchanged matches' : 'Already synced'}: ${response.alreadySynced}${trainerRoadSyncMode ? `<br>Updated: ${response.updated}<br>Removed: ${response.removed}${response.skipped ? `<br>Skipped (ambiguous or protected): ${response.skipped}` : ''}` : ''}${response.unidentifiedActivityDates?.length ? `<br>Activities without workout IDs on ${response.unidentifiedActivityDates.join(', ')} require manual review.${trainerRoadSyncMode === 'MIRROR' ? ' Marked events may have been removed even if they correspond to these activities.' : ''}` : ''}<br>Filtered out by workout type: ${response.filteredOut}<br>From ${response.startDate} to ${response.endDate}`)
     })
   }
 
@@ -168,7 +180,16 @@ export class CopyCalendarToCalendarComponent implements OnInit {
   }
 
   directionChanged(): void {
+    if (!this.isReconciliationSupported(this.formGroup.value.direction)) {
+      this.formGroup.patchValue({allowStaleRemoval: false})
+    }
     if (this.isReconciliationSupported(this.formGroup.value.direction)) this.applyHorizon()
+  }
+
+  syncModeChanged(): void {
+    if (this.formGroup.value.trainerRoadSyncMode !== 'MIRROR') {
+      this.formGroup.patchValue({allowStaleRemoval: false})
+    }
   }
 
   private getFormGroup() {
@@ -189,9 +210,8 @@ export class CopyCalendarToCalendarComponent implements OnInit {
     return this.workoutClient.getScheduleRequests().pipe(
       tap(values => {
           this.scheduleRequests = values.map(value => {
-            return {id: value.id, request: JSON.parse(value.requestJson)}
+            return {id: value.id, request: JSON.parse(value.requestJson), lastResult: value.lastResultJson ? JSON.parse(value.lastResultJson) : null}
           })
-          console.log(this.scheduleRequests)
         }
       )
     )

@@ -66,22 +66,41 @@ Scheduled jobs persist across restarts; remove them using the delete button in t
 For TrainerRoad to Intervals.icu, choose one of two sync behaviours:
 
 * **Add missing only** keeps matching events and copies missing selected workouts.
-* **Mirror current TR simulation** updates matches, copies missing workouts and removes stale
+* **Mirror current TR simulation** updates changed matches, leaves unchanged workouts alone, copies missing workouts and removes stale
   TrainerRoad events. You must explicitly allow stale workout removal before using this mode.
+  The confirmation is cleared when you leave Mirror mode or switch to another direction.
 
-Workouts are matched by TrainerRoad ID and day; ambiguous IDs are skipped. Updates and removal
-are limited to TrainerRoad events whose Intervals IDs this app recorded when creating them.
-Existing untracked events, including older app-created events, are protected; a copied text signature
-does not grant ownership. Ownership is stored in this installation's database, so retain it when
-migrating or restoring the application. If a tracked event's TrainerRoad ID is removed from its
-description, it remains protected and is not copied again. A conflicting ID stops reconciliation.
-Mirror can remove stale tracked events on
-empty days and for unselected workout types; other events are untouched. The TrainerRoad timeline
-must cover the selected range, and reconciliation stops if any planned activity in the range has
-no workout ID because it cannot be identified safely. Choose 2 days (the recommended default), 7 days,
+Workouts are matched by TrainerRoad ID and day, not by name or content; ambiguous matches are skipped.
+Mirror updates or removes Intervals.icu workout events with a single clear TrainerRoad ID in their
+description, regardless of who created them. An event is stale when no TrainerRoad workout with the
+same ID and day exists in the selected range, including workouts of unselected types.
+For matching workouts, it compares the event name, type and generated description (including workout
+steps). It compares the TrainerRoad start time when present, otherwise the selected default time.
+It does not compare a separately edited workout file or `workout_doc`. When neither time is set,
+Mirror preserves existing Intervals event times, and new workouts have no start time in Intervals.icu.
+The API request uses `00:00` for an unset time, which Intervals.icu treats as not set; an explicitly
+selected midnight is therefore indistinguishable from an unset time. A default local time can be set
+for integrations such as Hexis.
+It can overwrite or delete manual edits; an ID does not prove app ownership. If the ID is removed
+from an event's description, the app cannot recognize that event and may copy the workout again.
+Mirror can remove stale eligible events on empty days and for unselected workout types;
+other events are untouched. The TrainerRoad timeline
+must cover the selected range. For now, TrainerRoad calendar entries with an explicitly blank title
+and no workout ID are assumed to be rest days. Intervals.icu titles are not used for this assumption.
+This relies on TrainerRoad's unofficial format and may change; a missing title is not treated as blank.
+Other TrainerRoad activities without a workout ID are reported for manual review but do not
+prevent stale removal. An unidentified or moved TrainerRoad workout can therefore
+cause its marked Intervals event to be considered stale; review the preview before syncing.
+Activities outside the range are ignored.
+Choose 2 days (the recommended default), 7 days,
 4 weeks (all including today), or a custom range. TrainerRoad's simulated plans may change.
-Manual sync previews the affected workouts; if that list changes before confirmation, sync stops.
+Manual sync previews the affected workouts; if that list or, in Mirror mode, the unidentified
+activity dates change before confirmation, sync stops.
 Scheduled jobs use the selected behaviour and removal permission, but always run for today only.
+Older scheduled Mirror and legacy removal jobs cannot sync under the current policy: delete and recreate them to explicitly
+accept the current removal policy. The obsolete local ownership table is left in the database but is no
+longer used.
+Their latest run and any warnings are displayed with the scheduled job.
 Overlapping TrainerRoad syncs are serialized within one application instance; do not run multiple
 instances against the same calendar concurrently.
 Changes are not transactional: if a request fails, earlier changes may already have succeeded.

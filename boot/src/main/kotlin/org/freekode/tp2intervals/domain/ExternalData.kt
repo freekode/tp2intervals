@@ -25,7 +25,7 @@ data class ExternalData(
             return this
         }
 
-        val fields = split[1].trim().split("\n")
+        val fields = split[1].trim().lines()
         var externalData = this
         fields.forEach {
             val field = it.split("=", limit = 2)

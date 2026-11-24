@@ -21,6 +21,14 @@ class ExternalDataTest {
     }
 
     @Test
+    fun `parses identifiers in CRLF metadata`() {
+        val data = ExternalData.empty().fromSimpleString("//////////\r\ntrainerRoadId=333\r\ntrainingPeaksId=222")
+
+        Assertions.assertEquals("333", data.trainerRoadId)
+        Assertions.assertEquals("222", data.trainingPeaksId)
+    }
+
+    @Test
     fun `should not parse data`() {
         // given
         val string = "//////////\nmyFavVar=111"

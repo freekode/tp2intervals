@@ -4,6 +4,7 @@ import org.freekode.tp2intervals.domain.activity.Activity
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutDetails
+import org.freekode.tp2intervals.domain.workout.TrainerRoadReconciliationSource
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.activity.TrainerRoadActivityDTO
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.activity.TrainerRoadActivityMapper
 import org.freekode.tp2intervals.infrastructure.platform.trainerroad.configuration.TrainerRoadConfigurationRepository
@@ -32,6 +33,19 @@ class TrainerRoadApiClientService(
         memberId: Long,
         requireCompleteTimeline: Boolean = false,
     ): List<Workout> {
+        return getCalendarWorkouts(startDate, endDate, memberId, requireCompleteTimeline, false).workouts
+    }
+
+    fun getReconciliationSource(startDate: LocalDate, endDate: LocalDate, memberId: Long): TrainerRoadReconciliationSource =
+        getCalendarWorkouts(startDate, endDate, memberId, true, true)
+
+    private fun getCalendarWorkouts(
+        startDate: LocalDate,
+        endDate: LocalDate,
+        memberId: Long,
+        requireCompleteTimeline: Boolean,
+        allowUnidentified: Boolean,
+    ): TrainerRoadReconciliationSource {
         val removeHtmlTags = trainerRoadConfigurationRepository.getConfiguration().removeHtmlTags
         val timeline = trainerRoadApiClient.getCalendarTimeline(memberId)
         if (requireCompleteTimeline &&
@@ -40,10 +54,17 @@ class TrainerRoadApiClientService(
             throw PlatformException(Platform.TRAINER_ROAD, "TrainerRoad calendar does not cover the requested date range; no workouts were deleted")
         }
         val plannedActivities = timeline.plannedActivities.filter { it.date.toLocalDate() in startDate..endDate }
-        if (requireCompleteTimeline && plannedActivities.any { it.workoutId == null }) {
+        if (plannedActivities.any { it.workoutId != null && it.workoutId <= 0 }) {
+            throw PlatformException(Platform.TRAINER_ROAD, "A planned TrainerRoad workout has an invalid ID; no workouts were changed")
+        }
+        // TrainerRoad's unofficial API does not explicitly identify rest days.
+        val unidentified = plannedActivities.filter {
+            it.workoutId == null && (it.title == null || it.title.isNotBlank())
+        }
+        if (requireCompleteTimeline && !allowUnidentified && unidentified.isNotEmpty()) {
             throw PlatformException(Platform.TRAINER_ROAD, "A planned TrainerRoad activity has no workout ID; cannot safely reconcile this date range")
         }
-        return plannedActivities
+        val workouts = plannedActivities
             .filter { it.workoutId != null }
             .map { plannedActivity ->
                 val id = plannedActivity.workoutId!!.toString()
@@ -51,8 +72,9 @@ class TrainerRoadApiClientService(
                 if (requireCompleteTimeline && workout.details.externalData.trainerRoadId != id) {
                     throw PlatformException(Platform.TRAINER_ROAD, "TrainerRoad returned a workout with an unexpected ID; no workouts were deleted")
                 }
-                workout.withDate(plannedActivity.date.toLocalDate())
+                workout.withDate(plannedActivity.date.toLocalDate()).withStartTime(plannedActivity.timeOfDay)
             }
+        return TrainerRoadReconciliationSource(workouts, unidentified.map { it.date.toLocalDate() })
     }
 
     @Cacheable(key = "#trWorkoutId + ':' + #removeHtmlTags")

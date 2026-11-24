@@ -11,9 +11,9 @@ export class WorkoutClient {
   constructor(private httpClient: HttpClient) {
   }
 
-  copyCalendarToCalendar(startDate, endDate, types, skipSynced, defaultStartTime, trainerRoadSyncMode, allowStaleRemoval, platformDirection, expectedActions = null): Observable<any> {
+  copyCalendarToCalendar(startDate, endDate, types, skipSynced, defaultStartTime, trainerRoadSyncMode, allowStaleRemoval, platformDirection, expectedActions = null, expectedUnidentifiedActivityDates = null): Observable<any> {
     return this.httpClient
-      .post(`/api/workout/copy-calendar-to-calendar`, {startDate, endDate, types, skipSynced, defaultStartTime, trainerRoadSyncMode, allowStaleRemoval, expectedActions, ...platformDirection})
+      .post(`/api/workout/copy-calendar-to-calendar`, {startDate, endDate, types, skipSynced, defaultStartTime, trainerRoadSyncMode, allowStaleRemoval, expectedActions, expectedUnidentifiedActivityDates, ...platformDirection})
   }
 
   previewCalendarToCalendar(startDate, endDate, types, skipSynced, defaultStartTime, trainerRoadSyncMode, allowStaleRemoval, platformDirection): Observable<any> {
@@ -48,6 +48,8 @@ export class WorkoutClient {
         defaultStartTime,
         trainerRoadSyncMode,
         allowStaleRemoval,
+        mirrorByTrainerRoadId: trainerRoadSyncMode === 'MIRROR' && allowStaleRemoval,
+        allowUnidentifiedSourceRemoval: trainerRoadSyncMode === 'MIRROR' && allowStaleRemoval,
         ...platformDirection
       })
   }

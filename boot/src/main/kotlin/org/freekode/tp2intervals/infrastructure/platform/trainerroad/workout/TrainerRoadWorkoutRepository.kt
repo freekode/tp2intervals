@@ -43,6 +43,9 @@ class TrainerRoadWorkoutRepository(
     override fun getWorkoutsForReconciliation(startDate: LocalDate, endDate: LocalDate): List<Workout> =
         trainerRoadApiClientService.getWorkoutsFromCalendar(startDate, endDate, trUsernameRepository.getMemberId(), true)
 
+    override fun getTrainerRoadReconciliationSource(startDate: LocalDate, endDate: LocalDate) =
+        trainerRoadApiClientService.getReconciliationSource(startDate, endDate, trUsernameRepository.getMemberId())
+
     override fun saveWorkoutsToCalendar(workouts: List<Workout>) {
         throw PlatformException(Platform.TRAINER_ROAD, "TR doesn't support workout planning")
     }

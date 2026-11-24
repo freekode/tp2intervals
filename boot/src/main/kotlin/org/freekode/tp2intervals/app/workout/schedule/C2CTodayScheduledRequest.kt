@@ -16,6 +16,8 @@ data class C2CTodayScheduledRequest(
     val removeStaleTrainerRoad: Boolean = false,
     val trainerRoadSyncMode: TrainerRoadSyncMode? = null,
     val allowStaleRemoval: Boolean = false,
+    val mirrorByTrainerRoadId: Boolean = false,
+    val allowUnidentifiedSourceRemoval: Boolean = false,
 ) : Schedulable {
     fun forToday() = CopyFromCalendarToCalendarRequest(
         LocalDate.now(),

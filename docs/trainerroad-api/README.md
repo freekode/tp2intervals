@@ -46,6 +46,7 @@ is the preferred source for planned workouts.
 Use separate representations:
 
 - Planned workout date: `LocalDate`, for example `2026-11-24`
+- Optional planned workout time: `PlannedActivities[].TimeOfDay`, for example `18:00:00`
 - Intervals local event time: timezone-free ISO-8601 local datetime, for example
   `2026-11-24T18:00:00`
 - Real instants: UTC/ISO-8601 with `Z` or an explicit offset

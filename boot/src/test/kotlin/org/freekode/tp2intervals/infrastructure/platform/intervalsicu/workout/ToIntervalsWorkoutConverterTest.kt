@@ -11,7 +11,7 @@ import java.time.LocalTime
 
 class ToIntervalsWorkoutConverterTest {
     @Test
-    fun `untimed workout sends midnight as ISO local date time`() {
+    fun `untimed workout sends a midnight date-time value`() {
         val request = ToIntervalsWorkoutConverter().createEventRequestDTO(workout(null))
 
         assertEquals("2026-11-23T00:00:00", request.start_date_local)

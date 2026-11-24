@@ -70,6 +70,10 @@
           "Date": {
             "$ref": "#/components/schemas/CalendarDate"
           },
+          "TimeOfDay": {
+            "type": ["string", "null"],
+            "description": "Optional local planned workout time, e.g. 18:00:00."
+          },
           "WorkoutId": {
             "type": [
               "integer",

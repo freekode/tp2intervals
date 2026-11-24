@@ -31,8 +31,8 @@ class WorkoutService(
             (request.sourcePlatform != Platform.TRAINER_ROAD || request.targetPlatform != Platform.INTERVALS)) {
             throw PlatformException(request.targetPlatform, "TrainerRoad reconciliation is supported only from TrainerRoad to Intervals.icu")
         }
-        if (request.trainerRoadSyncMode != null && request.removeStaleTrainerRoad) {
-            throw PlatformException(request.targetPlatform, "Choose either the new sync mode or the legacy removal option")
+        if (request.removeStaleTrainerRoad) {
+            throw PlatformException(request.targetPlatform, "The old removal option is no longer supported; select Mirror and allow removal explicitly")
         }
         if (request.trainerRoadSyncMode == TrainerRoadSyncMode.MIRROR && !request.allowStaleRemoval) {
             throw PlatformException(request.targetPlatform, "Mirror mode requires permission to remove stale TrainerRoad workouts")
@@ -58,6 +58,10 @@ class WorkoutService(
             if (request.expectedActions != null && request.expectedActions != plan.actions()) {
                 throw PlatformException(request.targetPlatform, "The sync plan changed after preview; preview it again before syncing")
             }
+            if (request.trainerRoadSyncMode == TrainerRoadSyncMode.MIRROR && request.expectedActions != null &&
+                request.expectedUnidentifiedActivityDates?.distinct()?.sorted() != plan.unidentifiedActivityDates) {
+                throw PlatformException(request.targetPlatform, "The unidentified TrainerRoad activities changed after preview; preview again before syncing")
+            }
             val target = workoutRepositoryMap[request.targetPlatform]!!
             target.saveTrainerRoadWorkoutsToCalendar(plan.toCopy)
             plan.toUpdate.forEach { (source, existing) -> target.updateSyncedWorkout(source, existing) }
@@ -67,11 +71,7 @@ class WorkoutService(
         val sourceWorkoutRepository = workoutRepositoryMap[request.sourcePlatform]!!
         val targetWorkoutRepository = workoutRepositoryMap[request.targetPlatform]!!
 
-        val allWorkoutsToSync = if (request.removeStaleTrainerRoad) {
-            sourceWorkoutRepository.getWorkoutsForReconciliation(request.startDate, request.endDate)
-        } else {
-            sourceWorkoutRepository.getWorkoutsFromCalendar(request.startDate, request.endDate)
-        }
+        val allWorkoutsToSync = sourceWorkoutRepository.getWorkoutsFromCalendar(request.startDate, request.endDate)
         val workoutsMatchingTypes = allWorkoutsToSync.filter { request.types.contains(it.details.type) }
         val filteredOutCount = allWorkoutsToSync.size - workoutsMatchingTypes.size
         var filteredWorkoutsToSync = workoutsMatchingTypes
@@ -82,49 +82,11 @@ class WorkoutService(
                 throw PlatformException(request.targetPlatform, "Invalid default start time: $it")
             }
         }
-        filteredWorkoutsToSync = filteredWorkoutsToSync.map { it.withStartTime(defaultStartTime) }
+        filteredWorkoutsToSync = filteredWorkoutsToSync.map {
+            it.withStartTime(if (request.sourcePlatform == Platform.TRAINER_ROAD) it.startTime ?: defaultStartTime else defaultStartTime)
+        }
         var alreadySyncedCount = 0
-        var removedCount = 0
-        var skippedCount = 0
-        var workoutsToRemove = emptyList<Workout>()
-        if (request.removeStaleTrainerRoad) {
-            if (allWorkoutsToSync.any {
-                    it.date == null || it.date !in request.startDate..request.endDate ||
-                        it.details.externalData.trainerRoadId.isNullOrBlank()
-                }) {
-                throw PlatformException(request.sourcePlatform, "TrainerRoad returned a workout without a valid ID and date; no workouts were deleted")
-            }
-            val plannedWorkouts = targetWorkoutRepository.getWorkoutsForReconciliation(request.startDate, request.endDate)
-            val sourceGroups = allWorkoutsToSync.groupBy { it.date to it.details.externalData.trainerRoadId }
-            val targetGroups = plannedWorkouts
-                .filter { it.date != null && it.date in request.startDate..request.endDate && !it.details.externalData.trainerRoadId.isNullOrBlank() }
-                .groupBy { it.date to it.details.externalData.trainerRoadId }
-            filteredWorkoutsToSync = filteredWorkoutsToSync.filter { source ->
-                val key = source.date to source.details.externalData.trainerRoadId
-                val matches = targetGroups[key].orEmpty()
-                when {
-                    sourceGroups.getValue(key).size != 1 || matches.size > 1 -> {
-                        skippedCount++
-                        false
-                    }
-                    matches.isNotEmpty() -> {
-                        alreadySyncedCount++
-                        false
-                    }
-                    else -> true
-                }
-            }
-            workoutsToRemove = targetGroups.flatMap { (key, targets) ->
-                when {
-                    key in sourceGroups -> emptyList()
-                    targets.size == 1 && targetWorkoutRepository.isTrackedTrainerRoadWorkout(targets.single()) -> targets
-                    else -> {
-                        skippedCount += targets.size
-                        emptyList()
-                    }
-                }
-            }
-        } else if (request.skipSynced) {
+        if (request.skipSynced) {
             val plannedWorkouts = if (request.sourcePlatform == Platform.TRAINER_ROAD && request.targetPlatform == Platform.INTERVALS) {
                 targetWorkoutRepository.getWorkoutsForReconciliation(request.startDate, request.endDate)
             } else {
@@ -142,10 +104,6 @@ class WorkoutService(
         } else {
             targetWorkoutRepository.saveWorkoutsToCalendar(filteredWorkoutsToSync)
         }
-        workoutsToRemove.forEach {
-            targetWorkoutRepository.deleteSyncedWorkout(it)
-            removedCount++
-        }
         val response = CopyWorkoutsResponse(
             filteredWorkoutsToSync.size,
             filteredOutCount,
@@ -153,8 +111,6 @@ class WorkoutService(
             request.endDate,
             ExternalData.empty(), // TODO figure smth better
             alreadySyncedCount,
-            removed = removedCount,
-            skipped = skippedCount,
         )
         log.info("Saved workouts to calendar successfully: $response")
         return response
@@ -174,7 +130,8 @@ class WorkoutService(
         val toRemove: List<Workout>,
         val alreadySynced: Int,
         val filteredOut: Int,
-        val skipped: Int,
+        val skippedWorkouts: List<SkippedSyncWorkout>,
+        val unidentifiedActivityDates: List<LocalDate>,
     ) {
         fun actions(): List<SyncPlanAction> {
             fun action(kind: SyncAction, workout: Workout, eventId: String?) = SyncPlanAction(
@@ -189,17 +146,22 @@ class WorkoutService(
 
         fun response(request: CopyFromCalendarToCalendarRequest) = CopyWorkoutsResponse(
             toCopy.size, filteredOut, request.startDate, request.endDate, ExternalData.empty(),
-            alreadySynced, toRemove.size, skipped, toUpdate.size, actions(),
+            alreadySynced, toRemove.size, skippedWorkouts.size, toUpdate.size, actions(), unidentifiedActivityDates, skippedWorkouts,
         )
     }
 
     private fun prepareTrainerRoadSync(request: CopyFromCalendarToCalendarRequest): TrainerRoadSyncPlan {
         val mode = requireNotNull(request.trainerRoadSyncMode)
-        val source = workoutRepositoryMap[request.sourcePlatform]!!
-            .getWorkoutsForReconciliation(request.startDate, request.endDate)
+        val sourceResult = workoutRepositoryMap[request.sourcePlatform]!!
+            .getTrainerRoadReconciliationSource(request.startDate, request.endDate)
+        val source = sourceResult.workouts
+        val unidentifiedDates = sourceResult.unidentifiedActivityDates.filter { it in request.startDate..request.endDate }
+        if (unidentifiedDates.isNotEmpty()) {
+            log.warn("Skipping TrainerRoad activities without workout IDs on dates {}", unidentifiedDates.distinct().sorted())
+        }
         if (source.any {
                 it.date == null || it.date !in request.startDate..request.endDate ||
-                    it.details.externalData.trainerRoadId.isNullOrBlank()
+                    (it.details.externalData.trainerRoadId?.toLongOrNull() ?: 0) <= 0
             }) {
             throw PlatformException(request.sourcePlatform, "TrainerRoad returned a workout without a valid ID and date; no workouts were changed")
         }
@@ -211,6 +173,7 @@ class WorkoutService(
             }
         }
         val targetRepository = workoutRepositoryMap[request.targetPlatform]!!
+        fun eligible(workout: Workout) = targetRepository.hasExplicitTrainerRoadId(workout)
         val targets = targetRepository.getWorkoutsForReconciliation(request.startDate, request.endDate)
         val sourceGroups = source.groupBy { it.date to it.details.externalData.trainerRoadId }
         val targetGroups = targets
@@ -219,26 +182,38 @@ class WorkoutService(
         val toCopy = mutableListOf<Workout>()
         val toUpdate = mutableListOf<Pair<Workout, Workout>>()
         var alreadySynced = 0
-        var skipped = 0
+        val skipped = mutableListOf<SkippedSyncWorkout>()
+        fun skip(workout: Workout, reason: SkippedSyncReason, matchingTargets: List<Workout>) {
+            skipped.add(SkippedSyncWorkout(
+                requireNotNull(workout.date), workout.details.name,
+                requireNotNull(workout.details.externalData.trainerRoadId),
+                matchingTargets.mapNotNull { it.details.externalData.intervalsId },
+                reason,
+            ))
+        }
         val selected = source.filter { it.details.type in request.types }
-        for (workout in selected) {
+        for (sourceWorkout in selected) {
+            val workout = sourceWorkout.withStartTime(sourceWorkout.startTime ?: startTime)
             val key = workout.date to workout.details.externalData.trainerRoadId
             val matches = targetGroups[key].orEmpty()
             when {
-                sourceGroups.getValue(key).size != 1 || matches.size > 1 -> skipped++
-                matches.isEmpty() -> toCopy.add(workout.withStartTime(startTime))
+                sourceGroups.getValue(key).size != 1 -> skip(workout, SkippedSyncReason.DUPLICATE_TRAINERROAD_ID, matches)
+                matches.size > 1 -> skip(workout, SkippedSyncReason.DUPLICATE_INTERVALS_ID, matches)
+                matches.isEmpty() -> toCopy.add(workout)
                 mode == TrainerRoadSyncMode.ADD_MISSING -> alreadySynced++
-                !targetRepository.isTrackedTrainerRoadWorkout(matches.single()) -> skipped++
-                else -> toUpdate.add(workout.withStartTime(startTime) to matches.single())
+                !eligible(matches.single()) -> skip(workout, SkippedSyncReason.PROTECTED_EVENT, matches)
+                targetRepository.isTrainerRoadWorkoutUpToDate(workout, matches.single()) -> alreadySynced++
+                else -> toUpdate.add(workout to matches.single())
             }
         }
         val toRemove = if (mode == TrainerRoadSyncMode.MIRROR) {
             targetGroups.flatMap { (key, matches) ->
                 when {
                     key in sourceGroups -> emptyList()
-                    matches.size == 1 && targetRepository.isTrackedTrainerRoadWorkout(matches.single()) -> matches
+                    matches.size == 1 && eligible(matches.single()) -> matches
                     else -> {
-                        skipped += matches.size
+                        val reason = if (matches.size > 1) SkippedSyncReason.DUPLICATE_INTERVALS_ID else SkippedSyncReason.PROTECTED_EVENT
+                        matches.forEach { skip(it, reason, listOf(it)) }
                         emptyList()
                     }
                 }
@@ -247,7 +222,7 @@ class WorkoutService(
         if ((toUpdate.map { it.second } + toRemove).any { it.details.externalData.intervalsId.isNullOrBlank() }) {
             throw PlatformException(request.targetPlatform, "An Intervals.icu event is missing its ID; no workouts were changed")
         }
-        return TrainerRoadSyncPlan(toCopy, toUpdate, toRemove, alreadySynced, source.size - selected.size, skipped)
+        return TrainerRoadSyncPlan(toCopy, toUpdate, toRemove, alreadySynced, source.size - selected.size, skipped, unidentifiedDates.distinct().sorted())
     }
 
     fun copyWorkoutsC2L(request: CopyFromCalendarToLibraryRequest): CopyWorkoutsResponse {

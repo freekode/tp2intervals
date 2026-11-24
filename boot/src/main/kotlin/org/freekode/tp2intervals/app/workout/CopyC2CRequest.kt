@@ -17,6 +17,7 @@ data class CopyFromCalendarToCalendarRequest(
     val trainerRoadSyncMode: TrainerRoadSyncMode? = null,
     val allowStaleRemoval: Boolean = false,
     val expectedActions: List<SyncPlanAction>? = null,
+    val expectedUnidentifiedActivityDates: List<LocalDate>? = null,
 )
 
 enum class TrainerRoadSyncMode {

@@ -93,6 +93,43 @@ class TrainerRoadWorkoutRepositoryTest {
     }
 
     @Test
+    fun `calendar reads optional planned times per occurrence`() {
+        val api = mock(TrainerRoadApiClient::class.java)
+        val date = LocalDate.of(2026, 11, 23)
+        val timeline = objectMapper.readValue(
+            """{"PlannedActivities":[
+                {"Id":"1","Title":"Workout","Date":{"Year":2026,"Month":11,"Day":23},"WorkoutId":5460,"TimeOfDay":"00:30:00"},
+                {"Id":"2","Title":"Workout","Date":{"Year":2026,"Month":11,"Day":23},"WorkoutId":5460,"TimeOfDay":null},
+                {"Id":"3","Title":"Workout","Date":{"Year":2026,"Month":11,"Day":23},"WorkoutId":5460}
+            ]}""",
+            TrainerRoadCalendarTimelineDTO::class.java,
+        )
+        `when`(api.getCalendarTimeline(123)).thenReturn(timeline)
+        `when`(api.getWorkout("5460")).thenReturn(objectMapper.readValue(
+            ResourceUtils.getFile("classpath:tr-workoutsdetails-simple.json"), TRWorkoutResponseDTO::class.java,
+        ))
+
+        val workouts = TrainerRoadApiClientService(api, trainerRoadConfigurationRepository)
+            .getWorkoutsFromCalendar(date, date, 123)
+
+        assertEquals(listOf(LocalTime.of(0, 30), null, null), workouts.map { it.startTime })
+    }
+
+    @Test
+    fun `calendar rejects invalid workout IDs`() {
+        val api = mock(TrainerRoadApiClient::class.java)
+        val date = LocalDate.of(2026, 11, 23)
+        val activity = TrainerRoadCalendarTimelineDTO.PlannedActivityDTO(
+            "invalid", "Workout", TrainerRoadCalendarTimelineDTO.CalendarDateDTO(2026, 11, 23), 0,
+        )
+        `when`(api.getCalendarTimeline(123)).thenReturn(TrainerRoadCalendarTimelineDTO(listOf(activity)))
+
+        assertThrows(PlatformException::class.java) {
+            TrainerRoadApiClientService(api, trainerRoadConfigurationRepository).getWorkoutsFromCalendar(date, date, 123)
+        }
+    }
+
+    @Test
     fun `reconciliation requires full timeline coverage even for an empty day`() {
         val api = mock(TrainerRoadApiClient::class.java)
         val date = LocalDate.of(2026, 11, 23)
@@ -151,7 +188,82 @@ class TrainerRoadWorkoutRepositoryTest {
         assertThrows(PlatformException::class.java) {
             service.getWorkoutsFromCalendar(date, date, 123, true)
         }
+        val result = service.getReconciliationSource(date, date, 123)
+        assertTrue(result.workouts.isEmpty())
+        assertEquals(listOf(date), result.unidentifiedActivityDates)
         assertTrue(service.getWorkoutsFromCalendar(date.plusDays(1), date.plusDays(1), 123, true).isEmpty())
+        assertTrue(service.getReconciliationSource(date.plusDays(1), date.plusDays(1), 123).unidentifiedActivityDates.isEmpty())
+    }
+
+    @Test
+    fun `reconciliation returns identifiable workouts and dates of unidentified activities`() {
+        val api = mock(TrainerRoadApiClient::class.java)
+        val date = LocalDate.of(2026, 11, 23)
+        val activities = listOf(
+            TrainerRoadCalendarTimelineDTO.PlannedActivityDTO(
+                "before", "Planned activity", TrainerRoadCalendarTimelineDTO.CalendarDateDTO(2026, 11, 22), null,
+            ),
+            TrainerRoadCalendarTimelineDTO.PlannedActivityDTO(
+                "unknown", "Planned activity", TrainerRoadCalendarTimelineDTO.CalendarDateDTO(2026, 11, 23), null,
+            ),
+            TrainerRoadCalendarTimelineDTO.PlannedActivityDTO(
+                "known", "Workout", TrainerRoadCalendarTimelineDTO.CalendarDateDTO(2026, 11, 24), 5460,
+            ),
+            TrainerRoadCalendarTimelineDTO.PlannedActivityDTO(
+                "end", "Planned activity", TrainerRoadCalendarTimelineDTO.CalendarDateDTO(2026, 12, 6), null,
+            ),
+            TrainerRoadCalendarTimelineDTO.PlannedActivityDTO(
+                "after", "Planned activity", TrainerRoadCalendarTimelineDTO.CalendarDateDTO(2026, 12, 7), null,
+            ),
+        )
+        `when`(api.getCalendarTimeline(123)).thenReturn(
+            TrainerRoadCalendarTimelineDTO(activities, date.atStartOfDay(), date.plusDays(14).atStartOfDay()),
+        )
+        `when`(api.getWorkout("5460")).thenReturn(objectMapper.readValue(
+            ResourceUtils.getFile("classpath:tr-workoutsdetails-simple.json"), TRWorkoutResponseDTO::class.java,
+        ))
+        val result = TrainerRoadApiClientService(api, trainerRoadConfigurationRepository)
+            .getReconciliationSource(date, date.plusDays(13), 123)
+
+        assertEquals(listOf(date, date.plusDays(13)), result.unidentifiedActivityDates)
+        assertEquals(date.plusDays(1), result.workouts.single().date)
+        assertEquals("5460", result.workouts.single().details.externalData.trainerRoadId)
+    }
+
+    @Test
+    fun `blank titled entries without workout IDs are assumed rest days`() {
+        val api = mock(TrainerRoadApiClient::class.java)
+        val date = LocalDate.of(2026, 11, 23)
+        val activities = listOf(
+            TrainerRoadCalendarTimelineDTO.PlannedActivityDTO(
+                "rest", "", TrainerRoadCalendarTimelineDTO.CalendarDateDTO(2026, 11, 23), null,
+            ),
+            TrainerRoadCalendarTimelineDTO.PlannedActivityDTO(
+                "blank", "  ", TrainerRoadCalendarTimelineDTO.CalendarDateDTO(2026, 11, 24), null,
+            ),
+            TrainerRoadCalendarTimelineDTO.PlannedActivityDTO(
+                "untitled-workout", "", TrainerRoadCalendarTimelineDTO.CalendarDateDTO(2026, 11, 24), 5460,
+            ),
+            TrainerRoadCalendarTimelineDTO.PlannedActivityDTO(
+                "unknown", "Planned activity", TrainerRoadCalendarTimelineDTO.CalendarDateDTO(2026, 11, 25), null,
+            ),
+            TrainerRoadCalendarTimelineDTO.PlannedActivityDTO(
+                "missing-title", null, TrainerRoadCalendarTimelineDTO.CalendarDateDTO(2026, 11, 26), null,
+            ),
+        )
+        `when`(api.getCalendarTimeline(123)).thenReturn(
+            TrainerRoadCalendarTimelineDTO(activities, date.atStartOfDay(), date.plusDays(4).atStartOfDay()),
+        )
+        `when`(api.getWorkout("5460")).thenReturn(objectMapper.readValue(
+            ResourceUtils.getFile("classpath:tr-workoutsdetails-simple.json"), TRWorkoutResponseDTO::class.java,
+        ))
+        val service = TrainerRoadApiClientService(api, trainerRoadConfigurationRepository)
+
+        val result = service.getReconciliationSource(date, date.plusDays(3), 123)
+
+        assertEquals(listOf(date.plusDays(2), date.plusDays(3)), result.unidentifiedActivityDates)
+        assertEquals(date.plusDays(1), result.workouts.single().date)
+        assertTrue(service.getWorkoutsFromCalendar(date, date, 123, true).isEmpty())
     }
 
     @Test
