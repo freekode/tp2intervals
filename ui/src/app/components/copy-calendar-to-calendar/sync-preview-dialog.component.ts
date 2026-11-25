@@ -21,7 +21,7 @@ export function describeSkippedWorkout(workout: SkippedSyncWorkout): string {
   const reasons: Record<SkippedSyncWorkout['reason'], string> = {
     DUPLICATE_TRAINERROAD_ID: 'duplicate TrainerRoad ID on this day',
     DUPLICATE_INTERVALS_ID: 'multiple destination workouts match this ID',
-    PROTECTED_EVENT: 'destination workout is protected or does not have a clear TrainerRoad ID',
+    PROTECTED_EVENT: 'destination workout needs review; check its TrainerRoad ID and workout details',
     UNIDENTIFIED_ACTIVITY: 'stale removal was paused due to an activity without an ID (older policy)',
   };
   return `${workout.date}: ${workout.name} (TrainerRoad ID: ${workout.trainerRoadId}) - ${reasons[workout.reason]}`;
@@ -72,7 +72,7 @@ export interface SyncPreview {
         }
       }
       @if (data.skipped) {
-        <p><strong>{{data.skipped}} {{data.skipped === 1 ? 'entry was' : 'entries were'}} skipped due to ambiguity or protection.</strong> Please check manually.</p>
+        <p><strong>{{data.skipped}} {{data.skipped === 1 ? 'entry was' : 'entries were'}} skipped.</strong> Please review manually.</p>
         @if (data.skippedWorkouts?.length) {
           <ul>
             @for (workout of data.skippedWorkouts; track $index) {

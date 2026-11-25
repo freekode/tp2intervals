@@ -54,6 +54,54 @@ Use separate representations:
 Do not convert a calendar date through the machine timezone. A calendar date is the same date
 at both the source and destination.
 
+## Planned and completed timeline entries
+
+A read-only inspection of one account's timeline found planned workouts in
+`PlannedActivities` and activity entries in `Activities`. The inspected examples included
+an indoor TrainerRoad workout and an outdoor workout synced from Garmin. Their corresponding
+titles were not present in `PlannedActivities` on those dates; activity entries on those dates
+were plausible matches, but the timeline alone did not prove their identity or pairing.
+
+An illustrative future planned entry included:
+
+```json
+{
+  "WorkoutId": 12345,
+  "Status": 0,
+  "ManuallyCompleted": false,
+  "Tss": 72,
+  "ActualTss": 72
+}
+```
+
+In that sample, every observed future planned entry had `ActualTss` equal to `Tss`, often
+nonzero. **A nonzero `ActualTss` is not sufficient evidence of completion.** The inspected
+activity entries included `Id`, `Started`, `EventType`, `IsOutside`, `Tss`, and `PlannedTss`,
+but no `WorkoutId` or planned-event ID. Identifiers and values above are synthetic.
+
+These observations are not an API contract: they do not establish that every completed workout
+disappears from `PlannedActivities`, what each `Status` or `EventType` means, or that a missing
+planned workout is a rest day. The two plausible completed entries had raw `Started` timestamps
+two hours earlier than the times shown to the user; their timezone interpretation was not verified.
+Other endpoints may expose associations not present in the timeline.
+
+The current planned-workout sync reads `PlannedActivities` but does not check the `Activities`
+list for completion. In particular, an Intervals.icu Mirror operation does not establish that a
+stale planned event is unpaired or incomplete before updating or removing it.
+
+In a separate read-only Intervals.icu check, future planned events exposed `paired_activity_id`,
+and a completed activity exposed `paired_event_id`. The observed values were null for the
+unpaired records. In a separate live synthetic test, a planned event was created first and a
+matching simulated activity uploaded afterwards. Intervals paired them, and both fields referred
+to the corresponding record on subsequent reads. These fields are not included in the current
+Intervals reconciliation DTO. Their behavior in other cases and during concurrent updates still
+needs verification before relying on them as a completion-safety check.
+
+In one live test, a synthetic planned event was created after a completed indoor activity
+already existed on the same date and time. Both pairing fields remained null on subsequent
+reads. This single activity-first test does not establish whether pairing may occur later
+or in other circumstances.
+
 ## Workout payload mapping
 
 The useful workout details response contains:

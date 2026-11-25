@@ -8,6 +8,7 @@
 - Prevented incomplete TrainerRoad calendar copies and incorrect power targets from unrelated samples
 - Reject missing TrainerRoad power targets and unidentified activities in ordinary calendar copies
 - Reject conflicting TrainerRoad ID markers when copying to Intervals.icu
+- Preserve TrainingPeaks and TrainerRoad IDs in Intervals.icu copies and Mirror updates
 
 ### 0.12.3
 - Updated Java to 21.0.3

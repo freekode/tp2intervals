@@ -76,7 +76,13 @@ describe('SyncPreviewDialogComponent', () => {
     const text = describeSkippedWorkout({date: '2026-11-28', name: 'Workout', trainerRoadId: '123',
       intervalsIds: ['456'], trainingPeaksIds: ['789'], reason: 'PROTECTED_EVENT'});
     expect(text).toContain('TrainerRoad ID: 123');
+    expect(text).toContain('destination workout needs review; check its TrainerRoad ID and workout details');
     expect(text).not.toContain('456');
     expect(text).not.toContain('789');
+  });
+
+  it('asks for review when entries are skipped', () => {
+    const text = render({...preview, skipped: 1});
+    expect(text).toContain('1 entry was skipped. Please review manually.');
   });
 });

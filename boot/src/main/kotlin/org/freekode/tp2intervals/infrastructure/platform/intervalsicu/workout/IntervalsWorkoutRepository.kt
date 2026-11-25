@@ -48,14 +48,16 @@ class IntervalsWorkoutRepository(
     }
 
     override fun hasExplicitTrainerRoadId(workout: Workout): Boolean {
-        return workout.details.externalData.hasClearTrainerRoadId(workout.details.description)
+        return workout.details.externalData.hasClearTrainerRoadId(workout.details.description) &&
+            !ExternalData.hasAmbiguousMetadata(workout.details.description)
     }
 
     override fun isTrainerRoadWorkoutUpToDate(source: Workout, target: Workout): Boolean {
         val date = target.date ?: return false
         val time = target.startTime ?: return false
         if (source.date != date || source.details.externalData.trainerRoadId != target.details.externalData.trainerRoadId) return false
-        val workout = if (source.startTime == null) source.withStartTime(time) else source
+        val withTrainingPeaksId = preserveTrainingPeaksId(source, target)
+        val workout = if (source.startTime == null) withTrainingPeaksId.withStartTime(time) else withTrainingPeaksId
         val expected = ToIntervalsWorkoutConverter().createEventRequestDTO(workout)
         fun normalize(text: String) = text.replace("\r\n", "\n").replace("\r", "\n")
         return expected.name == target.details.name &&
@@ -82,7 +84,8 @@ class IntervalsWorkoutRepository(
         }
         val eventId = target.details.externalData.intervalsId?.takeIf { it.isNotBlank() }
             ?: throw PlatformException(Platform.INTERVALS, "Cannot update a workout without an Intervals.icu event ID")
-        val workout = if (source.startTime == null) source.withStartTime(target.startTime) else source
+        val withTrainingPeaksId = preserveTrainingPeaksId(source, target)
+        val workout = if (source.startTime == null) withTrainingPeaksId.withStartTime(target.startTime) else withTrainingPeaksId
         val result = intervalsApiClient.updateEvent(
             intervalsConfigurationRepository.getConfiguration().athleteId,
             eventId,
@@ -91,6 +94,13 @@ class IntervalsWorkoutRepository(
         if (result == null || result.id.toString() != eventId) {
             throw PlatformException(Platform.INTERVALS, "Intervals.icu did not confirm the event update for $eventId")
         }
+    }
+
+    private fun preserveTrainingPeaksId(source: Workout, target: Workout): Workout {
+        val trainingPeaksId = target.details.externalData.trainingPeaksId ?: return source
+        return source.copy(details = source.details.copy(
+            externalData = source.details.externalData.withTrainingPeaks(trainingPeaksId),
+        ))
     }
 
     override fun saveWorkoutsToLibrary(libraryContainer: LibraryContainer, workouts: List<Workout>) {

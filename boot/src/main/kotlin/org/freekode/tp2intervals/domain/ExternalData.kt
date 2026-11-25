@@ -8,7 +8,7 @@ data class ExternalData(
     val trainerRoadId: String?,
 ) : Serializable {
     companion object {
-        private const val externalDataDescriptionSeparator = "//////////"
+        const val externalDataDescriptionSeparator = "//////////"
 
         fun empty() = ExternalData(null, null, null)
 
@@ -20,6 +20,14 @@ data class ExternalData(
                 .map { it.substringAfter("=").trim() }
                 .filter { (it.toLongOrNull() ?: 0) > 0 }
                 .toSet()
+
+        fun hasAmbiguousMetadata(description: String?): Boolean {
+            val fields = description.orEmpty().substringAfter(externalDataDescriptionSeparator, "").lines()
+                .map { it.trimEnd('\r').split("=", limit = 2) }
+                .filter { it.size == 2 && it[0] in setOf("trainingPeaksId", "intervalsId", "trainerRoadId") }
+                .groupBy({ it[0] }, { it[1] })
+            return fields.values.any { values -> values.any { it.isBlank() } || values.distinct().size > 1 }
+        }
     }
 
     fun withTrainingPeaks(trainingPeaksId: String) = ExternalData(trainingPeaksId, intervalsId, trainerRoadId)

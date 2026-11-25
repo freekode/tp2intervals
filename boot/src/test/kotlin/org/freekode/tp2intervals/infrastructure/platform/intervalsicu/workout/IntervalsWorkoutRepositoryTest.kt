@@ -22,6 +22,8 @@ import org.freekode.tp2intervals.infrastructure.PlatformException
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsApiClient
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfiguration
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfigurationRepository
+import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.TPToWorkoutConverter
+import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.workout.TPWorkoutCalendarResponseDTO
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Assertions.assertThrows
@@ -308,6 +310,106 @@ class IntervalsWorkoutRepositoryTest {
     }
 
     @Test
+    fun `mirror retains TrainingPeaks ID when comparing updating and removing a marked event`() {
+        val day = LocalDate.of(2026, 11, 23)
+        val time = LocalTime.of(18, 30)
+        val source = sourceForWrite(trainerRoadWorkout("Workout"))
+        val sourceWithTrainingPeaks = source.copy(
+            details = source.details.copy(externalData = source.details.externalData.withTrainingPeaks("456")),
+        )
+        val rendered = ToIntervalsWorkoutConverter().createEventRequestDTO(sourceWithTrainingPeaks.withStartTime(time))
+        fun event(name: String, description: String) = objectMapper.readValue(
+            """{"id":42,"name":${objectMapper.writeValueAsString(name)},"description":${objectMapper.writeValueAsString(description)},"start_date_local":"2026-11-23T18:30:00","category":"WORKOUT","type":"Ride"}""",
+            IntervalsEventIdentityDTO::class.java,
+        )
+        val api = RecordingClient(events = listOf(event("Workout", rendered.description)))
+        val repository = IntervalsWorkoutRepository(api, intervalsConfigurationRepository)
+        val trainerRoad = mock(WorkoutRepository::class.java)
+        `when`(trainerRoad.platform()).thenReturn(Platform.TRAINER_ROAD)
+        `when`(trainerRoad.getTrainerRoadReconciliationSource(day, day))
+            .thenReturn(TrainerRoadReconciliationSource(listOf(source), emptyList()))
+        val request = CopyFromCalendarToCalendarRequest(
+            day, day, listOf(TrainingType.BIKE), true, Platform.TRAINER_ROAD, Platform.INTERVALS,
+            trainerRoadSyncMode = TrainerRoadSyncMode.MIRROR, allowStaleRemoval = true,
+        )
+        val service = WorkoutService(listOf(trainerRoad, repository), emptyList())
+        assertEquals(0, service.copyWorkoutsC2C(request).updated)
+        assertTrue(api.updatedRequests.isEmpty())
+
+        val changed = source.copy(details = source.details.copy(name = "Updated"))
+        `when`(trainerRoad.getTrainerRoadReconciliationSource(day, day))
+            .thenReturn(TrainerRoadReconciliationSource(listOf(changed), emptyList()))
+        assertEquals(1, service.copyWorkoutsC2C(request).updated)
+        val updated = api.updatedRequests.single().second
+        val ids = ExternalData.empty().fromSimpleString(updated.description)
+        assertEquals("456", ids.trainingPeaksId)
+        assertEquals("123", ids.trainerRoadId)
+        assertTrue(ids.hasClearTrainerRoadId(updated.description))
+
+        val staleApi = RecordingClient(events = listOf(event(updated.name, updated.description)))
+        val staleRepository = IntervalsWorkoutRepository(staleApi, intervalsConfigurationRepository)
+        `when`(trainerRoad.getTrainerRoadReconciliationSource(day, day))
+            .thenReturn(TrainerRoadReconciliationSource(emptyList(), emptyList()))
+        val staleService = WorkoutService(listOf(trainerRoad, staleRepository), emptyList())
+        assertEquals(1, staleService.copyWorkoutsC2C(request).removed)
+        assertEquals(listOf("42"), staleApi.deletedEventIds)
+
+        val ambiguousApi = RecordingClient(events = listOf(event(
+            "Workout", "//////////\ntrainerRoadId=123\ntrainingPeaksId=456\ntrainingPeaksId=789",
+        )))
+        val ambiguousService = WorkoutService(
+            listOf(trainerRoad, IntervalsWorkoutRepository(ambiguousApi, intervalsConfigurationRepository)), emptyList(),
+        )
+        val result = ambiguousService.copyWorkoutsC2C(request)
+        assertEquals(0, result.removed)
+        assertEquals(1, result.skipped)
+        assertTrue(ambiguousApi.deletedEventIds.isEmpty())
+    }
+
+    @Test
+    fun `mirror can remove a stale workout copied from TrainingPeaks with both IDs`() {
+        val day = LocalDate.of(2026, 11, 23)
+        val trainingPeaksWorkout = TPToWorkoutConverter().toWorkout(TPWorkoutCalendarResponseDTO(
+            day.atStartOfDay(), "456", 2, "Workout", null, null,
+            "Description\n//////////\ntrainerRoadId=123", null, null,
+        ))
+        val source = mock(WorkoutRepository::class.java)
+        `when`(source.platform()).thenReturn(Platform.TRAINING_PEAKS)
+        `when`(source.getWorkoutsFromCalendar(day, day)).thenReturn(listOf(trainingPeaksWorkout))
+        val copyApi = RecordingClient()
+        val copyService = WorkoutService(
+            listOf(source, IntervalsWorkoutRepository(copyApi, intervalsConfigurationRepository)), emptyList(),
+        )
+        val copyRequest = CopyFromCalendarToCalendarRequest(
+            day, day, listOf(TrainingType.BIKE), false, Platform.TRAINING_PEAKS, Platform.INTERVALS,
+        )
+        assertEquals(1, copyService.copyWorkoutsC2C(copyRequest).copied)
+        val copied = copyApi.createdRequests.single()
+        val ids = ExternalData.empty().fromSimpleString(copied.description)
+        assertEquals("456", ids.trainingPeaksId)
+        assertEquals("123", ids.trainerRoadId)
+
+        val event = objectMapper.readValue(
+            """{"id":42,"name":${objectMapper.writeValueAsString(copied.name)},"description":${objectMapper.writeValueAsString(copied.description)},"start_date_local":${objectMapper.writeValueAsString(copied.start_date_local)},"category":"WORKOUT","type":"Ride"}""",
+            IntervalsEventIdentityDTO::class.java,
+        )
+        val mirrorApi = RecordingClient(events = listOf(event))
+        val trainerRoad = mock(WorkoutRepository::class.java)
+        `when`(trainerRoad.platform()).thenReturn(Platform.TRAINER_ROAD)
+        `when`(trainerRoad.getTrainerRoadReconciliationSource(day, day))
+            .thenReturn(TrainerRoadReconciliationSource(emptyList(), emptyList()))
+        val mirrorService = WorkoutService(
+            listOf(trainerRoad, IntervalsWorkoutRepository(mirrorApi, intervalsConfigurationRepository)), emptyList(),
+        )
+        val mirrorRequest = copyRequest.copy(
+            sourcePlatform = Platform.TRAINER_ROAD, trainerRoadSyncMode = TrainerRoadSyncMode.MIRROR,
+            allowStaleRemoval = true,
+        )
+        assertEquals(1, mirrorService.copyWorkoutsC2C(mirrorRequest).removed)
+        assertEquals(listOf("42"), mirrorApi.deletedEventIds)
+    }
+
+    @Test
     fun `update requires matching IDs and a confirmed event response`() {
         val api = RecordingClient(confirmUpdate = false)
         val repository = IntervalsWorkoutRepository(api, intervalsConfigurationRepository)
@@ -339,6 +441,8 @@ class IntervalsWorkoutRepositoryTest {
             "//////////\ntrainerRoadId=999",
             "//////////\ntrainerRoadId=123\ntrainerRoadId=999",
             "//////////\ntrainerRoadId=not-a-number",
+            "//////////\ntrainerRoadId=123\ntrainingPeaksId=456\ntrainingPeaksId=789",
+            "//////////\ntrainerRoadId=123\ntrainingPeaksId=",
         )) {
             val invalid = target.copy(details = target.details.copy(description = description))
             assertTrue(!repository.hasExplicitTrainerRoadId(invalid))

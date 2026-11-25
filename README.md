@@ -94,6 +94,9 @@ TrainingPeaks reconciliation uses unofficial API endpoints; planned time writes,
 responses have not been verified against a disposable account.
 TrainerRoad descriptions are copied to Intervals.icu and TrainingPeaks with an appended ID marker. If a description conflicts
 with that marker, syncing fails rather than creating a workout that cannot be reliably matched.
+When copying a TrainingPeaks workout with a TrainerRoad marker to Intervals.icu, both IDs share one
+marker. Intervals.icu Mirror preserves the TrainingPeaks ID when updating the workout and can remove
+the workout if it becomes stale and removal is allowed. Conflicting or blank ID metadata is protected.
 It can overwrite or delete manual edits; an ID does not prove app ownership. If the ID is removed
 from an event's description, the app cannot recognize that event and may copy the workout again.
 Mirror can remove stale eligible events on empty days and for unselected workout types;

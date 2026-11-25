@@ -1,5 +1,6 @@
 package org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout
 
+import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.librarycontainer.LibraryContainer
 import org.freekode.tp2intervals.domain.workout.Workout
@@ -10,6 +11,8 @@ import java.time.LocalDate
 
 class ToIntervalsWorkoutConverter {
     private val unwantedStepRegex = "^[-*]".toRegex(RegexOption.MULTILINE)
+    private val metadataBlockRegex =
+        """\A(?:\r\n|\n|\r)((?:(?:trainingPeaksId|intervalsId|trainerRoadId)=[^\r\n]*(?:\r\n|\n|\r|$))+)""".toRegex()
 
     fun createWorkoutRequestDTO(libraryContainer: LibraryContainer, workout: Workout): CreateWorkoutRequestDTO {
         val workoutString = getWorkoutString(workout)
@@ -53,8 +56,7 @@ class ToIntervalsWorkoutConverter {
     }
 
     private fun getDescription(workout: Workout, workoutString: String?): String {
-        var description = workout.details.description
-            .orEmpty()
+        var description = descriptionWithoutExistingMarker(workout)
             .replace(unwantedStepRegex, "`-")
             .let { "$it\n- - - -\n${Signature.description}" }
         description += workoutString
@@ -64,12 +66,34 @@ class ToIntervalsWorkoutConverter {
         return description
     }
 
+    private fun descriptionWithoutExistingMarker(workout: Workout): String {
+        val description = workout.details.description.orEmpty()
+        if (workout.details.externalData.trainerRoadId == null &&
+            ExternalData.trainerRoadIdsInDescription(description).isNotEmpty()) {
+            rejectTrainerRoadMarker()
+        }
+        if (!workout.details.externalData.hasClearTrainerRoadId(description)) return description
+        if (ExternalData.hasAmbiguousMetadata(description)) rejectTrainerRoadMarker()
+
+        val parts = description.split(ExternalData.externalDataDescriptionSeparator, limit = 2)
+        val metadata = metadataBlockRegex.find(parts[1]) ?: rejectTrainerRoadMarker()
+        val fields = metadata.groupValues[1].lines().filter { it.isNotEmpty() }
+            .map { it.substringBefore("=") to it.substringAfter("=") }
+        if (fields.none { it.first == "trainerRoadId" && it.second == workout.details.externalData.trainerRoadId }) {
+            rejectTrainerRoadMarker()
+        }
+        return parts[0] + "\n" + parts[1].substring(metadata.range.last + 1)
+    }
+
     private fun validateTrainerRoadMarker(workout: Workout, description: String) {
         if (workout.details.externalData.trainerRoadId != null &&
             !workout.details.externalData.hasClearTrainerRoadId(description)) {
-            throw PlatformException(Platform.INTERVALS, "Cannot sync a workout whose description conflicts with the TrainerRoad ID marker")
+            rejectTrainerRoadMarker()
         }
     }
+
+    private fun rejectTrainerRoadMarker(): Nothing =
+        throw PlatformException(Platform.INTERVALS, "Cannot sync a workout whose description conflicts with the TrainerRoad ID marker")
 
     private fun getWorkoutString(workout: Workout) =
         if (workout.structure != null) {
