@@ -47,6 +47,7 @@ class TrainingPeaksWorkoutRepository(
 
     override fun platform() = Platform.TRAINING_PEAKS
 
+    @CatchFeignException(platform = Platform.TRAINING_PEAKS)
     override fun saveWorkoutsToCalendar(workouts: List<Workout>) {
         workouts.forEach { saveWorkoutToCalendar(it) }
     }

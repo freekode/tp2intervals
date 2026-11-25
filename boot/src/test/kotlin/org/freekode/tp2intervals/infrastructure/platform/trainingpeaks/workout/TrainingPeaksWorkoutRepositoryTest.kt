@@ -29,6 +29,11 @@ import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.user.Trai
 import org.freekode.tp2intervals.infrastructure.platform.trainingpeaks.user.TrainingPeaksUserRepository
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
+import feign.FeignException
+import feign.Request
+import feign.Response
+import org.freekode.tp2intervals.infrastructure.CatchFeignExceptionAspect
+import org.freekode.tp2intervals.rest.RestResponseEntityExceptionHandler
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -39,7 +44,11 @@ import org.mockito.Mockito.never
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoMoreInteractions
 import org.mockito.Mockito.`when`
+import org.springframework.aop.aspectj.annotation.AspectJProxyFactory
+import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.util.ResourceUtils
+import org.springframework.web.context.request.ServletWebRequest
+import java.nio.charset.StandardCharsets
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.Duration
@@ -52,6 +61,54 @@ class TrainingPeaksWorkoutRepositoryTest {
     private val objectMapper = ObjectMapperFactory.objectMapper()
 
     private val trainingPeaksUserRepository = trainingPeaksUserRepository()
+
+    @Test
+    fun `ordinary calendar sync translates TrainingPeaks write failures through the proxy`() {
+        var status = 402
+        val api = mock(TrainingPeaksApiClient::class.java) { invocation ->
+            if (invocation.method.name == "createAndPlanWorkout") {
+                val request = Request.create(
+                    Request.HttpMethod.POST, "https://example.invalid/synthetic-account",
+                    emptyMap(), null, StandardCharsets.UTF_8, null,
+                )
+                val response = Response.builder().status(status).reason("failure").request(request)
+                    .body("synthetic response body", StandardCharsets.UTF_8).build()
+                throw FeignException.errorStatus("createAndPlanWorkout", response)
+            }
+            org.mockito.Answers.RETURNS_DEFAULTS.answer(invocation)
+        }
+        val factory = AspectJProxyFactory(trainingPeaksWorkoutRepository(api))
+        factory.setProxyTargetClass(true)
+        factory.addAspect(CatchFeignExceptionAspect())
+        val target = factory.getProxy<WorkoutRepository>()
+        val source = mock(WorkoutRepository::class.java)
+        val date = LocalDate.of(2026, 11, 26)
+        val workout = Workout(
+            WorkoutDetails(TrainingType.BIKE, "Workout", null, null, null, ExternalData.empty()),
+            date, null,
+        )
+        `when`(source.platform()).thenReturn(Platform.INTERVALS)
+        `when`(source.getWorkoutsFromCalendar(date, date)).thenReturn(listOf(workout))
+        val service = WorkoutService(listOf(source, target), emptyList())
+        val request = CopyFromCalendarToCalendarRequest(
+            date, date, listOf(TrainingType.BIKE), false, Platform.INTERVALS, Platform.TRAINING_PEAKS,
+        )
+
+        val error = assertThrows(PlatformException::class.java) { service.copyWorkoutsC2C(request) }
+        val response = RestResponseEntityExceptionHandler()
+            .platformException(error, ServletWebRequest(MockHttpServletRequest()))
+        assertEquals(Platform.TRAINING_PEAKS.title, response.body!!.platform)
+        assertEquals(
+            "HTTP 402: Free accounts have limits on syncing future workouts. " +
+                "Tomorrow may be available later; try again then or sync today. " +
+                "Check your calendar before retrying, as some workouts may already have been synced.",
+            response.body!!.message,
+        )
+        status = 401
+        assertEquals("Access denied", assertThrows(PlatformException::class.java) { service.copyWorkoutsC2C(request) }.message)
+        status = 500
+        assertEquals("HTTP request failed with status 500", assertThrows(PlatformException::class.java) { service.copyWorkoutsC2C(request) }.message)
+    }
 
     @Test
     fun `should parse swim workout with distance based steps`() {
