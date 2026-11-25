@@ -84,9 +84,7 @@ for integrations such as Hexis.
 For TrainingPeaks, Mirror compares the name, mapped workout type, planned duration, load, description,
 converted workout structure, and TrainerRoad start time or the default when provided. If neither time
 is provided, it preserves the existing planned time; new workouts have no planned time. Times are local.
-TrainerRoad descriptions are copied to TrainingPeaks with an appended ID marker. If a description conflicts
-with that marker, syncing fails rather than creating a workout that cannot be reliably matched.
-It preserves unrelated workout fields when updating and skips workouts whose planned time is missing from
+TrainingPeaks Mirror preserves unrelated workout fields when updating and skips workouts whose planned time is missing from
 the provider response or invalid, or whose non-empty structure cannot be read. It also skips workouts with
 available actual activity metrics, workouts that appear completed or whose completion data is missing, and rechecks
 each workout before changing it. The provider does not offer verified atomic conditional writes:
@@ -94,16 +92,21 @@ a workout completed between that check and the write could still be changed. Fut
 TrainingPeaks Premium.
 TrainingPeaks reconciliation uses unofficial API endpoints; planned time writes, update and create
 responses have not been verified against a disposable account.
+TrainerRoad descriptions are copied to Intervals.icu and TrainingPeaks with an appended ID marker. If a description conflicts
+with that marker, syncing fails rather than creating a workout that cannot be reliably matched.
 It can overwrite or delete manual edits; an ID does not prove app ownership. If the ID is removed
 from an event's description, the app cannot recognize that event and may copy the workout again.
 Mirror can remove stale eligible events on empty days and for unselected workout types;
-other events are untouched. The TrainerRoad timeline
-must cover the selected range. For now, TrainerRoad calendar entries with an explicitly blank title
+other events are untouched. For all TrainerRoad calendar copies, including copies to a library,
+the TrainerRoad timeline must cover the selected range. For now, TrainerRoad calendar entries with an explicitly blank title
 and no workout ID are assumed to be rest days. Destination titles are not used for this assumption.
 This relies on TrainerRoad's unofficial format and may change; a missing title is not treated as blank.
-Other TrainerRoad activities without a workout ID are reported for manual review but do not
-prevent stale removal. An unidentified or moved TrainerRoad workout can therefore
+For Add missing and Mirror, other TrainerRoad activities without a workout ID are reported for manual review.
+They do not prevent stale removal in Mirror mode. An unidentified or moved TrainerRoad workout can therefore
 cause its marked destination workout to be considered stale; review the preview before syncing.
+Other calendar copies stop if such activities are present, instead of silently omitting them.
+Workouts with an interval whose starting power target is unavailable also stop the copy rather than
+substituting 0% FTP.
 Activities outside the range are ignored.
 Choose 2 days (the recommended default), 7 days,
 4 weeks (all including today), or a custom range. TrainerRoad's simulated plans may change.

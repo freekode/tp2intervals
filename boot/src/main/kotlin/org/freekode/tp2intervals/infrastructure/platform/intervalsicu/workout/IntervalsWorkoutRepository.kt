@@ -38,8 +38,9 @@ class IntervalsWorkoutRepository(
         }
         val athleteId = intervalsConfigurationRepository.getConfiguration().athleteId
         val converter = ToIntervalsWorkoutConverter()
-        workouts.forEach { workout ->
-            val response = intervalsApiClient.createEvent(athleteId, converter.createEventRequestDTO(workout))
+        val requests = workouts.map { converter.createEventRequestDTO(it) }
+        requests.forEach { request ->
+            val response = intervalsApiClient.createEvent(athleteId, request)
             if (response == null || response.id <= 0) {
                 throw PlatformException(Platform.INTERVALS, "Intervals.icu did not confirm the event ID; check the calendar before retrying")
             }
@@ -94,14 +95,11 @@ class IntervalsWorkoutRepository(
 
     override fun saveWorkoutsToLibrary(libraryContainer: LibraryContainer, workouts: List<Workout>) {
         val toIntervalsWorkoutConverter = ToIntervalsWorkoutConverter()
-        for (fromIndex in workouts.indices step maxWorkoutsToSave) {
+        val requests = workouts.map { toIntervalsWorkoutConverter.createWorkoutRequestDTO(libraryContainer, it) }
+        for (fromIndex in requests.indices step maxWorkoutsToSave) {
             val toIndex =
-                if (fromIndex + maxWorkoutsToSave >= workouts.size) workouts.size else fromIndex + maxWorkoutsToSave
-
-            val workoutsToSave = workouts.subList(fromIndex, toIndex)
-            val requests =
-                workoutsToSave.map { toIntervalsWorkoutConverter.createWorkoutRequestDTO(libraryContainer, it) }
-            intervalsApiClient.createWorkouts(intervalsConfigurationRepository.getConfiguration().athleteId, requests)
+                if (fromIndex + maxWorkoutsToSave >= requests.size) requests.size else fromIndex + maxWorkoutsToSave
+            intervalsApiClient.createWorkouts(intervalsConfigurationRepository.getConfiguration().athleteId, requests.subList(fromIndex, toIndex))
         }
     }
 

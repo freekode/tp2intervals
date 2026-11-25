@@ -48,10 +48,9 @@ class TrainerRoadApiClientService(
     ): TrainerRoadReconciliationSource {
         val removeHtmlTags = trainerRoadConfigurationRepository.getConfiguration().removeHtmlTags
         val timeline = trainerRoadApiClient.getCalendarTimeline(memberId)
-        if (requireCompleteTimeline &&
-            (timeline.start == null || timeline.end == null ||
-                timeline.start > startDate.atStartOfDay() || timeline.end < endDate.plusDays(1).atStartOfDay())) {
-            throw PlatformException(Platform.TRAINER_ROAD, "TrainerRoad calendar does not cover the requested date range; no workouts were deleted")
+        if (timeline.start == null || timeline.end == null ||
+            timeline.start > startDate.atStartOfDay() || timeline.end < endDate.plusDays(1).atStartOfDay()) {
+            throw PlatformException(Platform.TRAINER_ROAD, "TrainerRoad calendar does not cover the requested date range; no workouts were changed")
         }
         val plannedActivities = timeline.plannedActivities.filter { it.date.toLocalDate() in startDate..endDate }
         if (plannedActivities.any { it.workoutId != null && it.workoutId <= 0 }) {
@@ -61,8 +60,8 @@ class TrainerRoadApiClientService(
         val unidentified = plannedActivities.filter {
             it.workoutId == null && (it.title == null || it.title.isNotBlank())
         }
-        if (requireCompleteTimeline && !allowUnidentified && unidentified.isNotEmpty()) {
-            throw PlatformException(Platform.TRAINER_ROAD, "A planned TrainerRoad activity has no workout ID; cannot safely reconcile this date range")
+        if (!allowUnidentified && unidentified.isNotEmpty()) {
+            throw PlatformException(Platform.TRAINER_ROAD, "TrainerRoad activities have no workout IDs; review them before copying this date range")
         }
         val workouts = plannedActivities
             .filter { it.workoutId != null }

@@ -6,6 +6,7 @@ import config.mock.ObjectMapperFactory
 import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.ExternalData
 import org.freekode.tp2intervals.domain.Platform
+import org.freekode.tp2intervals.domain.librarycontainer.LibraryContainer
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutDetails
 import org.freekode.tp2intervals.domain.workout.WorkoutRepository
@@ -17,6 +18,7 @@ import org.freekode.tp2intervals.domain.workout.structure.SingleStep
 import org.freekode.tp2intervals.domain.workout.structure.StepLength
 import org.freekode.tp2intervals.domain.workout.structure.StepTarget
 import org.freekode.tp2intervals.domain.workout.structure.WorkoutStructure
+import org.freekode.tp2intervals.infrastructure.PlatformException
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.IntervalsApiClient
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfiguration
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.configuration.IntervalsConfigurationRepository
@@ -245,7 +247,7 @@ class IntervalsWorkoutRepositoryTest {
             details = source.details.copy(externalData = source.details.externalData.withIntervals("42")),
         )
 
-        repository.updateSyncedWorkout(source, target)
+        repository.updateSyncedWorkout(sourceForWrite(source), target)
 
         val (id, request) = api.updatedRequests.single()
         assertEquals("42", id)
@@ -264,8 +266,8 @@ class IntervalsWorkoutRepositoryTest {
             details = source.details.copy(externalData = source.details.externalData.withIntervals("42")),
         )
 
-        repository.updateSyncedWorkout(source, target)
-        repository.updateSyncedWorkout(source.withStartTime(LocalTime.MIDNIGHT), target)
+        repository.updateSyncedWorkout(sourceForWrite(source), target)
+        repository.updateSyncedWorkout(sourceForWrite(source).withStartTime(LocalTime.MIDNIGHT), target)
 
         assertEquals("2026-11-23T00:00:00", api.updatedRequests[0].second.start_date_local)
         assertEquals("2026-11-23T00:00:00", api.updatedRequests[1].second.start_date_local)
@@ -312,11 +314,11 @@ class IntervalsWorkoutRepositoryTest {
         val source = trainerRoadWorkout("Workout")
         val target = source.copy(details = source.details.copy(externalData = source.details.externalData.withIntervals("42")))
         assertThrows(org.freekode.tp2intervals.infrastructure.PlatformException::class.java) {
-            repository.updateSyncedWorkout(source.copy(date = source.date!!.plusDays(1)), target)
+            repository.updateSyncedWorkout(sourceForWrite(source).copy(date = source.date!!.plusDays(1)), target)
         }
         assertTrue(api.updatedRequests.isEmpty())
         assertThrows(org.freekode.tp2intervals.infrastructure.PlatformException::class.java) {
-            repository.updateSyncedWorkout(source, target)
+            repository.updateSyncedWorkout(sourceForWrite(source), target)
         }
         assertTrue(api.deletedEventIds.isEmpty())
     }
@@ -327,7 +329,7 @@ class IntervalsWorkoutRepositoryTest {
         val repository = IntervalsWorkoutRepository(api, intervalsConfigurationRepository)
         val source = trainerRoadWorkout("Workout")
         val target = source.copy(details = source.details.copy(externalData = source.details.externalData.withIntervals("42")))
-        repository.updateSyncedWorkout(source, target)
+        repository.updateSyncedWorkout(sourceForWrite(source), target)
         repository.deleteSyncedWorkout(target)
         assertEquals("42", api.updatedRequests.single().first)
         assertEquals(listOf("42"), api.deletedEventIds)
@@ -341,7 +343,7 @@ class IntervalsWorkoutRepositoryTest {
             val invalid = target.copy(details = target.details.copy(description = description))
             assertTrue(!repository.hasExplicitTrainerRoadId(invalid))
             assertThrows(org.freekode.tp2intervals.infrastructure.PlatformException::class.java) {
-                repository.updateSyncedWorkout(source, invalid)
+                repository.updateSyncedWorkout(sourceForWrite(source), invalid)
             }
             assertThrows(org.freekode.tp2intervals.infrastructure.PlatformException::class.java) {
                 repository.deleteSyncedWorkout(invalid)
@@ -366,10 +368,10 @@ class IntervalsWorkoutRepositoryTest {
         val date = requireNotNull(source.date)
         val (marked, unmarked) = repository.getWorkoutsForReconciliation(date, date)
 
-        repository.updateSyncedWorkout(source, marked)
+        repository.updateSyncedWorkout(sourceForWrite(source), marked)
         repository.deleteSyncedWorkout(marked)
         assertThrows(org.freekode.tp2intervals.infrastructure.PlatformException::class.java) {
-            repository.updateSyncedWorkout(source, unmarked)
+            repository.updateSyncedWorkout(sourceForWrite(source), unmarked)
         }
         assertThrows(org.freekode.tp2intervals.infrastructure.PlatformException::class.java) {
             repository.deleteSyncedWorkout(unmarked)
@@ -383,8 +385,50 @@ class IntervalsWorkoutRepositoryTest {
         val api = RecordingClient(confirmCreate = false)
         val repository = IntervalsWorkoutRepository(api, intervalsConfigurationRepository)
         assertThrows(org.freekode.tp2intervals.infrastructure.PlatformException::class.java) {
-            repository.saveTrainerRoadWorkoutsToCalendar(listOf(trainerRoadWorkout("Workout")))
+            repository.saveTrainerRoadWorkoutsToCalendar(listOf(sourceForWrite(trainerRoadWorkout("Workout"))))
         }
+    }
+
+    @Test
+    fun `invalid marker in a batch fails before creating any events`() {
+        val api = RecordingClient()
+        val repository = IntervalsWorkoutRepository(api, intervalsConfigurationRepository)
+        val valid = trainerRoadWorkout("Valid").let {
+            it.copy(details = it.details.copy(description = "Warmup"))
+        }
+        val invalid = valid.copy(details = valid.details.copy(description = "//////////"))
+
+        assertThrows(PlatformException::class.java) {
+            repository.saveTrainerRoadWorkoutsToCalendar(listOf(valid, invalid))
+        }
+        assertTrue(api.createdRequests.isEmpty())
+    }
+
+    @Test
+    fun `invalid marker in a later library batch fails before any workouts are created`() {
+        val api = mock(IntervalsApiClient::class.java)
+        val repository = IntervalsWorkoutRepository(api, intervalsConfigurationRepository)
+        val valid = sourceForWrite(trainerRoadWorkout("Valid"))
+        val invalid = valid.copy(details = valid.details.copy(description = "//////////"))
+        val library = LibraryContainer("Library", requireNotNull(valid.date), false, 0, ExternalData.empty().withIntervals("1"))
+
+        assertThrows(PlatformException::class.java) {
+            repository.saveWorkoutsToLibrary(library, List(10) { valid } + invalid)
+        }
+        org.mockito.Mockito.verifyNoInteractions(api)
+    }
+
+    @Test
+    fun `valid library workouts remain batched after prevalidation`() {
+        val api = RecordingClient()
+        val repository = IntervalsWorkoutRepository(api, intervalsConfigurationRepository)
+        val valid = sourceForWrite(trainerRoadWorkout("Valid"))
+        val library = LibraryContainer("Library", requireNotNull(valid.date), false, 0, ExternalData.empty().withIntervals("1"))
+
+        repository.saveWorkoutsToLibrary(library, List(11) { valid })
+
+        assertEquals(listOf(10, 1), api.workoutBatches.map { it.size })
+        assertTrue(api.workoutBatches.flatten().all { valid.details.externalData.hasClearTrainerRoadId(it.description) })
     }
 
     @Test
@@ -485,8 +529,13 @@ class IntervalsWorkoutRepositoryTest {
         val deletedEventIds = mutableListOf<String>()
         val updatedRequests = mutableListOf<Pair<String, CreateEventRequestDTO>>()
         val createdRequests = mutableListOf<CreateEventRequestDTO>()
+        val workoutBatches = mutableListOf<List<CreateWorkoutRequestDTO>>()
 
         override fun getEventsForReconciliation(athleteId: String, startDate: String, endDate: String) = events
+
+        override fun createWorkouts(athleteId: String, requests: List<CreateWorkoutRequestDTO>) {
+            workoutBatches.add(requests)
+        }
 
         override fun createEvent(athleteId: String, createEventRequestDTO: CreateEventRequestDTO): EventWriteResponseDTO? {
             createdRequests.add(createEventRequestDTO)
@@ -509,6 +558,9 @@ class IntervalsWorkoutRepositoryTest {
         LocalDate.of(2026, 11, 23),
         null,
     )
+
+    private fun sourceForWrite(workout: Workout) =
+        workout.copy(details = workout.details.copy(description = "Workout description"))
 
     private fun findWorkoutWithName(name: String, workouts: List<Workout>): Workout {
         return workouts.find { it.details.name == name }!!

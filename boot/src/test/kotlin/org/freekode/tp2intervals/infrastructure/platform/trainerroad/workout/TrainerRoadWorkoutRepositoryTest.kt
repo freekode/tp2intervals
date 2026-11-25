@@ -79,7 +79,7 @@ class TrainerRoadWorkoutRepositoryTest {
             TrainerRoadCalendarTimelineDTO.PlannedActivityDTO(
                 "occurrence-1", "Workout", TrainerRoadCalendarTimelineDTO.CalendarDateDTO(2026, 11, 23), 5460,
             ),
-        ))
+        ), date.atStartOfDay(), date.plusDays(1).atStartOfDay())
         val details = objectMapper.readValue(
             ResourceUtils.getFile("classpath:tr-workoutsdetails-simple.json"), TRWorkoutResponseDTO::class.java,
         )
@@ -97,7 +97,7 @@ class TrainerRoadWorkoutRepositoryTest {
         val api = mock(TrainerRoadApiClient::class.java)
         val date = LocalDate.of(2026, 11, 23)
         val timeline = objectMapper.readValue(
-            """{"PlannedActivities":[
+            """{"Start":"2026-11-23T00:00:00","End":"2026-11-24T00:00:00","PlannedActivities":[
                 {"Id":"1","Title":"Workout","Date":{"Year":2026,"Month":11,"Day":23},"WorkoutId":5460,"TimeOfDay":"00:30:00"},
                 {"Id":"2","Title":"Workout","Date":{"Year":2026,"Month":11,"Day":23},"WorkoutId":5460,"TimeOfDay":null},
                 {"Id":"3","Title":"Workout","Date":{"Year":2026,"Month":11,"Day":23},"WorkoutId":5460}
@@ -122,7 +122,9 @@ class TrainerRoadWorkoutRepositoryTest {
         val activity = TrainerRoadCalendarTimelineDTO.PlannedActivityDTO(
             "invalid", "Workout", TrainerRoadCalendarTimelineDTO.CalendarDateDTO(2026, 11, 23), 0,
         )
-        `when`(api.getCalendarTimeline(123)).thenReturn(TrainerRoadCalendarTimelineDTO(listOf(activity)))
+        `when`(api.getCalendarTimeline(123)).thenReturn(
+            TrainerRoadCalendarTimelineDTO(listOf(activity), date.atStartOfDay(), date.plusDays(1).atStartOfDay()),
+        )
 
         assertThrows(PlatformException::class.java) {
             TrainerRoadApiClientService(api, trainerRoadConfigurationRepository).getWorkoutsFromCalendar(date, date, 123)
@@ -151,6 +153,28 @@ class TrainerRoadWorkoutRepositoryTest {
         `when`(api.getCalendarTimeline(123)).thenReturn(TrainerRoadCalendarTimelineDTO(emptyList()))
         assertThrows(PlatformException::class.java) {
             service.getWorkoutsFromCalendar(date, date, 123, true)
+        }
+    }
+
+    @Test
+    fun `calendar copy rejects timelines that do not cover the requested range`() {
+        val api = mock(TrainerRoadApiClient::class.java)
+        val date = LocalDate.of(2026, 11, 23)
+        val service = TrainerRoadApiClientService(api, trainerRoadConfigurationRepository)
+        `when`(api.getCalendarTimeline(123)).thenReturn(
+            TrainerRoadCalendarTimelineDTO(emptyList(), date.atStartOfDay(), date.plusDays(1).atStartOfDay()),
+        )
+        assertTrue(service.getWorkoutsFromCalendar(date, date, 123).isEmpty())
+
+        assertThrows(PlatformException::class.java) {
+            service.getWorkoutsFromCalendar(date.minusDays(1), date, 123)
+        }
+        assertThrows(PlatformException::class.java) {
+            service.getWorkoutsFromCalendar(date, date.plusDays(1), 123)
+        }
+        `when`(api.getCalendarTimeline(123)).thenReturn(TrainerRoadCalendarTimelineDTO(emptyList()))
+        assertThrows(PlatformException::class.java) {
+            service.getWorkoutsFromCalendar(date, date, 123)
         }
     }
 
@@ -193,6 +217,30 @@ class TrainerRoadWorkoutRepositoryTest {
         assertEquals(listOf(date), result.unidentifiedActivityDates)
         assertTrue(service.getWorkoutsFromCalendar(date.plusDays(1), date.plusDays(1), 123, true).isEmpty())
         assertTrue(service.getReconciliationSource(date.plusDays(1), date.plusDays(1), 123).unidentifiedActivityDates.isEmpty())
+    }
+
+    @Test
+    fun `ordinary calendar copy rejects unidentified activities before fetching workouts`() {
+        val api = mock(TrainerRoadApiClient::class.java)
+        val date = LocalDate.of(2026, 11, 23)
+        val activities = listOf(
+            TrainerRoadCalendarTimelineDTO.PlannedActivityDTO(
+                "known", "Workout", TrainerRoadCalendarTimelineDTO.CalendarDateDTO(2026, 11, 23), 5460,
+            ),
+            TrainerRoadCalendarTimelineDTO.PlannedActivityDTO(
+                "unknown", null, TrainerRoadCalendarTimelineDTO.CalendarDateDTO(2026, 11, 23), null,
+            ),
+        )
+        `when`(api.getCalendarTimeline(123)).thenReturn(
+            TrainerRoadCalendarTimelineDTO(activities, date.atStartOfDay(), date.plusDays(1).atStartOfDay()),
+        )
+        `when`(api.getWorkout("5460")).thenReturn(objectMapper.readValue(
+            ResourceUtils.getFile("classpath:tr-workoutsdetails-simple.json"), TRWorkoutResponseDTO::class.java,
+        ))
+        val service = TrainerRoadApiClientService(api, trainerRoadConfigurationRepository)
+
+        assertThrows(PlatformException::class.java) { service.getWorkoutsFromCalendar(date, date, 123) }
+        org.mockito.Mockito.verify(api, org.mockito.Mockito.never()).getWorkout(org.mockito.ArgumentMatchers.anyString())
     }
 
     @Test
@@ -351,6 +399,72 @@ class TrainerRoadWorkoutRepositoryTest {
         val step = workout.structure!!.steps.single() as SingleStep
         assertEquals(90, step.target.start)
         assertEquals(94, step.target.end)
+    }
+
+    @Test
+    fun `uses interval targets when workout samples belong to another interval`() {
+        val dto = objectMapper.readValue(
+            """
+            {
+              "Workout": {
+                "Details": {
+                  "Id": "123", "WorkoutName": "Test", "WorkoutDescription": "Test",
+                  "IsOutside": false, "Tss": 40, "Duration": 30
+                },
+                "IntervalData": [
+                  {
+                    "Start": 0, "End": 150, "Name": "Warmup", "IsFake": false,
+                    "TestInterval": false, "StartTargetPowerPercent": 50, "EndTargetPowerPercent": 55
+                  },
+                  {
+                    "Start": 300, "End": 600, "Name": "Partial", "IsFake": false,
+                    "TestInterval": false, "StartTarget": [60, 65]
+                  },
+                  {
+                    "Start": 720, "End": 1920, "Name": "Work", "IsFake": false,
+                    "TestInterval": false, "StartTargetPowerPercent": 0, "EndTargetPowerPercent": 0
+                  }
+                ],
+                "WorkoutData": [
+                  {"Tick": 300, "FtpPercent": 62},
+                  {"Tick": 720, "FtpPercent": 90},
+                  {"Tick": 1919, "FtpPercent": 94}
+                ]
+              }
+            }
+            """.trimIndent(),
+            TRWorkoutResponseDTO::class.java,
+        )
+
+        val steps = TrainerRoadWorkoutMapper().toWorkout(dto, true).structure!!.steps
+        val warmup = steps[0] as SingleStep
+        val partial = steps[1] as SingleStep
+        val work = steps[2] as SingleStep
+        assertEquals(50, warmup.target.start)
+        assertEquals(55, warmup.target.end)
+        assertEquals(62, partial.target.start)
+        assertEquals(65, partial.target.end)
+        assertEquals(90, work.target.start)
+        assertEquals(94, work.target.end)
+    }
+
+    @Test
+    fun `rejects intervals with no start target but accepts explicit zero`() {
+        fun workout(intervalTarget: String) = objectMapper.readValue(
+            """
+            {"Workout":{"Details":{"Id":"123","WorkoutName":"Test","WorkoutDescription":"Test",
+              "IsOutside":false,"Tss":40,"Duration":30},
+              "IntervalData":[{"Start":0,"End":60,"Name":"Step","IsFake":false,
+                "TestInterval":false $intervalTarget}]}}
+            """.trimIndent(),
+            TRWorkoutResponseDTO::class.java,
+        )
+        val mapper = TrainerRoadWorkoutMapper()
+
+        val error = assertThrows(PlatformException::class.java) { mapper.toWorkout(workout(""), true) }
+        assertTrue(error.message!!.contains("power target"))
+        val zero = mapper.toWorkout(workout(""", "StartTargetPowerPercent":0"""), true)
+        assertEquals(0, (zero.structure!!.steps.single() as SingleStep).target.start)
     }
 
     @Test

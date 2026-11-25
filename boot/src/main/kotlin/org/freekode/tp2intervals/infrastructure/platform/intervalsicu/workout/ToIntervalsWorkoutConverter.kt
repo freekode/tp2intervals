@@ -1,7 +1,9 @@
 package org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout
 
+import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.librarycontainer.LibraryContainer
 import org.freekode.tp2intervals.domain.workout.Workout
+import org.freekode.tp2intervals.infrastructure.PlatformException
 import org.freekode.tp2intervals.infrastructure.Signature
 import org.freekode.tp2intervals.infrastructure.utils.Date
 import java.time.LocalDate
@@ -19,6 +21,7 @@ class ToIntervalsWorkoutConverter {
         } else {
             name = workout.details.name
         }
+        validateTrainerRoadMarker(workout, description)
         val request = CreateWorkoutRequestDTO(
             libraryContainer.externalData.intervalsId.toString(),
             Date.daysDiff(libraryContainer.startDate, workout.date ?: LocalDate.now()),
@@ -35,6 +38,7 @@ class ToIntervalsWorkoutConverter {
     fun createEventRequestDTO(workout: Workout): CreateEventRequestDTO {
         val workoutString = getWorkoutString(workout)
         val description = getDescription(workout, workoutString)
+        validateTrainerRoadMarker(workout, description)
         return CreateEventRequestDTO(
             if (workout.startTime != null) {
                 Date.toIsoLocalDateTime(workout.date ?: LocalDate.now(), workout.startTime)
@@ -58,6 +62,13 @@ class ToIntervalsWorkoutConverter {
             .orEmpty()
         description += "\n\n${workout.details.externalData.toSimpleString()}"
         return description
+    }
+
+    private fun validateTrainerRoadMarker(workout: Workout, description: String) {
+        if (workout.details.externalData.trainerRoadId != null &&
+            !workout.details.externalData.hasClearTrainerRoadId(description)) {
+            throw PlatformException(Platform.INTERVALS, "Cannot sync a workout whose description conflicts with the TrainerRoad ID marker")
+        }
     }
 
     private fun getWorkoutString(workout: Workout) =

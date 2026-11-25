@@ -1,10 +1,12 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainerroad.workout
 
 import org.freekode.tp2intervals.domain.ExternalData
+import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.TrainingType
 import org.freekode.tp2intervals.domain.workout.Workout
 import org.freekode.tp2intervals.domain.workout.WorkoutDetails
 import org.freekode.tp2intervals.domain.workout.structure.*
+import org.freekode.tp2intervals.infrastructure.PlatformException
 import java.time.Duration
 import kotlin.math.roundToInt
 
@@ -45,7 +47,10 @@ class TrainerRoadWorkoutMapper {
             val ftpPercent = targetAtTick(workoutData, interval.start)
                 ?: interval.startTarget?.firstOrNull()?.roundToInt()
                 ?: interval.startTargetPowerPercent?.toInt()
-                ?: 0
+                ?: throw PlatformException(
+                    Platform.TRAINER_ROAD,
+                    "TrainerRoad interval '${interval.name}' has no power target; cannot copy workout",
+                )
             val ftpEndPercent = targetAtTick(workoutData, interval.end - 1)
                 ?: interval.startTarget?.getOrNull(1)?.roundToInt()
                 ?: interval.endTargetPowerPercent?.toInt()
@@ -64,9 +69,7 @@ class TrainerRoadWorkoutMapper {
         workoutData: List<TRWorkoutResponseDTO.WorkoutDataDTO>,
         tick: Double,
     ): Int? {
-        if (workoutData.isEmpty()) return null
-        val closest = workoutData.minByOrNull { kotlin.math.abs(it.tick - tick) } ?: return null
-        return closest.ftpPercent.toInt()
+        return workoutData.firstOrNull { it.tick == tick }?.ftpPercent?.toInt()
     }
 
     private fun getDescription(details: TrainerRoadWorkoutDetailsDTO, removeHtmlTags: Boolean): String {
