@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: scheduled-sync-result
+      author: tp2intervals
+      changes:
+        - addColumn:
+            tableName: schedule_requests
+            columns:
+              - column:
+                  name: last_result_json
+                  type: text

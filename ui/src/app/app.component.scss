@@ -11,3 +11,10 @@ main {
   margin: auto;
   padding: 16px;
 }
+
+@media (max-width: 600px) {
+  main {
+    box-sizing: border-box;
+    width: 100%;
+  }
+}

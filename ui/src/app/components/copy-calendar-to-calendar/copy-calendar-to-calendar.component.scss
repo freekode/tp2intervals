@@ -3,3 +3,82 @@
   padding-bottom: 10px;
   padding-left: 10px;
 }
+
+.sync-options {
+  margin-bottom: 12px;
+}
+
+.sync-mode-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.sync-mode-option {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 8px;
+}
+
+.sync-mode-selected {
+  border-color: #c2185b;
+  background-color: #fdf4f7;
+}
+
+.sync-mode-confirmation {
+  margin: 12px 0 0 40px;
+}
+
+.sync-mode-confirmation .sync-warning {
+  margin: 4px 0 0;
+}
+
+.sync-mode-title,
+.sync-mode-description {
+  display: block;
+}
+
+.sync-mode-description {
+  color: #555;
+  font-size: 0.9em;
+  line-height: 1.4;
+}
+
+.sync-hint {
+  color: #555;
+  font-size: 0.9em;
+  margin: 0 0 12px;
+}
+
+.sync-warning {
+  color: #a33;
+}
+
+.sync-action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.scheduled-jobs {
+  margin-bottom: 10px;
+}
+
+.scheduled-job-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.scheduled-job {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+}
+
+.scheduled-job-details {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}

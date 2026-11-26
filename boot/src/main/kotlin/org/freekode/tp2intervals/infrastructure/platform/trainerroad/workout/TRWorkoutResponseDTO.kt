@@ -1,7 +1,6 @@
 package org.freekode.tp2intervals.infrastructure.platform.trainerroad.workout
 
 import com.fasterxml.jackson.annotation.JsonProperty
-
 class TRWorkoutResponseDTO(
     @JsonProperty("Workout")
     val workout: TRWorkout,
@@ -10,7 +9,16 @@ class TRWorkoutResponseDTO(
         @JsonProperty("Details")
         val details: TrainerRoadWorkoutDetailsDTO,
         @JsonProperty("IntervalData")
-        val intervalData: List<IntervalsDataDTO>,
+        val intervalData: List<IntervalsDataDTO> = emptyList(),
+        @JsonProperty("WorkoutData")
+        val workoutData: List<WorkoutDataDTO> = emptyList(),
+    )
+
+    class WorkoutDataDTO(
+        @JsonProperty("Tick")
+        val tick: Double,
+        @JsonProperty("FtpPercent")
+        val ftpPercent: Double,
     )
 
     class IntervalsDataDTO(
@@ -25,6 +33,10 @@ class TRWorkoutResponseDTO(
         @JsonProperty("TestInterval")
         val testInterval: Boolean,
         @JsonProperty("StartTargetPowerPercent")
-        val startTargetPowerPercent: Int,
+        val startTargetPowerPercent: Double? = null,
+        @JsonProperty("EndTargetPowerPercent")
+        val endTargetPowerPercent: Double? = null,
+        @JsonProperty("StartTarget")
+        val startTarget: List<Double>? = null,
     )
 }

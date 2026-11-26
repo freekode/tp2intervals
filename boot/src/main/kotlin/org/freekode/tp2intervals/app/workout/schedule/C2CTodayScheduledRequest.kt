@@ -1,6 +1,7 @@
 package org.freekode.tp2intervals.app.workout.schedule
 
 import org.freekode.tp2intervals.app.workout.CopyFromCalendarToCalendarRequest
+import org.freekode.tp2intervals.app.workout.TrainerRoadSyncMode
 import org.freekode.tp2intervals.domain.Platform
 import org.freekode.tp2intervals.domain.TrainingType
 import java.time.LocalDate
@@ -9,7 +10,14 @@ data class C2CTodayScheduledRequest(
     val types: List<TrainingType>,
     val skipSynced: Boolean,
     val sourcePlatform: Platform,
-    val targetPlatform: Platform
+    val targetPlatform: Platform,
+    val defaultStartTime: String? = null,
+    val refreshSynced: Boolean = false,
+    val removeStaleTrainerRoad: Boolean = false,
+    val trainerRoadSyncMode: TrainerRoadSyncMode? = null,
+    val allowStaleRemoval: Boolean = false,
+    val mirrorByTrainerRoadId: Boolean = false,
+    val allowUnidentifiedSourceRemoval: Boolean = false,
 ) : Schedulable {
     fun forToday() = CopyFromCalendarToCalendarRequest(
         LocalDate.now(),
@@ -17,6 +25,11 @@ data class C2CTodayScheduledRequest(
         types,
         skipSynced,
         sourcePlatform,
-        targetPlatform
+        targetPlatform,
+        defaultStartTime,
+        refreshSynced,
+        removeStaleTrainerRoad,
+        trainerRoadSyncMode,
+        allowStaleRemoval,
     )
 }

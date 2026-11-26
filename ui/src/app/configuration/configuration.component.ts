@@ -51,6 +51,16 @@ export class ConfigurationComponent implements OnInit {
   });
 
   inProgress = false;
+  loadError = false;
+  configLoaded = false;
+  trainerRoadTestInProgress = false;
+  trainerRoadTestResult: string | null = null;
+  trainerRoadTestSucceeded = false;
+  trainingPeaksTestInProgress = false;
+  trainingPeaksTestResult: string | null = null;
+  trainingPeaksTestSucceeded = false;
+  private trainerRoadTestRequestId = 0;
+  private trainingPeaksTestRequestId = 0;
 
   constructor(
     private router: Router,
@@ -61,12 +71,20 @@ export class ConfigurationComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.listenTrainingPeaksCookie()
+    this.listenTrainerRoadCookie()
+    this.loadConfig()
+  }
+
+  loadConfig(): void {
     this.inProgress = true
-    this.configClient.getConfig().subscribe(config => {
-      this.formGroup.patchValue(config.config);
-      this.inProgress = false
-      this.listenTrainingPeaksCookie()
-      this.listenTrainerRoadCookie()
+    this.loadError = false
+    this.configClient.getConfig().pipe(finalize(() => this.inProgress = false)).subscribe({
+      next: config => {
+        this.formGroup.patchValue(config.config)
+        this.configLoaded = true
+      },
+      error: () => this.loadError = true,
     });
   }
 
@@ -74,7 +92,6 @@ export class ConfigurationComponent implements OnInit {
     this.inProgress = true
     let newConfiguration = new ConfigData(this.formGroup.getRawValue());
 
-    console.log(newConfiguration)
     this.configClient.updateConfig(newConfiguration).pipe(
       finalize(() => this.inProgress = false)
     ).subscribe(() => {
@@ -83,8 +100,88 @@ export class ConfigurationComponent implements OnInit {
     });
   }
 
+  testTrainerRoadConnection(): void {
+    const control = this.formGroup.controls['trainer-road.auth-cookie'];
+    const requestId = ++this.trainerRoadTestRequestId
+    this.testCookie(
+      control,
+      (cookie) => this.configClient.testTrainerRoadConnection(cookie),
+      (response: any) => `Connection verified — TrainerRoad account: ${response.username}.`,
+      () => {
+        this.trainerRoadTestInProgress = true
+      },
+      (value: string, succeeded: boolean) => {
+        if (requestId !== this.trainerRoadTestRequestId) return
+        this.trainerRoadTestInProgress = false
+        this.trainerRoadTestSucceeded = succeeded
+        this.trainerRoadTestResult = value
+      },
+      'Enter a valid SharedTrainerRoadAuth cookie.',
+    )
+  }
+
+  testTrainingPeaksConnection(): void {
+    const control = this.formGroup.controls['training-peaks.auth-cookie'];
+    const requestId = ++this.trainingPeaksTestRequestId
+    this.testCookie(
+      control,
+      (cookie) => this.configClient.testTrainingPeaksConnection(cookie),
+      (response: any) => response.tokenValid
+        ? (response.username
+          ? `Connection verified — TrainingPeaks account: ${response.username}.`
+          : 'Connection verified — TrainingPeaks token is valid.')
+        : 'TrainingPeaks token validation failed.',
+      () => {
+        this.trainingPeaksTestInProgress = true
+      },
+      (value: string, succeeded: boolean) => {
+        if (requestId !== this.trainingPeaksTestRequestId) return
+        this.trainingPeaksTestInProgress = false
+        this.trainingPeaksTestSucceeded = succeeded
+        this.trainingPeaksTestResult = value
+      },
+      'Enter a valid Production_tpAuth cookie.',
+    )
+  }
+
+  private testCookie(
+    control: any,
+    testRequest: (cookie: string) => any,
+    successMessage: (response: any) => string,
+    start: () => void,
+    finish: (message: string, succeeded: boolean) => void,
+    invalidMessage: string,
+  ): void {
+    control.markAsTouched();
+    if (control.invalid || !control.value) {
+      finish(invalidMessage, false)
+      return
+    }
+    start()
+    const submittedCookie = control.value
+    testRequest(submittedCookie).subscribe({
+      next: (response: any) => {
+        if (control.value !== submittedCookie) return
+        const message = successMessage(response)
+        finish(message, true)
+        this.notificationService.success(message)
+      },
+      error: (error: any) => {
+        if (control.value !== submittedCookie) return
+        const message = error?.error?.message || 'Connection failed.'
+        finish(message, false)
+        this.notificationService.error(message)
+      }
+    })
+  }
+
   listenTrainerRoadCookie() {
     this.formGroup.controls['trainer-road.auth-cookie'].valueChanges.subscribe(value => {
+      ++this.trainerRoadTestRequestId
+      this.trainerRoadTestResult = null
+      this.trainerRoadTestInProgress = false
+      this.trainerRoadTestSucceeded = false
+      if (typeof value !== 'string') return
       let split = value.split('SharedTrainerRoadAuth=');
       if (split.length != 2) {
         return
@@ -100,6 +197,11 @@ export class ConfigurationComponent implements OnInit {
 
   listenTrainingPeaksCookie() {
     this.formGroup.controls['training-peaks.auth-cookie'].valueChanges.subscribe(value => {
+      ++this.trainingPeaksTestRequestId
+      this.trainingPeaksTestResult = null
+      this.trainingPeaksTestInProgress = false
+      this.trainingPeaksTestSucceeded = false
+      if (typeof value !== 'string') return
       let split = value.split('Production_tpAuth=');
       if (split.length != 2) {
         return

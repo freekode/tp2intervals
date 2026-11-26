@@ -38,4 +38,18 @@ export class ConfigurationClient {
       map(response => (<any>response).infoMap)
     )
   }
+
+  testTrainerRoadConnection(authCookie: string): Observable<{ memberId: number, username: string }> {
+    return this.httpClient.post<{ memberId: number, username: string }>(
+      `/api/configuration/trainer-road/test`,
+      {authCookie},
+    )
+  }
+
+  testTrainingPeaksConnection(authCookie: string): Observable<{ tokenValid: boolean, username: string | null, isAthlete: boolean | null, isPremium: boolean | null }> {
+    return this.httpClient.post<{ tokenValid: boolean, username: string | null, isAthlete: boolean | null, isPremium: boolean | null }>(
+      `/api/configuration/training-peaks/test`,
+      {authCookie},
+    )
+  }
 }

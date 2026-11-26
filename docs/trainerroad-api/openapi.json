@@ -1,0 +1,417 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Unofficial TrainerRoad Web API",
+    "version": "2026-11-22",
+    "description": "Reverse-engineered interoperability description for the web endpoints used by tp2intervals. This is not an official TrainerRoad API specification."
+  },
+  "servers": [
+    {
+      "url": "https://www.trainerroad.com"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "TrainerRoadCookie": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "SharedTrainerRoadAuth"
+      }
+    },
+    "schemas": {
+      "Member": {
+        "type": "object",
+        "properties": {
+          "MemberId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "Username": {
+            "type": "string"
+          },
+          "Ftp": {
+            "type": "integer"
+          },
+          "TzdbIdentifier": {
+            "type": "string"
+          }
+        }
+      },
+      "CalendarDate": {
+        "type": "object",
+        "properties": {
+          "Year": {
+            "type": "integer"
+          },
+          "Month": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 12
+          },
+          "Day": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 31
+          }
+        }
+      },
+      "PlannedActivity": {
+        "type": "object",
+        "properties": {
+          "Id": {
+            "type": "string"
+          },
+          "Title": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "Date": {
+            "$ref": "#/components/schemas/CalendarDate"
+          },
+          "TimeOfDay": {
+            "type": ["string", "null"],
+            "description": "Optional local planned workout time, e.g. 18:00:00."
+          },
+          "WorkoutId": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "format": "int64"
+          },
+          "Tss": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "Status": {
+            "type": "integer"
+          }
+        }
+      },
+      "Timeline": {
+        "type": "object",
+        "properties": {
+          "Start": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "End": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "PlannedActivities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PlannedActivity"
+            }
+          },
+          "Activities": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "Events": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "Annotations": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
+      },
+      "WorkoutInterval": {
+        "type": "object",
+        "properties": {
+          "Start": {
+            "type": "number"
+          },
+          "End": {
+            "type": "number"
+          },
+          "Name": {
+            "type": "string"
+          },
+          "IsFake": {
+            "type": "boolean"
+          },
+          "TestInterval": {
+            "type": "boolean"
+          },
+          "StartTargetPowerPercent": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "EndTargetPowerPercent": {
+            "type": [
+              "number",
+              "null"
+            ]
+          }
+        }
+      },
+      "WorkoutDataPoint": {
+        "type": "object",
+        "properties": {
+          "Tick": {
+            "type": "number"
+          },
+          "MemberFtpPercent": {
+            "type": "number"
+          },
+          "FtpPercent": {
+            "type": "number"
+          }
+        }
+      },
+      "WorkoutDetails": {
+        "type": "object",
+        "properties": {
+          "Workout": {
+            "type": "object",
+            "properties": {
+              "Details": {
+                "type": "object",
+                "properties": {
+                  "Id": {
+                    "type": "string"
+                  },
+                  "WorkoutName": {
+                    "type": "string"
+                  },
+                  "WorkoutDescription": {
+                    "type": "string"
+                  },
+                  "GoalDescription": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "IsOutside": {
+                    "type": "boolean"
+                  },
+                  "TSS": {
+                    "type": "integer"
+                  },
+                  "Duration": {
+                    "type": "integer"
+                  },
+                  "Zones": {
+                    "type": "array",
+                    "items": {
+                      "type": "object"
+                    }
+                  },
+                  "Progression": {
+                    "type": [
+                      "object",
+                      "null"
+                    ]
+                  },
+                  "ProgressionLevel": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "Levels": {
+                    "type": "array",
+                    "items": {
+                      "type": "object"
+                    }
+                  }
+                }
+              },
+              "IntervalData": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/WorkoutInterval"
+                }
+              },
+              "WorkoutData": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/WorkoutDataPoint"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "TrainerRoadCookie": []
+    }
+  ],
+  "paths": {
+    "/app/api/member-info": {
+      "get": {
+        "summary": "Get the authenticated member",
+        "responses": {
+          "200": {
+            "description": "Authenticated member",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Member"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app/api/react-calendar/{memberId}/timeline": {
+      "get": {
+        "summary": "Get react calendar timeline",
+        "parameters": [
+          {
+            "name": "memberId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Calendar timeline",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Timeline"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/app/api/calendar/activities/{username}": {
+      "get": {
+        "summary": "Legacy calendar activities endpoint",
+        "description": "Observed route; may return 405 or change.",
+        "parameters": [
+          {
+            "name": "username",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "startDate",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Legacy calendar activities"
+          },
+          "405": {
+            "description": "Method or route no longer supported"
+          }
+        }
+      }
+    },
+    "/app/api/workoutdetails/{workoutId}": {
+      "get": {
+        "summary": "Get workout details",
+        "parameters": [
+          {
+            "name": "workoutId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Workout details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkoutDetails"
+                }
+              }
+            }
+          },
+          "/app/api/workouts": {
+            "post": {
+              "summary": "Search workout library",
+              "requestBody": {
+                "required": true,
+                "content": {
+                  "application/json": {
+                    "schema": {
+                      "type": "object",
+                      "properties": {
+                        "Name": {
+                          "type": "string"
+                        },
+                        "Offset": {
+                          "type": "integer",
+                          "default": 0
+                        },
+                        "Limit": {
+                          "type": "integer",
+                          "default": 500
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "responses": {
+                "200": {
+                  "description": "Workout search response",
+                  "content": {
+                    "application/json": {
+                      "example": {
+                        "Workouts": []
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

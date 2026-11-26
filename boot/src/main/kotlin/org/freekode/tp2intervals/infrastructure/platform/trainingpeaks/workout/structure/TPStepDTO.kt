@@ -8,16 +8,21 @@ class TPStepDTO(
     var targets: List<TPTargetDTO> = listOf(),
 ) {
     fun toMainTarget(): StepTarget {
-        val target = targets.first { it.unit == null }
+        val target = targets.firstOrNull { it.unit == null }
+            ?: throw IllegalArgumentException("Step has no primary target")
+        val value = requireNotNull(target.minValue ?: target.maxValue) { "Primary target has no value" }
         return StepTarget(
-            target.minValue ?: target.maxValue!!,
-            target.maxValue ?: target.minValue!!,
+            target.minValue ?: value,
+            target.maxValue ?: value,
         )
     }
 
     fun toSecondaryTarget(): StepTarget? {
         return targets
             .firstOrNull { it.unit != null }
-            ?.let { StepTarget(it.minValue!!, it.maxValue!!) }
+            ?.let {
+                val value = requireNotNull(it.minValue ?: it.maxValue) { "Secondary target has no value" }
+                StepTarget(it.minValue ?: value, it.maxValue ?: value)
+            }
     }
 }

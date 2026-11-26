@@ -7,10 +7,27 @@ data class ExternalData(
     val intervalsId: String?,
     val trainerRoadId: String?,
 ) : Serializable {
-    private val externalDataDescriptionSeparator = "//////////"
-
     companion object {
+        const val externalDataDescriptionSeparator = "//////////"
+
         fun empty() = ExternalData(null, null, null)
+
+        fun trainerRoadIdsInDescription(description: String?): Set<String> =
+            description.orEmpty().split(externalDataDescriptionSeparator).drop(1)
+                .flatMap { it.lines() }
+                .map { it.trim() }
+                .filter { it.startsWith("trainerRoadId=") }
+                .map { it.substringAfter("=").trim() }
+                .filter { (it.toLongOrNull() ?: 0) > 0 }
+                .toSet()
+
+        fun hasAmbiguousMetadata(description: String?): Boolean {
+            val fields = description.orEmpty().substringAfter(externalDataDescriptionSeparator, "").lines()
+                .map { it.trimEnd('\r').split("=", limit = 2) }
+                .filter { it.size == 2 && it[0] in setOf("trainingPeaksId", "intervalsId", "trainerRoadId") }
+                .groupBy({ it[0] }, { it[1] })
+            return fields.values.any { values -> values.any { it.isBlank() } || values.distinct().size > 1 }
+        }
     }
 
     fun withTrainingPeaks(trainingPeaksId: String) = ExternalData(trainingPeaksId, intervalsId, trainerRoadId)
@@ -19,16 +36,27 @@ data class ExternalData(
 
     fun withTrainerRoad(trainerRoadId: String) = ExternalData(trainingPeaksId, intervalsId, trainerRoadId)
 
+    fun hasClearTrainerRoadId(description: String?): Boolean {
+        val parts = description.orEmpty().split(externalDataDescriptionSeparator)
+        if (parts.size != 2) return false
+        val ids = parts[1].lines().map { it.trimEnd('\r') }
+            .filter { it.startsWith("trainerRoadId=") }
+            .map { it.substringAfter("=") }
+        val id = ids.singleOrNull() ?: return false
+        return (id.toLongOrNull() ?: 0) > 0 && id == trainerRoadId
+    }
+
     fun fromSimpleString(string: String): ExternalData {
         val split = string.split(externalDataDescriptionSeparator)
         if (split.size != 2) {
             return this
         }
 
-        val fields = split[1].trim().split("\n")
+        val fields = split[1].trim().lines()
         var externalData = this
-        fields.map {
-            val field = it.split("=")
+        fields.forEach {
+            val field = it.split("=", limit = 2)
+            if (field.size != 2) return@forEach
             if (field[0] == "trainingPeaksId" && externalData.trainingPeaksId == null) {
                 externalData = externalData.withTrainingPeaks(field[1])
             } else if (field[0] == "intervalsId" && externalData.intervalsId == null) {
@@ -58,11 +86,11 @@ data class ExternalData(
 
         other as ExternalData
 
-        if (trainingPeaksId != null && trainingPeaksId == other.trainingPeaksId) return true
-        if (intervalsId != null && intervalsId == other.intervalsId) return true
-        if (trainerRoadId != null && trainerRoadId == other.trainerRoadId) return true
+        if (trainingPeaksId != other.trainingPeaksId) return false
+        if (intervalsId != other.intervalsId) return false
+        if (trainerRoadId != other.trainerRoadId) return false
 
-        return false
+        return true
     }
 
     override fun hashCode(): Int {

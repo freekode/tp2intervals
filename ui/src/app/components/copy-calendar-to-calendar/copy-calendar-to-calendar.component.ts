@@ -1,4 +1,5 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {HttpErrorResponse} from '@angular/common/http';
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {MatButtonModule} from "@angular/material/button";
 import {MatFormFieldModule} from "@angular/material/form-field";
@@ -9,17 +10,19 @@ import {MatNativeDateModule} from "@angular/material/core";
 import {MatSnackBarModule} from "@angular/material/snack-bar";
 import {MatSelectModule} from "@angular/material/select";
 import {MatCheckboxModule} from "@angular/material/checkbox";
+import {MatRadioModule} from "@angular/material/radio";
+import {MatDialog} from "@angular/material/dialog";
 import {Platform} from "infrastructure/platform";
 import {formatDate} from "utils/date-formatter";
 import {MatDividerModule} from "@angular/material/divider";
-import {MatListModule} from "@angular/material/list";
-import {NgIf} from "@angular/common";
+import {DatePipe, NgIf} from "@angular/common";
 import {ConfigurationClient} from "infrastructure/client/configuration.client";
-import {finalize, switchMap, tap} from "rxjs";
+import {catchError, EMPTY, filter, finalize, Subscription, switchMap, tap, throwError, timer} from "rxjs";
 import {WorkoutClient} from "infrastructure/client/workout.client";
 import {NotificationService} from "infrastructure/notification.service";
 import {MatTooltipModule} from "@angular/material/tooltip";
 import {TrainingTypes} from "infrastructure/training-types";
+import {describeSkippedWorkout, MatchedSyncWorkout, SyncPreviewDialogComponent} from "./sync-preview-dialog.component";
 
 @Component({
   selector: 'copy-calendar-to-calendar',
@@ -36,18 +39,27 @@ import {TrainingTypes} from "infrastructure/training-types";
     MatSnackBarModule,
     MatSelectModule,
     MatCheckboxModule,
+    MatRadioModule,
     MatDividerModule,
-    MatListModule,
     NgIf,
+    DatePipe,
     MatTooltipModule,
   ],
   templateUrl: './copy-calendar-to-calendar.component.html',
   styleUrl: './copy-calendar-to-calendar.component.scss'
 })
-export class CopyCalendarToCalendarComponent implements OnInit {
+export class CopyCalendarToCalendarComponent implements OnInit, OnDestroy {
   readonly Platform = Platform;
-  readonly todayDate = new Date()
-  readonly tomorrowDate = new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
+  readonly describeSkippedWorkout = describeSkippedWorkout;
+  get todayDate(): Date {
+    return new Date()
+  }
+
+  get tomorrowDate(): Date {
+    const tomorrow = new Date()
+    tomorrow.setDate(tomorrow.getDate() + 1)
+    return tomorrow
+  }
 
   @Input() trainingTypes: any[] = []
   @Input() selectedTrainingTypes = ['BIKE', 'VIRTUAL_BIKE']
@@ -57,12 +69,14 @@ export class CopyCalendarToCalendarComponent implements OnInit {
   formGroup: FormGroup
   platformsInfo: any
   scheduleRequests: any[] = []
+  private schedulePoll?: Subscription
 
   constructor(
     private formBuilder: FormBuilder,
     private configurationClient: ConfigurationClient,
     private workoutClient: WorkoutClient,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private dialog: MatDialog,
   ) {
   }
 
@@ -71,10 +85,23 @@ export class CopyCalendarToCalendarComponent implements OnInit {
       this.platformsInfo = value
     })
     this.formGroup = this.getFormGroup();
+    if (this.isReconciliationSupported(this.formGroup.value.direction)) {
+      this.applyHorizon();
+    }
     this.loadScheduleRequests().subscribe()
+    this.schedulePoll = timer(30000, 30000).pipe(
+      switchMap(() => this.loadScheduleRequests().pipe(
+        catchError(error => error instanceof HttpErrorResponse ? EMPTY : throwError(() => error)),
+      )),
+    ).subscribe()
+  }
+
+  ngOnDestroy(): void {
+    this.schedulePoll?.unsubscribe()
   }
 
   submit() {
+    if (this.isReconciliationSupported(this.formGroup.value.direction)) this.applyHorizon()
     let startDate = formatDate(this.formGroup.controls['startDate'].value)
     let endDate = formatDate(this.formGroup.controls['endDate'].value)
     this.copyWorkouts(startDate, endDate);
@@ -94,14 +121,21 @@ export class CopyCalendarToCalendarComponent implements OnInit {
     let direction = this.formGroup.value.direction
     let trainingTypes = this.formGroup.value.trainingTypes
     let skipSynced = this.formGroup.value.skipSynced
+    let defaultStartTime = this.formGroup.value.defaultStartTime || null
+    let trainerRoadSyncMode = this.isReconciliationSupported(direction) ? this.formGroup.value.trainerRoadSyncMode : null
+    let allowStaleRemoval = trainerRoadSyncMode === 'MIRROR' && this.formGroup.value.allowStaleRemoval
 
     this.inProgress = true
-    this.workoutClient.scheduleCopyCalendarToCalendar(startDate, endDate, trainingTypes, skipSynced, direction).pipe(
-      switchMap(() => this.loadScheduleRequests()),
+    this.workoutClient.scheduleCopyCalendarToCalendar(startDate, endDate, trainingTypes, skipSynced, defaultStartTime, trainerRoadSyncMode, allowStaleRemoval, direction).pipe(
+      tap(() => this.notificationService.success('Scheduled sync job')),
+      switchMap(() => this.loadScheduleRequests().pipe(
+        catchError(() => {
+          this.notificationService.error('The job was scheduled, but the job list could not be refreshed. It will run until deleted.')
+          return EMPTY
+        }),
+      )),
       finalize(() => this.inProgress = false)
-    ).subscribe(() => {
-      this.notificationService.success(`Scheduled sync job`)
-    })
+    ).subscribe()
   }
 
   mapTrainingTypesToTitles(values) {
@@ -116,14 +150,60 @@ export class CopyCalendarToCalendarComponent implements OnInit {
     let direction = this.formGroup.value.direction
     let trainingTypes = this.formGroup.value.trainingTypes
     let skipSynced = this.formGroup.value.skipSynced
+    let defaultStartTime = this.formGroup.value.defaultStartTime || null
+    let trainerRoadSyncMode = this.isReconciliationSupported(direction) ? this.formGroup.value.trainerRoadSyncMode : null
+    let allowStaleRemoval = trainerRoadSyncMode === 'MIRROR' && this.formGroup.value.allowStaleRemoval
 
     this.inProgress = true
-    this.workoutClient.copyCalendarToCalendar(startDate, endDate, trainingTypes, skipSynced, direction).pipe(
+    const execute = (expectedActions = null, expectedUnidentifiedActivityDates = null) => this.workoutClient.copyCalendarToCalendar(startDate, endDate, trainingTypes, skipSynced, defaultStartTime, trainerRoadSyncMode, allowStaleRemoval, direction, expectedActions, expectedUnidentifiedActivityDates)
+    const sync = trainerRoadSyncMode
+      ? this.workoutClient.previewCalendarToCalendar(startDate, endDate, trainingTypes, skipSynced, defaultStartTime, trainerRoadSyncMode, allowStaleRemoval, direction).pipe(
+          switchMap(preview => this.dialog.open(SyncPreviewDialogComponent, {data: {...preview, trainerRoadSyncMode}}).afterClosed().pipe(
+            filter(confirmed => confirmed === true),
+            switchMap(() => execute(preview.previewActions, preview.unidentifiedActivityDates ?? [])),
+          )),
+        )
+      : execute()
+    sync.pipe(
       finalize(() => this.inProgress = false)
     ).subscribe((response) => {
+      const escapeHtml = (value: string) => value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const matches = (response.matchedWorkouts ?? []).map((workout: MatchedSyncWorkout) =>
+        `<br>${escapeHtml(workout.date)} - ${escapeHtml(workout.name)}`
+      ).join('');
       this.notificationService.success(
-        `Planned: ${response.copied}\n Filtered out: ${response.filteredOut}\n From ${response.startDate} to ${response.endDate}`)
+        `Copied: ${response.copied}<br>${trainerRoadSyncMode === 'ADD_MISSING' ? 'Existing matches (not checked for changes)' : trainerRoadSyncMode === 'MIRROR' ? 'Unchanged matches' : 'Already synced'}: ${response.alreadySynced}${matches}${trainerRoadSyncMode ? `<br>Updated: ${response.updated}<br>Removed: ${response.removed}${response.skipped ? `<br>Skipped: ${response.skipped} (review manually)` : ''}` : ''}${response.unidentifiedActivityDates?.length ? `<br>Activities without workout IDs on ${response.unidentifiedActivityDates.join(', ')} require manual review.${trainerRoadSyncMode === 'MIRROR' ? ' Marked workouts may have been removed even if they correspond to these activities.' : ''}` : ''}<br>Filtered out by workout type: ${response.filteredOut}<br>From ${response.startDate} to ${response.endDate}`)
     })
+  }
+
+  isReconciliationSupported(direction: {sourcePlatform: string, targetPlatform: string}): boolean {
+    return direction?.sourcePlatform === Platform.TRAINER_ROAD.key &&
+      [Platform.INTERVALS.key, Platform.TRAINING_PEAKS.key].includes(direction?.targetPlatform)
+  }
+
+  isMirrorBlocked(): boolean {
+    return this.isReconciliationSupported(this.formGroup.value.direction) &&
+      this.formGroup.value.trainerRoadSyncMode === 'MIRROR' && !this.formGroup.value.allowStaleRemoval
+  }
+
+  applyHorizon(): void {
+    const days = Number(this.formGroup.value.horizon)
+    if (!days) return
+    const start = new Date()
+    const end = new Date(start)
+    end.setDate(end.getDate() + days - 1)
+    this.formGroup.patchValue({startDate: start, endDate: end})
+  }
+
+  directionChanged(): void {
+    this.formGroup.patchValue({allowStaleRemoval: false})
+    if (this.isReconciliationSupported(this.formGroup.value.direction)) this.applyHorizon()
+  }
+
+  syncModeChanged(): void {
+    if (this.formGroup.value.trainerRoadSyncMode !== 'MIRROR') {
+      this.formGroup.patchValue({allowStaleRemoval: false})
+    }
   }
 
   private getFormGroup() {
@@ -133,6 +213,10 @@ export class CopyCalendarToCalendarComponent implements OnInit {
       startDate: [this.todayDate, Validators.required],
       endDate: [this.tomorrowDate, Validators.required],
       skipSynced: [true, Validators.required],
+      trainerRoadSyncMode: ['ADD_MISSING', Validators.required],
+      allowStaleRemoval: [false],
+      horizon: ['2', Validators.required],
+      defaultStartTime: [null, Validators.pattern('^([01][0-9]|2[0-3]):[0-5][0-9]$')],
     })
   }
 
@@ -140,9 +224,8 @@ export class CopyCalendarToCalendarComponent implements OnInit {
     return this.workoutClient.getScheduleRequests().pipe(
       tap(values => {
           this.scheduleRequests = values.map(value => {
-            return {id: value.id, request: JSON.parse(value.requestJson)}
+            return {id: value.id, request: JSON.parse(value.requestJson), lastResult: value.lastResultJson ? JSON.parse(value.lastResultJson) : null}
           })
-          console.log(this.scheduleRequests)
         }
       )
     )
@@ -151,10 +234,14 @@ export class CopyCalendarToCalendarComponent implements OnInit {
   deleteJob(jobId: any) {
     this.inProgress = true
     this.workoutClient.deleteScheduleRequest(jobId).pipe(
-      switchMap(() => this.loadScheduleRequests()),
+      tap(() => this.notificationService.success('Deleted job')),
+      switchMap(() => this.loadScheduleRequests().pipe(
+        catchError(() => {
+          this.notificationService.error('The job was deleted, but the job list could not be refreshed.')
+          return EMPTY
+        }),
+      )),
       finalize(() => this.inProgress = false)
-    ).subscribe(() => {
-      this.notificationService.success(`Deleted job`)
-    })
+    ).subscribe()
   }
 }

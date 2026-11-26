@@ -8,10 +8,16 @@
         @for (option of workouts | async; track option) {
           <mat-option [value]="option">{{ getWorkoutDetailsName(option) }}</mat-option>
         }
-        <mat-option disabled *ngIf="(workouts | async)?.length === 0 && !searchInProgress">
+        <mat-option disabled *ngIf="searchFailed">
+          Search failed. Change the search to try again.
+        </mat-option>
+        <mat-option disabled *ngIf="(workouts | async)?.length === 0 && !searchInProgress && !searchFailed && canSearch">
           Not found
         </mat-option>
       </mat-autocomplete>
+      <mat-error *ngIf="formGroup.controls['trWorkoutDetails'].errors?.['workoutNotSelected']">
+        Select a workout from the search results.
+      </mat-error>
       <mat-progress-bar *ngIf="searchInProgress" mode="query"></mat-progress-bar>
     </mat-form-field>
   </div>

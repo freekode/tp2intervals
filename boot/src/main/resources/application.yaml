@@ -14,9 +14,12 @@ spring:
       client:
         config:
           default:
-            loggerLevel: full
+            loggerLevel: none
   jackson:
     default-property-inclusion: non_null
+    time-zone: UTC
+    deserialization:
+      adjust-dates-to-context-time-zone: false
     serialization:
       fail-on-empty-beans: false
   datasource:

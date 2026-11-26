@@ -16,6 +16,9 @@ data class ScheduleRequestEntity(
 
     @Column
     var requestJson: String?,
+
+    @Column
+    var lastResultJson: String? = null,
 ) {
     constructor() : this(null, null)
     constructor(requestJson: String) : this(null, requestJson)

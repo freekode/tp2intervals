@@ -1,0 +1,39 @@
+databaseChangeLog:
+  - changeSet:
+      id: trainerroad-synced-events
+      author: tp2intervals
+      changes:
+        - createTable:
+            tableName: trainerroad_synced_events
+            columns:
+              - column:
+                  name: id
+                  type: integer
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: athlete_id
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: event_id
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: trainer_road_id
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+        - createIndex:
+            tableName: trainerroad_synced_events
+            indexName: uq_trainerroad_synced_event
+            unique: true
+            columns:
+              - column:
+                  name: athlete_id
+              - column:
+                  name: event_id

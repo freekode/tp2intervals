@@ -1,6 +1,11 @@
 <mat-progress-bar *ngIf="inProgress" mode="query"></mat-progress-bar>
 
-<form [formGroup]="formGroup" novalidate (ngSubmit)="onSubmit()">
+<div *ngIf="loadError" role="alert">
+  <p>Could not load configuration. Check the connection and try again.</p>
+  <button mat-stroked-button type="button" (click)="loadConfig()">Retry</button>
+</div>
+
+<form *ngIf="configLoaded" [formGroup]="formGroup" novalidate (ngSubmit)="onSubmit()">
   <div>
     <h2>
       Intervals.icu
@@ -64,6 +69,25 @@
         <mat-error>Must be in format Production_tpAuth=[a-zA-Z0-9-_]*</mat-error>
       }
     </mat-form-field>
+
+    <div class="row test-connection-row">
+      <button
+        mat-stroked-button
+        type="button"
+        [disabled]="trainingPeaksTestInProgress || !formGroup.controls['training-peaks.auth-cookie'].value"
+        (click)="testTrainingPeaksConnection()"
+      >
+        Test connection
+      </button>
+    </div>
+    <div
+      *ngIf="trainingPeaksTestResult"
+      class="test-connection-result"
+      [class.success]="trainingPeaksTestSucceeded"
+      [class.error]="!trainingPeaksTestSucceeded"
+    >
+      {{ trainingPeaksTestResult }}
+    </div>
   </div>
 
   <div>
@@ -83,6 +107,25 @@
         <mat-error>Must be in format SharedTrainerRoadAuth=...</mat-error>
       }
     </mat-form-field>
+
+    <div class="row test-connection-row">
+      <button
+        mat-stroked-button
+        type="button"
+        [disabled]="trainerRoadTestInProgress || !formGroup.controls['trainer-road.auth-cookie'].value"
+        (click)="testTrainerRoadConnection()"
+      >
+        Test connection
+      </button>
+    </div>
+    <div
+      *ngIf="trainerRoadTestResult"
+      class="test-connection-result"
+      [class.success]="trainerRoadTestSucceeded"
+      [class.error]="!trainerRoadTestSucceeded"
+    >
+      {{ trainerRoadTestResult }}
+    </div>
 
     <mat-checkbox class="form-checkbox" formControlName="trainer-road.remove-html-tags">
       Remove HTML tags from description

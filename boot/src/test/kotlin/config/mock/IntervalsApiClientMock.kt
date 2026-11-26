@@ -9,6 +9,8 @@ import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.activity.C
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.CreateEventRequestDTO
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.CreateWorkoutRequestDTO
 import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsEventDTO
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.IntervalsEventIdentityDTO
+import org.freekode.tp2intervals.infrastructure.platform.intervalsicu.workout.EventWriteResponseDTO
 import org.springframework.web.multipart.MultipartFile
 
 class IntervalsApiClientMock(
@@ -23,7 +25,15 @@ class IntervalsApiClientMock(
         TODO("Not yet implemented")
     }
 
-    override fun createEvent(athleteId: String, createEventRequestDTO: CreateEventRequestDTO) {
+    override fun createEvent(athleteId: String, createEventRequestDTO: CreateEventRequestDTO): EventWriteResponseDTO? {
+        TODO("Not yet implemented")
+    }
+
+    override fun deleteEvent(athleteId: String, eventId: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun updateEvent(athleteId: String, eventId: String, request: CreateEventRequestDTO): EventWriteResponseDTO? {
         TODO("Not yet implemented")
     }
 
@@ -35,6 +45,11 @@ class IntervalsApiClientMock(
         hrRange: Float,
         paceRange: Float
     ): List<IntervalsEventDTO> = events
+
+    override fun getEventsForReconciliation(athleteId: String, startDate: String, endDate: String): List<IntervalsEventIdentityDTO> =
+        events.map {
+            IntervalsEventIdentityDTO(it.id, it.name, it.description, it.start_date_local, it.category, it.type, it.moving_time, it.icu_training_load)
+        }
 
 
     override fun getActivities(athleteId: String, startDate: String, endDate: String): List<IntervalsActivityDTO> {

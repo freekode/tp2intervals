@@ -1,0 +1,14 @@
+{
+  "Workouts": [
+    {
+      "Id": "265566",
+      "WorkoutName": "Example Sweet Spot Workout",
+      "Duration": 60,
+      "Tss": 72,
+      "IsOutside": false,
+      "ProfileName": "Example Profile",
+      "WorkoutDifficultyRating": 5,
+      "Tags": []
+    }
+  ]
+}

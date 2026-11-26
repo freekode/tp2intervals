@@ -11,9 +11,14 @@ export class WorkoutClient {
   constructor(private httpClient: HttpClient) {
   }
 
-  copyCalendarToCalendar(startDate, endDate, types, skipSynced, platformDirection): Observable<any> {
+  copyCalendarToCalendar(startDate, endDate, types, skipSynced, defaultStartTime, trainerRoadSyncMode, allowStaleRemoval, platformDirection, expectedActions = null, expectedUnidentifiedActivityDates = null): Observable<any> {
     return this.httpClient
-      .post(`/api/workout/copy-calendar-to-calendar`, {startDate, endDate, types, skipSynced, ...platformDirection})
+      .post(`/api/workout/copy-calendar-to-calendar`, {startDate, endDate, types, skipSynced, defaultStartTime, trainerRoadSyncMode, allowStaleRemoval, expectedActions, expectedUnidentifiedActivityDates, ...platformDirection})
+  }
+
+  previewCalendarToCalendar(startDate, endDate, types, skipSynced, defaultStartTime, trainerRoadSyncMode, allowStaleRemoval, platformDirection): Observable<any> {
+    return this.httpClient
+      .post(`/api/workout/copy-calendar-to-calendar/preview`, {startDate, endDate, types, skipSynced, defaultStartTime, trainerRoadSyncMode, allowStaleRemoval, ...platformDirection})
   }
 
   copyCalendarToLibrary(name, startDate, endDate, types, platformDirection, isPlan): Observable<any> {
@@ -33,13 +38,18 @@ export class WorkoutClient {
     return this.httpClient.get(`/api/workout/find`, {params: {platform, name}})
   }
 
-  scheduleCopyCalendarToCalendar(startDate, endDate, types, skipSynced, platformDirection): Observable<any> {
+  scheduleCopyCalendarToCalendar(startDate, endDate, types, skipSynced, defaultStartTime, trainerRoadSyncMode, allowStaleRemoval, platformDirection): Observable<any> {
     return this.httpClient
       .post(`/api/workout/copy-calendar-to-calendar/schedule`, {
         startDate,
         endDate,
         types,
         skipSynced,
+        defaultStartTime,
+        trainerRoadSyncMode,
+        allowStaleRemoval,
+        mirrorByTrainerRoadId: trainerRoadSyncMode === 'MIRROR' && allowStaleRemoval,
+        allowUnidentifiedSourceRemoval: trainerRoadSyncMode === 'MIRROR' && allowStaleRemoval,
         ...platformDirection
       })
   }
